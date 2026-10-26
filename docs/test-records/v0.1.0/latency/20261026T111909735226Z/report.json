@@ -1,0 +1,66 @@
+{
+  "measured_at": "2026-10-26T11:19:09.735226+00:00",
+  "health": [
+    {
+      "sample": 1,
+      "seconds": 0.0055,
+      "http_status": 200
+    },
+    {
+      "sample": 2,
+      "seconds": 0.0034,
+      "http_status": 200
+    },
+    {
+      "sample": 3,
+      "seconds": 0.0028,
+      "http_status": 200
+    },
+    {
+      "sample": 4,
+      "seconds": 0.0194,
+      "http_status": 200
+    },
+    {
+      "sample": 5,
+      "seconds": 0.0029,
+      "http_status": 200
+    }
+  ],
+  "chat": [
+    {
+      "sample": 1,
+      "seconds": 5.2088,
+      "http_status": 200,
+      "status": "success",
+      "query_count": 1,
+      "source_count": 1
+    },
+    {
+      "sample": 2,
+      "seconds": 5.3294,
+      "http_status": 200,
+      "status": "success",
+      "query_count": 1,
+      "source_count": 1
+    },
+    {
+      "sample": 3,
+      "seconds": 5.2691,
+      "http_status": 200,
+      "status": "success",
+      "query_count": 1,
+      "source_count": 1
+    }
+  ],
+  "health_summary": {
+    "mean_seconds": 0.0068,
+    "min_seconds": 0.0028,
+    "max_seconds": 0.0194
+  },
+  "chat_summary": {
+    "mean_seconds": 5.2691,
+    "min_seconds": 5.2088,
+    "max_seconds": 5.3294
+  }
+}

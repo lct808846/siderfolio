@@ -1,0 +1,11 @@
+{
+  "application_version": "0.1.0",
+  "original_timestamp": "2026-10-26T11:19:09.735226+00:00",
+  "files": [
+    {
+      "original": "outputs/latency-check.json",
+      "archived": "report.json",
+      "sha256": "f55444824e7b118633346832e549c20338e51ee8374e6bcc0eb4a83997a62dba"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "application_version": "0.1.0",
+  "original_timestamp": "2026-10-26T11:09:38.318990+00:00",
+  "files": [
+    {
+      "original": "outputs/v0.1-acceptance.json",
+      "archived": "report.json",
+      "sha256": "4b9b7fcf6250277051ad47b19f2bf1c12034d6d544b2fa8fff4f8ecb11bb5f43"
+    },
+    {
+      "original": "outputs/uvicorn-acceptance.log",
+      "archived": "uvicorn.txt",
+      "sha256": "f45c01c4997083dd904d2f68e0adcb0605008adfe65bb4ef7180dc79d466f34c"
+    }
+  ]
+}

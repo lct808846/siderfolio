@@ -1,0 +1,97 @@
+{
+  "verified_at": "2026-10-26T11:09:38.318990+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.1.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11"
+  },
+  "server_stopped": true,
+  "checks": [
+    {
+      "name": "health",
+      "http_status": 200,
+      "body": {
+        "status": "ok"
+      }
+    },
+    {
+      "name": "swagger",
+      "http_status": 200
+    },
+    {
+      "name": "openapi",
+      "http_status": 200
+    },
+    {
+      "name": "empty_message",
+      "http_status": 422
+    },
+    {
+      "name": "betelgeuse",
+      "http_status": 200,
+      "body": {
+        "status": "success",
+        "answer": "SIMBAD 查询结果（Betelgeuse，主标识符 * alf Ori）：\n\n- **坐标（ICRS）**：赤经 88.792939°，赤纬 +7.407064°\n- **天体类型**：s*r（红超巨星）\n- **光谱类型**：M1-M2Ia-Iab\n- **坐标文献编号**：2007A&A...474..653V\n\n来源：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML（检索时间 2026-10-26）\n\n说明：本版本仅查询标识符、坐标、类型和光谱类型，未查询亮度、距离、质量等测量值。",
+        "results": [
+          {
+            "object_name": "Betelgeuse",
+            "status": "success",
+            "source": {
+              "name": "SIMBAD",
+              "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+              "retrieved_at": "2026-10-26T11:09:28.157775Z"
+            },
+            "data": {
+              "main_id": "* alf Ori",
+              "ra_deg": 88.79293899077537,
+              "dec_deg": 7.407063995272694,
+              "coordinate_frame": "ICRS",
+              "object_type": "s*r",
+              "spectral_type": "M1-M2Ia-Iab",
+              "coordinate_bibcode": "2007A&A...474..653V"
+            },
+            "error": null
+          }
+        ],
+        "sources": [
+          {
+            "name": "SIMBAD",
+            "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+            "retrieved_at": "2026-10-26T11:09:28.157775Z"
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "name": "unknown_object",
+      "http_status": 200,
+      "body": {
+        "status": "error",
+        "answer": "查询失败：SIMBAD 未找到名为 **AstroAgentDefinitelyMissingObject20261026** 的天体（错误码 `object_not_found`，不可重试）。\n\n- 来源链接：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=AstroAgentDefinitelyMissingObject20261026&output.format=HTML\n- 检索时间：2026-10-26T11:09:34Z\n\n因此本次没有任何坐标、类型或光谱数据可提供。请确认名称拼写，或提供其他标识符（如 HD、NGC、2MASS 编号等）后我再查询。",
+        "results": [
+          {
+            "object_name": "AstroAgentDefinitelyMissingObject20261026",
+            "status": "not_found",
+            "source": {
+              "name": "SIMBAD",
+              "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=AstroAgentDefinitelyMissingObject20261026&output.format=HTML",
+              "retrieved_at": "2026-10-26T11:09:34.194135Z"
+            },
+            "data": null,
+            "error": {
+              "code": "object_not_found",
+              "message": "SIMBAD 未找到该天体名称。",
+              "retryable": false
+            }
+          }
+        ],
+        "sources": [],
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "application_version": "0.1.0",
+  "started_at": "2026-10-26T11:25:01.900841+00:00",
+  "kind": "offline-tests",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.1.0\\offline-tests\\20261026T112501898813Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 5.7521,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1333,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1216,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.7146,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-26T11:25:08.622483+00:00"
+}
