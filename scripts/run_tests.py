@@ -12,23 +12,34 @@ from record_utils import ROOT, create_record_directory, project_version, write_r
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--live", action="store_true", help="访问真实外部服务，会产生模型用量")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--live", action="store_true", help="访问真实 SIMBAD/模型，会产生模型用量")
+    mode.add_argument(
+        "--live-ads", action="store_true", help="访问真实 ADS/综合查询，会产生模型用量"
+    )
     args = parser.parse_args()
-    output = create_record_directory("live-tests" if args.live else "offline-tests")
+    live = args.live or args.live_ads
+    kind = "live-ads-tests" if args.live_ads else ("live-tests" if live else "offline-tests")
+    output = create_record_directory(kind)
     environment = os.environ.copy()
     environment["ASTROAGENT_RUN_LIVE"] = "1" if args.live else "0"
+    environment["ASTROAGENT_RUN_LIVE_ADS"] = "1" if args.live_ads else "0"
     commands = [
         [
             sys.executable,
             "-m",
             "pytest",
-            *(["tests/test_live.py", "-v"] if args.live else ["-q"]),
+            *(
+                ["tests/test_live_ads.py" if args.live_ads else "tests/test_live.py", "-v"]
+                if live
+                else ["-q"]
+            ),
             f"--junitxml={output / 'pytest.xml'}",
             "-o",
             "faulthandler_timeout=30",
         ],
     ]
-    if not args.live:
+    if not live:
         commands.extend(
             [
                 [sys.executable, "-m", "ruff", "check", "src", "tests", "scripts"],
@@ -39,7 +50,7 @@ def main():
     report = {
         "application_version": project_version(),
         "started_at": datetime.now(UTC).isoformat(),
-        "kind": "live-tests" if args.live else "offline-tests",
+        "kind": kind,
         "checks": [],
     }
     for index, command in enumerate(commands):

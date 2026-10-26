@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-26T12:08:35.836469+00:00",
+  "outcome": "human_verification_required",
+  "url": "https://ui.adsabs.harvard.edu/search/q=bibcode%3A%222007A%26A...474..653V%22&fq=database%3Aastronomy&sort=date%20desc&start=0&p_=0",
+  "observed_title": "Human Verification",
+  "observed_heading": "我们需要确认您是人类",
+  "result_page_verified": false,
+  "captcha_attempted": false,
+  "official_route_source": "https://github.com/adsabs/bumblebee/blob/master/src/js/apps/discovery/router.js",
+  "route_source_observation": "search/(:query) -> new ApiQuery().load(query)",
+  "scope": "API retrieval and URL encoding tested separately; graphical search results not verified."
+}

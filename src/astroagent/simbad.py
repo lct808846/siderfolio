@@ -65,8 +65,12 @@ class SimbadService:
         try:
             # 每次查询独立实例和 session，避免并发请求修改共享查询配置。
             with BoundedSession(self.timeout) as session:
-                client = Simbad(timeout=self.timeout)
+                # Passing timeout to the constructor eagerly fetches TAP capabilities
+                # before our bounded session is installed. Set it only after injection.
+                client = Simbad()
+                client._session.close()
                 client._session = session
+                client.timeout = self.timeout
                 client.ROW_LIMIT = 1
                 client.add_votable_fields("otype", "sp_type")
                 table = client.query_object(name, wildcard=False)

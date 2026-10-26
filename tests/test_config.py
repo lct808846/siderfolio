@@ -1,4 +1,4 @@
-from astroagent.agent import SIMBAD_TOOL, create_model
+from astroagent.agent import ADS_TOOL, SIMBAD_TOOL, create_model
 from astroagent.config import Settings
 
 
@@ -32,4 +32,4 @@ def test_model_has_timeout_no_retries_and_registered_tool(monkeypatch):
     assert captured["timeout"] == 9
     assert captured["max_retries"] == 0
     assert captured["extra_body"] == {"thinking": {"type": "disabled"}}
-    assert captured["tools"] == [SIMBAD_TOOL]
+    assert captured["tools"] == [SIMBAD_TOOL, ADS_TOOL]

@@ -1,0 +1,1042 @@
+{
+  "application_version": "0.2.0",
+  "started_at": "2026-10-26T11:59:13.247982+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.2.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "requests": "2.34.2"
+  },
+  "checks": [
+    {
+      "name": "health",
+      "path": "/health",
+      "request": null,
+      "started_at": "2026-10-26T11:59:18.154699+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "status": "ok"
+      }
+    },
+    {
+      "name": "swagger",
+      "path": "/docs",
+      "request": null,
+      "started_at": "2026-10-26T11:59:18.156926+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/favicon.png\">\n    <title>AstroAgent - Swagger UI</title>\n    </head>\n    <body>\n    <div id=\"swagger-ui\">\n    </div>\n    <script src=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js\"></script>\n    <!-- `SwaggerUIBundle` is now available on the page -->\n    <script>\n    const ui = SwaggerUIBundle({\n        url: '/openapi.json',\n    \"dom_id\": \"#swagger-ui\",\n\"layout\": \"BaseLayout\",\n\"deepLinking\": true,\n\"showExtensions\": true,\n\"showCommonExtensions\": true,\noauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',\n    presets: [\n        SwaggerUIBundle.presets.apis,\n        SwaggerUIBundle.SwaggerUIStandalonePreset\n        ],\n    })\n    </script>\n    </body>\n    </html>\n    "
+    },
+    {
+      "name": "openapi",
+      "path": "/openapi.json",
+      "request": null,
+      "started_at": "2026-10-26T11:59:18.157929+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "AstroAgent",
+          "version": "0.2.0"
+        },
+        "paths": {
+          "/health": {
+            "get": {
+              "tags": [
+                "health"
+              ],
+              "summary": "Get Health",
+              "description": "返回服务存活状态。",
+              "operationId": "get_health_health_get",
+              "responses": {
+                "200": {
+                  "description": "Successful Response",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "type": "object",
+                        "title": "Response Get Health Health Get"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/api/v1/chat": {
+            "post": {
+              "tags": [
+                "chat"
+              ],
+              "summary": "自然语言天文查询",
+              "description": "单次无状态 SIMBAD 与 ADS 查询。天体结果在 results，文献结果在 literature_results；数据库失败也逐次保留，status 可为 partial 或 error。",
+              "operationId": "chat_api_v1_chat_post",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ChatRequest"
+                    }
+                  }
+                },
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "description": "Successful Response",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ChatResponse"
+                      }
+                    }
+                  }
+                },
+                "502": {
+                  "description": "Bad Gateway",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  }
+                },
+                "503": {
+                  "description": "Service Unavailable",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  }
+                },
+                "504": {
+                  "description": "Gateway Timeout",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  }
+                },
+                "422": {
+                  "description": "Validation Error",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/HTTPValidationError"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "schemas": {
+            "ChatRequest": {
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "minLength": 1,
+                  "title": "Message",
+                  "examples": [
+                    "请查询 Betelgeuse 的坐标和类型"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "message"
+              ],
+              "title": "ChatRequest"
+            },
+            "ChatResponse": {
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "success",
+                    "partial",
+                    "error"
+                  ],
+                  "title": "Status"
+                },
+                "answer": {
+                  "type": "string",
+                  "title": "Answer"
+                },
+                "results": {
+                  "items": {
+                    "$ref": "#/components/schemas/QueryResult"
+                  },
+                  "type": "array",
+                  "title": "Results"
+                },
+                "literature_results": {
+                  "items": {
+                    "$ref": "#/components/schemas/LiteratureSearchResult"
+                  },
+                  "type": "array",
+                  "title": "Literature Results"
+                },
+                "sources": {
+                  "items": {
+                    "$ref": "#/components/schemas/Source"
+                  },
+                  "type": "array",
+                  "title": "Sources"
+                },
+                "warnings": {
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  },
+                  "type": "array",
+                  "title": "Warnings"
+                }
+              },
+              "type": "object",
+              "required": [
+                "status",
+                "answer"
+              ],
+              "title": "ChatResponse"
+            },
+            "ErrorInfo": {
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "title": "Code"
+                },
+                "message": {
+                  "type": "string",
+                  "title": "Message"
+                },
+                "retryable": {
+                  "type": "boolean",
+                  "title": "Retryable",
+                  "default": false
+                }
+              },
+              "type": "object",
+              "required": [
+                "code",
+                "message"
+              ],
+              "title": "ErrorInfo"
+            },
+            "ErrorResponse": {
+              "properties": {
+                "error": {
+                  "$ref": "#/components/schemas/ErrorInfo"
+                }
+              },
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "title": "ErrorResponse"
+            },
+            "HTTPValidationError": {
+              "properties": {
+                "detail": {
+                  "items": {
+                    "$ref": "#/components/schemas/ValidationError"
+                  },
+                  "type": "array",
+                  "title": "Detail"
+                }
+              },
+              "type": "object",
+              "title": "HTTPValidationError"
+            },
+            "LiteratureSearchResult": {
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "title": "Query"
+                },
+                "filters": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Filters"
+                },
+                "rows": {
+                  "type": "integer",
+                  "title": "Rows"
+                },
+                "start": {
+                  "type": "integer",
+                  "title": "Start"
+                },
+                "sort": {
+                  "type": "string",
+                  "enum": [
+                    "relevance",
+                    "date_desc",
+                    "citation_count_desc"
+                  ],
+                  "title": "Sort"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "success",
+                    "not_found",
+                    "error"
+                  ],
+                  "title": "Status"
+                },
+                "total_found": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Total Found"
+                },
+                "returned_count": {
+                  "type": "integer",
+                  "title": "Returned Count",
+                  "default": 0
+                },
+                "has_more": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Has More"
+                },
+                "papers": {
+                  "items": {
+                    "$ref": "#/components/schemas/PaperData"
+                  },
+                  "type": "array",
+                  "title": "Papers"
+                },
+                "source": {
+                  "$ref": "#/components/schemas/Source"
+                },
+                "error": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorInfo"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object",
+              "required": [
+                "query",
+                "rows",
+                "start",
+                "sort",
+                "status",
+                "source"
+              ],
+              "title": "LiteratureSearchResult"
+            },
+            "ObjectData": {
+              "properties": {
+                "main_id": {
+                  "type": "string",
+                  "title": "Main Id"
+                },
+                "ra_deg": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "exclusiveMaximum": 360.0,
+                      "minimum": 0.0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Ra Deg"
+                },
+                "dec_deg": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "maximum": 90.0,
+                      "minimum": -90.0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Dec Deg"
+                },
+                "coordinate_frame": {
+                  "type": "string",
+                  "const": "ICRS",
+                  "title": "Coordinate Frame",
+                  "default": "ICRS"
+                },
+                "object_type": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Object Type"
+                },
+                "spectral_type": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Spectral Type"
+                },
+                "coordinate_bibcode": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Coordinate Bibcode"
+                }
+              },
+              "type": "object",
+              "required": [
+                "main_id"
+              ],
+              "title": "ObjectData"
+            },
+            "PaperData": {
+              "properties": {
+                "bibcode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "title": "Bibcode"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Title"
+                },
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Authors"
+                },
+                "year": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "maximum": 9999.0,
+                      "minimum": 1.0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Year"
+                },
+                "publication": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Publication"
+                },
+                "doi": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Doi"
+                },
+                "abstract": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Abstract"
+                },
+                "citation_count": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0.0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Citation Count"
+                },
+                "source": {
+                  "$ref": "#/components/schemas/Source"
+                }
+              },
+              "type": "object",
+              "required": [
+                "bibcode",
+                "source"
+              ],
+              "title": "PaperData"
+            },
+            "QueryResult": {
+              "properties": {
+                "object_name": {
+                  "type": "string",
+                  "title": "Object Name"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "success",
+                    "not_found",
+                    "error"
+                  ],
+                  "title": "Status"
+                },
+                "source": {
+                  "$ref": "#/components/schemas/Source"
+                },
+                "data": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ObjectData"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "error": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorInfo"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object",
+              "required": [
+                "object_name",
+                "status",
+                "source"
+              ],
+              "title": "QueryResult"
+            },
+            "Source": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "SIMBAD",
+                    "ADS"
+                  ],
+                  "title": "Name",
+                  "default": "SIMBAD"
+                },
+                "url": {
+                  "type": "string",
+                  "title": "Url"
+                },
+                "retrieved_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "title": "Retrieved At"
+                }
+              },
+              "type": "object",
+              "required": [
+                "url",
+                "retrieved_at"
+              ],
+              "title": "Source"
+            },
+            "ValidationError": {
+              "properties": {
+                "loc": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "integer"
+                      }
+                    ]
+                  },
+                  "type": "array",
+                  "title": "Location"
+                },
+                "msg": {
+                  "type": "string",
+                  "title": "Message"
+                },
+                "type": {
+                  "type": "string",
+                  "title": "Error Type"
+                },
+                "input": {
+                  "title": "Input"
+                },
+                "ctx": {
+                  "type": "object",
+                  "title": "Context"
+                }
+              },
+              "type": "object",
+              "required": [
+                "loc",
+                "msg",
+                "type"
+              ],
+              "title": "ValidationError"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "empty_message",
+      "path": "/api/v1/chat",
+      "request": {
+        "message": " "
+      },
+      "started_at": "2026-10-26T11:59:18.196942+00:00",
+      "passed": true,
+      "http_status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "string_too_short",
+            "loc": [
+              "body",
+              "message"
+            ],
+            "msg": "String should have at least 1 character",
+            "input": " ",
+            "ctx": {
+              "min_length": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "simbad_only",
+      "path": "/api/v1/chat",
+      "request": {
+        "message": "请通过 SIMBAD 查询 Betelgeuse 的坐标与类型，给出来源。"
+      },
+      "started_at": "2026-10-26T11:59:18.202682+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "status": "success",
+        "answer": "**SIMBAD 查询结果（Betelgeuse）**\n\n- 主标识符：* alf Ori\n- 坐标（ICRS）：赤经 88.792939°，赤纬 +7.407064°\n- 天体类型：s*r（红超巨星）\n- 光谱类型：M1-M2Ia-Iab\n- 坐标文献编号：2007A&A...474..653V\n\n来源：SIMBAD 查询页 https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML（检索时间 2026-10-26T11:59:19Z）\n\n说明：以上均为本次 SIMBAD 返回字段；亮度、距离、质量等测量值本版本未查询。",
+        "results": [
+          {
+            "object_name": "Betelgeuse",
+            "status": "success",
+            "source": {
+              "name": "SIMBAD",
+              "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+              "retrieved_at": "2026-10-26T11:59:19.859214Z"
+            },
+            "data": {
+              "main_id": "* alf Ori",
+              "ra_deg": 88.79293899077537,
+              "dec_deg": 7.407063995272694,
+              "coordinate_frame": "ICRS",
+              "object_type": "s*r",
+              "spectral_type": "M1-M2Ia-Iab",
+              "coordinate_bibcode": "2007A&A...474..653V"
+            },
+            "error": null
+          }
+        ],
+        "literature_results": [],
+        "sources": [
+          {
+            "name": "SIMBAD",
+            "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+            "retrieved_at": "2026-10-26T11:59:19.859214Z"
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "name": "ads_only",
+      "path": "/api/v1/chat",
+      "request": {
+        "message": "检索 bibcode 为 2007A&A...474..653V 的文献，给出书目信息与来源。"
+      },
+      "started_at": "2026-10-26T11:59:23.932387+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "status": "success",
+        "answer": "**检索条件**\n- 实际 query：`bibcode:2007A&A...474..653V`\n- 范围：database:astronomy\n- 排序：relevance\n- 本页数量：1；total_found：1（仅表示该检索式匹配到的记录数）\n\n**书目信息**\n- bibcode：2007A&A...474..653V\n- 标题：Validation of the new Hipparcos reduction\n- 作者：van Leeuwen, F.\n- 年份：2007\n- 期刊：Astronomy and Astrophysics\n- DOI：10.1051/0004-6361:20078357；10.48550/arXiv.0708.1752\n- 被引次数：3431（查询时记录，不代表论文质量）\n- 链接：https://ui.adsabs.harvard.edu/abs/2007A%26A...474..653V/abstract\n\n**摘要要点（根据摘要）**\n该文检验了新版 Hipparcos 天体测量数据归算的质量：对 Hp=8 等以内的恒星，新星表的精度最高可提升约 4 倍；作者追踪内部误差、用少量恒星的射电观测和负视差分布评估外部误差，并考察误差相关性。结论认为新归算的总权重比 1997 年版提高约 2.2 倍，为恒星光度与本地银河系运动学研究提供改进数据。摘要未截断，作者列表未截断。\n\n**来源**\n- ADS 记录：https://ui.adsabs.harvard.edu/abs/2007A%26A...474..653V/abstract\n- 检索页：https://ui.adsabs.harvard.edu/search/q=bibcode%3A2007A%26A...474..653V&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0\n- 检索时间：2026-10-26T11:59:24Z\n\n本次仅检索文献，未查询 SIMBAD 天体数据。",
+        "results": [],
+        "literature_results": [
+          {
+            "query": "bibcode:2007A&A...474..653V",
+            "filters": [
+              "database:astronomy"
+            ],
+            "rows": 5,
+            "start": 0,
+            "sort": "relevance",
+            "status": "success",
+            "total_found": 1,
+            "returned_count": 1,
+            "has_more": false,
+            "papers": [
+              {
+                "bibcode": "2007A&A...474..653V",
+                "title": "Validation of the new Hipparcos reduction",
+                "authors": [
+                  "van Leeuwen, F."
+                ],
+                "year": 2007,
+                "publication": "Astronomy and Astrophysics",
+                "doi": [
+                  "10.1051/0004-6361:20078357",
+                  "10.48550/arXiv.0708.1752"
+                ],
+                "abstract": "Context: A new reduction of the astrometric data as produced by the Hipparcos mission has been published, claiming accuracies for nearly all stars brighter than magnitude Hp=8 to be better, by up to a factor 4, than in the original catalogue. <BR />Aims: The new Hipparcos astrometric catalogue is checked for the quality of the data and the consistency of the formal errors as well as the possible presence of error correlations. The differences with the earlier publication are explained. <BR />Methods: The internal errors are followed through the reduction process, and the external errors are investigated on the basis of a comparison with radio observations of a small selection of stars, and the distribution of negative parallaxes. Error correlation levels are investigated and the reduction by more than a factor 10 as obtained in the new catalogue is explained. <BR />Results: The formal errors on the parallaxes for the new catalogue are confirmed. The presence of a small amount of additional noise, though unlikely, cannot be ruled out. <BR />Conclusions: The new reduction of the Hipparcos astrometric data provides an improvement by a factor 2.2 in the total weight compared to the catalogue published in 1997, and provides much improved data for a wide range of studies on stellar luminosities and local galactic kinematics.",
+                "citation_count": 3431,
+                "source": {
+                  "name": "ADS",
+                  "url": "https://ui.adsabs.harvard.edu/abs/2007A%26A...474..653V/abstract",
+                  "retrieved_at": "2026-10-26T11:59:24.784842Z"
+                }
+              }
+            ],
+            "source": {
+              "name": "ADS",
+              "url": "https://ui.adsabs.harvard.edu/search/q=bibcode%3A2007A%26A...474..653V&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0",
+              "retrieved_at": "2026-10-26T11:59:24.784842Z"
+            },
+            "error": null
+          }
+        ],
+        "sources": [
+          {
+            "name": "ADS",
+            "url": "https://ui.adsabs.harvard.edu/abs/2007A%26A...474..653V/abstract",
+            "retrieved_at": "2026-10-26T11:59:24.784842Z"
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "name": "combined",
+      "path": "/api/v1/chat",
+      "request": {
+        "message": "查询 Betelgeuse 的坐标，再找 2 篇 2020—2026 年其变暗相关论文，给出来源。"
+      },
+      "started_at": "2026-10-26T11:59:29.346873+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "status": "success",
+        "answer": "## 一、坐标（SIMBAD 查询结果）\n\n- 查询名称：Betelgeuse → 主标识符 **\\* alf Ori**\n- ICRS 赤经：**88.792939°**；赤纬：**+7.407064°**\n- 天体类型：s*r（红超巨星）；光谱型：M1-M2Ia-Iab\n- 坐标文献编号：2007A&A...474..653V\n- 来源：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML\n\n本版本未查询亮度、距离、质量等字段。\n\n## 二、变暗相关论文（ADS）\n\n- 实际 query：`abs:\"Betelgeuse\" abs:dimming year:2020-2026`\n- 范围：database:astronomy；sort：relevance；本页 2 条（start=0）\n- total_found：**111**（这是检索命中总数，并非已阅读论文数；本次仅列出返回的 2 篇，未穷尽检索）\n\n1. **Drevon et al. 2024**，*Images of Betelgeuse with VLTI/MATISSE across the Great Dimming*，MNRAS 527, L88\n   DOI: 10.1093/mnrasl/slad138；链接：https://ui.adsabs.harvard.edu/abs/2024MNRAS.527L..88D/abstract\n   根据摘要：作者用 VLTI/MATISSE 在 3.98–4.15 µm 对变暗前（2018-12）、期间（2020-02）、之后（2020-12）观测，发现 SiO 空间分布高度不均匀且各期差异明显；伪连续谱图像对比度低，因此冷斑与尘埃云两种模型都得到支持。被引 13 次（查询时记录）。作者列表被截断。\n\n2. **Cannon et al. 2023**，*The dusty circumstellar environment of Betelgeuse during the Great Dimming as seen by VLTI/MATISSE*，A&A 675, A46\n   DOI: 10.1051/0004-6361/202243611；链接：https://ui.adsabs.harvard.edu/abs/2023A%26A...675A..46C/abstract\n   根据摘要：用 N 波段（8–13 µm）干涉观测与 3D 辐射转移建模，得到 8–8.75 µm 均匀盘直径 59.02 ± 0.64 mas；尘埃团块与冷斑模型均与数据相容，尘埃团块的消光与发射相互抵消，故变暗期间红外未见增亮不能排除尘埃团块机制。被引 15 次（查询时记录）。摘要与作者列表均被截断。\n\n来源：https://ui.adsabs.harvard.edu/search/q=abs%3A%22Betelgeuse%22%20abs%3Adimming%20year%3A2020-2026&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0\n\n如需更多篇或改为按被引/日期排序，请告知。",
+        "results": [
+          {
+            "object_name": "Betelgeuse",
+            "status": "success",
+            "source": {
+              "name": "SIMBAD",
+              "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+              "retrieved_at": "2026-10-26T11:59:30.334803Z"
+            },
+            "data": {
+              "main_id": "* alf Ori",
+              "ra_deg": 88.79293899077537,
+              "dec_deg": 7.407063995272694,
+              "coordinate_frame": "ICRS",
+              "object_type": "s*r",
+              "spectral_type": "M1-M2Ia-Iab",
+              "coordinate_bibcode": "2007A&A...474..653V"
+            },
+            "error": null
+          }
+        ],
+        "literature_results": [
+          {
+            "query": "abs:\"Betelgeuse\" abs:dimming year:2020-2026",
+            "filters": [
+              "database:astronomy"
+            ],
+            "rows": 2,
+            "start": 0,
+            "sort": "relevance",
+            "status": "success",
+            "total_found": 111,
+            "returned_count": 2,
+            "has_more": true,
+            "papers": [
+              {
+                "bibcode": "2024MNRAS.527L..88D",
+                "title": "Images of Betelgeuse with VLTI/MATISSE across the Great Dimming",
+                "authors": [
+                  "Drevon, J.",
+                  "Millour, F.",
+                  "Cruzalèbes, P.",
+                  "Paladini, C.",
+                  "Scicluna, P.",
+                  "Matter, A.",
+                  "Chiavassa, A.",
+                  "Montargès, M.",
+                  "Cannon, E.",
+                  "Allouche, F.",
+                  "Hofmann, K.-H.",
+                  "Lagarde, S.",
+                  "Lopez, B.",
+                  "Meilland, A.",
+                  "Petrov, R.",
+                  "Robbe-Dubois, S.",
+                  "Schertl, D.",
+                  "Zins, G.",
+                  "Ábrahám, P.",
+                  "Berio, P.",
+                  "Henning, Th",
+                  "Hron, J.",
+                  "Isbell, J. W.",
+                  "Jaffe, W.",
+                  "Labadie, L.",
+                  "Varga, J.",
+                  "Weigelt, G.",
+                  "Woillez, J.",
+                  "van Boekel, R.",
+                  "Pantin, E.",
+                  "Danchi, W. C.",
+                  "de Koter, A.",
+                  "Gámez-Rosas, V.",
+                  "Hogerheijde, M. R.",
+                  "Leftley, J.",
+                  "Stee, P.",
+                  "Waters, R."
+                ],
+                "year": 2024,
+                "publication": "Monthly Notices of the Royal Astronomical Society",
+                "doi": [
+                  "10.1093/mnrasl/slad138",
+                  "10.48550/arXiv.2401.12404"
+                ],
+                "abstract": "From Nov. 2019 to May 2020, the red supergiant star Betelgeuse experienced an unprecedented drop of brightness in the visible domain called the Great Dimming event (GDE). Large atmospheric dust clouds and large photospheric convective features are suspected to be responsible for it. To better understand the dimming event, we used mid-infrared long-baseline spectro-interferometric measurements of Betelgeuse taken with the Very Large Telescope Interferometer/Multi AperTure mid-Infrared SpectroScopic Experiment (VLTI/MATISSE) instrument before (Dec. 2018), during (Feb. 2020), and after (Dec. 2020) the GDE. We present data in the 3.98-4.15 µm range to cover SiO spectral features molecules as well as adjacent continuum. We have employed geometrical models, image reconstruction, as well as radiative transfer models to monitor the spatial distribution of SiO over the stellar surface. We find a strongly inhomogeneous spatial distribution of SiO that appears to be looking very different between our observing epochs, indicative of a vigorous activity in the stellar atmosphere. The contrast of our images is small in the pseudo-continuum for all epochs, implying that our MATISSE observations support both cold spot and dust cloud model.",
+                "citation_count": 13,
+                "source": {
+                  "name": "ADS",
+                  "url": "https://ui.adsabs.harvard.edu/abs/2024MNRAS.527L..88D/abstract",
+                  "retrieved_at": "2026-10-26T11:59:33.134417Z"
+                }
+              },
+              {
+                "bibcode": "2023A&A...675A..46C",
+                "title": "The dusty circumstellar environment of Betelgeuse during the Great Dimming as seen by VLTI/MATISSE",
+                "authors": [
+                  "Cannon, E.",
+                  "Montargès, M.",
+                  "de Koter, A.",
+                  "Matter, A.",
+                  "Sanchez-Bermudez, J.",
+                  "Norris, R.",
+                  "Paladini, C.",
+                  "Decin, L.",
+                  "Sana, H.",
+                  "Sundqvist, J. O.",
+                  "Lagadec, E.",
+                  "Kervella, P.",
+                  "Chiavassa, A.",
+                  "Dupree, A. K.",
+                  "Perrin, G.",
+                  "Scicluna, P.",
+                  "Stee, P.",
+                  "Kraus, S.",
+                  "Danchi, W.",
+                  "Lopez, B.",
+                  "Millour, F.",
+                  "Drevon, J.",
+                  "Cruzalèbes, P.",
+                  "Berio, P.",
+                  "Robbe-Dubois, S.",
+                  "Rosales-Guzman, A."
+                ],
+                "year": 2023,
+                "publication": "Astronomy and Astrophysics",
+                "doi": [
+                  "10.1051/0004-6361/202243611",
+                  "10.48550/arXiv.2303.08892"
+                ],
+                "abstract": "Context. The `Great Dimming' of the prototypical red supergiant Betelgeuse, which occurred between December 2019 and April 2020, gives us unprecedented insight into the processes occurring on the stellar surface and in the inner wind of this type of star. In particular it may bring further understanding of their dust nucleation and mass-loss processes. <BR /> Aims: Here, we present and analyse VLTI/MATISSE observations in the N band (8-13 µm) taken near the brightness minimum in order to assess the status of the dusty circumstellar environment. <BR /> Methods: We explored the compatibility of a dust clump obscuring the star with our mid-infrared interferometric observations using continuum 3D radiative transfer modelling, and probed the effect of adding multiple clumps close to the star on the observables. We also tested the viability of a large cool spot on the stellar surface without dust present in the ambient medium. <BR /> Results: Using the visibility data, we derived a uniform disk diameter of 59.02 ± 0.64 mas in the spectral range 8-8.75 µm. We find that both the dust clump and the cool spot models are compatible with the data. Further to this, we note that the extinction and emission of our localised dust clump in the line of sight of the star directly compensate for each other, making the clump undetectable in the spectral energy distribution and visibilities. The lack of infrared brightening during the Great Dimming therefore does not exclude extinction due to a dust clump as one of the possible mechanisms. The visibilities can be reproduced by a spherical wind with dust condensing at 13 stellar radii and a dust mass-loss rate of (2.1-4.9) × 10<SUP>‒10</SUP> M<SUB>☉</SUB> yr<SUP>‒1</SUP>; however, in order to reproduce the complexity of the observed closure phases, additional surface features or dust clumps would be needed. <P />Based on observations collected at the European Southern Observatory under ESO programme 104.20V6. <P />Based in part on observations with ISO, an ESA project with instruments funded by ESA Member States (especially the PI countries: France, Germany, The Netherlands, and UK) and with the participation of ISAS and NASA. <P />The reduced MATISSE data are available as OIFITS files at the optical interferometry database: <A href=\"http://oidb.jmmc.fr\">http://oidb.jmmc.fr</A>",
+                "citation_count": 15,
+                "source": {
+                  "name": "ADS",
+                  "url": "https://ui.adsabs.harvard.edu/abs/2023A%26A...675A..46C/abstract",
+                  "retrieved_at": "2026-10-26T11:59:33.134417Z"
+                }
+              }
+            ],
+            "source": {
+              "name": "ADS",
+              "url": "https://ui.adsabs.harvard.edu/search/q=abs%3A%22Betelgeuse%22%20abs%3Adimming%20year%3A2020-2026&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0",
+              "retrieved_at": "2026-10-26T11:59:33.134417Z"
+            },
+            "error": null
+          }
+        ],
+        "sources": [
+          {
+            "name": "SIMBAD",
+            "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+            "retrieved_at": "2026-10-26T11:59:30.334803Z"
+          },
+          {
+            "name": "ADS",
+            "url": "https://ui.adsabs.harvard.edu/abs/2024MNRAS.527L..88D/abstract",
+            "retrieved_at": "2026-10-26T11:59:33.134417Z"
+          },
+          {
+            "name": "ADS",
+            "url": "https://ui.adsabs.harvard.edu/abs/2023A%26A...675A..46C/abstract",
+            "retrieved_at": "2026-10-26T11:59:33.134417Z"
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "name": "ads_no_match",
+      "path": "/api/v1/chat",
+      "request": {
+        "message": "请仅检索 bibcode:\"AstroAgentDefinitelyMissingPaperV02\"，不要改写检索条件；说明是否匹配。"
+      },
+      "started_at": "2026-10-26T11:59:40.092596+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "status": "error",
+        "answer": "检索未匹配到任何论文。\n\n- 实际 query：`bibcode:\"AstroAgentDefinitelyMissingPaperV02\"`（未改写）\n- 范围：database:astronomy\n- 排序：relevance；start=0，rows=5\n- 本页数量：0；total_found：0；状态：not_found\n\n说明：ADS 返回状态为 not_found，即该 bibcode 在 astronomy 库中无匹配记录，本页为空与整个检索无匹配在此一致。未列出任何论文，也未以记忆数据替代。\n\n来源：[ADS 检索链接](https://ui.adsabs.harvard.edu/search/q=bibcode%3A%22AstroAgentDefinitelyMissingPaperV02%22&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0)（检索时间 2026-10-26T11:59:41Z）",
+        "results": [],
+        "literature_results": [
+          {
+            "query": "bibcode:\"AstroAgentDefinitelyMissingPaperV02\"",
+            "filters": [
+              "database:astronomy"
+            ],
+            "rows": 5,
+            "start": 0,
+            "sort": "relevance",
+            "status": "not_found",
+            "total_found": 0,
+            "returned_count": 0,
+            "has_more": false,
+            "papers": [],
+            "source": {
+              "name": "ADS",
+              "url": "https://ui.adsabs.harvard.edu/search/q=bibcode%3A%22AstroAgentDefinitelyMissingPaperV02%22&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0",
+              "retrieved_at": "2026-10-26T11:59:41.195014Z"
+            },
+            "error": null
+          }
+        ],
+        "sources": [],
+        "warnings": []
+      }
+    },
+    {
+      "name": "simbad_no_match",
+      "path": "/api/v1/chat",
+      "request": {
+        "message": "请调用 SIMBAD 查询 AstroAgentDefinitelyMissingObjectV02。"
+      },
+      "started_at": "2026-10-26T11:59:44.091978+00:00",
+      "passed": true,
+      "http_status": 200,
+      "body": {
+        "status": "error",
+        "answer": "已调用 SIMBAD 查询 `AstroAgentDefinitelyMissingObjectV02`，结果为**未找到匹配天体**（状态 `not_found`，错误码 `object_not_found`，不可重试）。\n\n- 因此没有可提供的坐标、天体类型、光谱类型或坐标文献编号；这些字段均为缺失，我不会用记忆中的数据替代。\n- 来源链接（查询记录）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=AstroAgentDefinitelyMissingObjectV02&output.format=HTML\n\n可能原因：名称拼写有误、该名称不在 SIMBAD 标识符库中，或该天体尚未被收录。如你有其他常用名、星表编号（如 HD、NGC、2MASS 等）或坐标，我可以再查。",
+        "results": [
+          {
+            "object_name": "AstroAgentDefinitelyMissingObjectV02",
+            "status": "not_found",
+            "source": {
+              "name": "SIMBAD",
+              "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=AstroAgentDefinitelyMissingObjectV02&output.format=HTML",
+              "retrieved_at": "2026-10-26T11:59:44.789711Z"
+            },
+            "data": null,
+            "error": {
+              "code": "object_not_found",
+              "message": "SIMBAD 未找到该天体名称。",
+              "retryable": false
+            }
+          }
+        ],
+        "literature_results": [],
+        "sources": [],
+        "warnings": []
+      }
+    }
+  ],
+  "server_stopped": true,
+  "finished_at": "2026-10-26T11:59:48.920533+00:00",
+  "outcome": "passed"
+}

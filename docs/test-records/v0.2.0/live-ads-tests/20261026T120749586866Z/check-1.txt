@@ -1,0 +1,104 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 6 items
+
+tests/test_live_ads.py::test_live_fixed_bibcode PASSED                   [ 16%]
+tests/test_live_ads.py::test_live_topic_year_and_paging PASSED           [ 33%]
+tests/test_live_ads.py::test_live_no_match PASSED                        [ 50%]
+tests/test_live_ads.py::test_live_model_chooses_tools[False] PASSED      [ 66%]
+tests/test_live_ads.py::test_live_model_chooses_tools[True] Timeout (0:00:30)!
+Thread 0x00004b74 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1103 in read
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1251 in recv_into
+  File "E:\miniconda3\envs\agent\Lib\socket.py", line 720 in readinto
+  File "E:\miniconda3\envs\agent\Lib\http\client.py", line 544 in _read_next_chunk_size
+  File "E:\miniconda3\envs\agent\Lib\http\client.py", line 584 in _get_chunk_left
+  File "E:\miniconda3\envs\agent\Lib\http\client.py", line 602 in _read_chunked
+  File "E:\miniconda3\envs\agent\Lib\http\client.py", line 478 in read
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\response.py", line 1005 in _fp_read
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\response.py", line 1022 in _raw_read
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\response.py", line 1110 in read
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\io\vosi\endpoint.py", line 350 in parse
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\io\vosi\endpoint.py", line 143 in parse_capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 175 in capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astropy\utils\decorators.py", line 949 in __get__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\simbad\core.py", line 160 in timeout
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\simbad\core.py", line 128 in __init__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\query.py", line 208 in __call__
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 68 in query
+  File "D:\project\astroagent\src\astroagent\agent.py", line 195 in chat
+  File "D:\project\astroagent\src\astroagent\api\chat.py", line 42 in chat
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00009090 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 774 in _poll
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 445 in select
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 1961 in _run_once
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 645 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 322 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 678 in run_until_complete
+  File "E:\miniconda3\envs\agent\Lib\asyncio\runners.py", line 118 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2481 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_core\_eventloop.py", line 83 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 536 in run_blocking_portal
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1012 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00002254 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 355 in wait
+  File "E:\miniconda3\envs\agent\Lib\concurrent\futures\_base.py", line 451 in result
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 338 in call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 351 in handle_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1076 in _send_single_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1043 in _send_handling_redirects
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1008 in _send_handling_auth
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 980 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 797 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 455 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1204 in post
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 556 in post
+  File "D:\project\astroagent\tests\test_live_ads.py", line 62 in test_live_model_chooses_tools
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+PASSED       [ 83%]
+tests/test_live_ads.py::test_live_model_ignores_synthetic_abstract_instructions PASSED [100%]
+
+- generated xml file: D:\project\astroagent\docs\test-records\v0.2.0\live-ads-tests\20261026T120749586866Z\pytest.xml -
+======================== 6 passed in 137.98s (0:02:17) ========================

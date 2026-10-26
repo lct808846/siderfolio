@@ -227,8 +227,10 @@ def test_call_limit_prevents_execution_of_oversized_batch(client):
 
 def test_round_limit_stops_repeated_calls_and_preserves_results(client):
     simbad = StubSimbad(result(), result())
+    second = query_reply("test-star")
+    second.tool_calls[0]["id"] = "call_second"
     install_agent(
-        ScriptedModel(query_reply("test-star"), query_reply("test-star")),
+        ScriptedModel(query_reply("test-star"), second),
         simbad,
         agent_max_rounds=2,
     )

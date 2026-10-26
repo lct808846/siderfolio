@@ -12,8 +12,9 @@ from astroagent.simbad import BoundedSession, SimbadService
 
 def mock_client(monkeypatch, table=None, error=None):
     class Client:
-        def __init__(self, **kwargs):
-            self.timeout = kwargs["timeout"]
+        def __init__(self):
+            self._session = Session()
+            self.timeout = None
 
         def add_votable_fields(self, *fields):
             assert fields == ("otype", "sp_type")
@@ -105,3 +106,19 @@ def test_session_limits_even_metadata_requests(monkeypatch):
     with BoundedSession(7) as session:
         session.get("https://example.test", timeout=None)
     assert captured["timeout"] == 7
+
+
+def test_first_capabilities_request_uses_bounded_session(monkeypatch):
+    requests = []
+
+    def request(session, method, url, **kwargs):
+        requests.append((session, kwargs.get("timeout")))
+        raise ReadTimeout("synthetic timeout during first capabilities fetch")
+
+    monkeypatch.setattr(Session, "request", request)
+    result = SimbadService(7).query("synthetic-star")
+    assert result.status == "error" and result.error.code == "simbad_timeout"
+    assert requests
+    assert all(
+        isinstance(session, BoundedSession) and timeout == 7 for session, timeout in requests
+    )

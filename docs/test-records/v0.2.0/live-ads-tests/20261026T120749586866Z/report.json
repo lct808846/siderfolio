@@ -1,0 +1,23 @@
+{
+  "application_version": "0.2.0",
+  "started_at": "2026-10-26T12:07:49.587875+00:00",
+  "kind": "live-ads-tests",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "tests/test_live_ads.py",
+        "-v",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.2.0\\live-ads-tests\\20261026T120749586866Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 140.0454,
+      "transcript": "check-1.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-26T12:10:09.633127+00:00"
+}

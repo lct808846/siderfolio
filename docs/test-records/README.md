@@ -2,11 +2,13 @@
 
 按 `v<版本号>/<测试类型>/<UTC运行时间>/` 保存；同一版本多次运行各有独立目录，历史记录不覆盖。版本来自 `pyproject.toml`；延迟测试读取被测服务的 OpenAPI 版本，避免误归档到本地代码的版本。
 
-当前版本：[v0.1.0](v0.1.0/README.md)。
+当前版本：[v0.2.0](v0.2.0/README.md)。历史版本：[v0.1.0](v0.1.0/README.md)。
 
 ```powershell
 python scripts/run_tests.py                 # 离线测试、Ruff、依赖检查
 python scripts/run_tests.py --live          # 真实 SIMBAD / DeepSeek 测试
+python scripts/run_tests.py --live-ads      # 独立 ADS / 综合查询测试
+python scripts/verify_v02.py                # V0.2 真实 HTTP 验收
 python scripts/verify_live.py               # 临时服务的真实 HTTP 验收
 python scripts/measure_latency.py           # 已启动服务的延迟，默认 3 次查询
 ```

@@ -1,0 +1,15 @@
+INFO:     Started server process [15596]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:54058 (Press CTRL+C to quit)
+INFO:     127.0.0.1:64856 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64857 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64858 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64859 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64860 - "POST /api/v1/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:64861 - "POST /api/v1/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64873 - "POST /api/v1/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64879 - "POST /api/v1/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64888 - "POST /api/v1/chat HTTP/1.1" 200 OK
+WARNING: NoResultsWarning: The request executed correctly, but there was no data corresponding to these criteria in SIMBAD [astroquery.simbad.core]
+INFO:     127.0.0.1:64892 - "POST /api/v1/chat HTTP/1.1" 200 OK

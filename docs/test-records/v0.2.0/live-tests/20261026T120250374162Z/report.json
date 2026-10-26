@@ -1,0 +1,23 @@
+{
+  "application_version": "0.2.0",
+  "started_at": "2026-10-26T12:02:50.376163+00:00",
+  "kind": "live-tests",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "tests/test_live.py",
+        "-v",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.2.0\\live-tests\\20261026T120250374162Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 25.4016,
+      "transcript": "check-1.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-26T12:03:15.777876+00:00"
+}

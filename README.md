@@ -1,12 +1,12 @@
 # AstroAgent
 
-面向天文科研的 AI Agent 平台。V0.1 已实现自然语言问题 → DeepSeek 工具调用 → SIMBAD 真实查询 → 带来源的回答，使用 FastAPI 提供接口。
+面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前发布版本：`v0.1.0`，详见 [发布说明](docs/releases/v0.1.0.md)。
+当前发布版本：`v0.2.0`，详见 [发布说明](docs/releases/v0.2.0.md) 和 [GitHub Release](https://github.com/lct808846/astroagent/releases/tag/v0.2.0)。
 
-开发依据为 [项目计划 V0.1](docs/PROJECT_PLAN_V0.1.md)。本版本为单次、无状态查询；不包含前端、多用户、MCP、RAG 或复杂科研工作流。
+开发依据为 [V0.2 开发文档](docs/PROJECT_PLAN_V0.2.md)，原有能力见 [V0.1 计划](docs/PROJECT_PLAN_V0.1.md)。本版本为单次、无状态查询；不包含前端、多用户、MCP、RAG 或复杂科研工作流。
 
-下一版本的范围与实现方案见 [V0.2 开发文档：ADS 文献检索](docs/PROJECT_PLAN_V0.2.md)；该文档为待实现设计，当前运行版本仍为 V0.1。
+ADS 支持主题、标题、作者、年份范围、bibcode 与相关性/日期/被引次数排序。每次查询一页（1–10 篇，前 100 条范围），返回标题、完整作者列表、年份、出版物、全部 DOI、摘要、被引次数及程序构建的 ADS 链接。缺失数据保留空值；仅依据本次摘要总结，不下载或声称阅读全文。
 
 支持按天体名称查询主标识符、ICRS 赤经赤纬（度）、天体类型、光谱类型及坐标文献编号。缺失值保留为 `null`。查询结果由程序直接记录，来源不依赖模型生成；距离、质量、亮度等字段尚未接入。
 
@@ -33,7 +33,7 @@ python -m pip install -e ".[dev]"
 
 ## 配置
 
-聊天接口需要 DeepSeek API 密钥。启动、健康检查、接口文档和离线测试不需要密钥。
+聊天接口需要 DeepSeek API 密钥。文献检索另需 `ADS_API_TOKEN`，仅 SIMBAD 查询可留空。启动、健康检查、接口文档和离线测试不需要密钥。ADS token 从 [官方 Access 说明](https://github.com/adsabs/adsabs-dev-api#access) 获取。
 
 可在当前 PowerShell 会话中设置：
 
@@ -50,10 +50,12 @@ $env:DEEPSEEK_API_KEY = "your-deepseek-api-key"
 | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` | 模型服务地址 |
 | `LLM_TIMEOUT_SECONDS` | `60` | 单次模型 HTTP 请求超时，关闭自动重试 |
 | `SIMBAD_TIMEOUT_SECONDS` | `20` | SIMBAD 每次网络操作的连接、读取超时 |
+| `ADS_API_TOKEN` | 空 | 执行 ADS 时必需，缺失产生逐条 `ads_not_configured` 错误 |
+| `ADS_TIMEOUT_SECONDS` | `20` | ADS 连接/读取各自超时，须大于 0 且不超过 120 秒 |
 | `AGENT_MAX_ROUNDS` | `4` | 一次聊天最多模型调用轮数 |
-| `AGENT_MAX_TOOL_CALLS` | `6` | 一次聊天最多工具调用次数 |
+| `AGENT_MAX_TOOL_CALLS` | `6` | SIMBAD 与 ADS 共享的工具调用上限 |
 
-模型按 [DeepSeek 官方工具调用示例](https://api-docs.deepseek.com/guides/tool_calls/) 使用非思考模式。SIMBAD 超时按网络操作计算，一次查询可能有多次元数据请求，并非整个聊天的总耗时上限。
+模型按 [DeepSeek 官方工具调用示例](https://api-docs.deepseek.com/guides/tool_calls/) 使用非思考模式。网络超时不是整个聊天的总耗时上限。ADS 固定请求官方 API、使用 Bearer 头，关闭重定向和自动重试。Windows 用户环境变量更改后，需新开终端并重启已有服务才能继承。
 
 ## 运行
 
@@ -83,6 +85,16 @@ python -m uvicorn astroagent.main:app --reload
 {"message": "请查询 Betelgeuse 的坐标、天体类型和光谱类型，并给出来源。"}
 ```
 
+文献或综合查询示例：
+
+```json
+{"message": "检索 2020—2026 年 Betelgeuse 变暗相关论文，取 3 篇，按发表时间降序，给出来源。"}
+```
+
+```json
+{"message": "查询 Betelgeuse 的坐标，再找 2 篇有关其变暗的论文，给出来源。"}
+```
+
 或使用 PowerShell：
 
 ```powershell
@@ -99,10 +111,15 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/v1/chat `
 | `status` | `success` 全部完成；`partial` 部分成功或回答生成未完成；`error` 所有已执行的数据库查询均失败或无匹配 |
 | `answer` | 模型生成的自然语言解释，或回答生成失败时的明确提示 |
 | `results` | 逐次工具查询的实际结果，包括输入名称、状态、数据、来源和错误 |
-| `sources` | 成功查询的 SIMBAD 链接和 UTC 查询时间，按链接去重 |
+| `literature_results` | 逐次 ADS 调用，含实际检索式、固定筛选、分页、总命中数、完整文献和失败原因 |
+| `sources` | 成功 SIMBAD 查询与 ADS 各篇论文的来源、UTC 时间，按 URL 去重且保留首次记录 |
 | `warnings` | 已取得查询结果后发生的模型失败或调用限制 |
 
-`results[].data` 是数据库字段的直接映射，应以它核对数值。`answer` 由模型生成，仍需科研核查。概念问题可以不调用工具，此时 `results`、`sources` 为空。未匹配或失败查询的链接保留在各自的 `results[].source`，其中时间表示查询尝试时间，不代表成功获得数据。
+`results[].data` 与 `literature_results[].papers` 用于核查实际数据；`answer` 由模型生成，仍需科研核查。概念问题可以不调用工具，此时两个结果列表和 `sources` 为空。失败/无匹配的尝试链接仍在各条 `source` 中，ADS 搜索页也只保留在该次检索中，不进入成功来源列表。
+
+`total_found` 是数据库命中数，`returned_count` 是本页去重后数量，`has_more` 按原始页大小计算；本页无数据不一定意味着整个检索无匹配。API 保留完整摘要与作者，模型视图只提供摘要前 2000 字符及前 5 位作者并标记截断。相对年份按请求时 UTC 日期解释，用户指定时区时按指定时区解释。
+
+兼容性：路径和请求格式保留 V0.1 约定；响应新增 `literature_results=[]`，`Source.name` 增加 `ADS`。拒绝未知响应字段或只接受 SIMBAD 枚举的客户端需要更新。
 
 输入 `message` 去除首尾空白后须为 1–4000 个字符，不接受额外字段。每次请求独立处理，不保留会话历史。
 
@@ -115,9 +132,10 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/v1/chat `
 | 模型网络失败、无效工具调用、空回答 | HTTP 502 |
 | 模型超时 | HTTP 504 |
 | SIMBAD 未匹配、超时或不可用 | HTTP 200，查看 `status` 与 `results[].error`；无成功数据来源 |
+| ADS 未配置、认证失败、限流、超时、无匹配或异常响应 | HTTP 200，查看 `literature_results[].status/error`；不以记忆生成论文 |
 | 已有结果后模型失败、超出轮数或调用次数 | HTTP 200，保留结果并返回 `warnings` |
 
-外部异常信息经过清理，不向接口返回 SDK 原始异常或密钥。SIMBAD 查询使用 [astroquery 官方名称查询接口](https://astroquery.readthedocs.io/en/latest/simbad/simbad.html)，不执行模型传入的 SQL、命令或未知工具。
+外部异常信息经过清理，不向接口返回原始异常或密钥。SIMBAD 查询使用 [astroquery 官方名称查询接口](https://astroquery.readthedocs.io/en/latest/simbad/simbad.html)，ADS 使用 [官方 Search API](https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_Python/Search_API_Python.ipynb)。每批工具先验证再执行，未知工具被拒绝。
 
 ## 测试
 
@@ -149,10 +167,14 @@ python scripts/verify_live.py
 ```powershell
 python scripts/run_tests.py          # 离线测试、Ruff 和依赖检查，保存输出与 JUnit XML
 python scripts/run_tests.py --live   # 真实服务测试，会产生模型用量
+python scripts/run_tests.py --live-ads # 独立启用 ADS 与综合聊天测试
+python scripts/verify_v02.py         # V0.2 九项真实 HTTP 验收并停止临时服务
 python scripts/measure_latency.py    # 测量已启动服务的延迟，默认 3 次真实查询
 ```
 
-记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.1.0](docs/test-records/v0.1.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 配置为每次 push / PR 执行离线测试与 Ruff 检查；远程运行状态须在推送后查看。
+ADS 的 pytest 独立开关为 `ASTROAGENT_RUN_LIVE_ADS=1`；原有 `ASTROAGENT_RUN_LIVE` 不会启用 ADS。显式启用后缺密钥或外部失败会报错，不能当作跳过。
+
+记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.2.0](docs/test-records/v0.2.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 配置为每次 push / PR 执行离线测试与 Ruff 检查；远程运行状态须在推送后查看。
 
 ## 目录
 
@@ -164,6 +186,7 @@ astroagent/
 │   ├── config.py            # 环境变量与 .env
 │   ├── agent.py             # LangChain 工具调用循环
 │   ├── simbad.py            # 真实 SIMBAD 查询与字段转换
+│   ├── ads.py               # 真实 ADS 单页检索与字段验证
 │   ├── schemas.py           # 请求、结果、来源与错误模型
 │   ├── errors.py            # 对外安全错误
 │   └── api/
@@ -175,6 +198,9 @@ astroagent/
 │   ├── test_chat.py
 │   ├── test_config.py
 │   ├── test_simbad.py
+│   ├── test_ads.py
+│   ├── test_literature_chat.py
+│   ├── test_live_ads.py
 │   └── test_live.py
 ├── scripts/verify_live.py
 ├── .github/workflows/test.yml

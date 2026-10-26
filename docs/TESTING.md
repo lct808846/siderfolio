@@ -10,7 +10,7 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-当前预期结果：42 项离线测试通过，2 项真实服务测试默认跳过。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。
+当前实际结果见 [V0.2 测试记录](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭两个联网开关，避免继承终端设置误用真实服务。
 
 代码检查：
 
@@ -30,6 +30,8 @@ python -m pip check
 | `test_chat.py` | 模型工具调用与 ToolMessage 回传、来源记录、概念问答、多目标部分成功、无匹配、输入验证、配置错误、认证/限流/超时/网络错误、无效工具与参数、空回答、调用次数和轮数上限、保留已有结果、聊天 OpenAPI |
 | `test_simbad.py` | Astropy 表转 JSON、ICRS 坐标单位、来源 URL 编码、缺失/掩码/非有限值、不匹配、超时包装、连接失败、无效返回、元数据网络超时限制 |
 | `test_config.py` | `.env` 加载与环境变量优先级、密钥 repr 隐藏、模型超时/关闭重试/非思考模式/工具注册 |
+| `test_ads.py` | 固定域名/字段/认证/排序/超时、关闭重试/重定向、严格参数边界、完整字段、去重、缺失与坏字段、分页矛盾、错误映射和密钥清理 |
+| `test_literature_chat.py` | 双工具批次验证、共享预算、来源顺序、模型视图截断与原始数据保留、综合失败降级、恶意摘要样例、无 token 的 SIMBAD 回归及 OpenAPI |
 
 接口测试使用 FastAPI `TestClient` 在进程内发起请求；工具转换测试使用合成数据，不将它当作真实天文数据，也不将模拟测试当作联网验收。默认测试不验证模型的实际行为或远端服务可用性。
 
@@ -46,6 +48,21 @@ Remove-Item Env:ASTROAGENT_RUN_LIVE
 两项测试分别验证真实 SIMBAD Betelgeuse 查询，以及真实模型自动调用工具、拿到坐标并生成回答。会产生模型 API 用量，失败时不会跳过或自动使用模拟数据。
 
 这些是外部依赖的抽样验收，不能保证之后每次网络查询都成功。
+
+ADS 测试使用独立开关；需要 `ADS_API_TOKEN`、`DEEPSEEK_API_KEY` 与 ADS / SIMBAD / DeepSeek 网络访问：
+
+```powershell
+python scripts/run_tests.py --live-ads
+# 或手动启用：
+$env:ASTROAGENT_RUN_LIVE_ADS = "1"
+try {
+    python -m pytest tests/test_live_ads.py -v
+} finally {
+    Remove-Item Env:ASTROAGENT_RUN_LIVE_ADS -ErrorAction SilentlyContinue
+}
+```
+
+固定 bibcode、主题年份、无匹配、真实模型 ADS 选择与综合调用均验证实际响应。合成的恶意摘要探针单独标明为模型防注入测试，不能充当真实 ADS 数据验收。原 `ASTROAGENT_RUN_LIVE` 不启用 ADS；显式启用后缺少凭证或外部服务失败会报错。
 
 ## 手动运行验收
 
@@ -79,10 +96,14 @@ python scripts/verify_live.py
 | --- | --- | --- |
 | `python scripts/run_tests.py` | `offline-tests` | pytest、Ruff、pip check 输出，JUnit XML，JSON 汇总 |
 | `python scripts/run_tests.py --live` | `live-tests` | 真实服务测试输出，JUnit XML，JSON 汇总 |
+| `python scripts/run_tests.py --live-ads` | `live-ads-tests` | 独立 ADS 与综合聊天的真实测试、JUnit XML、JSON 汇总 |
 | `python scripts/verify_live.py` | `acceptance` | `report.json` 与 `uvicorn.txt` |
+| `python scripts/verify_v02.py` | `acceptance-v02` | 九项真实 HTTP 检查、请求和完整响应、依赖版本、服务停止状态 |
 | `python scripts/measure_latency.py` | `latency` | 逐次响应时间、成功状态与汇总 JSON |
 
 延迟测试默认对 `http://127.0.0.1:8000` 执行 5 次健康检查和 3 次 Betelgeuse 查询；可通过 `--samples`、`--health-samples` 和 `--base-url` 调整。需要先启动服务，会产生模型用量。
+
+V0.2 HTTP 脚本检查健康、文档、OpenAPI、空输入、仅 SIMBAD、仅 ADS、综合查询与两类无匹配。失败的请求/响应也保存；`finally` 中停止自己创建的服务。不可覆盖的主报告在分版本目录，本机便利副本为忽略提交的 `outputs/v0.2-acceptance.json`，不覆盖 V0.1 记录。
 
 原有 `outputs/v0.1-acceptance.json`、`outputs/uvicorn-acceptance.log` 和 `outputs/latency-check.json` 已原样归档到 [v0.1.0 记录](test-records/v0.1.0/README.md)，并逐文件校验 SHA-256。归档目录的 `archive.json` 保留原路径、测试时间和校验值；旧文件仍保留在本机 `outputs/`，后续运行使用新目录。
 

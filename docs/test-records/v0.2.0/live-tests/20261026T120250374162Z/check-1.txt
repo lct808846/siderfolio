@@ -1,0 +1,13 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 2 items
+
+tests/test_live.py::test_live_simbad_betelgeuse PASSED                   [ 50%]
+tests/test_live.py::test_live_chat_betelgeuse PASSED                     [100%]
+
+- generated xml file: D:\project\astroagent\docs\test-records\v0.2.0\live-tests\20261026T120250374162Z\pytest.xml -
+============================= 2 passed in 23.30s ==============================

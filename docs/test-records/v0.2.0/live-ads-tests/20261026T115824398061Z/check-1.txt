@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 5 items
+
+tests/test_live_ads.py::test_live_fixed_bibcode PASSED                   [ 20%]
+tests/test_live_ads.py::test_live_topic_year_and_paging PASSED           [ 40%]
+tests/test_live_ads.py::test_live_no_match PASSED                        [ 60%]
+tests/test_live_ads.py::test_live_model_chooses_tools[False] PASSED      [ 80%]
+tests/test_live_ads.py::test_live_model_chooses_tools[True] PASSED       [100%]
+
+- generated xml file: D:\project\astroagent\docs\test-records\v0.2.0\live-ads-tests\20261026T115824398061Z\pytest.xml -
+============================= 5 passed in 24.97s ==============================
