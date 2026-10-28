@@ -1,0 +1,72 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T07:13:07.983831+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "success",
+  "export_status": "success",
+  "queries": [
+    {
+      "family": "ads",
+      "result_index": 0,
+      "query": "bibcode:2016A&A...595A...2G",
+      "filters": [
+        "database:astronomy"
+      ],
+      "rows": 1,
+      "start": 0,
+      "sort": "relevance",
+      "status": "success",
+      "total_found": 1,
+      "returned_count": 1,
+      "has_more": false,
+      "source": {
+        "name": "ADS",
+        "url": "https://ui.adsabs.harvard.edu/search/q=bibcode%3A2016A%26A...595A...2G&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0",
+        "retrieved_at": "2026-10-28T07:13:01.857308Z"
+      },
+      "error": null,
+      "table_path": "tables/ads-000.csv",
+      "table_skipped_reason": null
+    }
+  ],
+  "plots": [],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 22239,
+      "sha256": "c7bc1364727add6c852403483d72314870af16b41dc0512a5d0218872a7b3822"
+    },
+    {
+      "path": "tables/ads-000.csv",
+      "bytes": 13617,
+      "sha256": "bd872fd6510d77053ed0e6eeffd1cd72a39a56b7769694c9763c9041a5313d4d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3030,
+      "sha256": "7c4e5f0d27ea9c0d7b10a29f83e03d3359bcc0075c2042e1573a4a0e4a8c8ca0"
+    }
+  ]
+}

@@ -1,0 +1,769 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T07:10:54.806547+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "success",
+  "export_status": "success",
+  "queries": [
+    {
+      "family": "simbad",
+      "result_index": 0,
+      "object_name": "合成天体",
+      "status": "success",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://example.invalid/synthetic-simbad",
+        "retrieved_at": "2026-10-28T00:00:00Z"
+      },
+      "error": null,
+      "table_path": "tables/simbad-000.csv",
+      "table_skipped_reason": null
+    },
+    {
+      "family": "ads",
+      "result_index": 0,
+      "query": "synthetic",
+      "filters": [
+        "database:astronomy"
+      ],
+      "rows": 1,
+      "start": 0,
+      "sort": "relevance",
+      "status": "success",
+      "total_found": 1,
+      "returned_count": 1,
+      "has_more": false,
+      "source": {
+        "name": "ADS",
+        "url": "https://example.invalid/synthetic-ads",
+        "retrieved_at": "2026-10-28T00:00:00Z"
+      },
+      "error": null,
+      "table_path": "tables/ads-000.csv",
+      "table_skipped_reason": null
+    },
+    {
+      "family": "gaia",
+      "result_index": 0,
+      "query": {
+        "mode": "cone",
+        "ra_deg": 56.75,
+        "dec_deg": 24.12,
+        "radius_arcmin": 5.0,
+        "limit": 100,
+        "ruwe_max": null,
+        "parallax_snr_min": null,
+        "estimate_distance": true
+      },
+      "release": "Gaia DR3",
+      "table": "gaiadr3.gaia_source",
+      "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+      "adql": "SELECT TOP 101 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC",
+      "maxrec": 101,
+      "status": "success",
+      "returned_count": 100,
+      "total_found": null,
+      "has_more": true,
+      "truncated": true,
+      "archive_overflow": false,
+      "units": {
+        "source_id": "1",
+        "ra": "deg",
+        "dec": "deg",
+        "ref_epoch": "yr",
+        "ra_error": "mas",
+        "dec_error": "mas",
+        "parallax": "mas",
+        "parallax_error": "mas",
+        "pmra": "mas/yr",
+        "pmra_error": "mas/yr",
+        "pmdec": "mas/yr",
+        "pmdec_error": "mas/yr",
+        "phot_g_mean_mag": "mag",
+        "phot_bp_mean_mag": "mag",
+        "phot_rp_mean_mag": "mag",
+        "bp_rp": "mag",
+        "radial_velocity": "km/s",
+        "radial_velocity_error": "km/s",
+        "ruwe": "1",
+        "astrometric_params_solved": "1",
+        "duplicated_source": "1",
+        "separation_arcsec": "arcsec"
+      },
+      "source": {
+        "name": "Gaia",
+        "url": "https://gea.esac.esa.int/archive/",
+        "retrieved_at": "2026-10-28T00:00:00Z"
+      },
+      "warnings": [
+        "合成样本；截断仅供测试"
+      ],
+      "error": null,
+      "table_path": "tables/gaia-000.csv",
+      "table_skipped_reason": null
+    }
+  ],
+  "plots": [],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [
+    {
+      "file": "tables/simbad-000.csv",
+      "data_row": 1,
+      "column": "main_id",
+      "reason": "spreadsheet_formula"
+    },
+    {
+      "file": "tables/ads-000.csv",
+      "data_row": 1,
+      "column": "abstract",
+      "reason": "spreadsheet_formula"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 1,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 2,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 3,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 4,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 5,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 6,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 7,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 8,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 9,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 10,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 11,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 12,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 13,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 14,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 15,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 16,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 17,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 18,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 19,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 20,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 21,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 22,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 23,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 24,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 25,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 26,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 27,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 28,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 29,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 30,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 31,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 32,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 33,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 34,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 35,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 36,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 37,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 38,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 39,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 40,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 41,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 42,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 43,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 44,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 45,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 46,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 47,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 48,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 49,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 50,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 51,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 52,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 53,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 54,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 55,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 56,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 57,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 58,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 59,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 60,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 61,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 62,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 63,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 64,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 65,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 66,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 67,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 68,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 69,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 70,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 71,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 72,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 73,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 74,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 75,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 76,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 77,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 78,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 79,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 80,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 81,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 82,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 83,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 84,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 85,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 86,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 87,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 88,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 89,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 90,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 91,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 92,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 93,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 94,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 95,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 96,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 97,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 98,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 99,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 100,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    }
+  ],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 109183,
+      "sha256": "33dc7c3ce6635719279f04f247053143261e9059f1eff81e7d980d7f3eeafc7b"
+    },
+    {
+      "path": "tables/simbad-000.csv",
+      "bytes": 262,
+      "sha256": "cc016f480bbe38dd343f85af0bbe65713150ba2b2abd6f6f69d779652074f059"
+    },
+    {
+      "path": "tables/ads-000.csv",
+      "bytes": 260,
+      "sha256": "74703d46808fa353e7ccf58c40a76b222361f30106cc354a92c1c79feb24409e"
+    },
+    {
+      "path": "tables/gaia-000.csv",
+      "bytes": 16742,
+      "sha256": "da66935be2fe347eb49025b1112217db19cf1fc8125c6318190420068b6e3ad5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5343,
+      "sha256": "49e131f9f7bc476314fe2dc30b4cff0c5a3cdf0b97f3d2a922f667574a211acb"
+    }
+  ]
+}

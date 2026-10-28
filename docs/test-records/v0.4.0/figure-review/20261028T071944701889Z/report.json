@@ -1,0 +1,115 @@
+{
+  "outcome": "passed",
+  "method": "Opened all 10 distinct rendered PNGs with view_image; byte-identical copies checked by SHA-256. Latest HTTP outputs match the inspected bytes.",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.4.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M scripts/record_utils.py\n M scripts/verify_v03.py\n M src/astroagent/__init__.py\n M src/astroagent/main.py\n M tests/test_gaia_chat.py\n M tests/test_literature_chat.py\n?? docs/PROJECT_PLAN_V0.4.md\n?? docs/releases/v0.4.0.md\n?? docs/test-records/v0.4.0/\n?? scripts/export_samples.py\n?? scripts/verify_v04.py\n?? src/astroagent/api/exports.py\n?? src/astroagent/export_schemas.py\n?? src/astroagent/exports.py\n?? src/astroagent/plots.py\n?? tests/test_exports.py",
+  "unique_images_opened": 10,
+  "images_verified": 16,
+  "figures": [
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-gaia-000-observed-cmd.png",
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-gaia-000-parallax-histogram.png",
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-gaia-000-proper-motion.png",
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-gaia-000-observed-cmd.png",
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-gaia-000-parallax-histogram.png",
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-gaia-000-proper-motion.png",
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\single-point-gaia-000-observed-cmd.png",
+      "sha256": "501f6fe7108cac802ab86a94bb11985cae4c66334737069f4a6b9be86180c92d",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\single-point-gaia-000-proper-motion.png",
+      "sha256": "e217df540da0ea8fc3f0817590cab7894e5bf3c32773a677fb7a071694274b23",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-gaia-000-observed-cmd.png",
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-gaia-000-parallax-histogram.png",
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-gaia-000-proper-motion.png",
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-observed-cmd.png",
+      "sha256": "2169601a49f523f711147bf0f462273d64c627078f509b42a46ccb59ffed8033",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-parallax-histogram.png",
+      "sha256": "ae1325ce376c68d868f05ff9d73c1a670539a596c330499bb66760bf392cab3a",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-proper-motion.png",
+      "sha256": "54b8ca3fbe3ee07e3d96563acd4ac072461c5047e97a14075a6871c725a72d28",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-observed-cmd.png",
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a",
+      "visual_result": "passed"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-proper-motion.png",
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84",
+      "visual_result": "passed"
+    }
+  ],
+  "checks": [
+    "Axes, units, titles and returned-row counts are readable without clipping.",
+    "Proper-motion coordinates retain negative values with equal scaling.",
+    "Parallax counts retain negative measurements and mark zero.",
+    "Observed CMD has brighter apparent G values above fainter values.",
+    "Truncation and archive-overflow labels agree with each manifest.",
+    "Exact-source plots show one point; histogram correctly skipped for insufficient data."
+  ],
+  "scope": "synthetic and real Gaia figures; does not certify source authenticity or SIMBAD availability"
+}

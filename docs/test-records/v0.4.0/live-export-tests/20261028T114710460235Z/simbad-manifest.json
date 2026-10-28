@@ -1,0 +1,80 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T11:49:14.561388+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "error",
+  "export_status": "success",
+  "queries": [
+    {
+      "family": "simbad",
+      "result_index": 0,
+      "object_name": "Betelgeuse",
+      "status": "error",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+        "retrieved_at": "2026-10-28T11:47:50.174280Z"
+      },
+      "error": {
+        "code": "simbad_timeout",
+        "message": "SIMBAD 查询超时，请稍后重试。",
+        "retryable": true
+      },
+      "table_path": null,
+      "table_skipped_reason": "query_not_successful"
+    },
+    {
+      "family": "simbad",
+      "result_index": 1,
+      "object_name": "Betelgeuse",
+      "status": "error",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&output.format=HTML",
+        "retrieved_at": "2026-10-28T11:48:31.869151Z"
+      },
+      "error": {
+        "code": "simbad_timeout",
+        "message": "SIMBAD 查询超时，请稍后重试。",
+        "retryable": true
+      },
+      "table_path": null,
+      "table_skipped_reason": "query_not_successful"
+    }
+  ],
+  "plots": [],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 1544,
+      "sha256": "d702cfd311c2dfea02de9518e909903d0592388fb9cc307fb069b9105c65388b"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3595,
+      "sha256": "485599d96c9dc198f5aa369040648bababc40c9a7a7f127153bbbe7af8ea88b3"
+    }
+  ]
+}

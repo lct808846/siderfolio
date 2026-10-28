@@ -1,0 +1,80 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T11:50:45.110216+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "error",
+  "export_status": "success",
+  "queries": [
+    {
+      "family": "simbad",
+      "result_index": 0,
+      "object_name": "M45",
+      "status": "error",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+        "retrieved_at": "2026-10-28T11:49:21.598628Z"
+      },
+      "error": {
+        "code": "simbad_timeout",
+        "message": "SIMBAD 查询超时，请稍后重试。",
+        "retryable": true
+      },
+      "table_path": null,
+      "table_skipped_reason": "query_not_successful"
+    },
+    {
+      "family": "simbad",
+      "result_index": 1,
+      "object_name": "M45",
+      "status": "error",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+        "retrieved_at": "2026-10-28T11:50:02.912447Z"
+      },
+      "error": {
+        "code": "simbad_timeout",
+        "message": "SIMBAD 查询超时，请稍后重试。",
+        "retryable": true
+      },
+      "table_path": null,
+      "table_skipped_reason": "query_not_successful"
+    }
+  ],
+  "plots": [],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 1594,
+      "sha256": "471e6b79069d708b972d0c5c42cf267b026438df91130905e6f6605d2e7a3818"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3567,
+      "sha256": "407fef001b7e0137d20d070f6938ee22fd262cbba5f7ce2b36de928f976ccc98"
+    }
+  ]
+}

@@ -38,6 +38,7 @@ def runtime_metadata() -> dict:
         "astropy",
         "defusedxml",
         "numpy",
+        "matplotlib",
         "requests",
         "pydantic",
         "pytest",

@@ -1,0 +1,77 @@
+{
+  "application_version": "0.4.0",
+  "started_at": "2026-10-28T12:41:36.586531+00:00",
+  "kind": "offline-tests",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.4.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M scripts/record_utils.py\n M scripts/verify_v03.py\n M src/astroagent/__init__.py\n M src/astroagent/main.py\n M tests/test_gaia_chat.py\n M tests/test_literature_chat.py\n?? docs/PROJECT_PLAN_V0.4.md\n?? docs/releases/v0.4.0.md\n?? docs/test-records/v0.4.0/\n?? scripts/export_samples.py\n?? scripts/verify_v04.py\n?? src/astroagent/api/exports.py\n?? src/astroagent/export_schemas.py\n?? src/astroagent/exports.py\n?? src/astroagent/plots.py\n?? tests/test_exports.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 29.1254,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4071,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2589,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 2.2465,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-28T12:42:09.026682+00:00"
+}

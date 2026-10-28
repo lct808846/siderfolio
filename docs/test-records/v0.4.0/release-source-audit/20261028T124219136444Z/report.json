@@ -1,0 +1,992 @@
+{
+  "outcome": "passed",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.4.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M scripts/record_utils.py\n M scripts/verify_v03.py\n M src/astroagent/__init__.py\n M src/astroagent/main.py\n M tests/test_gaia_chat.py\n M tests/test_literature_chat.py\n?? docs/PROJECT_PLAN_V0.4.md\n?? docs/releases/v0.4.0.md\n?? docs/test-records/v0.4.0/\n?? scripts/export_samples.py\n?? scripts/verify_v04.py\n?? src/astroagent/api/exports.py\n?? src/astroagent/export_schemas.py\n?? src/astroagent/exports.py\n?? src/astroagent/plots.py\n?? tests/test_exports.py",
+  "files": [
+    {
+      "path": "docs\\PROJECT_PLAN_V0.4.md",
+      "bytes": 26358,
+      "sha256": "485fbe3bc9bac1b57b7d47589c8d3f909393d29fd6a27e5dc57d1eeefc8f77d6"
+    },
+    {
+      "path": "docs\\releases\\v0.4.0.md",
+      "bytes": 3103,
+      "sha256": "1a0bf092e4d8ca288727fc22bca81b2d1b0052b7f37a8ea613e7e23617eb8518"
+    },
+    {
+      "path": "docs\\test-records\\README.md",
+      "bytes": 1594,
+      "sha256": "3c6164b08df3776150d08b2d1bbfdf0030ac17f81e3487a1fd5c04c1bff852b4"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\data-only-no-keys-manifest.json",
+      "bytes": 19750,
+      "sha256": "03520357f24d09f1387faf110ced801dd1fca4c57aabaf6194703f52ee7bcb0e"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\data-only-no-keys.zip",
+      "bytes": 16674,
+      "sha256": "c102cbac1c0d98123ca8e0c018bca8ced8124b9599ee6312405ba7b0421d7ad9"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\not-found-gaia-000-observed-cmd.png",
+      "bytes": 51759,
+      "sha256": "ea1d95ffce8b44c47624bd7951a2f4f2aef569ab541d85f0e494c44ac9f3b70b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\not-found-gaia-000-parallax-histogram.png",
+      "bytes": 41150,
+      "sha256": "3dad31f4b69eda7e9b8a9e7139a92151c9fd42b014f2420d06259a1b73202682"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\not-found-gaia-000-proper-motion.png",
+      "bytes": 50555,
+      "sha256": "f770598940e6218d3722c52eaa9ae8321f6a5c294727fa574da6bd7ccb891314"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\not-found-manifest.json",
+      "bytes": 49582,
+      "sha256": "741bb464dffe22f063cc3328c9f2bf10edb2ad47e57d81ceaf9dcbb89e7d0ea7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\not-found.zip",
+      "bytes": 142996,
+      "sha256": "a747cbd04a8e72e8b6ee6d0a725b3880cb6b68b67cc9b1057adb1451b1dd1a97"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\partial-query-gaia-000-observed-cmd.png",
+      "bytes": 51759,
+      "sha256": "ea1d95ffce8b44c47624bd7951a2f4f2aef569ab541d85f0e494c44ac9f3b70b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\partial-query-gaia-000-parallax-histogram.png",
+      "bytes": 41150,
+      "sha256": "3dad31f4b69eda7e9b8a9e7139a92151c9fd42b014f2420d06259a1b73202682"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\partial-query-gaia-000-proper-motion.png",
+      "bytes": 50555,
+      "sha256": "f770598940e6218d3722c52eaa9ae8321f6a5c294727fa574da6bd7ccb891314"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\partial-query-manifest.json",
+      "bytes": 49578,
+      "sha256": "0d4435bcba6eb876efb7b1487acb149eadddd5b5a6c9be1c4a20d5cf450cb144"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\partial-query.zip",
+      "bytes": 142986,
+      "sha256": "f5ac5a357ec6fb53569679c72263a48b0434d81dcd8288b6b02022cbe40283fc"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\report.json",
+      "bytes": 653335,
+      "sha256": "9bd378868bb403a5a46fb6a7aef18da3a7bde143e982dd72650a3ad915e48f75"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\single-point-gaia-000-observed-cmd.png",
+      "bytes": 44527,
+      "sha256": "ee21e31d74dc3c9a4a87fc16ad4286bcc5c0f32dd045b70ea3aaeb4b9c59e662"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\single-point-gaia-000-proper-motion.png",
+      "bytes": 45052,
+      "sha256": "8405b01e5c8ecf3d6be6da3680264c1e1db34f5d5d6e8d760f77984cfdf0a48f"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\single-point-manifest.json",
+      "bytes": 8608,
+      "sha256": "b23be2469d58af33db71ca9ba82b5317c3d65629413065a01eb57632005b5e66"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\single-point.zip",
+      "bytes": 83085,
+      "sha256": "e7c33e871685c5f0cfc4c6b61a52fb815334316940fbbdc3818f36abff0629d3"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\synthetic-full-gaia-000-observed-cmd.png",
+      "bytes": 51759,
+      "sha256": "ea1d95ffce8b44c47624bd7951a2f4f2aef569ab541d85f0e494c44ac9f3b70b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\synthetic-full-gaia-000-parallax-histogram.png",
+      "bytes": 41150,
+      "sha256": "3dad31f4b69eda7e9b8a9e7139a92151c9fd42b014f2420d06259a1b73202682"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\synthetic-full-gaia-000-proper-motion.png",
+      "bytes": 50555,
+      "sha256": "f770598940e6218d3722c52eaa9ae8321f6a5c294727fa574da6bd7ccb891314"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\synthetic-full-manifest.json",
+      "bytes": 49786,
+      "sha256": "09115ae4229ea7ab8b05f029768f5cc7e5e46272ad754f64ccab6586da71bfec"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\synthetic-full.zip",
+      "bytes": 143368,
+      "sha256": "deb816dc42060f71b453845c6f99b4d1b602f9f3088cd41f53ef2be2fd2b86e3"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071049404980Z\\uvicorn.txt",
+      "bytes": 1080,
+      "sha256": "f27a4a826583ca23d0f3f87f3fc819edcf2c69dc0991dbb90e1921d13566a781"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\data-only-no-keys-manifest.json",
+      "bytes": 19750,
+      "sha256": "3990ef8ef4691050019ebcaa499fa2b46cd7e5e673e11b651c4af02ee759c9b0"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\data-only-no-keys.zip",
+      "bytes": 16696,
+      "sha256": "f2451d04f2b54e48a683b9377c1ba81a1caefd6fd8a1fe52076aa8e337dd32b7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\not-found-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\not-found-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\not-found-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\not-found-manifest.json",
+      "bytes": 49582,
+      "sha256": "aebdc0b4849ac5bed5b6880ab89917c8587015557bd05a4d392a9256ef141933"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\not-found.zip",
+      "bytes": 130465,
+      "sha256": "59897f51a4e32ff472c96a35d7ed2191e34e9fbde51603e8f21391c660a94a9c"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\partial-query-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\partial-query-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\partial-query-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\partial-query-manifest.json",
+      "bytes": 49578,
+      "sha256": "508d67b9242355384f39d016f5dcdbb9163fdf4a652c24267783577208e15bb2"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\partial-query.zip",
+      "bytes": 130456,
+      "sha256": "c4ab30092d9198c4f897c021328697b25f2645b55ed9ddf8b734576201dc4411"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\report.json",
+      "bytes": 653566,
+      "sha256": "7735786afc81698659460a2a0b63526baff29484863a3b34a19895e4352fe7a1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\single-point-gaia-000-observed-cmd.png",
+      "bytes": 40493,
+      "sha256": "501f6fe7108cac802ab86a94bb11985cae4c66334737069f4a6b9be86180c92d"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\single-point-gaia-000-proper-motion.png",
+      "bytes": 40953,
+      "sha256": "e217df540da0ea8fc3f0817590cab7894e5bf3c32773a677fb7a071694274b23"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\single-point-manifest.json",
+      "bytes": 8608,
+      "sha256": "0f8ce1d1d6c8ca7b622368b595355f0816e13e494d3a6a2b19634517216fc32c"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\single-point.zip",
+      "bytes": 75475,
+      "sha256": "8022648e552e6c9b10707a61d32758c2032062c2ad39d601b8d3c859c00fba5e"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\synthetic-full-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\synthetic-full-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\synthetic-full-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\synthetic-full-manifest.json",
+      "bytes": 49786,
+      "sha256": "fcb070d234e9aae185f324f018a4f6a9732336bc3f0a33c22ec4a1aa4f794116"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\synthetic-full.zip",
+      "bytes": 130844,
+      "sha256": "901a2e1513c49b4903268c68f15a9be7c262fd6cbd19afeeed7b833c59bd7846"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071620519531Z\\uvicorn.txt",
+      "bytes": 1080,
+      "sha256": "c5575c0aea9152bf85d2dec982b4b3afa9a81eb059155be6fccd5020df1794ae"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\data-only-no-keys-manifest.json",
+      "bytes": 19750,
+      "sha256": "11e4969ff5baac5f5d38b21c7b9cb6066c2da0abf10703115eabcd91b388f167"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\data-only-no-keys.zip",
+      "bytes": 16696,
+      "sha256": "c71b2433a87d9bbc14fc770eba8ae82cf46d72e47e8e895d3da064cfc3b6ba76"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found-manifest.json",
+      "bytes": 49582,
+      "sha256": "5a856bc59710f63dcef0fedfcb053730f31c593f436d55ed69c49f4d58be69f7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\not-found.zip",
+      "bytes": 130466,
+      "sha256": "5d0e528e9236c6c1ca74de233f4b1dc49a267c71e19071e016ee178a5afae5b7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query-manifest.json",
+      "bytes": 49578,
+      "sha256": "c113137491264322265c61ae636b9e0f953e8f0ad3ebedbdd76e3f913cddf4f1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\partial-query.zip",
+      "bytes": 130456,
+      "sha256": "0a09f8fc92267218cc70c9888acb8cb5e10410c60ff7d09980c5cdaae63b73b7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\report.json",
+      "bytes": 653566,
+      "sha256": "7b5860cee097cff66e1817dad5a4002e99fb704d6c002a1395260884b55a4ae6"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\single-point-gaia-000-observed-cmd.png",
+      "bytes": 40493,
+      "sha256": "501f6fe7108cac802ab86a94bb11985cae4c66334737069f4a6b9be86180c92d"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\single-point-gaia-000-proper-motion.png",
+      "bytes": 40953,
+      "sha256": "e217df540da0ea8fc3f0817590cab7894e5bf3c32773a677fb7a071694274b23"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\single-point-manifest.json",
+      "bytes": 8608,
+      "sha256": "44ddac4946fc9afc390db4daaa27f400aa3c0f6b8c176deeb908b787f7ac654d"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\single-point.zip",
+      "bytes": 75475,
+      "sha256": "b4ec681cbcff968f6471d19aa35c81b8af5a8bf62f109c1df5069be3d2b700cd"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full-manifest.json",
+      "bytes": 49786,
+      "sha256": "15ffd88d38db1e9d1f5e60ca692d54ef7898d18905c6cbd6210baf8c27a533c8"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\synthetic-full.zip",
+      "bytes": 130844,
+      "sha256": "72299015121d0bdee9239e0a06a3a5f8ec58f8f1b2a3d5efce2ac2f4ec0c8d15"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T071816749372Z\\uvicorn.txt",
+      "bytes": 1080,
+      "sha256": "008253b16d4668aca345648f52fd33d21cdcc7b08dc06af7e8c97071fdbb71e0"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\data-only-no-keys-manifest.json",
+      "bytes": 19750,
+      "sha256": "d633641cefc124f80a2859c28a5d171e0842cc5ea11d75eaa992e553f8e46435"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\data-only-no-keys.zip",
+      "bytes": 16696,
+      "sha256": "d676630d7855c78948579dbdf77e0a12b5e7c1d8542b596a3a6991aebbdc9a7a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\not-found-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\not-found-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\not-found-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\not-found-manifest.json",
+      "bytes": 49582,
+      "sha256": "7451e21bc08e7373190c069e4ae951b6165039114c440bf25614dbb4b39d75cd"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\not-found.zip",
+      "bytes": 130466,
+      "sha256": "12a6bb5ab5a7598c0cb157e1cad748eac608a798ab3aabc4655ae4cefb243641"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\partial-query-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\partial-query-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\partial-query-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\partial-query-manifest.json",
+      "bytes": 49578,
+      "sha256": "861c302dc32943f81240d749a725223e6d51ff15690612add9d5f1503a186feb"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\partial-query.zip",
+      "bytes": 130456,
+      "sha256": "4b093c7621dfd59c4053f88ff8c0946d7e99b4abee43d1f259b32d25ab7a04d6"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\report.json",
+      "bytes": 653566,
+      "sha256": "e17e17bed5b9dc4affbbfadcc41f57b59a702f42292be8334504fd324bb09f6d"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\single-point-gaia-000-observed-cmd.png",
+      "bytes": 40493,
+      "sha256": "501f6fe7108cac802ab86a94bb11985cae4c66334737069f4a6b9be86180c92d"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\single-point-gaia-000-proper-motion.png",
+      "bytes": 40953,
+      "sha256": "e217df540da0ea8fc3f0817590cab7894e5bf3c32773a677fb7a071694274b23"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\single-point-manifest.json",
+      "bytes": 8608,
+      "sha256": "68101efca3eb5f996ea8e17b1e16c915dee8a25d2b6fa99fd9c24a608440c6eb"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\single-point.zip",
+      "bytes": 75475,
+      "sha256": "423ffd2a116e7a5baa94d80434c6384ac5cc88236d8c351fb141d17b4e02aef7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\synthetic-full-gaia-000-observed-cmd.png",
+      "bytes": 47941,
+      "sha256": "30fc25dfba2556a9b8b0d80118fdc584fae3c45cd33dde999628661bf91abed1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\synthetic-full-gaia-000-parallax-histogram.png",
+      "bytes": 37099,
+      "sha256": "9c6679d587ebed5125b384e5bea2ff3028f2fce6b0f438b67de1d3d319e77f58"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\synthetic-full-gaia-000-proper-motion.png",
+      "bytes": 46629,
+      "sha256": "9a805c1cf564ae90e55777ae1840161f9fc20a048eef982666bb036a5c839818"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\synthetic-full-manifest.json",
+      "bytes": 49786,
+      "sha256": "fa4ac6cfe28b3ffe04b831a9a1931e4ae65e4b380d5961256118948464c856c2"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\synthetic-full.zip",
+      "bytes": 130845,
+      "sha256": "81ced8d167daac234144f97fd144d6c8effece45bb02f96852711875686e7b7b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\acceptance-v04\\20261028T124139075374Z\\uvicorn.txt",
+      "bytes": 1080,
+      "sha256": "bbe7d1a61d7909c8b02585812c31e62a47e06307b47fb40f68359da2530779a2"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\figure-review\\20261028T071944701889Z\\report.json",
+      "bytes": 6034,
+      "sha256": "7b389ce93e808d7785882e7042649b8167481f95da2cbf19086139cc0df613af"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\ads-manifest.json",
+      "bytes": 2115,
+      "sha256": "c9fa9b45902ebe2fdbaa5e8f73628db8b56fea749fe45af592ab16546dd13e0c"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\ads.zip",
+      "bytes": 16009,
+      "sha256": "a4701993e3b5f278824f7fa7d7bafee75347bbc61d5e3d85d7a1e6abf3bf427c"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\cone-gaia-000-observed-cmd.png",
+      "bytes": 54022,
+      "sha256": "2169601a49f523f711147bf0f462273d64c627078f509b42a46ccb59ffed8033"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\cone-gaia-000-parallax-histogram.png",
+      "bytes": 43756,
+      "sha256": "ae1325ce376c68d868f05ff9d73c1a670539a596c330499bb66760bf392cab3a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\cone-gaia-000-proper-motion.png",
+      "bytes": 48413,
+      "sha256": "54b8ca3fbe3ee07e3d96563acd4ac072461c5047e97a14075a6871c725a72d28"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\cone-manifest.json",
+      "bytes": 55829,
+      "sha256": "88c979a99b6787938038632dd176145f785e93be944e6de1f7eafda7aed8e52c"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\cone.zip",
+      "bytes": 181033,
+      "sha256": "db5f7c87b81289acba8ba152c69f2429695405ec9a302586072cbefe916b7477"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\exact-gaia-000-observed-cmd.png",
+      "bytes": 37755,
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\exact-gaia-000-proper-motion.png",
+      "bytes": 40439,
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\exact-manifest.json",
+      "bytes": 7324,
+      "sha256": "a6817b797c23a23a0adad9d02f52edd91f76141ebccb395411c9dd5c1efa0c46"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\exact.zip",
+      "bytes": 71502,
+      "sha256": "fc4a03043abdb1b8a9f44d83cf258d08b829eb467e91bbea6c57b09a7fc73b44"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\name-manifest.json",
+      "bytes": 1816,
+      "sha256": "6f26fcb76c912f10641e2c11ce31972f36b0f98481e91dd7da3a23662b747a5e"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\name.zip",
+      "bytes": 3782,
+      "sha256": "f7383da9feb7e077cd8af7877fd0ddf02dcbbbfc9ac223043b580ca0d0d9feb6"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\report.json",
+      "bytes": 476851,
+      "sha256": "1a9f77fecc276d20142659340ce331fcb9b9a1f1aa8ba0b5d80fdbe77f755c9b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\simbad-manifest.json",
+      "bytes": 2405,
+      "sha256": "70b98d4efa8f90cb91b14d630d6935772f729128e689d51409348542eac55c3c"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\simbad.zip",
+      "bytes": 3810,
+      "sha256": "47745f81eeefd0531be5e6c36c862e239e6deae2ac987df38f8d027a3185b20f"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\three-tools-gaia-000-observed-cmd.png",
+      "bytes": 37755,
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\three-tools-gaia-000-proper-motion.png",
+      "bytes": 40439,
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\three-tools-manifest.json",
+      "bytes": 8504,
+      "sha256": "8b2c6660b2506c340a729090aedfb370f130add4d18cb58c5d845959f549fd35"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\three-tools.zip",
+      "bytes": 84465,
+      "sha256": "1a65e86728f42d876728bb4f614b7a4068beea5c2ff16580c2b4777566092a89"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071107609932Z\\uvicorn.txt",
+      "bytes": 1184,
+      "sha256": "d2d95c6b24b033f7efc4815641c32f4789f48333b3654b1c70cd9cc5eb1b2ab7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\ads-manifest.json",
+      "bytes": 2115,
+      "sha256": "2c4e75f0fa33558d9f01d5f89f9008175a6fca1837a193eadaf3dfcf3c98ad83"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\ads.zip",
+      "bytes": 15995,
+      "sha256": "ad6d2bd09aaff353b0898415d9f485e3b8c52832239be62b47ede32385a84101"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-observed-cmd.png",
+      "bytes": 54022,
+      "sha256": "2169601a49f523f711147bf0f462273d64c627078f509b42a46ccb59ffed8033"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-parallax-histogram.png",
+      "bytes": 43756,
+      "sha256": "ae1325ce376c68d868f05ff9d73c1a670539a596c330499bb66760bf392cab3a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-proper-motion.png",
+      "bytes": 48413,
+      "sha256": "54b8ca3fbe3ee07e3d96563acd4ac072461c5047e97a14075a6871c725a72d28"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-manifest.json",
+      "bytes": 55829,
+      "sha256": "75068d7ba71a2e6eba650a2557b993d1672df07a4a45b0aee8e3b9f636b82263"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone.zip",
+      "bytes": 181286,
+      "sha256": "f69efa7648dc031d95c94bb445d27f80b12e15d1e0fec8b0c9472a9602f3cf69"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-observed-cmd.png",
+      "bytes": 37755,
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-proper-motion.png",
+      "bytes": 40439,
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-manifest.json",
+      "bytes": 7324,
+      "sha256": "2bec1c566efb62fb381a69e4a36924593228c0398059f46643177cae2d84af63"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact.zip",
+      "bytes": 71636,
+      "sha256": "a890e3a2930c4a03fc714919047eb4436bd3a9556038ee616e95c8d2cd7bb77f"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\report.json",
+      "bytes": 398248,
+      "sha256": "10fdb18e45be907d894925c1573027865895c4dd92cecb3116cc4af83448be45"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\uvicorn.txt",
+      "bytes": 785,
+      "sha256": "27bcde6c6bb6ffdc3e35f81b0a6756d2bc468a9aeb2f23157e6a011a28282385"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\ads-manifest.json",
+      "bytes": 2115,
+      "sha256": "dee0b12f94aa3677eda6146c2c465b34f72a9e6571e32616dc516868349b14de"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\ads.zip",
+      "bytes": 15951,
+      "sha256": "cda6ec43fec0a60dcfec724f4dcb6ec0d98418566975e40dec3b83d9a349b8c4"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\cone-gaia-000-observed-cmd.png",
+      "bytes": 54022,
+      "sha256": "2169601a49f523f711147bf0f462273d64c627078f509b42a46ccb59ffed8033"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\cone-gaia-000-parallax-histogram.png",
+      "bytes": 43756,
+      "sha256": "ae1325ce376c68d868f05ff9d73c1a670539a596c330499bb66760bf392cab3a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\cone-gaia-000-proper-motion.png",
+      "bytes": 48413,
+      "sha256": "54b8ca3fbe3ee07e3d96563acd4ac072461c5047e97a14075a6871c725a72d28"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\cone-manifest.json",
+      "bytes": 55829,
+      "sha256": "b0f75b3c2477462af8e5c7aa8b88003ecd71382b791357a0854bba062aa33bc1"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\cone.zip",
+      "bytes": 180841,
+      "sha256": "9de82d96296749fd100fb50a893a629dca3e268b1a9caa01d2bdcfbc2202d39b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\exact-gaia-000-observed-cmd.png",
+      "bytes": 37755,
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\exact-gaia-000-proper-motion.png",
+      "bytes": 40439,
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\exact-manifest.json",
+      "bytes": 7324,
+      "sha256": "f9d8d8b20226d920ae4444304623b112795a5745d93cf39775ebfe12774086ee"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\exact.zip",
+      "bytes": 71548,
+      "sha256": "c546c22dbe05f5f33e1d14ebb67a8b2255284eb4c8257cb4823f58b0a59453aa"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\name-manifest.json",
+      "bytes": 2377,
+      "sha256": "787d1a52ff7f21514fb606e36d8ded9065f4107c2545b91e9c96e091ca601805"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\name.zip",
+      "bytes": 3893,
+      "sha256": "a2e83a4409f5f5dc51885fa8f0836c93f3f0e444d9d287174e3616bf6e81e320"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\report.json",
+      "bytes": 476418,
+      "sha256": "27743d0b2933ae46f6764be26d10d28671bf685c22b0ab1a629b98c42eb75166"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\simbad-manifest.json",
+      "bytes": 2405,
+      "sha256": "05cce15a8c3dfd89014865dee9d919425610ece912093fcc36b242165cbf7af8"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\simbad.zip",
+      "bytes": 3847,
+      "sha256": "9a8be287f1f07431ebfac959aa06d5c0ff4f89a8becd046f1480e5b8ce16ef64"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\three-tools-gaia-000-observed-cmd.png",
+      "bytes": 37755,
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\three-tools-gaia-000-proper-motion.png",
+      "bytes": 40439,
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\three-tools-manifest.json",
+      "bytes": 8504,
+      "sha256": "c0cf8190c4533fed3059e6109f63925685e5fd06726302fb9e6c1418b6657eaf"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\three-tools.zip",
+      "bytes": 84234,
+      "sha256": "47b49fb75920417cef9eb7403b51879373e1ae06643ac417cf6f527e23a162d6"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T114710460235Z\\uvicorn.txt",
+      "bytes": 1184,
+      "sha256": "16b12b49a62d82330f64574e8ce524ff2d84633a8bd24e64303d4ebdab2250d4"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071108230030Z\\check-1.txt",
+      "bytes": 2283,
+      "sha256": "affd97bf1b66be83cfe0eb66d9700bdfe3c9004dbe8149b9f8d39d809f135863"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071108230030Z\\check-2.txt",
+      "bytes": 20,
+      "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071108230030Z\\check-3.txt",
+      "bytes": 28,
+      "sha256": "1e78eac5aa29f9a621be1e11533f615369afe4c5be7f09649ac4252d7e8c7526"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071108230030Z\\check-4.txt",
+      "bytes": 31,
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071108230030Z\\pytest.xml",
+      "bytes": 103427,
+      "sha256": "adda728227f3e26939f3093d69a602c7d886b93903ebc9bd2d723e223acc713d"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071108230030Z\\report.json",
+      "bytes": 2104,
+      "sha256": "4196c047ade94d79a94257346ac4d7b5901dda6403269278b7c5e1fcef4df8e7"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071533728649Z\\check-1.txt",
+      "bytes": 905,
+      "sha256": "75bea468cbb68e9b2e6262829d02b412ca53a4a052632494fd9bfec534890531"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071533728649Z\\check-2.txt",
+      "bytes": 20,
+      "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071533728649Z\\check-3.txt",
+      "bytes": 28,
+      "sha256": "1e78eac5aa29f9a621be1e11533f615369afe4c5be7f09649ac4252d7e8c7526"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071533728649Z\\check-4.txt",
+      "bytes": 31,
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071533728649Z\\pytest.xml",
+      "bytes": 103024,
+      "sha256": "90981cfa6e07c421201a69238f58571360b248e7e23deb61a656ee3b31f2a785"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071533728649Z\\report.json",
+      "bytes": 2271,
+      "sha256": "ad39796734f79002504ec0bca20765682410d19f519f028db643e9ef2264fbba"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071723430134Z\\check-1.txt",
+      "bytes": 519,
+      "sha256": "e53f7f2bff1e8f84b684a25deb807d3410fa07c258abd34a24febcb104c7bd32"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071723430134Z\\check-2.txt",
+      "bytes": 20,
+      "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071723430134Z\\check-3.txt",
+      "bytes": 28,
+      "sha256": "1e78eac5aa29f9a621be1e11533f615369afe4c5be7f09649ac4252d7e8c7526"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071723430134Z\\check-4.txt",
+      "bytes": 31,
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071723430134Z\\pytest.xml",
+      "bytes": 103024,
+      "sha256": "5391dda1ecd10ad0b7fa024e5187067a7f27ac776bb6f1623739bb3f86bde618"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T071723430134Z\\report.json",
+      "bytes": 2271,
+      "sha256": "3ca868f8c361217fc284094e59cee22650f5e4e3ddf4f146a41f519ad2659aac"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\check-1.txt",
+      "bytes": 520,
+      "sha256": "96d45aa4120cd95705cfcd305ff3c3ca9dd4e2f637c28190b5706060c6c561be"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\check-2.txt",
+      "bytes": 20,
+      "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\check-3.txt",
+      "bytes": 28,
+      "sha256": "1e78eac5aa29f9a621be1e11533f615369afe4c5be7f09649ac4252d7e8c7526"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\check-4.txt",
+      "bytes": 31,
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\pytest.xml",
+      "bytes": 103025,
+      "sha256": "3b6097b44242f83c1d55dd5859dfe50f2923ff98664c98e957c467fa4f69996b"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\offline-tests\\20261028T124136582662Z\\report.json",
+      "bytes": 2272,
+      "sha256": "0c5902f82bb9d4359c32dc2bab394856d50f4ff2283d0a07b1f17a90309188cf"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\README.md",
+      "bytes": 7639,
+      "sha256": "1a12935125fefc0349198236f64abe61dc33da5cc3e76594bfc99c6a98d08874"
+    },
+    {
+      "path": "docs\\test-records\\v0.4.0\\source-audit\\20261028T072037728993Z\\report.json",
+      "bytes": 4080,
+      "sha256": "35f47c9ff3863568b7bd1e8e9d159ab6632aa3639051fb86cba4bdf29504ce61"
+    },
+    {
+      "path": "docs\\TESTING.md",
+      "bytes": 11937,
+      "sha256": "dc5f392837b5f4c5e12cd42148c6b030c0581316733155030df7bd86964c749b"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 1048,
+      "sha256": "a6cbdf5deba4e4b59a4c48c25e53ae9b8ef549e4f2782cc0f0b81ecd2657cb43"
+    },
+    {
+      "path": "README.md",
+      "bytes": 18126,
+      "sha256": "5760d349f6215819b79e880676568b1d6d8117aa5ea5377fa3efd3e135d84260"
+    },
+    {
+      "path": "scripts\\export_samples.py",
+      "bytes": 3446,
+      "sha256": "0498f31822a9f0855ac0ccc8f7c49c2e833921ea826cdbe0d771b35298cdd630"
+    },
+    {
+      "path": "scripts\\record_utils.py",
+      "bytes": 2531,
+      "sha256": "d69da04f7fe17954b78059a9722a7cbac9df9171b060afa4f289cb35cd5f9949"
+    },
+    {
+      "path": "scripts\\verify_v03.py",
+      "bytes": 13556,
+      "sha256": "7bb2f934fa742d0f93fbba171b6501959a9275965ba286af13d63a3c8a9796cf"
+    },
+    {
+      "path": "scripts\\verify_v04.py",
+      "bytes": 14930,
+      "sha256": "0c48f10e14ebb79ac0f54d05f7eccdcf50c02b912ac9ae362760f3a65cb5ead6"
+    },
+    {
+      "path": "src\\astroagent\\__init__.py",
+      "bytes": 56,
+      "sha256": "1b1947eace39f5427c0cbbd55792fea19d0ba0a2652ad3d041939dcfc53eff4c"
+    },
+    {
+      "path": "src\\astroagent\\api\\exports.py",
+      "bytes": 4893,
+      "sha256": "96b439967c629cf1d203b46cfee07991449bb10e301f61fd3256ce8ec0dc18a0"
+    },
+    {
+      "path": "src\\astroagent\\export_schemas.py",
+      "bytes": 10465,
+      "sha256": "3410c579c610b42a41e4c3fe3c328fbfcb540bba933348d06549d9ab1d7a34d6"
+    },
+    {
+      "path": "src\\astroagent\\exports.py",
+      "bytes": 12026,
+      "sha256": "dfa49e8f22adbf5be5eadf07bea24f4f8db95de289979b4d5a7feb44a09dbc5a"
+    },
+    {
+      "path": "src\\astroagent\\main.py",
+      "bytes": 1777,
+      "sha256": "75090e6715ebfb724bfc552e833a739185ef4884601614028ca4c26d063d8249"
+    },
+    {
+      "path": "src\\astroagent\\plots.py",
+      "bytes": 7716,
+      "sha256": "f663c65c4c3b7ef6df47afd2d22d10e0507ea73d851e1fe9a21a37e5e99875c4"
+    },
+    {
+      "path": "tests\\test_exports.py",
+      "bytes": 17729,
+      "sha256": "191b836c4054fac5b5612237e5b146658812d11a5aaaf360715807858ab7b0fd"
+    },
+    {
+      "path": "tests\\test_gaia_chat.py",
+      "bytes": 9610,
+      "sha256": "d365c1baac275c0e89a8a579a8f6da5600ab6f9cd3fd1bb4d1051bed00b04d8b"
+    },
+    {
+      "path": "tests\\test_literature_chat.py",
+      "bytes": 9799,
+      "sha256": "f763f838f15befbc48dbadda7bf06c15a38bdce0f37abae87a837336405c901d"
+    }
+  ],
+  "credential_leak_paths": [],
+  "known_credential_values_checked": 2,
+  "missing_document_links": [],
+  "scope": "Changed and untracked release inventory, including decompressed ZIP members; no credential values stored"
+}

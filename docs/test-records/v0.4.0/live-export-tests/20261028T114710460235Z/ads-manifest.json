@@ -1,0 +1,72 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T11:49:20.583605+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "success",
+  "export_status": "success",
+  "queries": [
+    {
+      "family": "ads",
+      "result_index": 0,
+      "query": "bibcode:2016A&A...595A...2G",
+      "filters": [
+        "database:astronomy"
+      ],
+      "rows": 1,
+      "start": 0,
+      "sort": "relevance",
+      "status": "success",
+      "total_found": 1,
+      "returned_count": 1,
+      "has_more": false,
+      "source": {
+        "name": "ADS",
+        "url": "https://ui.adsabs.harvard.edu/search/q=bibcode%3A2016A%26A...595A...2G&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0",
+        "retrieved_at": "2026-10-28T11:49:15.569096Z"
+      },
+      "error": null,
+      "table_path": "tables/ads-000.csv",
+      "table_skipped_reason": null
+    }
+  ],
+  "plots": [],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 22177,
+      "sha256": "52e486dfc9fbbbb636e369ab7adee9fe8c825077706f813683ee5621357166b7"
+    },
+    {
+      "path": "tables/ads-000.csv",
+      "bytes": 13617,
+      "sha256": "039a52bf8fef3d7ece6708036aa39f4bec57d23e9d6a88ad7d020b6d37c5d6af"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3130,
+      "sha256": "b5558321911a1de270c4dcc39063049ca115c46851b0a870dc44df2c5e684032"
+    }
+  ]
+}

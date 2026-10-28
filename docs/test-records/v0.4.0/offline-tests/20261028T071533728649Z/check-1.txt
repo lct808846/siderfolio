@@ -1,0 +1,13 @@
+........................................................................ [ 19%]
+........................................................................ [ 39%]
+........................................................................ [ 59%]
+........................................................................ [ 79%]
+................................................sssssssssssssss......... [ 99%]
+..                                                                       [100%]
+============================== warnings summary ===============================
+tests/test_exports.py::test_histogram_constant_single_missing_and_extreme
+  D:\project\astroagent\src\astroagent\plots.py:35: RuntimeWarning: overflow encountered in scalar divide
+    or not math.isfinite(1 / width)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+347 passed, 15 skipped, 1 warning in 9.80s

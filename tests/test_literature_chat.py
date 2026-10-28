@@ -9,6 +9,7 @@ from langchain_core.messages import AIMessage, ToolMessage
 from pydantic import ValidationError
 from test_chat import ScriptedModel, StubSimbad, query_reply, result
 
+from astroagent import __version__
 from astroagent.agent import AstroAgent
 from astroagent.api.chat import get_agent
 from astroagent.config import Settings
@@ -226,7 +227,7 @@ def test_ads_settings_priority_and_secret_repr(tmp_path, monkeypatch):
 def test_openapi_additive_schema_and_invalid_ads_config(monkeypatch):
     with TestClient(app) as client:
         schema = client.get("/openapi.json").json()
-        assert schema["info"]["version"] == "0.3.0"
+        assert schema["info"]["version"] == __version__
         components = schema["components"]["schemas"]
         assert "literature_results" in components["ChatResponse"]["properties"]
         assert components["Source"]["properties"]["name"]["enum"] == ["SIMBAD", "ADS", "Gaia"]

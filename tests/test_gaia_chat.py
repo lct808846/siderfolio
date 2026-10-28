@@ -10,6 +10,7 @@ from pydantic import ValidationError
 from test_chat import ScriptedModel, StubSimbad, query_reply, result
 from test_literature_chat import StubAds, ads_call, literature
 
+from astroagent import __version__
 from astroagent.agent import SYSTEM_PROMPT, AstroAgent
 from astroagent.api.chat import get_agent
 from astroagent.config import Settings
@@ -225,7 +226,7 @@ def test_initialization_and_openapi_do_not_access_databases(monkeypatch):
     with TestClient(app) as client:
         assert client.get("/health").json() == {"status": "ok"}
         schema = client.get("/openapi.json").json()
-        assert schema["info"]["version"] == "0.3.0"
+        assert schema["info"]["version"] == __version__
         assert "gaia_results" in schema["components"]["schemas"]["ChatResponse"]["properties"]
         monkeypatch.setenv("GAIA_TIMEOUT_SECONDS", "private-invalid")
         response = client.post("/api/v1/chat", json={"message": "Gaia"})

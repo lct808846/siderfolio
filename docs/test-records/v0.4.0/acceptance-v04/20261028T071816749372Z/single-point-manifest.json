@@ -1,0 +1,315 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T07:18:22.611330+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "success",
+  "export_status": "partial",
+  "queries": [
+    {
+      "family": "simbad",
+      "result_index": 0,
+      "object_name": "合成天体",
+      "status": "success",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://example.invalid/synthetic-simbad",
+        "retrieved_at": "2026-10-28T00:00:00Z"
+      },
+      "error": null,
+      "table_path": "tables/simbad-000.csv",
+      "table_skipped_reason": null
+    },
+    {
+      "family": "ads",
+      "result_index": 0,
+      "query": "synthetic",
+      "filters": [
+        "database:astronomy"
+      ],
+      "rows": 1,
+      "start": 0,
+      "sort": "relevance",
+      "status": "success",
+      "total_found": 1,
+      "returned_count": 1,
+      "has_more": false,
+      "source": {
+        "name": "ADS",
+        "url": "https://example.invalid/synthetic-ads",
+        "retrieved_at": "2026-10-28T00:00:00Z"
+      },
+      "error": null,
+      "table_path": "tables/ads-000.csv",
+      "table_skipped_reason": null
+    },
+    {
+      "family": "gaia",
+      "result_index": 0,
+      "query": {
+        "mode": "cone",
+        "ra_deg": 56.75,
+        "dec_deg": 24.12,
+        "radius_arcmin": 5.0,
+        "limit": 100,
+        "ruwe_max": null,
+        "parallax_snr_min": null,
+        "estimate_distance": true
+      },
+      "release": "Gaia DR3",
+      "table": "gaiadr3.gaia_source",
+      "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+      "adql": "SELECT TOP 101 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC",
+      "maxrec": 101,
+      "status": "success",
+      "returned_count": 1,
+      "total_found": null,
+      "has_more": true,
+      "truncated": true,
+      "archive_overflow": false,
+      "units": {
+        "source_id": "1",
+        "ra": "deg",
+        "dec": "deg",
+        "ref_epoch": "yr",
+        "ra_error": "mas",
+        "dec_error": "mas",
+        "parallax": "mas",
+        "parallax_error": "mas",
+        "pmra": "mas/yr",
+        "pmra_error": "mas/yr",
+        "pmdec": "mas/yr",
+        "pmdec_error": "mas/yr",
+        "phot_g_mean_mag": "mag",
+        "phot_bp_mean_mag": "mag",
+        "phot_rp_mean_mag": "mag",
+        "bp_rp": "mag",
+        "radial_velocity": "km/s",
+        "radial_velocity_error": "km/s",
+        "ruwe": "1",
+        "astrometric_params_solved": "1",
+        "duplicated_source": "1",
+        "separation_arcsec": "arcsec"
+      },
+      "source": {
+        "name": "Gaia",
+        "url": "https://gea.esac.esa.int/archive/",
+        "retrieved_at": "2026-10-28T00:00:00Z"
+      },
+      "warnings": [
+        "合成样本；截断仅供测试"
+      ],
+      "error": null,
+      "table_path": "tables/gaia-000.csv",
+      "table_skipped_reason": null
+    }
+  ],
+  "plots": [
+    {
+      "gaia_result_index": 0,
+      "kind": "proper_motion",
+      "status": "success",
+      "reason": null,
+      "fields": [
+        "pmra",
+        "pmdec"
+      ],
+      "delivered_count": 1,
+      "valid_count": 1,
+      "skipped_count": 0,
+      "included_source_ids": [
+        "5853498713190525696"
+      ],
+      "excluded_rows": [],
+      "coordinates": [
+        [
+          -20.0,
+          45.0
+        ]
+      ],
+      "parameters": {
+        "pixels": [
+          1200,
+          900
+        ],
+        "dpi": 150,
+        "style_version": "1",
+        "font": "DejaVu Sans",
+        "returned_rows_only": true,
+        "truncated": true,
+        "archive_overflow": false,
+        "quality_filters": {},
+        "x_limits": [
+          -21.0,
+          -19.0
+        ],
+        "y_limits": [
+          42.75,
+          47.25
+        ],
+        "aspect": "equal",
+        "y_inverted": false
+      },
+      "output_path": "figures/gaia-000-proper-motion.png"
+    },
+    {
+      "gaia_result_index": 0,
+      "kind": "parallax_histogram",
+      "status": "skipped",
+      "reason": "insufficient_data",
+      "fields": [
+        "parallax"
+      ],
+      "delivered_count": 1,
+      "valid_count": 1,
+      "skipped_count": 0,
+      "included_source_ids": [
+        "5853498713190525696"
+      ],
+      "excluded_rows": [],
+      "coordinates": [
+        [
+          -2.5
+        ]
+      ],
+      "parameters": {
+        "pixels": [
+          1200,
+          900
+        ],
+        "dpi": 150,
+        "style_version": "1",
+        "font": "DejaVu Sans",
+        "returned_rows_only": true,
+        "truncated": true,
+        "archive_overflow": false,
+        "quality_filters": {}
+      },
+      "output_path": null
+    },
+    {
+      "gaia_result_index": 0,
+      "kind": "observed_cmd",
+      "status": "success",
+      "reason": null,
+      "fields": [
+        "bp_rp",
+        "phot_g_mean_mag"
+      ],
+      "delivered_count": 1,
+      "valid_count": 1,
+      "skipped_count": 0,
+      "included_source_ids": [
+        "5853498713190525696"
+      ],
+      "excluded_rows": [],
+      "coordinates": [
+        [
+          0.1,
+          8.0
+        ]
+      ],
+      "parameters": {
+        "pixels": [
+          1200,
+          900
+        ],
+        "dpi": 150,
+        "style_version": "1",
+        "font": "DejaVu Sans",
+        "returned_rows_only": true,
+        "truncated": true,
+        "archive_overflow": false,
+        "quality_filters": {},
+        "x_limits": [
+          -0.4,
+          0.6
+        ],
+        "y_limits": [
+          7.5,
+          8.5
+        ],
+        "aspect": "auto",
+        "y_inverted": true
+      },
+      "output_path": "figures/gaia-000-observed-cmd.png"
+    }
+  ],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [
+    {
+      "file": "tables/simbad-000.csv",
+      "data_row": 1,
+      "column": "main_id",
+      "reason": "spreadsheet_formula"
+    },
+    {
+      "file": "tables/ads-000.csv",
+      "data_row": 1,
+      "column": "abstract",
+      "reason": "spreadsheet_formula"
+    },
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 1,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    }
+  ],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 6911,
+      "sha256": "6827ec8e97df4e9a0f5cd9edf3c9f770d598b1bb0507e37347f906aff49ce045"
+    },
+    {
+      "path": "tables/simbad-000.csv",
+      "bytes": 262,
+      "sha256": "cc016f480bbe38dd343f85af0bbe65713150ba2b2abd6f6f69d779652074f059"
+    },
+    {
+      "path": "tables/ads-000.csv",
+      "bytes": 260,
+      "sha256": "74703d46808fa353e7ccf58c40a76b222361f30106cc354a92c1c79feb24409e"
+    },
+    {
+      "path": "tables/gaia-000.csv",
+      "bytes": 482,
+      "sha256": "1219cfcbe736d8874556c7378d7d0393fc9ac2d0f21fb19960e70307a53ccff7"
+    },
+    {
+      "path": "figures/gaia-000-proper-motion.png",
+      "bytes": 40953,
+      "sha256": "e217df540da0ea8fc3f0817590cab7894e5bf3c32773a677fb7a071694274b23"
+    },
+    {
+      "path": "figures/gaia-000-observed-cmd.png",
+      "bytes": 40493,
+      "sha256": "501f6fe7108cac802ab86a94bb11985cae4c66334737069f4a6b9be86180c92d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5737,
+      "sha256": "1fa0224bc5a2bc12aede8ca72c2d8a430db425e8ff89e90c95ae0d1a15592e03"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "outcome": "passed",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.4.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M scripts/record_utils.py\n M scripts/verify_v03.py\n M src/astroagent/__init__.py\n M src/astroagent/main.py\n M tests/test_gaia_chat.py\n M tests/test_literature_chat.py\n?? docs/PROJECT_PLAN_V0.4.md\n?? docs/releases/v0.4.0.md\n?? docs/test-records/v0.4.0/\n?? scripts/export_samples.py\n?? scripts/verify_v04.py\n?? src/astroagent/api/exports.py\n?? src/astroagent/export_schemas.py\n?? src/astroagent/exports.py\n?? src/astroagent/plots.py\n?? tests/test_exports.py",
+  "source_files": [
+    {
+      "path": "docs\\PROJECT_PLAN_V0.4.md",
+      "sha256": "2653f9b115d1067eef338504ee0e9fe01b72c28dc040fd273d3c76bf47d6c708",
+      "bytes": 26052
+    },
+    {
+      "path": "docs\\releases\\v0.4.0.md",
+      "sha256": "a313b22d24f84a45af88325718d3187c8a33b828b3979162538a8f1a315a898f",
+      "bytes": 1860
+    },
+    {
+      "path": "scripts\\export_samples.py",
+      "sha256": "0498f31822a9f0855ac0ccc8f7c49c2e833921ea826cdbe0d771b35298cdd630",
+      "bytes": 3446
+    },
+    {
+      "path": "scripts\\verify_v04.py",
+      "sha256": "0c48f10e14ebb79ac0f54d05f7eccdcf50c02b912ac9ae362760f3a65cb5ead6",
+      "bytes": 14930
+    },
+    {
+      "path": "src\\astroagent\\api\\exports.py",
+      "sha256": "96b439967c629cf1d203b46cfee07991449bb10e301f61fd3256ce8ec0dc18a0",
+      "bytes": 4893
+    },
+    {
+      "path": "src\\astroagent\\export_schemas.py",
+      "sha256": "3410c579c610b42a41e4c3fe3c328fbfcb540bba933348d06549d9ab1d7a34d6",
+      "bytes": 10465
+    },
+    {
+      "path": "src\\astroagent\\exports.py",
+      "sha256": "dfa49e8f22adbf5be5eadf07bea24f4f8db95de289979b4d5a7feb44a09dbc5a",
+      "bytes": 12026
+    },
+    {
+      "path": "src\\astroagent\\plots.py",
+      "sha256": "f663c65c4c3b7ef6df47afd2d22d10e0507ea73d851e1fe9a21a37e5e99875c4",
+      "bytes": 7716
+    },
+    {
+      "path": "tests\\test_exports.py",
+      "sha256": "191b836c4054fac5b5612237e5b146658812d11a5aaaf360715807858ab7b0fd",
+      "bytes": 17729
+    },
+    {
+      "path": "README.md",
+      "sha256": "ec1ffbd9a246d70bf3d1d57e3937580801f82fecaecae35f4e50f2b31bc32952",
+      "bytes": 18055
+    },
+    {
+      "path": "docs\\TESTING.md",
+      "sha256": "dc5f392837b5f4c5e12cd42148c6b030c0581316733155030df7bd86964c749b",
+      "bytes": 11937
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "a6cbdf5deba4e4b59a4c48c25e53ae9b8ef549e4f2782cc0f0b81ecd2657cb43",
+      "bytes": 1048
+    },
+    {
+      "path": "scripts\\record_utils.py",
+      "sha256": "d69da04f7fe17954b78059a9722a7cbac9df9171b060afa4f289cb35cd5f9949",
+      "bytes": 2531
+    },
+    {
+      "path": "scripts\\verify_v03.py",
+      "sha256": "7bb2f934fa742d0f93fbba171b6501959a9275965ba286af13d63a3c8a9796cf",
+      "bytes": 13556
+    },
+    {
+      "path": "src\\astroagent\\__init__.py",
+      "sha256": "1b1947eace39f5427c0cbbd55792fea19d0ba0a2652ad3d041939dcfc53eff4c",
+      "bytes": 56
+    },
+    {
+      "path": "src\\astroagent\\main.py",
+      "sha256": "75090e6715ebfb724bfc552e833a739185ef4884601614028ca4c26d063d8249",
+      "bytes": 1777
+    },
+    {
+      "path": "tests\\test_gaia_chat.py",
+      "sha256": "d365c1baac275c0e89a8a579a8f6da5600ab6f9cd3fd1bb4d1051bed00b04d8b",
+      "bytes": 9610
+    },
+    {
+      "path": "tests\\test_literature_chat.py",
+      "sha256": "f763f838f15befbc48dbadda7bf06c15a38bdce0f37abae87a837336405c901d",
+      "bytes": 9799
+    }
+  ],
+  "missing_document_links": []
+}

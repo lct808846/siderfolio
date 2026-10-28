@@ -1,0 +1,47 @@
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+........................................................................ [ 61%]
+......................................................................F. [ 82%]
+....................................Fsssssssssssssss...........          [100%]
+================================== FAILURES ===================================
+___________ test_initialization_and_openapi_do_not_access_databases ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002E61E8486E0>
+
+    def test_initialization_and_openapi_do_not_access_databases(monkeypatch):
+        # block_external_http also rejects any implicit constructor or metadata request.
+        monkeypatch.setenv("GAIA_TIMEOUT_SECONDS", "8")
+        agent = get_agent()
+        assert agent.gaia.timeout == 8
+        with TestClient(app) as client:
+            assert client.get("/health").json() == {"status": "ok"}
+            schema = client.get("/openapi.json").json()
+>           assert schema["info"]["version"] == "0.3.0"
+E           AssertionError: assert '0.4.0' == '0.3.0'
+E             
+E             - 0.3.0
+E             ?   ^
+E             + 0.4.0
+E             ?   ^
+
+tests\test_gaia_chat.py:228: AssertionError
+_____________ test_openapi_additive_schema_and_invalid_ads_config _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002E620651BB0>
+
+    def test_openapi_additive_schema_and_invalid_ads_config(monkeypatch):
+        with TestClient(app) as client:
+            schema = client.get("/openapi.json").json()
+>           assert schema["info"]["version"] == "0.3.0"
+E           AssertionError: assert '0.4.0' == '0.3.0'
+E             
+E             - 0.3.0
+E             ?   ^
+E             + 0.4.0
+E             ?   ^
+
+tests\test_literature_chat.py:229: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gaia_chat.py::test_initialization_and_openapi_do_not_access_databases
+FAILED tests/test_literature_chat.py::test_openapi_additive_schema_and_invalid_ads_config
+2 failed, 334 passed, 15 skipped in 8.34s

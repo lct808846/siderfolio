@@ -10,7 +10,7 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-当前实际结果见 [V0.3 测试记录](test-records/v0.3.0/README.md)，历史见 [V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
+当前实际结果见 [V0.4 测试记录](test-records/v0.4.0/README.md)，历史见 [V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
 
 代码检查：
 
@@ -35,6 +35,7 @@ python -m pip check
 | `test_gaia.py` | 严格模式/编号/边界、固定 ADQL 与 POST、单位、TAP 前后状态、XML 外部引用防护、响应体/分配上限、BINARY2 掩码、坏字段、截断/哨兵行及安全错误 |
 | `test_analysis.py` | 合成样本统计、缺失与负/零视差、距离开关、跳过顺序、SNR=10、100 pc/5 pc 示例与极端有限值 |
 | `test_gaia_chat.py` | 三类结果分流、来源去重与顺序、完整统计/API 和前 10 行模型视图、批次验证、共享预算、后续模型失败保留数据、配置与无网络初始化 |
+| `test_exports.py` | 严格递归字段/有限数/状态/来源/统计复算，完整100行与跨查询上下文，CSV精度和文本保护，哈希与ZIP读回，三种图的坐标与PNG，分块超限、忙锁与失败释放，V0.3真实历史响应兼容、OpenAPI所有引用可解析 |
 
 接口测试使用 FastAPI `TestClient` 在进程内发起请求；工具转换测试使用合成数据，不将它当作真实天文数据，也不将模拟测试当作联网验收。默认测试不验证模型的实际行为或远端服务可用性。
 
@@ -119,6 +120,8 @@ python scripts/verify_live.py
 | `python scripts/verify_live.py` | `acceptance` | `report.json` 与 `uvicorn.txt` |
 | `python scripts/verify_v02.py` | `acceptance-v02` | 九项真实 HTTP 检查、请求和完整响应、依赖版本、服务停止状态 |
 | `python scripts/verify_v03.py` | `acceptance-v03` | 十二项真实 HTTP 检查、当次空结果预检、查询条件/完整响应、Git/依赖信息、进程停止和端口关闭证据 |
+| `python scripts/verify_v04.py` | `acceptance-v04` | 无密钥合成数据导出、三种图/单点跳图/部分失败/无匹配、真实Uvicorn分块超限、ZIP下载与逐文件哈希、PID退出及端口关闭 |
+| `python scripts/verify_v04.py --live` | `live-export-tests` | 当次Gaia圆锥/精确源、SIMBAD、ADS、名称及三工具查询→导出，保存请求/响应、ZIP、PNG、清单与失败记录 |
 | `python scripts/measure_latency.py` | `latency` | 逐次响应时间、成功状态与汇总 JSON |
 
 延迟测试默认对 `http://127.0.0.1:8000` 执行 5 次健康检查和 3 次 Betelgeuse 查询；可通过 `--samples`、`--health-samples` 和 `--base-url` 调整。需要先启动服务，会产生模型用量。
@@ -145,5 +148,7 @@ V0.3 HTTP 脚本实际启动 Uvicorn，检查基础接口、Gaia 两种查询、
 - 执行说明：沙箱内的 TestClient 未正常返回，已停止该次测试；上述通过结果来自本机 `agent` 环境的受控沙箱外验证。联网验收需要外网访问。
 
 ## 验证边界
+
+V0.4 两种 HTTP 脚本运行模式均在 `finally` 停止自身服务并检查 PID 和端口。默认模式强制清空子进程的模型及 ADS 密钥，合成数据明确标记，不能作为实际观测；`--live` 需要实际凭证和外部网络，外部失败按失败记录，不得静默跳过。PNG 解码/尺寸检查不等同于视觉验收；人工打开实际 PNG 后，在独立 `figure-review/<UTC时间>/` 保存图像哈希与检查结论，原报告的 `pending_manual_inspection` 不覆盖修改。
 
 当前验证了服务提供 Swagger HTML 和正确 OpenAPI 定义，未在图形浏览器中检查 Swagger CDN 静态资源加载。模型的自然语言回答仍需对照 `results` 核查；本版本没有完整的模型科学准确性评测、压力测试或生产部署验收。

@@ -2,9 +2,13 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：`v0.3.0`，详见 [GitHub Release](https://github.com/lct808846/astroagent/releases/tag/v0.3.0)、[版本说明](docs/releases/v0.3.0.md) 和 [实际测试记录](docs/test-records/v0.3.0/README.md)。SIMBAD 相关联网成功路径尚未通过当日本机验收，本版按明确授权带此已知限制发布，不代表完整联网测试全部通过。
+当前版本：[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)，新增查询快照、CSV、Gaia 图表和 ZIP 导出，详见 [版本说明](docs/releases/v0.4.0.md) 与 [实际测试记录](docs/test-records/v0.4.0/README.md)。本版按用户明确授权带已记录的 SIMBAD 超时限制发布，完整联网成功路径仍需补验，不代表全部联网测试通过。
+
+上一版本为 [v0.3.0](https://github.com/lct808846/astroagent/releases/tag/v0.3.0)，历史源码与测试记录保留。
 
 开发依据为 [V0.3 开发文档](docs/PROJECT_PLAN_V0.3.md)，原有能力见 [V0.2 开发文档](docs/PROJECT_PLAN_V0.2.md) 和 [V0.1 计划](docs/PROJECT_PLAN_V0.1.md)。本版本为单次、无状态查询；不包含前端、多用户、MCP、RAG 或复杂科研工作流。
+
+导出契约与完成门槛见 [V0.4 开发文档：查询结果可视化与可复现导出](docs/PROJECT_PLAN_V0.4.md)。`POST /api/v1/exports` 接收完整客户端快照，独立于模型和外部数据库，可无密钥使用。
 
 Gaia 固定访问 `gaiadr3.gaia_source`：支持十进制字符串 DR3 `source_id` 精确查询，或 ICRS 中心与半径（最大 30 角分）的圆锥查询（最多 100 行，默认 20 行）。返回测量、误差、单位、参考历元、实际 ADQL 与截断状态；可按要求筛选 RUWE 和正视差信噪比。基础统计由程序计算，只描述实际交付行；总命中数未知，不自动翻页。
 
@@ -71,6 +75,7 @@ python -m uvicorn astroagent.main:app --reload
 
 - 健康检查：<http://127.0.0.1:8000/health>
 - 聊天查询：`POST http://127.0.0.1:8000/api/v1/chat`
+- 结果导出：`POST http://127.0.0.1:8000/api/v1/exports`
 - 交互接口文档：<http://127.0.0.1:8000/docs>
 - OpenAPI 定义：<http://127.0.0.1:8000/openapi.json>
 
@@ -145,6 +150,51 @@ Gaia 用多取一行判断截断，哨兵行不进入交付数据或统计；`to
 
 输入 `message` 去除首尾空白后须为 1–4000 个字符，不接受额外字段。每次请求独立处理，不保留会话历史。
 
+## 导出数据与图表
+
+先取得聊天接口的完整响应，再显式提交导出请求。两次请求独立，服务不保存历史；仅在自然语言中要求“画图”不会自动执行导出。
+
+```python
+from pathlib import Path
+import requests
+
+base = "http://127.0.0.1:8000"
+chat = requests.post(base + "/api/v1/chat", json={
+    "message": "查询 ICRS 赤经56.75度、赤纬24.12度、半径5角分内最近100个Gaia DR3位置候选源。"
+}, timeout=240)
+chat.raise_for_status()
+snapshot = chat.json()  # 完整响应，不能使用模型前10行视图
+export = requests.post(base + "/api/v1/exports", json={
+    "schema_version": "1",
+    "snapshot": snapshot,
+    "plots": [
+        {"gaia_result_index": 0, "kind": "proper_motion"},
+        {"gaia_result_index": 0, "kind": "parallax_histogram"},
+        {"gaia_result_index": 0, "kind": "observed_cmd"},
+    ] if snapshot["gaia_results"] else [],
+}, timeout=60)
+export.raise_for_status()
+Path("astroagent-results.zip").write_bytes(export.content)
+```
+
+也可以把已保存的 V0.3 / V0.4 完整响应作为 `snapshot`，设置 `plots=[]` 仅导出数据。最多选择三张图，索引对应 `gaia_results`，同一索引和图种不能重复。
+
+ZIP 包含完整 `snapshot.json`、每次成功查询的固定列 CSV、所选 PNG、中文 `README.md` 和 `manifest.json`。清单记录查询/来源/单位/截断、运行版本、逐行绘图选择、跳图原因、CSV 文本处理位置及每个文件的 SHA-256。失败与无匹配保留原状态，不生成伪数据表；不足两行有效视差时跳过直方图，其他文件仍可下载。
+
+图表只描述本次交付样本：自行等比例、视差保留负值与零值、观测颜色—星等图的亮源在上。图表不作成员判定、消光/零点校正、年龄拟合或新的距离推断。CSV 用 UTF-8 BOM，危险文本和长 `source_id` 加前导单引号；精确原文、编号和空值以 JSON 为准。
+
+快照由客户端提交，包内固定标注来源真实性未经认证；哈希用于核对文件变化，不是来源签名。接口限制实际请求体 2 MiB、总查询 12 次、单次 Gaia 100 行、ADS 10 篇、包内总字节与 ZIP 各 16 MiB。每进程同时一次导出；不支持压缩请求体，不提供公共文件目录或长期链接。
+
+成功响应为 `application/zip`，固定文件名 `astroagent-results.zip`、`Cache-Control: no-store`。查询状态与清单的 `export_status` 独立；存在跳图时后者为 `partial`。
+
+| 导出异常 | HTTP / 错误码 |
+| --- | --- |
+| 非法 JSON、未知字段、坏索引或不一致快照 | 422 / `invalid_export_snapshot` |
+| 请求体或包体超限 | 413 / `export_too_large` |
+| 非 JSON 或非 identity 编码 | 415 / `unsupported_export_media_type` |
+| 进程内导出正忙 | 503 / `export_busy` |
+| 核心打包失败 | 500 / `export_failed` |
+
 ## 错误处理
 
 | 情况 | 接口行为 |
@@ -193,13 +243,15 @@ python scripts/run_tests.py --live   # 真实服务测试，会产生模型用�
 python scripts/run_tests.py --live-ads # 独立启用 ADS 与综合聊天测试
 python scripts/run_tests.py --live-gaia # 独立 Gaia、真实模型、名称衔接和三工具测试
 python scripts/verify_v03.py         # V0.3 十二项真实 HTTP 验收并停止临时服务
+python scripts/verify_v04.py         # 合成数据的真实 HTTP 导出验收，无密钥
+python scripts/verify_v04.py --live  # 真实查询→导出，会产生模型用量
 python scripts/verify_v02.py         # V0.2 九项真实 HTTP 验收并停止临时服务
 python scripts/measure_latency.py    # 测量已启动服务的延迟，默认 3 次真实查询
 ```
 
 Gaia 的 pytest 独立开关为 `ASTROAGENT_RUN_LIVE_GAIA=1`；ADS 使用 `ASTROAGENT_RUN_LIVE_ADS=1`。三个开关互不启用，默认归档入口全部关闭它们。显式启用后缺密钥或外部失败会报错，不能当作跳过。Gaia 直接查询测试无需密钥，模型及联合场景需已有相应配置。
 
-记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.3.0](docs/test-records/v0.3.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 配置为每次 push / PR 执行离线测试与 Ruff 检查；远程运行状态须在推送后查看。
+记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.4.0](docs/test-records/v0.4.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 配置为每次 push / PR 执行离线测试与 Ruff 检查；远程运行状态须在推送后查看。
 
 ## 目录
 
@@ -214,11 +266,15 @@ astroagent/
 │   ├── ads.py               # 真实 ADS 单页检索与字段验证
 │   ├── gaia.py              # 固定 DR3 同步 TAP、严格 VOTable 与资源边界
 │   ├── analysis.py          # 返回样本统计与条件式距离近似
+│   ├── export_schemas.py    # 严格快照与导出契约
+│   ├── exports.py           # 固定列 CSV、JSON、ZIP 与校验清单
+│   ├── plots.py             # 全交付样本选行、分箱与无 GUI PNG
 │   ├── schemas.py           # 请求、结果、来源与错误模型
 │   ├── errors.py            # 对外安全错误
 │   └── api/
 │       ├── __init__.py
 │       ├── chat.py          # POST /api/v1/chat
+│       ├── exports.py       # POST /api/v1/exports、接收字节上限
 │       └── health.py        # GET /health
 ├── tests/
 │   ├── test_health.py
@@ -232,6 +288,7 @@ astroagent/
 │   ├── test_analysis.py
 │   ├── test_gaia_chat.py
 │   ├── test_live_gaia.py
+│   ├── test_exports.py
 │   └── test_live.py
 ├── scripts/verify_live.py
 ├── .github/workflows/test.yml
@@ -239,6 +296,7 @@ astroagent/
 │   ├── PROJECT_PLAN_V0.1.md
 │   ├── PROJECT_PLAN_V0.2.md
 │   ├── PROJECT_PLAN_V0.3.md
+│   ├── PROJECT_PLAN_V0.4.md
 │   └── TESTING.md
 ├── .env.example
 ├── .gitignore

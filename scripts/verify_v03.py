@@ -144,7 +144,7 @@ def main():
                     "/openapi.json",
                     lambda s, b: (
                         s == 200
-                        and b["info"]["version"] == "0.3.0"
+                        and b["info"]["version"] == project_version()
                         and "gaia_results"
                         in b["components"]["schemas"]["ChatResponse"]["properties"]
                     ),

@@ -1,0 +1,297 @@
+{
+  "schema_version": "1",
+  "exporter_version": "0.4.0",
+  "git_commit": "ee70400cc96abff928483a356f59cbafd4530c4a",
+  "git_dirty": true,
+  "exported_at": "2026-10-28T07:14:40.625439+00:00",
+  "runtime": {
+    "python": "3.12.13",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  },
+  "plot_style_version": "1",
+  "provenance": "client_supplied_snapshot",
+  "source_authenticity_verified": false,
+  "snapshot_status": "partial",
+  "export_status": "partial",
+  "queries": [
+    {
+      "family": "simbad",
+      "result_index": 0,
+      "object_name": "M45",
+      "status": "error",
+      "source": {
+        "name": "SIMBAD",
+        "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+        "retrieved_at": "2026-10-28T07:13:51.795504Z"
+      },
+      "error": {
+        "code": "simbad_timeout",
+        "message": "SIMBAD 查询超时，请稍后重试。",
+        "retryable": true
+      },
+      "table_path": null,
+      "table_skipped_reason": "query_not_successful"
+    },
+    {
+      "family": "ads",
+      "result_index": 0,
+      "query": "bibcode:2016A&A...595A...2G",
+      "filters": [
+        "database:astronomy"
+      ],
+      "rows": 5,
+      "start": 0,
+      "sort": "relevance",
+      "status": "success",
+      "total_found": 1,
+      "returned_count": 1,
+      "has_more": false,
+      "source": {
+        "name": "ADS",
+        "url": "https://ui.adsabs.harvard.edu/search/q=bibcode%3A2016A%26A...595A...2G&fq=database%3Aastronomy&sort=score%20desc&start=0&p_=0",
+        "retrieved_at": "2026-10-28T07:14:33.613269Z"
+      },
+      "error": null,
+      "table_path": "tables/ads-000.csv",
+      "table_skipped_reason": null
+    },
+    {
+      "family": "gaia",
+      "result_index": 0,
+      "query": {
+        "mode": "source_id",
+        "source_id": "5853498713190525696",
+        "estimate_distance": false
+      },
+      "release": "Gaia DR3",
+      "table": "gaiadr3.gaia_source",
+      "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+      "adql": "SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 5853498713190525696",
+      "maxrec": 2,
+      "status": "success",
+      "returned_count": 1,
+      "total_found": null,
+      "has_more": false,
+      "truncated": false,
+      "archive_overflow": false,
+      "units": {
+        "source_id": "1",
+        "ra": "deg",
+        "dec": "deg",
+        "ref_epoch": "yr",
+        "ra_error": "mas",
+        "dec_error": "mas",
+        "parallax": "mas",
+        "parallax_error": "mas",
+        "pmra": "mas/yr",
+        "pmra_error": "mas/yr",
+        "pmdec": "mas/yr",
+        "pmdec_error": "mas/yr",
+        "phot_g_mean_mag": "mag",
+        "phot_bp_mean_mag": "mag",
+        "phot_rp_mean_mag": "mag",
+        "bp_rp": "mag",
+        "radial_velocity": "km/s",
+        "radial_velocity_error": "km/s",
+        "ruwe": "1",
+        "astrometric_params_solved": "1",
+        "duplicated_source": "1",
+        "separation_arcsec": "arcsec"
+      },
+      "source": {
+        "name": "Gaia",
+        "url": "https://gea.esac.esa.int/archive/",
+        "retrieved_at": "2026-10-28T07:14:31.866942Z"
+      },
+      "warnings": [
+        "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。"
+      ],
+      "error": null,
+      "table_path": "tables/gaia-000.csv",
+      "table_skipped_reason": null
+    }
+  ],
+  "plots": [
+    {
+      "gaia_result_index": 0,
+      "kind": "proper_motion",
+      "status": "success",
+      "reason": null,
+      "fields": [
+        "pmra",
+        "pmdec"
+      ],
+      "delivered_count": 1,
+      "valid_count": 1,
+      "skipped_count": 0,
+      "included_source_ids": [
+        "5853498713190525696"
+      ],
+      "excluded_rows": [],
+      "coordinates": [
+        [
+          -3781.741008265163,
+          769.4650146478623
+        ]
+      ],
+      "parameters": {
+        "pixels": [
+          1200,
+          900
+        ],
+        "dpi": 150,
+        "style_version": "1",
+        "font": "DejaVu Sans",
+        "returned_rows_only": true,
+        "truncated": false,
+        "archive_overflow": false,
+        "quality_filters": {},
+        "x_limits": [
+          -3970.8280586784213,
+          -3592.653957851905
+        ],
+        "y_limits": [
+          730.9917639154692,
+          807.9382653802554
+        ],
+        "aspect": "equal",
+        "y_inverted": false
+      },
+      "output_path": "figures/gaia-000-proper-motion.png"
+    },
+    {
+      "gaia_result_index": 0,
+      "kind": "parallax_histogram",
+      "status": "skipped",
+      "reason": "insufficient_data",
+      "fields": [
+        "parallax"
+      ],
+      "delivered_count": 1,
+      "valid_count": 1,
+      "skipped_count": 0,
+      "included_source_ids": [
+        "5853498713190525696"
+      ],
+      "excluded_rows": [],
+      "coordinates": [
+        [
+          768.0665391873573
+        ]
+      ],
+      "parameters": {
+        "pixels": [
+          1200,
+          900
+        ],
+        "dpi": 150,
+        "style_version": "1",
+        "font": "DejaVu Sans",
+        "returned_rows_only": true,
+        "truncated": false,
+        "archive_overflow": false,
+        "quality_filters": {}
+      },
+      "output_path": null
+    },
+    {
+      "gaia_result_index": 0,
+      "kind": "observed_cmd",
+      "status": "success",
+      "reason": null,
+      "fields": [
+        "bp_rp",
+        "phot_g_mean_mag"
+      ],
+      "delivered_count": 1,
+      "valid_count": 1,
+      "skipped_count": 0,
+      "included_source_ids": [
+        "5853498713190525696"
+      ],
+      "excluded_rows": [],
+      "coordinates": [
+        [
+          3.8045802116394043,
+          8.984748840332031
+        ]
+      ],
+      "parameters": {
+        "pixels": [
+          1200,
+          900
+        ],
+        "dpi": 150,
+        "style_version": "1",
+        "font": "DejaVu Sans",
+        "returned_rows_only": true,
+        "truncated": false,
+        "archive_overflow": false,
+        "quality_filters": {},
+        "x_limits": [
+          3.3045802116394043,
+          4.304580211639404
+        ],
+        "y_limits": [
+          8.484748840332031,
+          9.484748840332031
+        ],
+        "aspect": "auto",
+        "y_inverted": true
+      },
+      "output_path": "figures/gaia-000-observed-cmd.png"
+    }
+  ],
+  "csv_policy": {
+    "encoding": "utf-8-sig",
+    "delimiter": ",",
+    "line_ending": "CRLF",
+    "null": "empty_cell",
+    "text_formula_protection": "leading_apostrophe",
+    "gaia_source_id": "leading_apostrophe_exact_string_in_snapshot_json",
+    "change_row_numbering": "1-based data rows, excluding header",
+    "array_columns": "JSON strings",
+    "numeric_rounding": false
+  },
+  "csv_changes": [
+    {
+      "file": "tables/gaia-000.csv",
+      "data_row": 1,
+      "column": "source_id",
+      "reason": "source_id_precision"
+    }
+  ],
+  "files": [
+    {
+      "path": "snapshot.json",
+      "bytes": 28738,
+      "sha256": "c14b72cf99fcc4da2b0da064dd9c86ea3c4a1cbeca88f82227fde76926de7402"
+    },
+    {
+      "path": "tables/ads-000.csv",
+      "bytes": 13617,
+      "sha256": "f63dd0e09d03d0be11a978a0a4cdd89c55c3e7af6d8a0d41d843b5d10881b282"
+    },
+    {
+      "path": "tables/gaia-000.csv",
+      "bytes": 713,
+      "sha256": "37f91d60dd244d10914ec141baf0f14b91058d641a44488fe1577bb89895b4e0"
+    },
+    {
+      "path": "figures/gaia-000-proper-motion.png",
+      "bytes": 40439,
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84"
+    },
+    {
+      "path": "figures/gaia-000-observed-cmd.png",
+      "bytes": 37755,
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5505,
+      "sha256": "a2d2839dcc6866518695b67185e7ff2766d397efb80c4aecf1b53e26bc0f118e"
+    }
+  ]
+}
