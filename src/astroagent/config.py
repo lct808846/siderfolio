@@ -14,5 +14,6 @@ class Settings(BaseSettings):
     simbad_timeout_seconds: float = Field(default=20, gt=0, le=120)
     ads_api_token: SecretStr = SecretStr("")
     ads_timeout_seconds: float = Field(default=20, gt=0, le=120)
+    gaia_timeout_seconds: float = Field(default=20, gt=0, le=120)
     agent_max_rounds: int = Field(default=4, ge=1, le=8)
     agent_max_tool_calls: int = Field(default=6, ge=1, le=12)

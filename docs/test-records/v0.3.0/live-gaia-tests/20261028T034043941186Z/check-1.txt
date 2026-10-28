@@ -1,0 +1,331 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 7 items
+
+tests/test_live_gaia.py::test_live_gaia_exact_id PASSED                  [ 14%]
+tests/test_live_gaia.py::test_live_gaia_cone[False] PASSED               [ 28%]
+tests/test_live_gaia.py::test_live_gaia_cone[True] PASSED                [ 42%]
+tests/test_live_gaia.py::test_live_gaia_confirm_empty_condition PASSED   [ 57%]
+tests/test_live_gaia.py::test_live_gaia_model[source] PASSED             [ 71%]
+tests/test_live_gaia.py::test_live_gaia_model[name] Timeout (0:00:30)!
+Thread 0x000070c0 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1319 in do_handshake
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1041 in _create
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 455 in wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 477 in _ssl_wrap_socket_impl
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 433 in ssl_wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 975 in _ssl_wrap_socket_and_match_hostname
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 796 in connect
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 1106 in _validate_conn
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 464 in _make_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 788 in urlopen
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\adapters.py", line 696 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 784 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 651 in request
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 24 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 671 in get
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 104 in _get_endpoint
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 171 in _capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\utils\decorators.py", line 9 in wrapper
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 175 in capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astropy\utils\decorators.py", line 949 in __get__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\simbad\core.py", line 160 in timeout
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 73 in query
+  File "D:\project\astroagent\src\astroagent\agent.py", line 260 in chat
+  File "D:\project\astroagent\src\astroagent\api\chat.py", line 45 in chat
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x000003a4 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 774 in _poll
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 445 in select
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 1961 in _run_once
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 645 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 322 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 678 in run_until_complete
+  File "E:\miniconda3\envs\agent\Lib\asyncio\runners.py", line 118 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2481 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_core\_eventloop.py", line 83 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 536 in run_blocking_portal
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1012 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00006c74 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 355 in wait
+  File "E:\miniconda3\envs\agent\Lib\concurrent\futures\_base.py", line 451 in result
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 338 in call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 351 in handle_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1076 in _send_single_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1043 in _send_handling_redirects
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1008 in _send_handling_auth
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 980 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 797 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 455 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1204 in post
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 556 in post
+  File "D:\project\astroagent\tests\test_live_gaia.py", line 107 in test_live_gaia_model
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+FAILED               [ 85%]
+tests/test_live_gaia.py::test_live_gaia_model[three-tools] Timeout (0:00:30)!
+Thread 0x00007e50 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1319 in do_handshake
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1041 in _create
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 455 in wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 477 in _ssl_wrap_socket_impl
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 433 in ssl_wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 975 in _ssl_wrap_socket_and_match_hostname
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 796 in connect
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 1106 in _validate_conn
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 464 in _make_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 788 in urlopen
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\adapters.py", line 696 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 784 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 651 in request
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 24 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 671 in get
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 104 in _get_endpoint
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 171 in _capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\utils\decorators.py", line 9 in wrapper
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 175 in capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astropy\utils\decorators.py", line 949 in __get__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\simbad\core.py", line 160 in timeout
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 73 in query
+  File "D:\project\astroagent\src\astroagent\agent.py", line 260 in chat
+  File "D:\project\astroagent\src\astroagent\api\chat.py", line 45 in chat
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x000079dc (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 774 in _poll
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 445 in select
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 1961 in _run_once
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 645 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 322 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 678 in run_until_complete
+  File "E:\miniconda3\envs\agent\Lib\asyncio\runners.py", line 118 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2481 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_core\_eventloop.py", line 83 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 536 in run_blocking_portal
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1012 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00006c74 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 355 in wait
+  File "E:\miniconda3\envs\agent\Lib\concurrent\futures\_base.py", line 451 in result
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 338 in call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 351 in handle_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1076 in _send_single_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1043 in _send_handling_redirects
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1008 in _send_handling_auth
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 980 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 797 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 455 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx2\_client.py", line 1204 in post
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 556 in post
+  File "D:\project\astroagent\tests\test_live_gaia.py", line 107 in test_live_gaia_model
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+FAILED        [100%]
+
+================================== FAILURES ===================================
+_________________________ test_live_gaia_model[name] __________________________
+
+kind = 'name'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+>       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'error', 'answer': '**查询未完成：SIMBAD 两次超时，因此没有进行 Gaia 查询。**
+E         
+E         - 第 1 次：`M45` → `simbad_timeout`（可重试）
+E         - 第 2 次：`M45` → `simbad_timeout`（可重试）
+E         - 来源链接（两次均指向该页，但未取回数据）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML
+E         
+E         按流程要求，Gaia 圆锥查询必须使用本次 SIMBAD 成功返回的 `ra_deg/dec_deg` 作为中心；SIMBAD 失败、没有坐标，所以我没有调用 `query_gaia`，也没有用记忆中的坐标代替。因此本次**没有**任何 Gaia DR3 源、视差、自行或测光数据可报告，也没有视场样本可总结。
+E         
+E         关于你要求说明的限制，先给出原则性说明（不涉及任何具体数值）：
+E         
+E         - **位置候选 ≠ 确认匹配**：圆锥查询返回的只是位于该天区内的源，最近或唯一一行都不等于已确认对应某个天体。
+E         - **视场样本 ≠ 星团成员**：5 角分内的源不能认定为 M45 成员，也不能据此推断星团距离、年龄或质量；成员判定需要自行、视差、测光等多维分析。
+E         - **参考历元**：Gaia DR3 的位置对应其参考历元（通常为 J2016.0），与 SIMBAD 坐标的历元可能不同；本次未提供历元信息，也未做自行传播，跨历元的位置差异不能忽略。
+E         
+E         **下一步**：可以稍后重试 SIMBAD（或你提供 M45 的 ICRS 中心坐标与半径，我直接查 Gaia）。需要我现在再试一次 SIMBAD 吗？', 'results': [{'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML', 'retrieved_at': '2026-10-28T03:41:12.231173Z'}, 'data': None, ...}, {'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML', 'retrieved_at': '2026-10-28T03:41:53.336766Z'}, 'data': None, ...}], 'literature_results': [], ...}
+E       assert (200 == 200 and 'error' == 'success'
+E        +  where 200 = <Response [200 OK]>.status_code
+E         
+E         - success
+E         + error)
+
+tests\test_live_gaia.py:110: AssertionError
+______________________ test_live_gaia_model[three-tools] ______________________
+
+kind = 'three-tools'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+>       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'partial', 'answer': '三项查询结果如下，来源彼此独立：
+E         
+E         ## 1. SIMBAD：M45 坐标 —— 查询失败
+E         - 查询名称：M45，来源链接：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45
+E         - 返回错误：`simbad_timeout`（SIMBAD 查询超时，可重试）。
+E         - 因此本次**没有获得任何 M45 坐标数据**，我不以记忆中的数值替代。需要的话可稍后重试。
+E         
+E         ## 2. Gaia DR3：source_id 5853498713190525696 —— 成功
+E         发布版 Gaia DR3，表 `gaiadr3.gaia_source`，按 source_id 精确查询，返回 1 行，无截断。参考历元 2016.0。
+E         
+E         | 字段 | 值 | 单位 |
+E         |---|---|---|
+E         | RA | 217.39232147200883 | deg |
+E         | Dec | −62.67607511676666 | deg |
+E         | RA 误差 / Dec 误差 | 0.0240 / 0.0344 | mas |
+E         | 视差 | 768.0665 ± 0.0499 | mas |
+E         | pmra（含 cos δ） | −3781.741 ± 0.031 | mas/yr |
+E         | pmdec | 769.465 ± 0.051 | mas/yr |
+E         | G / BP / RP | 8.985 / 11.373 / 7.569 | mag |
+E         | BP−RP | 3.805 | mag |
+E         | 径向速度 | −21.94 ± 0.22 | km/s |
+E         | RUWE | 0.971 | — |
+E         | astrometric_params_solved | 95 | — |
+E         | duplicated_source | false | — |
+E         
+E         - 未请求距离估算（estimate_distance=false），故未生成距离；视差本身不是距离。
+E         - 来源：https://gea.esac.esa.int/archive/
+E         - 说明：该行仅为按编号取回的单个源，与 M45 无任何关联假设。
+E         
+E         ## 3. ADS：bibcode:2016A&A...595A...2G —— 成功
+E         - 实际 query：`bibcode:2016A&A...595A...2G`；范围 database:astronomy；sort=relevance；本页 1 条；total_found=1。
+E         - 标题：Gaia Data Release 1. Summary of the astrometric, photometric, and survey properties
+E         - 作者：Gaia Collaboration, Brown, A. G. A., Vallenari, A., Prusti, T., de Bruijne, J. H. J. 等（作者列表已截断）
+E         - 年份/期刊：2016，Astronomy and Astrophysics
+E         - DOI：10.1051/0004-6361/201629512；10.48550/arXiv.1609.04172
+E         - 被引次数：2085（查询时记录，不代表质量）
+E         - 链接：https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...2G/abstract
+E         - 根据摘要（摘要已截断，未读全文）：该文总结 Gaia 首次数据发布 DR1，包含约 20.7 等以上逾 10 亿源的天测与测光；主要天测集（TGAS，约 200 万颗与 Hipparcos/Tycho-2 共有的最亮恒星）给出位置、视差与自行，典型不确定度约 0.3 mas（位置/视差）与约 1 mas/yr（自行），视差误差需另加 0.3 mas 系统项；次级集给出 11 亿源的位置（典型 10 mas）；测光集为 G 波段平均星等，另含南黄极附近 3000 颗造父变星与天琴座 RR 型星的光变曲线。
+E         
+E         **独立性说明**：以上三项互不关联——Gaia 源未被认定为 M45 成员，该 ADS 论文（Gaia DR1 概览）也未被认定为研究该 Gaia 源或 M45。', 'results': [{'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML', 'retrieved_at': '2026-10-28T03:42:37.560081Z'}, 'data': None, ...}], 'literature_results': [{'query': 'bibcode:2016A&A...595A...2G', 'filters': ['database:astronomy'], 'rows': 5, 'start': 0, ...}], ...}
+E       assert (200 == 200 and 'partial' == 'success'
+E        +  where 200 = <Response [200 OK]>.status_code
+E         
+E         - success
+E         + partial)
+
+tests\test_live_gaia.py:110: AssertionError
+- generated xml file: D:\project\astroagent\docs\test-records\v0.3.0\live-gaia-tests\20261028T034043941186Z\pytest.xml -
+=========================== short test summary info ===========================
+FAILED tests/test_live_gaia.py::test_live_gaia_model[name] - AssertionError: ...
+FAILED tests/test_live_gaia.py::test_live_gaia_model[three-tools] - Assertion...
+=================== 2 failed, 5 passed in 161.37s (0:02:41) ===================

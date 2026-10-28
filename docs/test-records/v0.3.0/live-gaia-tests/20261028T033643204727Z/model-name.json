@@ -1,0 +1,44 @@
+{
+  "message": "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。",
+  "http_status": 200,
+  "body": {
+    "status": "error",
+    "answer": "SIMBAD 查询两次均超时，因此本次无法获得 M45 的坐标，Gaia 圆锥查询链路按规则停止。\n\n## 结果\n\n**1. SIMBAD 查询 M45：失败**\n- 两次调用均返回 `simbad_timeout`（SIMBAD 查询超时，可重试），`data` 为空。\n- 来源链接（查询入口，未取得数据）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML\n\n**2. Gaia DR3 圆锥查询：未执行**\n- 按流程要求，圆锥中心必须使用本次 SIMBAD 成功返回的 `ra_deg/dec_deg`。SIMBAD 未返回坐标，我不能用记忆中的坐标代替，因此没有发起 Gaia 查询，也没有任何 Gaia 测量值可报告。\n\n## 关于你要求说明的限制（概念性说明，非查询结果）\n\n- **位置候选 ≠ 确认匹配**：圆锥视场内的源只是位置候选；即使某个源离中心最近或唯一，也不能据此认定它就是 M45 的某个成员或中心天体。\n- **视场样本 ≠ 星团成员**：5 角分内的 Gaia 源是空间样本，不能据此断言成员身份，也不能据此推断星团距离、年龄或质量；成员判定需要自行运动、视差、径向速度等额外依据。\n- **参考历元**：Gaia DR3 的坐标对应其参考历元（J2016.0），与 SIMBAD 坐标的历元可能不同；本次未提供历元信息，也未做自行传播，跨历元比较需谨慎。\n- **距离**：Gaia 视差换算的近似距离是程序派生量，非直接测量，未校正视差零点与消光；本次未产生任何距离值。\n\n## 建议\n\n可以稍后重试（超时属可重试错误），或直接提供 M45 的 ICRS 中心坐标（度）与半径，我再用 Gaia 圆锥查询；也可提供 Gaia DR3 source_id 做单源查询。需要我现在再试一次 SIMBAD 吗？",
+    "results": [
+      {
+        "object_name": "M45",
+        "status": "error",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-28T03:37:12.194911Z"
+        },
+        "data": null,
+        "error": {
+          "code": "simbad_timeout",
+          "message": "SIMBAD 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      },
+      {
+        "object_name": "M45",
+        "status": "error",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-28T03:37:53.384802Z"
+        },
+        "data": null,
+        "error": {
+          "code": "simbad_timeout",
+          "message": "SIMBAD 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      }
+    ],
+    "literature_results": [],
+    "gaia_results": [],
+    "sources": [],
+    "warnings": []
+  }
+}

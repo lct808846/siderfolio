@@ -1,0 +1,229 @@
+{
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.3.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "0373ec8974ed81b004a3307a4c4a0181c6322358",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M README.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M scripts/record_utils.py\n M scripts/run_tests.py\n M scripts/verify_v02.py\n M src/astroagent/__init__.py\n M src/astroagent/agent.py\n M src/astroagent/api/chat.py\n M src/astroagent/config.py\n M src/astroagent/schemas.py\n M tests/test_config.py\n M tests/test_literature_chat.py\n?? docs/PROJECT_PLAN_V0.3.md\n?? docs/releases/v0.3.0.md\n?? docs/test-records/v0.3.0/\n?? scripts/verify_v03.py\n?? src/astroagent/analysis.py\n?? src/astroagent/gaia.py\n?? tests/gaia_fixtures.py\n?? tests/test_analysis.py\n?? tests/test_gaia.py\n?? tests/test_gaia_chat.py\n?? tests/test_live_gaia.py",
+  "credential_matches": [],
+  "broken_document_links": [],
+  "files": [
+    {
+      "path": ".env.example",
+      "bytes": 534,
+      "sha256": "1cfb9915d30652e3cadf86a0b3586748b11b72935acfdc32b6b071ab38b19612"
+    },
+    {
+      "path": "README.md",
+      "bytes": 14091,
+      "sha256": "510d311f0343a65444abb4897d657562a0f86535b5e00f2342a18fe6618d5bcf"
+    },
+    {
+      "path": "docs/PROJECT_PLAN_V0.3.md",
+      "bytes": 31404,
+      "sha256": "dea991efcf6ae44ec7272e9755477e09f1e14d3c6315345ddf08f64feced1806"
+    },
+    {
+      "path": "docs/TESTING.md",
+      "bytes": 10666,
+      "sha256": "e2c7d29d88092c427f97cb10b4c6165eef3b15b2e8efbff21fa82acee2254609"
+    },
+    {
+      "path": "docs/releases/v0.3.0.md",
+      "bytes": 3310,
+      "sha256": "b02d986ac84cde49e7eeb38b2f69af1d2322689add23e0604986d8796de3fa6a"
+    },
+    {
+      "path": "docs/test-records/README.md",
+      "bytes": 1387,
+      "sha256": "18f64003542a8304a18cdd90b066690e9465108afb6c598cc3de4f3c905558a3"
+    },
+    {
+      "path": "docs/test-records/v0.3.0/README.md",
+      "bytes": 3975,
+      "sha256": "07ceeca8c1bfacfa6a739d89db0108c9746b7628338d5d3b58982681b481b9b5"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 1022,
+      "sha256": "be4aef0db599aec12e5d5563c1314a71f8036ac910bdce97beb3d6c69ab9fda2"
+    },
+    {
+      "path": "scripts/measure_latency.py",
+      "bytes": 3398,
+      "sha256": "18c966974b6b41698a798f6047264714e6c7b9c161bd18d62ff658dbd96b79ed"
+    },
+    {
+      "path": "scripts/record_utils.py",
+      "bytes": 2509,
+      "sha256": "fa52da02a6df0fa60107d4ac4f2ac17da3ca10689f89f0d07be2cfebeb124a52"
+    },
+    {
+      "path": "scripts/run_tests.py",
+      "bytes": 3693,
+      "sha256": "0cfdd62a35b1b791c11a4fa10f3e6adb5d92a6a91d2027ffc283ead89b4d733c"
+    },
+    {
+      "path": "scripts/verify_live.py",
+      "bytes": 5213,
+      "sha256": "4ab72aea809c0ad709209773f01665f9e9a0696ad7e45fe3552e5eb77bf590e8"
+    },
+    {
+      "path": "scripts/verify_v02.py",
+      "bytes": 8936,
+      "sha256": "f2be35c70b512df1c7f282d89fdddd6a5a8de2606ae7f2208a8b46cee76a6b3f"
+    },
+    {
+      "path": "scripts/verify_v03.py",
+      "bytes": 13546,
+      "sha256": "3484dc28e492c5dfdba73cf0446890e94f7ad203be5c705cbc0029755f7c54c5"
+    },
+    {
+      "path": "src/astroagent/__init__.py",
+      "bytes": 56,
+      "sha256": "5d2bd73c6f8989057530445954ab21000309931e5a198e71c5520c8312293b3a"
+    },
+    {
+      "path": "src/astroagent/ads.py",
+      "bytes": 7493,
+      "sha256": "a5936badb93dde534376768e469ba2a8d2b4f4b3a989db941bd4c065b6600bd4"
+    },
+    {
+      "path": "src/astroagent/agent.py",
+      "bytes": 15849,
+      "sha256": "b3e76e5fd127af9b91b579a9d56c1e5f27481821ce4dee4079fca621f5f4dd2b"
+    },
+    {
+      "path": "src/astroagent/analysis.py",
+      "bytes": 3294,
+      "sha256": "e0c702db9d797f0e169e6051b176f841d25ad018604a4480471b5a02b55f6b10"
+    },
+    {
+      "path": "src/astroagent/api/__init__.py",
+      "bytes": 27,
+      "sha256": "d6669e783fe6a0c3a063f1a8da02dce3f071b1f929575696bc43e2bb1a5012f2"
+    },
+    {
+      "path": "src/astroagent/api/chat.py",
+      "bytes": 1628,
+      "sha256": "ce845700eb32c671bc7d91d8f6857a3b0c4b874274eee74592364b6325922047"
+    },
+    {
+      "path": "src/astroagent/api/health.py",
+      "bytes": 231,
+      "sha256": "cecd358e5925a82508c2f00197e5485453ba1614e82ee4bd380986f9eab3ce91"
+    },
+    {
+      "path": "src/astroagent/config.py",
+      "bytes": 947,
+      "sha256": "82aaa2ba672ccc5bef3379e5fec56f93726539ad2d68f9bc928ed0e814dc9c6a"
+    },
+    {
+      "path": "src/astroagent/errors.py",
+      "bytes": 413,
+      "sha256": "6f7966af2c4d471bac111f695fd9ce7cbe4e4c1e2caf911758c16a3789c1ddde"
+    },
+    {
+      "path": "src/astroagent/gaia.py",
+      "bytes": 16452,
+      "sha256": "d1d18d4b017ad6acacba012b1a77712fbc07240b331eba725c6caa0c2f865d3f"
+    },
+    {
+      "path": "src/astroagent/main.py",
+      "bytes": 629,
+      "sha256": "f054299de90db5f1b1ac5948095327726468094e60d9a541fba7a05b211be312"
+    },
+    {
+      "path": "src/astroagent/schemas.py",
+      "bytes": 9345,
+      "sha256": "5f086612ba17283de1f961dc19ed3fe541f13a36b38ffe3d8fbffeecc57b05d0"
+    },
+    {
+      "path": "src/astroagent/simbad.py",
+      "bytes": 4154,
+      "sha256": "4f7f9a41a39015fc2146a99f9547d84a5fdeae0fedc4fc38a99dde717012285d"
+    },
+    {
+      "path": "tests/conftest.py",
+      "bytes": 525,
+      "sha256": "995f6c7e3445df6f29ecde25f8f9be9356491d5d46fe5a75da93c19e43dec118"
+    },
+    {
+      "path": "tests/gaia_fixtures.py",
+      "bytes": 3610,
+      "sha256": "6f3b8442d201e7e2c09e8dab3a28366307778b66bdfee418f45b0068b856a109"
+    },
+    {
+      "path": "tests/test_ads.py",
+      "bytes": 10034,
+      "sha256": "eb43d19f69a1b39951726667881b14cb81f830d76f3a165bee46251af0863eea"
+    },
+    {
+      "path": "tests/test_analysis.py",
+      "bytes": 3902,
+      "sha256": "46aff5fe9dfadae31c35817732d488f0f53070ca40d198feda78816f83a3b3a2"
+    },
+    {
+      "path": "tests/test_chat.py",
+      "bytes": 9337,
+      "sha256": "2fa6a49b1bcf2f7c858a117b2f7566993109eb7b65f51a3f6d2b6940a2a1183e"
+    },
+    {
+      "path": "tests/test_config.py",
+      "bytes": 1444,
+      "sha256": "132a9c38539d1657f7fcd0130bc43239325a8eef4f96dc20a62794317cf85b5c"
+    },
+    {
+      "path": "tests/test_gaia.py",
+      "bytes": 16063,
+      "sha256": "0ab45ae083981f61ac93912080906635d14b147cecec3625abd24da8210b25f9"
+    },
+    {
+      "path": "tests/test_gaia_chat.py",
+      "bytes": 9571,
+      "sha256": "b50595ac147a6321c4c5fd81b338f170ab883b425da73937f5bf3d3c35d9faae"
+    },
+    {
+      "path": "tests/test_health.py",
+      "bytes": 1041,
+      "sha256": "38296ededb8337fb86e47041c25393de8b2347d8b80dca9d307793e6b5c57ead"
+    },
+    {
+      "path": "tests/test_literature_chat.py",
+      "bytes": 9760,
+      "sha256": "4da35c105ebda4c99426cd28a6140e29299e3e7a3b8a981674c9843357463fb2"
+    },
+    {
+      "path": "tests/test_live.py",
+      "bytes": 1269,
+      "sha256": "5571c3dafc6937dee8ccf7b1e77ce723c574ee207ecdb8424396f956dc210b28"
+    },
+    {
+      "path": "tests/test_live_ads.py",
+      "bytes": 5339,
+      "sha256": "35af730d15a59a231518b1f01f5d1ec47ecc31700fdc83aae450bf00d0a59360"
+    },
+    {
+      "path": "tests/test_live_gaia.py",
+      "bytes": 6112,
+      "sha256": "c4f68334473f179ca4fa01607ebe3301a07b5e91678915d628f8022fee2ff5a7"
+    },
+    {
+      "path": "tests/test_simbad.py",
+      "bytes": 4342,
+      "sha256": "a154d3089cb97b7f4a823446fd2552209e3efbadf4b47f938e8828987c4ec2f8"
+    }
+  ],
+  "outcome": "passed"
+}

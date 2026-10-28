@@ -7,33 +7,55 @@ import sys
 import time
 from datetime import UTC, datetime
 
-from record_utils import ROOT, create_record_directory, project_version, write_report
+from record_utils import (
+    ROOT,
+    create_record_directory,
+    project_version,
+    runtime_metadata,
+    write_report,
+)
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--live", action="store_true", help="访问真实 SIMBAD/模型，会产生模型用量")
     mode.add_argument(
         "--live-ads", action="store_true", help="访问真实 ADS/综合查询，会产生模型用量"
     )
+    mode.add_argument("--live-gaia", action="store_true", help="访问真实 Gaia/三工具与模型验收")
     args = parser.parse_args()
-    live = args.live or args.live_ads
-    kind = "live-ads-tests" if args.live_ads else ("live-tests" if live else "offline-tests")
+    live = args.live or args.live_ads or args.live_gaia
+    kind = (
+        "live-gaia-tests"
+        if args.live_gaia
+        else "live-ads-tests"
+        if args.live_ads
+        else "live-tests"
+        if live
+        else "offline-tests"
+    )
     output = create_record_directory(kind)
     environment = os.environ.copy()
+    environment["PYTHONIOENCODING"] = "utf-8"
     environment["ASTROAGENT_RUN_LIVE"] = "1" if args.live else "0"
     environment["ASTROAGENT_RUN_LIVE_ADS"] = "1" if args.live_ads else "0"
+    environment["ASTROAGENT_RUN_LIVE_GAIA"] = "1" if args.live_gaia else "0"
+    environment["ASTROAGENT_RECORD_DIR"] = str(output)
+    live_file = (
+        "tests/test_live_gaia.py"
+        if args.live_gaia
+        else "tests/test_live_ads.py"
+        if args.live_ads
+        else "tests/test_live.py"
+    )
     commands = [
         [
             sys.executable,
             "-m",
             "pytest",
-            *(
-                ["tests/test_live_ads.py" if args.live_ads else "tests/test_live.py", "-v"]
-                if live
-                else ["-q"]
-            ),
+            *([live_file, "-v"] if live else ["-q"]),
             f"--junitxml={output / 'pytest.xml'}",
             "-o",
             "faulthandler_timeout=30",
@@ -51,6 +73,7 @@ def main():
         "application_version": project_version(),
         "started_at": datetime.now(UTC).isoformat(),
         "kind": kind,
+        **runtime_metadata(),
         "checks": [],
     }
     for index, command in enumerate(commands):

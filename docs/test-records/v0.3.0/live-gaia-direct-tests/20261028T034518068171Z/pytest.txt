@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 7 items / 3 deselected / 4 selected
+
+tests/test_live_gaia.py::test_live_gaia_exact_id PASSED                  [ 25%]
+tests/test_live_gaia.py::test_live_gaia_cone[False] PASSED               [ 50%]
+tests/test_live_gaia.py::test_live_gaia_cone[True] PASSED                [ 75%]
+tests/test_live_gaia.py::test_live_gaia_confirm_empty_condition PASSED   [100%]
+
+- generated xml file: D:\project\astroagent\docs\test-records\v0.3.0\live-gaia-direct-tests\20261028T034518068171Z\pytest.xml -
+====================== 4 passed, 3 deselected in 12.91s =======================

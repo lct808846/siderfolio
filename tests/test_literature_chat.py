@@ -226,10 +226,10 @@ def test_ads_settings_priority_and_secret_repr(tmp_path, monkeypatch):
 def test_openapi_additive_schema_and_invalid_ads_config(monkeypatch):
     with TestClient(app) as client:
         schema = client.get("/openapi.json").json()
-        assert schema["info"]["version"] == "0.2.0"
+        assert schema["info"]["version"] == "0.3.0"
         components = schema["components"]["schemas"]
         assert "literature_results" in components["ChatResponse"]["properties"]
-        assert components["Source"]["properties"]["name"]["enum"] == ["SIMBAD", "ADS"]
+        assert components["Source"]["properties"]["name"]["enum"] == ["SIMBAD", "ADS", "Gaia"]
         monkeypatch.setenv("ADS_TIMEOUT_SECONDS", "private-invalid")
         response = client.post("/api/v1/chat", json={"message": "查询"})
         assert response.status_code == 503

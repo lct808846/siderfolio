@@ -9,6 +9,7 @@ from astroagent.ads import AdsService
 from astroagent.agent import AstroAgent
 from astroagent.config import Settings
 from astroagent.errors import ServiceError
+from astroagent.gaia import GaiaService
 from astroagent.schemas import ChatRequest, ChatResponse, ErrorResponse
 from astroagent.simbad import SimbadService
 
@@ -25,6 +26,7 @@ def get_agent() -> AstroAgent:
         SimbadService(settings.simbad_timeout_seconds),
         settings,
         AdsService(settings.ads_api_token, settings.ads_timeout_seconds),
+        GaiaService(settings.gaia_timeout_seconds),
     )
 
 
@@ -34,7 +36,8 @@ def get_agent() -> AstroAgent:
     responses={code: {"model": ErrorResponse} for code in (502, 503, 504)},
     summary="自然语言天文查询",
     description=(
-        "单次无状态 SIMBAD 与 ADS 查询。天体结果在 results，文献结果在 literature_results；"
+        "单次无状态 SIMBAD、ADS 与 Gaia DR3 查询。天体结果在 results，"
+        "文献结果在 literature_results，Gaia 数据与程序统计在 gaia_results；"
         "数据库失败也逐次保留，status 可为 partial 或 error。"
     ),
 )

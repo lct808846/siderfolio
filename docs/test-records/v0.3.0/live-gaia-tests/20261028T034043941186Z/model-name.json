@@ -1,0 +1,44 @@
+{
+  "message": "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。",
+  "http_status": 200,
+  "body": {
+    "status": "error",
+    "answer": "**查询未完成：SIMBAD 两次超时，因此没有进行 Gaia 查询。**\n\n- 第 1 次：`M45` → `simbad_timeout`（可重试）\n- 第 2 次：`M45` → `simbad_timeout`（可重试）\n- 来源链接（两次均指向该页，但未取回数据）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML\n\n按流程要求，Gaia 圆锥查询必须使用本次 SIMBAD 成功返回的 `ra_deg/dec_deg` 作为中心；SIMBAD 失败、没有坐标，所以我没有调用 `query_gaia`，也没有用记忆中的坐标代替。因此本次**没有**任何 Gaia DR3 源、视差、自行或测光数据可报告，也没有视场样本可总结。\n\n关于你要求说明的限制，先给出原则性说明（不涉及任何具体数值）：\n\n- **位置候选 ≠ 确认匹配**：圆锥查询返回的只是位于该天区内的源，最近或唯一一行都不等于已确认对应某个天体。\n- **视场样本 ≠ 星团成员**：5 角分内的源不能认定为 M45 成员，也不能据此推断星团距离、年龄或质量；成员判定需要自行、视差、测光等多维分析。\n- **参考历元**：Gaia DR3 的位置对应其参考历元（通常为 J2016.0），与 SIMBAD 坐标的历元可能不同；本次未提供历元信息，也未做自行传播，跨历元的位置差异不能忽略。\n\n**下一步**：可以稍后重试 SIMBAD（或你提供 M45 的 ICRS 中心坐标与半径，我直接查 Gaia）。需要我现在再试一次 SIMBAD 吗？",
+    "results": [
+      {
+        "object_name": "M45",
+        "status": "error",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-28T03:41:12.231173Z"
+        },
+        "data": null,
+        "error": {
+          "code": "simbad_timeout",
+          "message": "SIMBAD 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      },
+      {
+        "object_name": "M45",
+        "status": "error",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-28T03:41:53.336766Z"
+        },
+        "data": null,
+        "error": {
+          "code": "simbad_timeout",
+          "message": "SIMBAD 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      }
+    ],
+    "literature_results": [],
+    "gaia_results": [],
+    "sources": [],
+    "warnings": []
+  }
+}

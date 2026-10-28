@@ -117,7 +117,7 @@ def main():
                     "/openapi.json",
                     lambda s, b: (
                         s == 200
-                        and b["info"]["version"] == "0.2.0"
+                        and b["info"]["version"] == project_version()
                         and "literature_results"
                         in b["components"]["schemas"]["ChatResponse"]["properties"]
                     ),

@@ -1,0 +1,2 @@
+# Preserve the exact bytes of immutable test evidence, including raw XML and transcripts.
+docs/test-records/** -text

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="7" time="162.344" timestamp="2026-10-28T12:44:43.519613+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_live_gaia" name="test_live_gaia_exact_id" time="3.385" /><testcase classname="tests.test_live_gaia" name="test_live_gaia_cone[False]" time="2.185" /><testcase classname="tests.test_live_gaia" name="test_live_gaia_cone[True]" time="3.271" /><testcase classname="tests.test_live_gaia" name="test_live_gaia_confirm_empty_condition" time="4.311" /><testcase classname="tests.test_live_gaia" name="test_live_gaia_model[source]" time="8.398" /><testcase classname="tests.test_live_gaia" name="test_live_gaia_model[name]" time="84.898"><failure message="AssertionError: {'status': 'error', 'answer': '**查询未完成：SIMBAD 两次超时，因此没有进行 Gaia 查询。**&#10;  &#10;  ## 已执行的操作&#10;  | 步骤 | 工具 | 结果 |&#10;  |---|---|---|&#10;  | 1 | `query_simbad(&quot;M45&quot;)` | 失败：`simbad_timeout`（查询超时，可重试） |&#10;  | 1（重试） | `query_simbad(&quot;M45&quot;)` | 失败：`simbad_timeout` |&#10;  | 2 | `query_gaia`（圆锥查询） | **未执行** |&#10;  &#10;  ## 为什么没有继续查 Gaia&#10;  按流程，Gaia 圆锥查询的中心坐标必须来自本次 SIMBAD 成功返回的 `ra_deg/dec_deg`。SIMBAD 两次都失败，没有返回任何坐标，因此我无法获得可用的中心点。我不会用记忆中的 M45 坐标代替数据库结果，也不会自行猜测检索半径或中心，所以这一步按规则停止。&#10;  &#10;  ## 关于你要求的几点说明（概念性，非查询结果）&#10;  - **位置候选**：圆锥查询返回的源只是“位于该视场内的 Gaia DR3 记录”，属于位置候选，不等于已确认的物理成员。&#10;  - **成员判定**：需要自行运动、视差、径向速度、测光等多维信息，并结合星团成员判据；仅凭空间接近不能断言成员关系，也不能据此推断星团距离、年龄或质量。&#10;  - **参考历元**：Gaia DR3 的 `ra/dec` 是 J2016.0 历元的位置，与 SIMBAD 的 ICRS 坐标（通常为 J2000 历元）存在历元差异；本次未做自行传播，若后续查询需注意这一差异。&#10;  &#10;  ## 来源&#10;  - SIMBAD 查询页（本次失败）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML&#10;  &#10;  ## 建议&#10;  可以稍后重试（SIMBAD 超时通常是临时性的）。如果你愿意，也可以直接提供 M45 中心的 ICRS 赤经/赤纬（度）和检索半径，我就能直接进行 Gaia DR3 圆锥查询；或者你确认后我再重试 SIMBAD。', 'results': [{'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-28T04:45:11.697271Z'}, 'data': None, ...}, {'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-28T04:45:52.927350Z'}, 'data': None, ...}], 'literature_results': [], ...}&#10;assert (200 == 200 and 'error' == 'success'&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code&#10;  &#10;  - success&#10;  + error)">kind = 'name'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&amp;A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+&gt;       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'error', 'answer': '**查询未完成：SIMBAD 两次超时，因此没有进行 Gaia 查询。**
+E         
+E         ## 已执行的操作
+E         | 步骤 | 工具 | 结果 |
+E         |---|---|---|
+E         | 1 | `query_simbad("M45")` | 失败：`simbad_timeout`（查询超时，可重试） |
+E         | 1（重试） | `query_simbad("M45")` | 失败：`simbad_timeout` |
+E         | 2 | `query_gaia`（圆锥查询） | **未执行** |
+E         
+E         ## 为什么没有继续查 Gaia
+E         按流程，Gaia 圆锥查询的中心坐标必须来自本次 SIMBAD 成功返回的 `ra_deg/dec_deg`。SIMBAD 两次都失败，没有返回任何坐标，因此我无法获得可用的中心点。我不会用记忆中的 M45 坐标代替数据库结果，也不会自行猜测检索半径或中心，所以这一步按规则停止。
+E         
+E         ## 关于你要求的几点说明（概念性，非查询结果）
+E         - **位置候选**：圆锥查询返回的源只是“位于该视场内的 Gaia DR3 记录”，属于位置候选，不等于已确认的物理成员。
+E         - **成员判定**：需要自行运动、视差、径向速度、测光等多维信息，并结合星团成员判据；仅凭空间接近不能断言成员关系，也不能据此推断星团距离、年龄或质量。
+E         - **参考历元**：Gaia DR3 的 `ra/dec` 是 J2016.0 历元的位置，与 SIMBAD 的 ICRS 坐标（通常为 J2000 历元）存在历元差异；本次未做自行传播，若后续查询需注意这一差异。
+E         
+E         ## 来源
+E         - SIMBAD 查询页（本次失败）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML
+E         
+E         ## 建议
+E         可以稍后重试（SIMBAD 超时通常是临时性的）。如果你愿意，也可以直接提供 M45 中心的 ICRS 赤经/赤纬（度）和检索半径，我就能直接进行 Gaia DR3 圆锥查询；或者你确认后我再重试 SIMBAD。', 'results': [{'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-28T04:45:11.697271Z'}, 'data': None, ...}, {'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-28T04:45:52.927350Z'}, 'data': None, ...}], 'literature_results': [], ...}
+E       assert (200 == 200 and 'error' == 'success'
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+E         
+E         - success
+E         + error)
+
+tests\test_live_gaia.py:110: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_model[three-tools]" time="49.805"><failure message="AssertionError: {'status': 'partial', 'answer': '三项查询结果如下，来源彼此独立：&#10;  &#10;  ## 1. SIMBAD：M45 坐标 —— 查询失败&#10;  - 查询标识符：`M45`，来源链接：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&#10;  - 返回错误：`simbad_timeout`（SIMBAD 查询超时，可重试）。&#10;  - 因此本次**没有获得任何 M45 坐标数据**，我不会用记忆中的数值替代。如需，可稍后重试。&#10;  &#10;  ## 2. Gaia DR3：source_id 5853498713190525696 —— 成功&#10;  发布版 Gaia DR3，表 `gaiadr3.gaia_source`，按 source_id 精确查询，返回 1 行（未截断，无重复源标记）。参考历元 2016.0。&#10;  &#10;  | 字段 | 值 | 单位 |&#10;  |---|---|---|&#10;  | RA | 217.39232147200883 | deg |&#10;  | Dec | −62.67607511676666 | deg |&#10;  | RA 误差 / Dec 误差 | 0.0240 / 0.0344 | mas |&#10;  | 视差 | 768.0665 ± 0.0499 | mas |&#10;  | pmra（含 cos δ） | −3781.741 ± 0.0314 | mas/yr |&#10;  | pmdec | 769.465 ± 0.0505 | mas/yr |&#10;  | G / BP / RP | 8.9847 / 11.3731 / 7.5685 | mag |&#10;  | BP−RP | 3.8046 | mag |&#10;  | 径向速度 | −21.943 ± 0.216 | km/s |&#10;  | RUWE | 0.9715 | — |&#10;  | astrometric_params_solved | 95 | — |&#10;  &#10;  - 未请求距离估算，故未生成距离派生量（视差本身不是距离）。&#10;  - 来源：https://gea.esac.esa.int/archive/ （检索时间 2026-10-28）&#10;  - 说明：该源与 M45 的成员关系**未做任何判断**，本次也未做空间匹配。&#10;  &#10;  ## 3. ADS：bibcode:2016A&amp;A...595A...2G —— 成功&#10;  - 实际 query：`bibcode:2016A&amp;A...595A...2G`；范围 database:astronomy；sort: relevance；本页 1 条；total_found = 1。&#10;  - 标题：*Gaia Data Release 1. Summary of the astrometric, photometric, and survey properties*&#10;  - 作者：Gaia Collaboration, Brown, A. G. A., Vallenari, A., Prusti, T., de Bruijne, J. H. J. 等（作者列表被截断，authors_truncated = true）&#10;  - 年份/期刊：2016，Astronomy and Astrophysics&#10;  - DOI：10.1051/0004-6361/201629512；10.48550/arXiv.1609.04172&#10;  - 被引次数：2085（查询时记录，不代表质量）&#10;  - 链接：https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...2G/abstract&#10;  - 根据摘要（摘要被截断，abstract_truncated = true）：该文总结 Gaia 首次数据发布 DR1，包含约 20.7 等以上逾 10 亿源的天测与测光；主要天测集（TGAS，约 200 万颗与 Hipparcos/Tycho-2 共有的最亮星）给出位置、视差与平均自行，典型不确定度约 0.3 mas（位置与视差）、约 1 mas/yr（自行），视差不确定度需另加 0.3 mas 系统项；次级集给出额外 11 亿源的位置（典型 10 mas）；测光集为全部源的平均 G 星等；第三部分为南黄极附近 3000 颗造父变星与天琴座 RR 型星的 G 波段光变曲线。结论部分因截断未完整获取。&#10;  &#10;  **独立性说明**：以上三项互不关联——该 Gaia 源是否属于 M45、该论文是否研究该源，均未作任何推断。', 'results': [{'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-28T04:46:37.022980Z'}, 'data': None, ...}], 'literature_results': [{'query': 'bibcode:2016A&amp;A...595A...2G', 'filters': ['database:astronomy'], 'rows': 5, 'start': 0, ...}], ...}&#10;assert (200 == 200 and 'partial' == 'success'&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code&#10;  &#10;  - success&#10;  + partial)">kind = 'three-tools'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&amp;A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+&gt;       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'partial', 'answer': '三项查询结果如下，来源彼此独立：
+E         
+E         ## 1. SIMBAD：M45 坐标 —— 查询失败
+E         - 查询标识符：`M45`，来源链接：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45
+E         - 返回错误：`simbad_timeout`（SIMBAD 查询超时，可重试）。
+E         - 因此本次**没有获得任何 M45 坐标数据**，我不会用记忆中的数值替代。如需，可稍后重试。
+E         
+E         ## 2. Gaia DR3：source_id 5853498713190525696 —— 成功
+E         发布版 Gaia DR3，表 `gaiadr3.gaia_source`，按 source_id 精确查询，返回 1 行（未截断，无重复源标记）。参考历元 2016.0。
+E         
+E         | 字段 | 值 | 单位 |
+E         |---|---|---|
+E         | RA | 217.39232147200883 | deg |
+E         | Dec | −62.67607511676666 | deg |
+E         | RA 误差 / Dec 误差 | 0.0240 / 0.0344 | mas |
+E         | 视差 | 768.0665 ± 0.0499 | mas |
+E         | pmra（含 cos δ） | −3781.741 ± 0.0314 | mas/yr |
+E         | pmdec | 769.465 ± 0.0505 | mas/yr |
+E         | G / BP / RP | 8.9847 / 11.3731 / 7.5685 | mag |
+E         | BP−RP | 3.8046 | mag |
+E         | 径向速度 | −21.943 ± 0.216 | km/s |
+E         | RUWE | 0.9715 | — |
+E         | astrometric_params_solved | 95 | — |
+E         
+E         - 未请求距离估算，故未生成距离派生量（视差本身不是距离）。
+E         - 来源：https://gea.esac.esa.int/archive/ （检索时间 2026-10-28）
+E         - 说明：该源与 M45 的成员关系**未做任何判断**，本次也未做空间匹配。
+E         
+E         ## 3. ADS：bibcode:2016A&amp;A...595A...2G —— 成功
+E         - 实际 query：`bibcode:2016A&amp;A...595A...2G`；范围 database:astronomy；sort: relevance；本页 1 条；total_found = 1。
+E         - 标题：*Gaia Data Release 1. Summary of the astrometric, photometric, and survey properties*
+E         - 作者：Gaia Collaboration, Brown, A. G. A., Vallenari, A., Prusti, T., de Bruijne, J. H. J. 等（作者列表被截断，authors_truncated = true）
+E         - 年份/期刊：2016，Astronomy and Astrophysics
+E         - DOI：10.1051/0004-6361/201629512；10.48550/arXiv.1609.04172
+E         - 被引次数：2085（查询时记录，不代表质量）
+E         - 链接：https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...2G/abstract
+E         - 根据摘要（摘要被截断，abstract_truncated = true）：该文总结 Gaia 首次数据发布 DR1，包含约 20.7 等以上逾 10 亿源的天测与测光；主要天测集（TGAS，约 200 万颗与 Hipparcos/Tycho-2 共有的最亮星）给出位置、视差与平均自行，典型不确定度约 0.3 mas（位置与视差）、约 1 mas/yr（自行），视差不确定度需另加 0.3 mas 系统项；次级集给出额外 11 亿源的位置（典型 10 mas）；测光集为全部源的平均 G 星等；第三部分为南黄极附近 3000 颗造父变星与天琴座 RR 型星的 G 波段光变曲线。结论部分因截断未完整获取。
+E         
+E         **独立性说明**：以上三项互不关联——该 Gaia 源是否属于 M45、该论文是否研究该源，均未作任何推断。', 'results': [{'object_name': 'M45', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-28T04:46:37.022980Z'}, 'data': None, ...}], 'literature_results': [{'query': 'bibcode:2016A&amp;A...595A...2G', 'filters': ['database:astronomy'], 'rows': 5, 'start': 0, ...}], ...}
+E       assert (200 == 200 and 'partial' == 'success'
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+E         
+E         - success
+E         + partial)
+
+tests\test_live_gaia.py:110: AssertionError</failure></testcase></testsuite></testsuites>

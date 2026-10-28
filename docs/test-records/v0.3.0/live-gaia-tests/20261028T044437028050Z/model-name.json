@@ -1,0 +1,44 @@
+{
+  "message": "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。",
+  "http_status": 200,
+  "body": {
+    "status": "error",
+    "answer": "**查询未完成：SIMBAD 两次超时，因此没有进行 Gaia 查询。**\n\n## 已执行的操作\n| 步骤 | 工具 | 结果 |\n|---|---|---|\n| 1 | `query_simbad(\"M45\")` | 失败：`simbad_timeout`（查询超时，可重试） |\n| 1（重试） | `query_simbad(\"M45\")` | 失败：`simbad_timeout` |\n| 2 | `query_gaia`（圆锥查询） | **未执行** |\n\n## 为什么没有继续查 Gaia\n按流程，Gaia 圆锥查询的中心坐标必须来自本次 SIMBAD 成功返回的 `ra_deg/dec_deg`。SIMBAD 两次都失败，没有返回任何坐标，因此我无法获得可用的中心点。我不会用记忆中的 M45 坐标代替数据库结果，也不会自行猜测检索半径或中心，所以这一步按规则停止。\n\n## 关于你要求的几点说明（概念性，非查询结果）\n- **位置候选**：圆锥查询返回的源只是“位于该视场内的 Gaia DR3 记录”，属于位置候选，不等于已确认的物理成员。\n- **成员判定**：需要自行运动、视差、径向速度、测光等多维信息，并结合星团成员判据；仅凭空间接近不能断言成员关系，也不能据此推断星团距离、年龄或质量。\n- **参考历元**：Gaia DR3 的 `ra/dec` 是 J2016.0 历元的位置，与 SIMBAD 的 ICRS 坐标（通常为 J2000 历元）存在历元差异；本次未做自行传播，若后续查询需注意这一差异。\n\n## 来源\n- SIMBAD 查询页（本次失败）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML\n\n## 建议\n可以稍后重试（SIMBAD 超时通常是临时性的）。如果你愿意，也可以直接提供 M45 中心的 ICRS 赤经/赤纬（度）和检索半径，我就能直接进行 Gaia DR3 圆锥查询；或者你确认后我再重试 SIMBAD。",
+    "results": [
+      {
+        "object_name": "M45",
+        "status": "error",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-28T04:45:11.697271Z"
+        },
+        "data": null,
+        "error": {
+          "code": "simbad_timeout",
+          "message": "SIMBAD 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      },
+      {
+        "object_name": "M45",
+        "status": "error",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-28T04:45:52.927350Z"
+        },
+        "data": null,
+        "error": {
+          "code": "simbad_timeout",
+          "message": "SIMBAD 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      }
+    ],
+    "literature_results": [],
+    "gaia_results": [],
+    "sources": [],
+    "warnings": []
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "application_version": "0.3.0",
+  "started_at": "2026-10-28T03:44:25.502027+00:00",
+  "kind": "offline-tests",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.3.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "0373ec8974ed81b004a3307a4c4a0181c6322358",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M README.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M scripts/record_utils.py\n M scripts/run_tests.py\n M src/astroagent/__init__.py\n M src/astroagent/agent.py\n M src/astroagent/api/chat.py\n M src/astroagent/config.py\n M src/astroagent/schemas.py\n M tests/test_config.py\n M tests/test_literature_chat.py\n?? docs/PROJECT_PLAN_V0.3.md\n?? docs/test-records/v0.3.0/\n?? scripts/verify_v03.py\n?? src/astroagent/analysis.py\n?? src/astroagent/gaia.py\n?? tests/gaia_fixtures.py\n?? tests/test_analysis.py\n?? tests/test_gaia.py\n?? tests/test_gaia_chat.py\n?? tests/test_live_gaia.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.3.0\\offline-tests\\20261028T034425501025Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 6.518,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1536,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1564,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.8382,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-28T03:44:33.289010+00:00"
+}

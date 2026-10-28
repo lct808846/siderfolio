@@ -1,10 +1,10 @@
 """接口与工具共用的可追溯数据结构。"""
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 from urllib.parse import quote_plus
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator
 
 
 class ChatRequest(BaseModel):
@@ -30,7 +30,7 @@ class ErrorResponse(BaseModel):
 
 
 class Source(BaseModel):
-    name: Literal["SIMBAD", "ADS"] = "SIMBAD"
+    name: Literal["SIMBAD", "ADS", "Gaia"] = "SIMBAD"
     url: str
     retrieved_at: datetime
 
@@ -97,10 +97,159 @@ class LiteratureSearchResult(BaseModel):
     error: ErrorInfo | None = None
 
 
+FiniteNumber = Annotated[float, Field(strict=True, allow_inf_nan=False)]
+GaiaSourceId = Annotated[str, Field(strict=True, pattern=r"^[1-9][0-9]{0,18}$")]
+
+
+class GaiaQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    mode: Literal["source_id", "cone"]
+    source_id: GaiaSourceId | None = None
+    ra_deg: Annotated[FiniteNumber, Field(ge=0, lt=360)] | None = None
+    dec_deg: Annotated[FiniteNumber, Field(ge=-90, le=90)] | None = None
+    radius_arcmin: Annotated[FiniteNumber, Field(gt=0, le=30)] | None = None
+    limit: StrictInt = Field(default=20, ge=1, le=100)
+    ruwe_max: Annotated[FiniteNumber, Field(gt=0, le=10)] | None = None
+    parallax_snr_min: Annotated[FiniteNumber, Field(gt=0, le=1000)] | None = None
+    estimate_distance: StrictBool = False
+
+    @model_validator(mode="after")
+    def check_mode(self):
+        if self.mode == "source_id":
+            if self.source_id is None or int(self.source_id) > 2**63 - 1:
+                raise ValueError("A positive signed 64-bit DR3 source_id is required")
+            cone_fields = {
+                "ra_deg",
+                "dec_deg",
+                "radius_arcmin",
+                "limit",
+                "ruwe_max",
+                "parallax_snr_min",
+            }
+            if self.model_fields_set & cone_fields:
+                raise ValueError("Cone fields are not allowed in source_id mode")
+        elif (
+            "source_id" in self.model_fields_set
+            or self.ra_deg is None
+            or self.dec_deg is None
+            or self.radius_arcmin is None
+        ):
+            raise ValueError("Cone mode requires coordinates and radius, without source_id")
+        return self
+
+    def effective_parameters(self) -> dict:
+        fields = (
+            {"mode", "source_id", "estimate_distance"}
+            if self.mode == "source_id"
+            else set(type(self).model_fields) - {"source_id"}
+        )
+        return self.model_dump(include=fields)
+
+
+class GaiaSourceData(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False, strict=True)
+
+    source_id: GaiaSourceId
+    ra: float = Field(ge=0, lt=360, description="ICRS degrees")
+    dec: float = Field(ge=-90, le=90, description="ICRS degrees")
+    ref_epoch: float = Field(description="Julian year")
+    ra_error: float | None = Field(default=None, ge=0, description="mas")
+    dec_error: float | None = Field(default=None, ge=0, description="mas")
+    parallax: float | None = Field(default=None, description="mas; negative values retained")
+    parallax_error: float | None = Field(default=None, ge=0, description="mas")
+    pmra: float | None = Field(default=None, description="mas/yr, includes cos(dec)")
+    pmra_error: float | None = Field(default=None, ge=0, description="mas/yr")
+    pmdec: float | None = Field(default=None, description="mas/yr")
+    pmdec_error: float | None = Field(default=None, ge=0, description="mas/yr")
+    phot_g_mean_mag: float | None = Field(default=None, description="mag")
+    phot_bp_mean_mag: float | None = Field(default=None, description="mag")
+    phot_rp_mean_mag: float | None = Field(default=None, description="mag")
+    bp_rp: float | None = Field(default=None, description="mag")
+    radial_velocity: float | None = Field(default=None, description="km/s")
+    radial_velocity_error: float | None = Field(default=None, ge=0, description="km/s")
+    ruwe: float | None = Field(default=None, ge=0)
+    astrometric_params_solved: int | None = None
+    duplicated_source: bool | None = None
+    separation_arcsec: float | None = Field(default=None, ge=0, description="arcsec")
+
+    @model_validator(mode="after")
+    def check_source_id(self):
+        if int(self.source_id) > 2**63 - 1:
+            raise ValueError("Invalid source_id")
+        return self
+
+
+class GaiaStatistic(BaseModel):
+    valid_count: int
+    missing_count: int
+    median: float | None
+    minimum: float | None
+    maximum: float | None
+    unit: str
+
+
+class GaiaDistanceEstimate(BaseModel):
+    source_id: str
+    distance_pc: float | None = None
+    distance_error_pc: float | None = None
+    method: Literal["inverse_parallax_high_snr"] = "inverse_parallax_high_snr"
+    zero_point_corrected: Literal[False] = False
+    skipped_reason: (
+        Literal[
+            "missing_parallax",
+            "non_positive_parallax",
+            "invalid_or_missing_error",
+            "low_parallax_snr",
+            "numerical_overflow",
+        ]
+        | None
+    ) = None
+
+
+class GaiaAnalysis(BaseModel):
+    sample_size: int
+    scope: Literal["returned_rows"] = "returned_rows"
+    truncated: bool
+    quality_filters: dict[str, float] = Field(default_factory=dict)
+    statistics: dict[str, GaiaStatistic]
+    negative_parallax_count: int
+    zero_parallax_count: int
+    missing_parallax_count: int
+    estimate_distance: bool
+    distance_estimates: list[GaiaDistanceEstimate] = Field(default_factory=list)
+    distance_computed_count: int = 0
+    distance_skipped_count: int = 0
+
+
+class GaiaQueryResult(BaseModel):
+    query: dict
+    release: Literal["Gaia DR3"] = "Gaia DR3"
+    table: Literal["gaiadr3.gaia_source"] = "gaiadr3.gaia_source"
+    endpoint: Literal["https://gea.esac.esa.int/tap-server/tap/sync"] = (
+        "https://gea.esac.esa.int/tap-server/tap/sync"
+    )
+    adql: str
+    maxrec: int
+    status: Literal["success", "not_found", "error"]
+    returned_count: int = 0
+    total_found: None = None
+    has_more: bool | None = None
+    truncated: bool | None = None
+    archive_overflow: bool | None = None
+    data: list[GaiaSourceData] = Field(default_factory=list)
+    analysis: GaiaAnalysis | None = None
+    units: dict[str, str] = Field(default_factory=dict)
+    source: Source
+    warnings: list[str] = Field(default_factory=list)
+    error: ErrorInfo | None = None
+
+
 class ChatResponse(BaseModel):
     status: Literal["success", "partial", "error"]
     answer: str
     results: list[QueryResult] = Field(default_factory=list)
     literature_results: list[LiteratureSearchResult] = Field(default_factory=list)
+    gaia_results: list[GaiaQueryResult] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     warnings: list[ErrorInfo] = Field(default_factory=list)

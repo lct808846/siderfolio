@@ -1,13 +1,59 @@
 """测试记录按项目版本、类型和 UTC 运行时间归档。"""
 
+import importlib.metadata
 import json
 import re
+import subprocess
+import sys
 import tomllib
 from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RECORDS = ROOT / "docs" / "test-records"
+
+
+def runtime_metadata() -> dict:
+    """只记录版本、Git 状态；不保存环境变量、密钥或请求头。"""
+
+    def git(*args):
+        result = subprocess.run(
+            ["git", *args],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            encoding="utf-8",
+            errors="replace",
+        )
+        return result.stdout.strip() if result.returncode == 0 else None
+
+    versions = {}
+    for name in (
+        "astroagent",
+        "fastapi",
+        "langchain-core",
+        "langchain-openai",
+        "astroquery",
+        "astropy",
+        "defusedxml",
+        "numpy",
+        "requests",
+        "pydantic",
+        "pytest",
+    ):
+        try:
+            versions[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            versions[name] = None
+    state = git("status", "--porcelain")
+    return {
+        "python": sys.version.split()[0],
+        "versions": versions,
+        "git_head": git("rev-parse", "HEAD"),
+        "git_dirty": bool(state) if state is not None else None,
+        "git_status": state,
+    }
 
 
 def project_version() -> str:

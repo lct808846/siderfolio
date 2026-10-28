@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "astroagent"
-version = "0.2.0"
-description = "基于 DeepSeek 工具调用、SIMBAD 与 ADS 的天文科研查询服务"
+version = "0.3.0"
+description = "基于 DeepSeek、SIMBAD、ADS 与 Gaia DR3 的天文查询与基础分析服务"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -14,6 +14,8 @@ dependencies = [
     "langchain-core>=1.0,<2",
     "langchain-openai>=1.0,<2",
     "astroquery>=0.4.8,<0.5",
+    "astropy>=6.1,<9",
+    "defusedxml>=0.7.1,<1",
     "pydantic-settings>=2.6,<3",
     "requests>=2.32,<3",
     "pydantic>=2.7,<3",
