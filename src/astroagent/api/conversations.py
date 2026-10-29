@@ -58,7 +58,9 @@ def detail(conversation_id: UUID, service: Service):
 @router.patch("/{conversation_id}", response_model=Conversation)
 def rename(conversation_id: UUID, request: ConversationRename, service: Service):
     with service.gate:
-        return service.repository.rename(str(conversation_id), request.title)
+        return service.repository.rename(
+            str(conversation_id), request.title, request.expected_metadata_revision
+        )
 
 
 @router.delete("/{conversation_id}", status_code=204)

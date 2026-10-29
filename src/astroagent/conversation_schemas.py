@@ -16,6 +16,7 @@ class ConversationCreate(BaseModel):
 
 class ConversationRename(ConversationCreate):
     title: str = Field(min_length=1, max_length=80)
+    expected_metadata_revision: StrictInt | None = Field(default=None, ge=0)
 
 
 class TurnRequest(BaseModel):
@@ -53,6 +54,7 @@ class Conversation(BaseModel):
     created_at: str
     updated_at: str
     revision: int
+    metadata_revision: int = 0
 
 
 class Turn(BaseModel):

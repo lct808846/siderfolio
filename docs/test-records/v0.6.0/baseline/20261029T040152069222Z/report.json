@@ -1,0 +1,26 @@
+{
+  "target": "0.6.0",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.5.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "c057010f68e10a12d3d69708e8a2436d88fa22dd",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/ROADMAP.md\n?? docs/PROJECT_PLAN_V0.6.md\n?? docs/test-records/v0.6.0/",
+  "preserved_uncommitted": [
+    "README.md",
+    "docs/ROADMAP.md",
+    "docs/PROJECT_PLAN_V0.6.md"
+  ]
+}

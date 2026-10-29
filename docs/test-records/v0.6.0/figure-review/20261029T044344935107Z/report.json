@@ -1,0 +1,103 @@
+{
+  "outcome": "passed",
+  "opened_images": [
+    {
+      "file": "browser-tests/20261029T044014645743Z/chromium-project-desktop.png",
+      "sha256": "0cbc903c1633f5d16d1bd9a8597ad1e1915670c747c0cd5fc364fd2e1af8a6b5",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/chromium-project-comparison.png",
+      "sha256": "d9082fd5df923f00407d27802cc9fba95cb3f507dfb6903939c8968849b507b7",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/chromium-project-mobile.png",
+      "sha256": "f992a04a7b5fd5ab08511cfc6288360f964692773aec3d60fc61af4adf04763e",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/edge-project-desktop.png",
+      "sha256": "1f31e0479cb2002c38ba3f638141a8504f68c527341aae122ce0693bf4d9f5cb",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/edge-project-comparison.png",
+      "sha256": "83ee992c9b06fd5c1c56999f6b01bf6acc0414e85e49d710ce3ed39a716cd1ee",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/edge-project-mobile.png",
+      "sha256": "59bd9383f6f6225e551b7bb9924e26eb6b404def42f68cfbeac68853d0c1dfa4",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/chromium-empty.png",
+      "sha256": "895192f15bade02bc0101f17dd8980d021bd5e3eb4754252b118b81d30478638",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/chromium-mobile.png",
+      "sha256": "bc6a5399563c2c7f5063610312953d5df7104333a5dde110c8a03a260a681c18",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/edge-full.png",
+      "sha256": "e3de1e4d575e978c7ba4f7d84099e4cd4d615b96230262c1735896d0702bfd09",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "browser-tests/20261029T044014645743Z/edge-mobile.png",
+      "sha256": "5d2d838b9353395423731528bbb1bbbdf209983608ada113dcc9e8a40c26b0a7",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "live-project-tests/20261029T043048563698Z/gaia-proper_motion.png",
+      "sha256": "54b8ca3fbe3ee07e3d96563acd4ac072461c5047e97a14075a6871c725a72d28",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "live-project-tests/20261029T043048563698Z/gaia-parallax_histogram.png",
+      "sha256": "ae1325ce376c68d868f05ff9d73c1a670539a596c330499bb66760bf392cab3a",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    },
+    {
+      "file": "live-project-tests/20261029T043048563698Z/gaia-observed_cmd.png",
+      "sha256": "2169601a49f523f711147bf0f462273d64c627078f509b42a46ccb59ffed8033",
+      "review": "opened and visually inspected",
+      "result": "passed"
+    }
+  ],
+  "restored_figures": [
+    {
+      "file": "live-project-tests/20261029T043048563698Z/restored-proper_motion.png",
+      "identical_to": "live-project-tests/20261029T043048563698Z/gaia-proper_motion.png"
+    },
+    {
+      "file": "live-project-tests/20261029T043048563698Z/restored-parallax_histogram.png",
+      "identical_to": "live-project-tests/20261029T043048563698Z/gaia-parallax_histogram.png"
+    },
+    {
+      "file": "live-project-tests/20261029T043048563698Z/restored-observed_cmd.png",
+      "identical_to": "live-project-tests/20261029T043048563698Z/gaia-observed_cmd.png"
+    }
+  ],
+  "notes": [
+    "New project desktop/comparison/mobile layouts inspected in Chromium and Edge.",
+    "Four legacy workbench screenshots inspected for header, complete result and narrow-screen layout.",
+    "Three genuine Gaia plots inspected for units, axes, valid-row counts, negative/zero parallax and truncation warning.",
+    "UI screenshots use synthetic data; genuine plots do not establish membership or source authenticity."
+  ]
+}

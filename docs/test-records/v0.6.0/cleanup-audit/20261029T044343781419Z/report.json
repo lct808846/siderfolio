@@ -1,0 +1,23 @@
+{
+  "ports": [
+    {
+      "port": 5173,
+      "listener_count": 0
+    },
+    {
+      "port": 8000,
+      "listener_count": 0
+    },
+    {
+      "port": 54344,
+      "listener_count": 0
+    },
+    {
+      "port": 60039,
+      "listener_count": 0
+    }
+  ],
+  "alive_test_pids": [],
+  "method": "native Windows TCP table and process inventory",
+  "outcome": "passed"
+}

@@ -39,16 +39,33 @@ class ArtifactCache:
     def remove_conversation(self, identifier):
         with self.lock:
             for key in [
-                k for k, v in self.items.items() if v["info"].conversation_id == identifier
+                k
+                for k, v in self.items.items()
+                if not v.get("owner") and v["info"].conversation_id == identifier
             ]:
                 del self.items[key]
 
-    def generate(self, conversation_id, turn_id, request):
+    def remove_project(self, project_id, snapshot_id=None):
+        with self.lock:
+            for key, value in list(self.items.items()):
+                owner = value.get("owner")
+                if (
+                    owner
+                    and owner[0] == project_id
+                    and (snapshot_id is None or owner[1] == snapshot_id)
+                ):
+                    del self.items[key]
+
+    def generate(self, conversation_id, turn_id, request, *, snapshot_loader=None, owner=None):
         with self.service.gate:
-            turn = self.service.repository.turn(conversation_id, turn_id)
-            if turn.response is None:
+            response = (
+                snapshot_loader()
+                if snapshot_loader
+                else self.service.repository.turn(conversation_id, turn_id).response
+            )
+            if response is None:
                 raise ServiceError(422, "invalid_export_snapshot", "这轮没有可导出的完整查询响应。")
-            snapshot = turn.response.model_dump(mode="json")
+            snapshot = response.model_dump(mode="json")
         plots = sorted(
             [p.model_dump() for p in request.plots],
             key=lambda p: (p["gaia_result_index"], p["kind"]),
@@ -63,7 +80,7 @@ class ArtifactCache:
                 422, "invalid_export_snapshot", "该轮与当前导出契约不兼容。"
             ) from exc
         digest = hashlib.sha256(encode(snapshot).encode()).hexdigest()
-        cache_key = (conversation_id, turn_id, digest, encode(plots), __version__)
+        cache_key = (owner or (conversation_id, turn_id), digest, encode(plots), __version__)
         with self.lock:
             self.purge()
             for item in self.items.values():
@@ -121,7 +138,10 @@ class ArtifactCache:
             figures=figures,
         )
         with self.service.gate, self.lock:
-            self.service.repository.turn(conversation_id, turn_id)
+            if snapshot_loader:
+                snapshot_loader()
+            else:
+                self.service.repository.turn(conversation_id, turn_id)
             self.purge()
             for item in self.items.values():
                 if item["key"] == cache_key:
@@ -141,6 +161,7 @@ class ArtifactCache:
                 manifest=manifest,
                 members=members,
                 deadline=self.clock() + self.settings.artifact_ttl_seconds,
+                owner=owner,
             )
         return info
 

@@ -14,6 +14,7 @@ from astroagent.api.conversations import router as conversations_router
 from astroagent.api.exports import ExportBodyLimit
 from astroagent.api.exports import router as exports_router
 from astroagent.api.health import router as health_router
+from astroagent.api.projects import router as projects_router
 from astroagent.artifacts import ArtifactCache
 from astroagent.config import LocalSettings
 from astroagent.conversation_service import ConversationService
@@ -21,6 +22,7 @@ from astroagent.conversations import ConversationRepository
 from astroagent.errors import ServiceError
 from astroagent.export_schemas import ExportRequest
 from astroagent.local_access import LocalAccess
+from astroagent.project_service import ProjectService
 
 
 @asynccontextmanager
@@ -33,6 +35,7 @@ async def lifespan(app):
         repository.initialize()
         service = ConversationService(repository)
         ArtifactCache(service, settings)
+        service.projects = ProjectService(service)
         app.state.conversation_service = service
     except Exception:
         if repository is not None:
@@ -51,6 +54,7 @@ app.include_router(chat_router)
 app.include_router(exports_router)
 app.include_router(conversations_router)
 app.include_router(artifacts_router)
+app.include_router(projects_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 
@@ -90,13 +94,19 @@ async def service_error_handler(request: Request, exc: ServiceError):
 
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(request: Request, exc: RequestValidationError):
-    if request.url.path.startswith(("/api/v1/conversations", "/api/v1/artifacts")):
+    if request.url.path.startswith(
+        ("/api/v1/conversations", "/api/v1/artifacts", "/api/v1/projects")
+    ):
         return JSONResponse(
             status_code=422,
             content={
                 "error": {
-                    "code": "invalid_conversation_request",
-                    "message": "会话请求参数无效。",
+                    "code": "invalid_project_request"
+                    if request.url.path.startswith("/api/v1/projects")
+                    else "invalid_conversation_request",
+                    "message": "项目请求参数无效。"
+                    if request.url.path.startswith("/api/v1/projects")
+                    else "会话请求参数无效。",
                     "retryable": False,
                 }
             },

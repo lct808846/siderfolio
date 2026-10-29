@@ -65,25 +65,32 @@ class LocalAccess:
                 for h in headers.get(b"access-control-request-headers", "").split(",")
                 if h.strip()
             }
-            if method not in {"GET", "POST", "PATCH", "DELETE"} or not requested_headers <= {
+            if method not in {"GET", "POST", "PATCH", "PUT", "DELETE"} or not requested_headers <= {
                 "content-type"
             }:
                 return await failure(403, "origin_not_allowed", "不支持此预检请求。")
             response = JSONResponse(
                 content={},
                 headers={
-                    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+                    "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
                     "Access-Control-Allow-Headers": "Content-Type",
                 },
             )
             return await response(scope, receive, with_headers)
-        if scope["path"].startswith("/api/v1/conversations") and scope["method"] in {
+        importing = scope["path"] == "/api/v1/projects/import" and scope["method"] == "POST"
+        if scope["path"].startswith(("/api/v1/conversations", "/api/v1/projects")) and scope[
+            "method"
+        ] in {
             "POST",
             "PATCH",
+            "PUT",
+            "DELETE",
         }:
+            if scope["method"] == "DELETE" and scope["path"].startswith("/api/v1/conversations"):
+                return await self.app(scope, receive, with_headers)
             if (
                 headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
-                != "application/json"
+                != ("application/zip" if importing else "application/json")
                 or headers.get(b"content-encoding", "identity").strip().lower() != "identity"
             ):
                 return await failure(
@@ -95,9 +102,13 @@ class LocalAccess:
                 if message["type"] == "http.disconnect":
                     return
                 chunk = message.get("body", b"")
-                if len(body) + len(chunk) > CONVERSATION_BODY_LIMIT:
+                if len(body) + len(chunk) > (
+                    32 * 1024**2 if importing else CONVERSATION_BODY_LIMIT
+                ):
                     return await failure(
-                        413, "conversation_request_too_large", "会话请求超过32 KiB。"
+                        413,
+                        "conversation_request_too_large",
+                        "项目包超过32 MiB。" if importing else "请求超过32 KiB。",
                     )
                 body.extend(chunk)
                 if not message.get("more_body", False):
@@ -118,7 +129,13 @@ class LocalAccess:
                 def constant(value):
                     raise ValueError("Non-finite constant")
 
-                parsed = json.loads(body, object_pairs_hook=pairs, parse_constant=constant)
+                parsed = (
+                    {}
+                    if importing
+                    else json.loads(
+                        body.decode("utf-8"), object_pairs_hook=pairs, parse_constant=constant
+                    )
+                )
 
                 def depth(value, level=0):
                     if level > 32:

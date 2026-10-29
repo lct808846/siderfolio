@@ -62,7 +62,7 @@ export const useWorkbench = defineStore('workbench', {
     },
     async rename(title: string) {
       if (!this.current) return
-      try { await api.rename(this.current.id, title); await this.load(this.current.id); await this.refreshList() } catch (error) { this.report(error) }
+      try { await api.rename(this.current.id, title, this.current.metadata_revision); await this.load(this.current.id); await this.refreshList() } catch (error) { this.report(error) }
     },
     async remove() {
       if (!this.current) return

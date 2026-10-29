@@ -1,0 +1,13 @@
+........................................................................ [ 17%]
+........................................................................ [ 34%]
+........................................................................ [ 52%]
+........................................................................ [ 69%]
+.......................................................................s [ 87%]
+ssssssssssssss......................................                     [100%]
+============================== warnings summary ===============================
+tests/test_projects.py::test_bad_archives_reject_atomically[symlink]
+  E:\miniconda3\envs\agent\Lib\zipfile\__init__.py:1624: UserWarning: Duplicate name: 'snapshots.json'
+    return self._open_to_write(zinfo, force_zip64=force_zip64)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+397 passed, 15 skipped, 1 warning in 28.61s

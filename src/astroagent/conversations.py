@@ -64,7 +64,7 @@ class ConversationRepository:
                 fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             with self.connection() as db:
                 version = db.execute("PRAGMA user_version").fetchone()[0]
-                if version not in (0, 1):
+                if version not in (0, 1, 2):
                     raise storage_error()
                 if version == 0:
                     tables = db.execute(
@@ -82,6 +82,16 @@ class ConversationRepository:
                     db.execute("BEGIN IMMEDIATE")
                     self._migrate_v1(db)
                     db.commit()
+                if version < 2:
+                    backup = self.path.with_name(
+                        "migration-v2-"
+                        + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+                        + ".sqlite3"
+                    )
+                    with sqlite3.connect(backup) as target:
+                        db.backup(target)
+                    with self.transaction(db):
+                        self._migrate_v2(db)
                 db.execute("PRAGMA journal_mode=WAL")
                 with self.transaction(db):
                     for row in db.execute(
@@ -95,6 +105,9 @@ class ConversationRepository:
                             message="服务重启中断了该轮，请确认后重新提问。",
                         )
                         self._save(db, turn)
+                    from astroagent.projects import ProjectRepository
+
+                    ProjectRepository.recover(db)
         except (OSError, sqlite3.Error) as exc:
             self.close()
             raise storage_error() from exc
@@ -120,6 +133,31 @@ class ConversationRepository:
         if self.lock_file is not None:
             self.lock_file.close()
             self.lock_file = None
+
+    @staticmethod
+    def _migrate_v2(db):
+        db.execute(
+            "ALTER TABLE conversations ADD COLUMN metadata_revision INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execute("CREATE TABLE projects (id TEXT PRIMARY KEY, record TEXT NOT NULL)")
+        db.execute("""CREATE TABLE project_conversations (
+            conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE,
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE)""")
+        db.execute("CREATE INDEX project_membership ON project_conversations(project_id)")
+        db.execute("""CREATE TABLE snapshots (id TEXT PRIMARY KEY,
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            record TEXT NOT NULL)""")
+        db.execute("CREATE INDEX snapshot_project ON snapshots(project_id)")
+        db.execute("""CREATE TABLE reruns (id TEXT PRIMARY KEY,
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            request_id TEXT NOT NULL, request_hash TEXT NOT NULL, state TEXT NOT NULL,
+            record TEXT NOT NULL, reserved_bytes INTEGER NOT NULL DEFAULT 0,
+            UNIQUE(project_id,request_id))""")
+        db.execute("CREATE INDEX rerun_project ON reruns(project_id)")
+        db.execute("""CREATE TABLE imported_turn_origins (
+            turn_id TEXT PRIMARY KEY REFERENCES turns(id) ON DELETE CASCADE,
+            record TEXT NOT NULL)""")
+        db.execute("PRAGMA user_version=2")
 
     @contextmanager
     def connection(self):
@@ -161,12 +199,31 @@ class ConversationRepository:
             raise ServiceError(409, "conversation_busy", "该会话正在处理，请稍后再试。")
 
     @staticmethod
+    def _touch_project(db, identifier):
+        row = db.execute(
+            "SELECT p.record FROM projects p JOIN project_conversations m "
+            "ON p.id=m.project_id WHERE m.conversation_id=?",
+            (identifier,),
+        ).fetchone()
+        if row:
+            value = json.loads(row[0])
+            value["revision"] += 1
+            value["updated_at"] = utc_now()
+            db.execute("UPDATE projects SET record=? WHERE id=?", (encode(value), value["id"]))
+
+    @staticmethod
     def _used(db):
         turns = db.execute(
             "SELECT coalesce(sum(size_bytes+reserved_bytes),0) FROM turns"
         ).fetchone()[0]
-        return turns + sum(
+        base = turns + sum(
             len(encode(dict(row)).encode()) for row in db.execute("SELECT * FROM conversations")
+        )
+        for table in ("projects", "snapshots", "reruns", "imported_turn_origins"):
+            base += sum(len(row[0].encode()) for row in db.execute(f"SELECT record FROM {table}"))
+        base += db.execute("SELECT coalesce(sum(reserved_bytes),0) FROM reruns").fetchone()[0]
+        return base + sum(
+            len(encode(dict(r)).encode()) for r in db.execute("SELECT * FROM project_conversations")
         )
 
     def create(self, title):
@@ -179,14 +236,20 @@ class ConversationRepository:
                     409, "conversation_limit_reached", "会话已满，请整理历史后再新建。"
                 )
             value = dict(
-                id=str(uuid4()), title=title, created_at=utc_now(), updated_at=utc_now(), revision=0
+                id=str(uuid4()),
+                title=title,
+                created_at=utc_now(),
+                updated_at=utc_now(),
+                revision=0,
+                metadata_revision=0,
             )
             if self._used(db) + len(encode(value).encode()) > self.settings.storage_bytes:
                 raise ServiceError(
                     409, "conversation_storage_limit", "本地历史预算已满，请整理会话。"
                 )
             db.execute(
-                "INSERT INTO conversations VALUES (:id,:title,:created_at,:updated_at,:revision)",
+                "INSERT INTO conversations VALUES "
+                "(:id,:title,:created_at,:updated_at,:revision,:metadata_revision)",
                 value,
             )
             return value
@@ -226,12 +289,22 @@ class ConversationRepository:
             ]
             return value
 
-    def rename(self, identifier, title):
+    def rename(self, identifier, title, expected_metadata_revision=None):
         with self.connection() as db, self.transaction(db):
             previous = self._conversation(db, identifier)
+            if (
+                expected_metadata_revision is not None
+                and previous["metadata_revision"] != expected_metadata_revision
+            ):
+                raise ServiceError(409, "conversation_revision_conflict", "会话已更新，请刷新。")
             self._idle(db, identifier)
             updated_at = utc_now()
-            candidate = {**previous, "title": title, "updated_at": updated_at}
+            candidate = {
+                **previous,
+                "title": title,
+                "updated_at": updated_at,
+                "metadata_revision": previous["metadata_revision"] + 1,
+            }
             if (
                 self._used(db) - len(encode(previous).encode()) + len(encode(candidate).encode())
                 > self.settings.storage_bytes
@@ -240,15 +313,24 @@ class ConversationRepository:
                     409, "conversation_storage_limit", "本地历史预算已满，请整理会话。"
                 )
             db.execute(
-                "UPDATE conversations SET title=?,updated_at=? WHERE id=?",
+                "UPDATE conversations SET title=?,updated_at=?,"
+                "metadata_revision=metadata_revision+1 WHERE id=?",
                 (title, updated_at, identifier),
             )
+            self._touch_project(db, identifier)
+            if self._used(db) > self.settings.storage_bytes:
+                raise ServiceError(
+                    409, "conversation_storage_limit", "项目历史预算已满，未保存改名。"
+                )
             return self._conversation(db, identifier)
 
     def delete(self, identifier):
         with self.connection() as db, self.transaction(db):
             self._conversation(db, identifier)
             self._idle(db, identifier)
+            from astroagent.projects import ProjectRepository
+
+            ProjectRepository.detach_conversation(db, identifier)
             db.execute("DELETE FROM conversations WHERE id=?", (identifier,))
 
     def turn(self, identifier, turn_id):
@@ -329,6 +411,11 @@ class ConversationRepository:
                 "UPDATE conversations SET revision=?,updated_at=? WHERE id=?",
                 (turn.revision, utc_now(), identifier),
             )
+            self._touch_project(db, identifier)
+            if self._used(db) > self.settings.storage_bytes:
+                raise ServiceError(
+                    409, "conversation_storage_limit", "项目历史预算已满，未执行查询。"
+                )
             return turn
 
     @staticmethod
@@ -341,6 +428,7 @@ class ConversationRepository:
         db.execute(
             "UPDATE conversations SET updated_at=? WHERE id=?", (utc_now(), turn.conversation_id)
         )
+        ConversationRepository._touch_project(db, turn.conversation_id)
 
     def finish(self, turn):
         text = turn.model_dump_json()

@@ -17,8 +17,11 @@ export const apiUrl = (path: string) => {
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status = 0, public conversationId?: string, public turnId?: string) { super(message) }
 }
-async function request<T>(path: string, method = 'GET', payload?: unknown): Promise<T> {
+export function assertApiConfiguration(): void {
   if (invalidConfiguration) throw new ApiError('invalid_api_configuration', '服务地址配置无效，请检查前端的 VITE_API_BASE_URL。')
+}
+export async function request<T>(path: string, method = 'GET', payload?: unknown): Promise<T> {
+  assertApiConfiguration()
   let response: Response
   try { response = await fetch(apiUrl(path), { method, headers: payload === undefined ? {} : { 'Content-Type': 'application/json' }, body: payload === undefined ? undefined : JSON.stringify(payload), cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '连接已断开，处理可能仍在继续。请恢复会话核对状态，不要重复发送。') }
@@ -34,14 +37,16 @@ export const api = {
   list: () => request<Conversation[]>('/api/v1/conversations'),
   create: (title = '新会话') => request<Conversation>('/api/v1/conversations', 'POST', { title }),
   detail: (id: string) => request<ConversationDetail>(`/api/v1/conversations/${id}`),
-  rename: (id: string, title: string) => request<Conversation>(`/api/v1/conversations/${id}`, 'PATCH', { title }),
+  rename: (id: string, title: string, expected_metadata_revision?: number) => request<Conversation>(`/api/v1/conversations/${id}`, 'PATCH', { title, expected_metadata_revision }),
   delete: (id: string) => request<void>(`/api/v1/conversations/${id}`, 'DELETE'),
   submit: (id: string, message: string, client_request_id: string, expected_revision: number) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision }),
   turn: (id: string, turn: string) => request<Turn>(`/api/v1/conversations/${id}/turns/${turn}`),
   artifact: (id: string, turn: string, plots: PlotSpec[]) => request<ArtifactInfo>(`/api/v1/conversations/${id}/turns/${turn}/artifacts`, 'POST', { plots }),
   manifest: (path: string) => request<Manifest>(path),
+  snapshotArtifact: (path: string, plots: PlotSpec[]) => request<ArtifactInfo>(path, 'POST', { plots }),
 }
 export async function download(path: string): Promise<void> {
+  assertApiConfiguration()
   let response: Response
   try { response = await fetch(apiUrl(path), { cache: 'no-store' }) } catch { throw new ApiError('connection_lost', '下载连接已断开，请重新点击下载。') }
   if (!response.ok) {

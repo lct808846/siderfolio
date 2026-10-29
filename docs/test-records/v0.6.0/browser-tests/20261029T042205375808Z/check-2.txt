@@ -1,0 +1,115 @@
+[WebServer] INFO:     Started server process [27908]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[WebServer] (node:21456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:14236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (9.0s)
+(node:38148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.5s)
+  ok  3 [chromium] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (982ms)
+  ok  4 [chromium] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (620ms)
+  ok  5 [chromium] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (311ms)
+  ok  6 [chromium] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (639ms)
+  ok  7 [chromium] › tests\browser\workbench.spec.ts:97:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (29ms)
+(node:26952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   8 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (8.9s)
+(node:21840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  9 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.7s)
+  ok 10 [edge] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (1.2s)
+  ok 11 [edge] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (831ms)
+  ok 12 [edge] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (421ms)
+  ok 13 [edge] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (774ms)
+  ok 14 [edge] › tests\browser\workbench.spec.ts:97:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (31ms)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('查看完整交付表格（100 行）')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('查看完整交付表格（100 行）') with timeout 5000ms
+      - waiting for getByText('查看完整交付表格（100 行）')
+
+
+      59 |     expect(imported.snapshots).toHaveLength(2)
+      60 |     await page.getByRole('button', { name: '查看快照 原始完整样本' }).click()
+    > 61 |     await page.reload(); await expect(page.getByText('查看完整交付表格（100 行）')).toBeVisible()
+         |                                                                          ^
+      62 |     await page.setViewportSize({ width: 390, height: 844 }); await page.getByRole('button', { name: '项目记录', exact: true }).click()
+      63 |     await page.locator('.project-main').evaluate(el => { el.scrollTop = 0 }); await screenshot('mobile')
+      64 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:61:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('查看完整交付表格（100 行）')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('查看完整交付表格（100 行）') with timeout 5000ms
+      - waiting for getByText('查看完整交付表格（100 行）')
+
+
+      59 |     expect(imported.snapshots).toHaveLength(2)
+      60 |     await page.getByRole('button', { name: '查看快照 原始完整样本' }).click()
+    > 61 |     await page.reload(); await expect(page.getByText('查看完整交付表格（100 行）')).toBeVisible()
+         |                                                                          ^
+      62 |     await page.setViewportSize({ width: 390, height: 844 }); await page.getByRole('button', { name: '项目记录', exact: true }).click()
+      63 |     await page.locator('.project-main').evaluate(el => { el.scrollTop = 0 }); await screenshot('mobile')
+      64 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:61:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-edge\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-edge\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\docs\test-records\v0.6.0\browser-tests\20261029T042205375808Z\artifacts\projects-projects-full-sna-759f0-and-preserved-conversations-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+    [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+  12 passed (43.7s)

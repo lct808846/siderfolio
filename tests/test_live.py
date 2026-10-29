@@ -1,12 +1,13 @@
 """显式启用后访问真实服务；不把模拟数据作为联网验收。"""
 
 import os
+from urllib.parse import urlparse
 
 import pytest
 from fastapi.testclient import TestClient
 
 from astroagent.main import app
-from astroagent.simbad import SimbadService
+from astroagent.simbad import SIMBAD_SERVERS, SimbadService
 
 pytestmark = [
     pytest.mark.live,
@@ -36,4 +37,5 @@ def test_live_chat_betelgeuse():
         result["status"] == "success" and result["data"]["ra_deg"] is not None
         for result in body["results"]
     )
-    assert "simbad.cds.unistra.fr" in body["sources"][0]["url"]
+    source = urlparse(body["sources"][0]["url"])
+    assert source.hostname in SIMBAD_SERVERS and source.path == "/simbad/sim-id"

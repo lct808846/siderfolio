@@ -115,9 +115,22 @@ with TestClient(app,base_url='http://127.0.0.1') as client:
               'literature_results':[],'gaia_results':[],'sources':[],'warnings':[]}
     export={'schema_version':'1','snapshot':snapshot,'plots':[]}
     assert client.post('/api/v1/exports',json=export).status_code==200
+    p=client.post('/api/v1/projects',json={'name':'wheel project smoke'}).json()
+    assert p['revision']==0
+    assignment={'expected_revision':0,'expected_conversation_revision':1,
+                'expected_metadata_revision':0}
+    assert client.put('/api/v1/projects/'+p['id']+'/conversations/'+c['id'],
+                      json=assignment).status_code==200
+    archive=client.post('/api/v1/projects/'+p['id']+'/archive',
+                        json={'expected_revision':1})
+    assert archive.status_code==200
+    restored=client.post('/api/v1/projects/import',content=archive.content,
+                         headers={'Content-Type':'application/zip'})
+    assert restored.status_code==201 and restored.json()['project']['id']!=p['id']
+    assert restored.json()['project']['provenance']=='imported_unverified'
 print(json.dumps({'imported_from':astroagent.__file__,'version':astroagent.__version__,
                   'health':True,'crud':True,'failed_turn_saved':True,
-                  'export_without_key':True}))
+                  'export_without_key':True,'project_restore_without_key':True}))
 """
                 result = subprocess.run(
                     [sys.executable, "-c", code],

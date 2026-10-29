@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { api, apiUrl, download, safeLink } from '../api'
 import type { ArtifactInfo, Manifest, PlotSpec, Turn } from '../types'
 
-const props = defineProps<{ turn: Turn | null; historical: boolean }>()
+const props = defineProps<{ turn: Turn | null; historical: boolean; artifactPath?: string; heading?: string }>()
 const tab = ref<'gaia' | 'ads' | 'simbad'>('gaia')
 const page = ref(0)
 const index = ref(0)
@@ -30,7 +30,8 @@ async function generate() {
   const token = generation
   const turnId = props.turn.turn_id
   try {
-    const generated = await api.artifact(props.turn.conversation_id, turnId, kinds.value.map(kind => ({ kind, gaia_result_index: index.value })))
+    const plots = kinds.value.map(kind => ({ kind, gaia_result_index: index.value }))
+    const generated = props.artifactPath ? await api.snapshotArtifact(props.artifactPath, plots) : await api.artifact(props.turn.conversation_id, turnId, plots)
     const metadata = await api.manifest(generated.manifest_url)
     if (props.turn?.turn_id === turnId && token === generation) { artifact.value = generated; manifest.value = metadata }
   } catch (e) { error.value = e instanceof Error ? e.message : '生成失败' } finally { busy.value = false }
@@ -40,10 +41,10 @@ async function save() { if (!artifact.value) return; try { await download(artifa
 
 <template>
   <aside class="results-panel" aria-label="结果核查">
-    <header class="pane-heading"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ turn ? `第 ${turn.revision} 轮结果` : '查询结果' }}</h2></div><span v-if="historical" class="tag">历史结果</span></header>
+    <header class="pane-heading"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ heading || (turn ? `第 ${turn.revision} 轮结果` : '查询结果') }}</h2></div><span v-if="historical" class="tag">历史结果</span></header>
     <div v-if="!turn" class="results-empty"><span class="crosshair" aria-hidden="true">⊙</span><h3>让每一个结论有据可查</h3><p>查询后在这里核查测量、检索条件和来源。</p><div class="empty-axis"><span>等待查询数据</span></div></div>
     <template v-else>
-      <p class="small muted">接收时间（UTC）<br><time>{{ turn.received_at }}</time></p>
+      <p class="small muted">{{ artifactPath ? "快照保存时间（UTC）" : "接收时间（UTC）" }}<br><time>{{ turn.received_at }}</time></p>
       <p v-if="turn.error" class="notice danger">{{ turn.error.message }} <code>{{ turn.error.code }}</code></p>
       <p v-if="!response" class="notice">这一轮暂时没有可核查的完整响应。</p>
       <template v-if="response">
@@ -71,7 +72,7 @@ async function save() { if (!artifact.value) return; try { await download(artifa
           <p v-if="!response.results?.length" class="muted">本轮未执行 SIMBAD 查询。</p>
           <article v-for="(result, i) in response.results" :key="i" class="object-result"><h3>{{ result.object_name }}</h3><span class="tag">{{ result.status }}</span><p v-if="result.error" class="notice danger">{{ result.error.message }} <code>{{ result.error.code }}</code></p><dl v-if="result.data"><template v-for="(value, field) in result.data" :key="field"><dt>{{ field }}</dt><dd>{{ text(value) }}</dd></template></dl><p class="small muted">UTC {{ result.source.retrieved_at }}</p><a v-if="safeLink(result.source.url)" :href="safeLink(result.source.url)!" target="_blank" rel="noopener noreferrer">SIMBAD 来源 ↗</a><p v-else>{{ result.source.url }}</p></article>
         </section>
-        <section class="export-section" aria-label="图表与下载"><h3>图表与数据包</h3><p class="small muted">基于第 {{ turn.revision }} 轮完整响应。图表只描述交付样本。</p><div v-if="response.gaia_results?.length" class="plot-options"><label v-for="(name, kind) in names" :key="kind"><input v-model="kinds" type="checkbox" :value="kind" :disabled="busy">{{ name }}</label></div><div class="export-actions"><button :disabled="busy" class="button-secondary" @click="generate">{{ busy ? '正在生成…' : '生成预览与数据包' }}</button><button v-if="artifact" class="button-primary" @click="save">下载 ZIP</button></div><p v-if="error" class="notice danger" role="alert">{{ error }}</p><template v-if="artifact"><p class="small muted">导出{{ artifact.export_status === 'partial' ? '部分完成' : '完成' }} · {{ artifact.exporter_version }}<br>有效期至 {{ artifact.expires_at }}</p><figure v-for="picture in artifact.figures" :key="picture.figure_id"><img :src="apiUrl(picture.url)" :alt="names[picture.kind] || picture.kind" @error="error = '图片已过期或不可用，请重新生成。'"><figcaption>{{ names[picture.kind] }} · <a :href="apiUrl(picture.url)" target="_blank" rel="noopener noreferrer">原尺寸 ↗</a></figcaption></figure><template v-if="manifest"><p v-for="(plot, i) in manifest.plots" :key="i" class="small">{{ names[String(plot.kind)] }}：{{ plot.status === 'success' ? '已生成' : reasons[String(plot.reason)] || '未生成' }}</p></template></template></section>
+        <section class="export-section" aria-label="图表与下载"><h3>图表与数据包</h3><p class="small muted">{{ artifactPath ? "基于保存的完整快照。" : `基于第 ${turn.revision} 轮完整响应。` }}图表只描述交付样本。</p><div v-if="response.gaia_results?.length" class="plot-options"><label v-for="(name, kind) in names" :key="kind"><input v-model="kinds" type="checkbox" :value="kind" :disabled="busy">{{ name }}</label></div><div class="export-actions"><button :disabled="busy" class="button-secondary" @click="generate">{{ busy ? '正在生成…' : '生成预览与数据包' }}</button><button v-if="artifact" class="button-primary" @click="save">下载 ZIP</button></div><p v-if="error" class="notice danger" role="alert">{{ error }}</p><template v-if="artifact"><p class="small muted">导出{{ artifact.export_status === 'partial' ? '部分完成' : '完成' }} · {{ artifact.exporter_version }}<br>有效期至 {{ artifact.expires_at }}</p><figure v-for="picture in artifact.figures" :key="picture.figure_id"><img :src="apiUrl(picture.url)" :alt="names[picture.kind] || picture.kind" @error="error = '图片已过期或不可用，请重新生成。'"><figcaption>{{ names[picture.kind] }} · <a :href="apiUrl(picture.url)" target="_blank" rel="noopener noreferrer">原尺寸 ↗</a></figcaption></figure><template v-if="manifest"><p v-for="(plot, i) in manifest.plots" :key="i" class="small">{{ names[String(plot.kind)] }}：{{ plot.status === 'success' ? '已生成' : reasons[String(plot.reason)] || '未生成' }}</p></template></template></section>
       </template>
     </template>
   </aside>

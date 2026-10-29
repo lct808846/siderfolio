@@ -1,0 +1,53 @@
+{
+  "started_at": "2026-10-29T04:40:14.663250+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.6.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "c057010f68e10a12d3d69708e8a2436d88fa22dd",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/ROADMAP.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/index.ts\n M frontend/src/components/ResultPanel.vue\n M frontend/src/main.ts\n M frontend/src/stores/workbench.ts\n M frontend/src/style.css\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/tests/unit/workbench.test.ts\n M pyproject.toml\n M scripts/fixture_server.py\n M scripts/verify_package.py\n M src/astroagent/__init__.py\n M src/astroagent/api/conversations.py\n M src/astroagent/artifacts.py\n M src/astroagent/conversation_schemas.py\n M src/astroagent/conversations.py\n M src/astroagent/local_access.py\n M src/astroagent/main.py\n?? docs/PROJECT_PLAN_V0.6.md\n?? docs/releases/v0.6.0.md\n?? docs/test-records/v0.6.0/\n?? frontend/src/api/projects.ts\n?? frontend/src/views/ProjectWorkspace.vue\n?? frontend/tests/browser/projects.spec.ts\n?? frontend/tests/unit/projects-api.test.ts\n?? scripts/synthetic_services.py\n?? scripts/verify_v06.py\n?? src/astroagent/api/projects.py\n?? src/astroagent/project_archives.py\n?? src/astroagent/project_schemas.py\n?? src/astroagent/project_service.py\n?? src/astroagent/projects.py\n?? tests/test_projects.py",
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "D:\\project\\astroagent\\frontend\\node_modules\\playwright\\cli.js",
+        "test",
+        "--output",
+        "D:\\project\\astroagent\\docs\\test-records\\v0.6.0\\browser-tests\\20261029T044014645743Z\\artifacts"
+      ],
+      "exit_code": 0,
+      "transcript": "check-2.txt"
+    }
+  ],
+  "node": "v24.22.1",
+  "data_kind": "synthetic_not_observations",
+  "visual_review": "pending_manual_inspection",
+  "server_ports_closed": {
+    "8000": true,
+    "5173": true
+  },
+  "outcome": "passed",
+  "finished_at": "2026-10-29T04:40:57.212799+00:00"
+}

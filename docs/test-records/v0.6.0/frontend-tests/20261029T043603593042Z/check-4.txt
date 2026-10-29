@@ -1,0 +1,16 @@
+
+> astroagent-workbench@0.6.0 test
+> vitest run
+
+
+ RUN  v3.2.4 D:/project/astroagent/frontend
+
+ ✓ tests/unit/projects-api.test.ts (3 tests) 13ms
+ ✓ tests/unit/api.test.ts (7 tests) 20ms
+ ✓ tests/unit/workbench.test.ts (5 tests) 34ms
+
+ Test Files  3 passed (3)
+      Tests  15 passed (15)
+   Start at  12:36:21
+   Duration  3.00s (transform 537ms, setup 0ms, collect 854ms, tests 66ms, environment 3.38s, prepare 722ms)
+

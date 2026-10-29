@@ -1,0 +1,9 @@
+Processing .\.
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: astroagent
+  Building wheel for astroagent (pyproject.toml): started
+  Building wheel for astroagent (pyproject.toml): finished with status 'done'
+  Created wheel for astroagent: filename=astroagent-0.6.0-py3-none-any.whl size=86487 sha256=cfb4aacef165004e39b6c4d40ad58409d59035b489c883750fc3c0d5d3ba410b
+  Stored in directory: C:\Users\lct\AppData\Local\Temp\pip-ephem-wheel-cache-jgzf6xf4\wheels\fe\be\63\f37517591837473b857d7355756a86fd042baeb245869ce9ab
+Successfully built astroagent

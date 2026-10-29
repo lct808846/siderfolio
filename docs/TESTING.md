@@ -10,7 +10,33 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-当前实际结果见 [V0.5 测试记录](test-records/v0.5.0/README.md)，历史见 [V0.4](test-records/v0.4.0/README.md)、[V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
+当前实际结果见 [V0.6 测试记录](test-records/v0.6.0/README.md)，历史见 [V0.5](test-records/v0.5.0/README.md)、[V0.4](test-records/v0.4.0/README.md)、[V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
+
+## V0.6 网页手动测试
+
+按README启动单worker后端及前端，访问 <http://127.0.0.1:5173/projects>。先在对话页取得一轮完整结果，再创建项目并加入该会话，保存命名快照。核对100行原始表、来源时间与条件，选择单条查询，检查确认弹窗；取消不触网，确认才生成独立重跑轮次与快照。选择新旧快照比较，查看执行状态和数据状态。
+
+导出项目ZIP，再导入恢复，核对新项目ID、未认证标记、完整结果及关系。刷新选中的快照，再生成预览和单轮ZIP。最后删除恢复项目，确认其会话仍存在于未归档列表。使用独立测试库，避免试验性删除个人历史。
+
+## V0.6 自动化检查
+
+```powershell
+conda activate agent
+python scripts/run_tests.py
+python scripts/verify_v06.py
+$env:NODE_BINARY = "$env:USERPROFILE\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"
+python scripts/run_frontend_checks.py
+python scripts/run_frontend_checks.py --browser
+python scripts/verify_package.py
+# 显式联网，会产生模型用量；真实服务失败如实保存
+python scripts/verify_v06.py --live
+```
+
+浏览器验收前停止手动启动的8000/5173服务。HTTP脚本使用动态端口、合成服务及独立临时库，覆盖三工具直接重跑、幂等、100行、项目比较、固定成员/哈希、真实进程重启、运行重跑标中断且不自动重放，以及在另一份空库导入恢复和删除项目保留会话。Windows使用原生TCP监听表确认临时端口关闭，不把连接超时视为关闭证据。
+
+`test_projects.py`覆盖完整快照、迁移前备份和故障回滚、修订冲突、来源等级保留、共享执行槽、配额、坏包与引用/版本/严格JSON、大小边界及导入失败无部分写入。默认禁止科研服务HTTP访问，导入/比较不调用模型。前端覆盖快照地址刷新恢复、明确重跑确认和Escape取消、原请求键、项目恢复与移动端布局；旧工作台浏览器用例同时执行。
+
+`--live`实际检查Gaia/ADS/SIMBAD的初次模型查询和无模型直接重跑，复验名称链路与三工具，并用真实响应完成比较、包校验、新库恢复和图表再生成。接入哈佛镜像后本次21/21通过，原失败报告保留；版本化证据见V0.6记录。
 
 ## V0.5 前后端与会话验收
 
@@ -174,3 +200,10 @@ V0.3 HTTP 脚本实际启动 Uvicorn，检查基础接口、Gaia 两种查询、
 V0.4 两种 HTTP 脚本运行模式均在 `finally` 停止自身服务并检查 PID 和端口。默认模式强制清空子进程的模型及 ADS 密钥，合成数据明确标记，不能作为实际观测；`--live` 需要实际凭证和外部网络，外部失败按失败记录，不得静默跳过。PNG 解码/尺寸检查不等同于视觉验收；人工打开实际 PNG 后，在独立 `figure-review/<UTC时间>/` 保存图像哈希与检查结论，原报告的 `pending_manual_inspection` 不覆盖修改。
 
 当前验证了服务提供 Swagger HTML 和正确 OpenAPI 定义，未在图形浏览器中检查 Swagger CDN 静态资源加载。模型的自然语言回答仍需对照 `results` 核查；本版本没有完整的模型科学准确性评测、压力测试或生产部署验收。
+
+
+## SIMBAD 镜像故障转移复验
+
+主站网络不可达、超时或临时服务故障时自动尝试固定的哈佛镜像，不修改全局astroquery配置；未匹配、无效查询和损坏数据不换站重放。`test_simbad_fallback.py`覆盖实际来源、独立会话、包装异常、两站失败、并发和无匹配；原首次capabilities请求的有界超时测试保留。真实测试接受两站的准确来源域名，坐标和工具返回断言保持。
+
+2026-10-29本次离线417项通过，真实SIMBAD两项回归和V0.6联网21项均通过；名称链路另核对实际SIMBAD坐标与Gaia参数一致，三工具确有三类新结果。`--live`日志中的30秒线程栈是诊断采样，并非断言失败，最终结果与JUnit为准。历史失败不覆盖。

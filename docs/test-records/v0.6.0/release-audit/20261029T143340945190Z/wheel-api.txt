@@ -1,0 +1,1 @@
+{"imported_from": "C:\\Users\\lct\\AppData\\Local\\Temp\\astroagent-wheel-l5q1_nto\\installed\\astroagent\\__init__.py", "version": "0.6.0", "health": true, "crud": true, "failed_turn_saved": true, "export_without_key": true, "project_restore_without_key": true}
