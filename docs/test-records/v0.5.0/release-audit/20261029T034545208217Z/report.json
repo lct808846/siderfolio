@@ -1,0 +1,65 @@
+{
+  "started_at": "2026-10-29T03:45:45.209217+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.5.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "670ffe5e4e1428b4a039b0b0bdb8e7bbfc343b99",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M .github/workflows/test.yml\n M .gitignore\n M README.md\n M docs/PROJECT_PLAN_V0.1.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M src/astroagent/__init__.py\n M src/astroagent/agent.py\n M src/astroagent/api/chat.py\n M src/astroagent/config.py\n M src/astroagent/main.py\n M tests/conftest.py\n?? docs/PROJECT_PLAN_V0.5.md\n?? docs/ROADMAP.md\n?? docs/releases/v0.5.0.md\n?? docs/test-records/v0.5.0/\n?? frontend/\n?? scripts/fixture_server.py\n?? scripts/frontend.ps1\n?? scripts/generate_frontend_types.py\n?? scripts/run_frontend_checks.py\n?? scripts/verify_package.py\n?? scripts/verify_v05.py\n?? src/astroagent/api/artifacts.py\n?? src/astroagent/api/conversations.py\n?? src/astroagent/artifacts.py\n?? src/astroagent/context.py\n?? src/astroagent/conversation_schemas.py\n?? src/astroagent/conversation_service.py\n?? src/astroagent/conversations.py\n?? src/astroagent/execution.py\n?? src/astroagent/local_access.py\n?? tests/test_conversations.py",
+  "checks": [
+    {
+      "command": [
+        "E:\\miniconda3\\envs\\agent\\python.exe",
+        "-m",
+        "pip",
+        "wheel",
+        "D:\\project\\astroagent",
+        "--no-deps",
+        "--no-build-isolation",
+        "--wheel-dir",
+        "C:\\Users\\lct\\AppData\\Local\\Temp\\astroagent-wheel-sj_et8fd\\wheels"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "E:\\miniconda3\\envs\\agent\\python.exe",
+        "-m",
+        "pip",
+        "install",
+        "--no-deps",
+        "--no-compile",
+        "--target",
+        "C:\\Users\\lct\\AppData\\Local\\Temp\\astroagent-wheel-sj_et8fd\\installed",
+        "C:\\Users\\lct\\AppData\\Local\\Temp\\astroagent-wheel-sj_et8fd\\wheels\\astroagent-0.5.0-py3-none-any.whl"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "isolated wheel API smoke"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "scope": "Dedicated wheel installation; dependencies reused from the verified Python environment. No installer is published.",
+  "wheel": {
+    "name": "astroagent-0.5.0-py3-none-any.whl",
+    "sha256": "5a5392e10af181460ceff0b7c041b274e04e5a0c80fea88c90b89526b6236424",
+    "frontend_embedded": false
+  },
+  "outcome": "passed",
+  "finished_at": "2026-10-29T03:46:00.291051+00:00"
+}

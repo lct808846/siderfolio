@@ -1,0 +1,42 @@
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'astroagent-workbench@0.5.0',
+npm warn EBADENGINE   required: { node: '^24.15.0' },
+npm warn EBADENGINE   current: { node: 'v22.15.0', npm: '10.9.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'abbrev@5.0.0',
+npm warn EBADENGINE   required: { node: '^22.22.2 || ^24.15.0 || >=26.0.0' },
+npm warn EBADENGINE   current: { node: 'v22.15.0', npm: '10.9.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'nopt@10.0.1',
+npm warn EBADENGINE   required: { node: '^22.22.2 || ^24.15.0 || >=26.0.0' },
+npm warn EBADENGINE   current: { node: 'v22.15.0', npm: '10.9.2' }
+npm warn EBADENGINE }
+npm error code EPERM
+npm error syscall mkdir
+npm error path D:\project\astroagent\frontend\node_modules\@typescript-eslint\parser
+npm error errno -4048
+npm error Error: EPERM: operation not permitted, mkdir 'D:\project\astroagent\frontend\node_modules\@typescript-eslint\parser'
+npm error     at async mkdir (node:internal/fs/promises:852:10)
+npm error     at async E:\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:624:20
+npm error     at async Promise.allSettled (index 96)
+npm error     at async [reifyPackages] (E:\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:325:11)
+npm error     at async Arborist.reify (E:\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:142:5)
+npm error     at async CI.exec (E:\nodejs\node_modules\npm\lib\commands\ci.js:100:5)
+npm error     at async Npm.exec (E:\nodejs\node_modules\npm\lib\npm.js:207:9)
+npm error     at async module.exports (E:\nodejs\node_modules\npm\lib\cli\entry.js:74:5) {
+npm error   errno: -4048,
+npm error   code: 'EPERM',
+npm error   syscall: 'mkdir',
+npm error   path: 'D:\\project\\astroagent\\frontend\\node_modules\\@typescript-eslint\\parser'
+npm error }
+npm error
+npm error The operation was rejected by your operating system.
+npm error It's possible that the file was already in use (by a text editor or antivirus),
+npm error or that you lack permissions to access it.
+npm error
+npm error If you believe this might be a permissions issue, please double-check the
+npm error permissions of the file and its containing directories, or try running
+npm error the command again as root/Administrator.
+npm error A complete log of this run can be found in: C:\Users\lct\AppData\Local\Packages\sandbox.{59bbbc9b-08ef-45b0-ad90-d78faeda49e5}\AC\npm-cache\_logs\2026-10-29T03_44_58_053Z-debug-0.log

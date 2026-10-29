@@ -1,0 +1,17 @@
+INFO:     Started server process [22156]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:60342 (Press CTRL+C to quit)
+INFO:     127.0.0.1:60428 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60431 - "GET /api/v1/conversations/a8effb67-89f8-4671-ade3-6445c62a2feb/turns/55b4e05a-7422-4e43-b921-3ba375bab06c HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60432 - "GET /api/v1/conversations/62604043-0c4d-4639-b0c1-8df5375606cc/turns/5a9745b0-be6c-4629-b1bc-dc91d04d4858 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60433 - "POST /api/v1/conversations/62604043-0c4d-4639-b0c1-8df5375606cc/turns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60434 - "POST /api/v1/conversations/a8effb67-89f8-4671-ade3-6445c62a2feb/turns/55b4e05a-7422-4e43-b921-3ba375bab06c/artifacts HTTP/1.1" 201 Created
+INFO:     127.0.0.1:60435 - "GET /api/v1/artifacts/f8e862bd-c6aa-477e-8fae-4decfcd15371/download HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60436 - "GET /api/v1/artifacts/f8e862bd-c6aa-477e-8fae-4decfcd15371/manifest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60437 - "GET /api/v1/artifacts/f8e862bd-c6aa-477e-8fae-4decfcd15371/figures/7f8138b1-cbff-46aa-957a-2f66748747a0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60438 - "GET /api/v1/artifacts/f8e862bd-c6aa-477e-8fae-4decfcd15371/figures/eab3e50f-ee70-4877-9aac-ae50f9dc30e6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60439 - "GET /api/v1/artifacts/f8e862bd-c6aa-477e-8fae-4decfcd15371/figures/f6d67fe4-c751-4e58-9b11-3d9349ca7be9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60440 - "PATCH /api/v1/conversations/a8effb67-89f8-4671-ade3-6445c62a2feb HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60441 - "DELETE /api/v1/conversations/a8effb67-89f8-4671-ade3-6445c62a2feb HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:60442 - "GET /api/v1/conversations/a8effb67-89f8-4671-ade3-6445c62a2feb HTTP/1.1" 404 Not Found

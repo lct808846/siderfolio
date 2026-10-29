@@ -1,0 +1,35 @@
+diff --git a/README.md b/README.md
+index 0eefdff..76129d4 100644
+--- a/README.md
++++ b/README.md
+@@ -10,6 +10,8 @@
+ 
+ 导出契约与完成门槛见 [V0.4 开发文档：查询结果可视化与可复现导出](docs/PROJECT_PLAN_V0.4.md)。`POST /api/v1/exports` 接收完整客户端快照，独立于模型和外部数据库，可无密钥使用。
+ 
++下一版本规划见 [V0.5 开发文档：Web 界面与连续对话](docs/PROJECT_PLAN_V0.5.md)，采用 Vue 3 + TypeScript + Vite（Vue Router、Pinia）独立前端、FastAPI 后端与 SQLite 本地业务库，范围为本机中文网页、本地会话与上下文、结果核查、图表预览和下载；目前仅完成开发规划，尚未实现。后续 V0.6–V2.0 的目标、依赖与验收门槛统一见 [版本路线图](docs/ROADMAP.md)。
++
+ Gaia 固定访问 `gaiadr3.gaia_source`：支持十进制字符串 DR3 `source_id` 精确查询，或 ICRS 中心与半径（最大 30 角分）的圆锥查询（最多 100 行，默认 20 行）。返回测量、误差、单位、参考历元、实际 ADQL 与截断状态；可按要求筛选 RUWE 和正视差信噪比。基础统计由程序计算，只描述实际交付行；总命中数未知，不自动翻页。
+ 
+ ADS 支持主题、标题、作者、年份范围、bibcode 与相关性/日期/被引次数排序。每次查询一页（1–10 篇，前 100 条范围），返回标题、完整作者列表、年份、出版物、全部 DOI、摘要、被引次数及程序构建的 ADS 链接。缺失数据保留空值；仅依据本次摘要总结，不下载或声称阅读全文。
+@@ -297,6 +299,8 @@ astroagent/
+ │   ├── PROJECT_PLAN_V0.2.md
+ │   ├── PROJECT_PLAN_V0.3.md
+ │   ├── PROJECT_PLAN_V0.4.md
++│   ├── PROJECT_PLAN_V0.5.md
++│   ├── ROADMAP.md
+ │   └── TESTING.md
+ ├── .env.example
+ ├── .gitignore
+diff --git a/docs/PROJECT_PLAN_V0.1.md b/docs/PROJECT_PLAN_V0.1.md
+index 6f3735e..3ae9282 100644
+--- a/docs/PROJECT_PLAN_V0.1.md
++++ b/docs/PROJECT_PLAN_V0.1.md
+@@ -74,6 +74,8 @@
+ 
+ ## 7. 后续迭代
+ 
++以下保留 V0.1 时的原始方向。2026-10-28 起的细分版本、范围和退出标准统一见 [版本路线图](ROADMAP.md)，下一步见 [V0.5 开发文档](PROJECT_PLAN_V0.5.md)。
++
+ V0.2：ADS 文献检索。
+ 
+ V0.3：Gaia 数据查询与分析。

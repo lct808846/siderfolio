@@ -9,6 +9,7 @@ from astroagent.ads import AdsService
 from astroagent.agent import AstroAgent
 from astroagent.config import Settings
 from astroagent.errors import ServiceError
+from astroagent.execution import MODEL_TASK_SLOTS
 from astroagent.gaia import GaiaService
 from astroagent.schemas import ChatRequest, ChatResponse, ErrorResponse
 from astroagent.simbad import SimbadService
@@ -42,4 +43,11 @@ def get_agent() -> AstroAgent:
     ),
 )
 def chat(request: ChatRequest, agent: Annotated[AstroAgent, Depends(get_agent)]) -> ChatResponse:
-    return agent.chat(request.message)
+    if not MODEL_TASK_SLOTS.acquire(blocking=False):
+        raise ServiceError(
+            503, "conversation_service_busy", "已有两轮正在处理，请稍后重试。", retryable=True
+        )
+    try:
+        return agent.chat(request.message)
+    finally:
+        MODEL_TASK_SLOTS.release()

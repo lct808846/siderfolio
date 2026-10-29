@@ -2,13 +2,49 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)，新增查询快照、CSV、Gaia 图表和 ZIP 导出，详见 [版本说明](docs/releases/v0.4.0.md) 与 [实际测试记录](docs/test-records/v0.4.0/README.md)。本版按用户明确授权带已记录的 SIMBAD 超时限制发布，完整联网成功路径仍需补验，不代表全部联网测试通过。
+当前版本：`v0.5.0`，新增中文 Web 工作台、本地会话与连续对话、历史核查和同包图表预览/下载。见 [版本说明](docs/releases/v0.5.0.md)、[实际测试记录](docs/test-records/v0.5.0/README.md) 与 [源码发布页](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)。SIMBAD 相关完整联网成功路径仍未通过，本版保留该已知限制。
 
-上一版本为 [v0.3.0](https://github.com/lct808846/astroagent/releases/tag/v0.3.0)，历史源码与测试记录保留。
+本版按 2026-10-29 用户“发布新版本”的指令执行源码发布流程，保留当日 SIMBAD 超时复验和失败证据。历史版本见 [`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
 
-开发依据为 [V0.3 开发文档](docs/PROJECT_PLAN_V0.3.md)，原有能力见 [V0.2 开发文档](docs/PROJECT_PLAN_V0.2.md) 和 [V0.1 计划](docs/PROJECT_PLAN_V0.1.md)。本版本为单次、无状态查询；不包含前端、多用户、MCP、RAG 或复杂科研工作流。
+开发依据为 [V0.5 开发文档](docs/PROJECT_PLAN_V0.5.md)。网页通过独立会话接口保存历史；原 `POST /api/v1/chat` 保持单次、无状态语义。本版仅面向可信本机的单用户使用，不包含账号、多用户、公网/LAN 部署、MCP、RAG 或复杂科研工作流。
 
 导出契约与完成门槛见 [V0.4 开发文档：查询结果可视化与可复现导出](docs/PROJECT_PLAN_V0.4.md)。`POST /api/v1/exports` 接收完整客户端快照，独立于模型和外部数据库，可无密钥使用。
+
+前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，后端使用 FastAPI 与标准库 SQLite。后续 V0.6–V2.0 的目标、依赖与验收门槛统一见 [版本路线图](docs/ROADMAP.md)。
+
+## 本机网页使用
+
+需要 Python 3.12+ 和 Node.js 24.15+（本轮验证版本24.22.1，npm10.9.2）。先按下节安装后端并在服务端配置密钥。前端不接收或保存模型密钥、ADS token。
+
+在第一个 PowerShell 终端启动后端，保持单进程、单 worker：
+
+```powershell
+conda activate agent
+python -m uvicorn astroagent.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+在第二个终端，从项目根目录进入前端，安装锁定依赖并启动构建产物：
+
+```powershell
+cd frontend
+npm ci
+npm run build
+npm run serve
+```
+
+Windows也可在项目根目录运行 `powershell -File scripts/frontend.ps1 -Mode build`，再运行 `powershell -File scripts/frontend.ps1 -Mode serve`。脚本优先使用已安装的Node24.15+（24.x）；若当前Node不受支持，可使用已存在的Codex内置Node，或显式传入 `-NodePath`。它不替换系统Node，也不修改全局配置。
+
+打开 <http://127.0.0.1:5173>。新建会话，输入完整首问，再基于已保存结果追问；右侧按轮次核查三类结果、完整表格、条件与来源。选择图种后点击“生成预览与数据包”，预览和下载来自同一个 ZIP。改选轮次或图种后需要重新生成；不足绘图条件时保留具体跳过原因。
+
+会话默认保存在 `.astroagent/astroagent.sqlite3`，刷新与服务重启后可以恢复。断线只代表网页停止等待，不保证后端已取消；先点击“恢复会话 / 刷新状态”核对，不要重复执行。已有运行中轮次在服务重启后标为“中断”，不会自动重放收费请求。删除会话前需要确认，不影响已下载到其他目录的文件。
+
+预览包仅缓存于内存，15分钟后或重启后失效；回到原轮次显式重新生成。缺少模型密钥时仍可读取历史及生成历史结果的预览/导出。SQLite不可写时会话接口明确报错；健康、接口文档及旧无状态入口仍可启动。
+
+前端开发时用 `npm run dev` 代替构建/静态服务，同样只监听127.0.0.1:5173且端口占用即失败。默认两种前端服务都把 `/api`、`/health` 代理至127.0.0.1:8000；构建静态服务不把API错误回退成HTML。直接跨源联调可在前端独立环境文件设置公开的 `VITE_API_BASE_URL`，后端配置明确的 `ASTROAGENT_ALLOWED_ORIGINS` JSON数组；不使用通配来源，前端环境变量中不得包含凭证。
+
+本地限制：最多20个会话、每会话40个已接受轮次；全局最多两轮模型任务，不排队；请求32 KiB，单轮16 MiB，全库业务内容及预留256 MiB。历史模型窗口最近六轮且至多64 KiB，整轮裁剪并提示遗漏；不改写原始完整结果。该字节预算不是供应商token容量保证，模型调用前另保留当前输入、工具与输出预算。
+
+数据库目录通过 `ASTROAGENT_DATA_DIR` 配置，必须在后端本机磁盘。数据库schema迁移前使用SQLite备份接口，未知更高版本拒绝降级写入。数据库和前端构建缓存不进入源码归档。本版不支持多worker或多个进程共享会话库；不要通过绑定0.0.0.0将无登录工具暴露到公网或LAN。
 
 Gaia 固定访问 `gaiadr3.gaia_source`：支持十进制字符串 DR3 `source_id` 精确查询，或 ICRS 中心与半径（最大 30 角分）的圆锥查询（最多 100 行，默认 20 行）。返回测量、误差、单位、参考历元、实际 ADQL 与截断状态；可按要求筛选 RUWE 和正视差信噪比。基础统计由程序计算，只描述实际交付行；总命中数未知，不自动翻页。
 
@@ -76,6 +112,9 @@ python -m uvicorn astroagent.main:app --reload
 - 健康检查：<http://127.0.0.1:8000/health>
 - 聊天查询：`POST http://127.0.0.1:8000/api/v1/chat`
 - 结果导出：`POST http://127.0.0.1:8000/api/v1/exports`
+- 本地会话：`/api/v1/conversations`、`/{id}/turns`
+- 轮次产物：`/api/v1/conversations/{id}/turns/{turn_id}/artifacts`
+- 清单/图片/下载：`/api/v1/artifacts/{artifact_id}/...`
 - 交互接口文档：<http://127.0.0.1:8000/docs>
 - OpenAPI 定义：<http://127.0.0.1:8000/openapi.json>
 
@@ -245,18 +284,26 @@ python scripts/run_tests.py --live-gaia # 独立 Gaia、真实模型、名称衔
 python scripts/verify_v03.py         # V0.3 十二项真实 HTTP 验收并停止临时服务
 python scripts/verify_v04.py         # 合成数据的真实 HTTP 导出验收，无密钥
 python scripts/verify_v04.py --live  # 真实查询→导出，会产生模型用量
+python scripts/verify_v05.py         # 合成替身的真实HTTP、追问、幂等与重启恢复
+python scripts/verify_v05.py --live  # 真实会话/条件继承/历史引用，会产生模型用量
+python scripts/run_frontend_checks.py # npm ci、类型、ESLint、Vitest、构建和契约
+python scripts/run_frontend_checks.py --browser # 生产dist的Chromium/Edge验收
+python scripts/verify_package.py     # 独立wheel安装与无密钥API验收，不发布安装器
 python scripts/verify_v02.py         # V0.2 九项真实 HTTP 验收并停止临时服务
 python scripts/measure_latency.py    # 测量已启动服务的延迟，默认 3 次真实查询
 ```
 
 Gaia 的 pytest 独立开关为 `ASTROAGENT_RUN_LIVE_GAIA=1`；ADS 使用 `ASTROAGENT_RUN_LIVE_ADS=1`。三个开关互不启用，默认归档入口全部关闭它们。显式启用后缺密钥或外部失败会报错，不能当作跳过。Gaia 直接查询测试无需密钥，模型及联合场景需已有相应配置。
 
-记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.4.0](docs/test-records/v0.4.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 配置为每次 push / PR 执行离线测试与 Ruff 检查；远程运行状态须在推送后查看。
+浏览器检查前在 `frontend/` 执行 `npx playwright install chromium`；Windows同时使用已安装的Edge，Linux仅运行Chromium。检查脚本可用 `NODE_BINARY` 指定已安装的受支持Node可执行文件；浏览器测试采用专用合成库，不访问个人会话库。
+
+记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.5.0](docs/test-records/v0.5.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 包含后端检查、独立前端构建与浏览器任务；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
 
 ## 目录
 
 ```text
 astroagent/
+├── frontend/               # 独立Vue/TypeScript工程、生产静态服务、组件与浏览器测试
 ├── src/astroagent/
 │   ├── __init__.py
 │   ├── main.py              # 应用、路由与错误响应
@@ -269,6 +316,11 @@ astroagent/
 │   ├── export_schemas.py    # 严格快照与导出契约
 │   ├── exports.py           # 固定列 CSV、JSON、ZIP 与校验清单
 │   ├── plots.py             # 全交付样本选行、分箱与无 GUI PNG
+│   ├── conversations.py    # SQLite迁移、短事务、幂等、配额与恢复
+│   ├── conversation_service.py # 同会话一轮、全局两轮模型任务
+│   ├── context.py           # 整轮有界历史窗口及引用记录
+│   ├── artifacts.py         # 缓存ZIP、清单与白名单图片
+│   ├── local_access.py      # 本机Host/Origin与会话接收限制
 │   ├── schemas.py           # 请求、结果、来源与错误模型
 │   ├── errors.py            # 对外安全错误
 │   └── api/
@@ -297,6 +349,8 @@ astroagent/
 │   ├── PROJECT_PLAN_V0.2.md
 │   ├── PROJECT_PLAN_V0.3.md
 │   ├── PROJECT_PLAN_V0.4.md
+│   ├── PROJECT_PLAN_V0.5.md
+│   ├── ROADMAP.md
 │   └── TESTING.md
 ├── .env.example
 ├── .gitignore

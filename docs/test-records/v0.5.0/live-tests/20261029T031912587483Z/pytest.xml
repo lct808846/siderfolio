@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="130.130" timestamp="2026-10-29T11:19:17.410423+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_live" name="test_live_simbad_betelgeuse" time="40.110"><failure message="AssertionError: {&quot;object_name&quot;:&quot;Betelgeuse&quot;,&quot;status&quot;:&quot;error&quot;,&quot;source&quot;:{&quot;name&quot;:&quot;SIMBAD&quot;,&quot;url&quot;:&quot;https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML&quot;,&quot;retrieved_at&quot;:&quot;2026-10-29T03:19:22.928371Z&quot;},&quot;data&quot;:null,&quot;error&quot;:{&quot;code&quot;:&quot;simbad_timeout&quot;,&quot;message&quot;:&quot;SIMBAD 查询超时，请稍后重试。&quot;,&quot;retryable&quot;:true}}&#10;assert 'error' == 'success'&#10;  &#10;  - success&#10;  + error">def test_live_simbad_betelgeuse():
+        result = SimbadService().query("Betelgeuse")
+&gt;       assert result.status == "success", result.model_dump_json()
+E       AssertionError: {"object_name":"Betelgeuse","status":"error","source":{"name":"SIMBAD","url":"https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML","retrieved_at":"2026-10-29T03:19:22.928371Z"},"data":null,"error":{"code":"simbad_timeout","message":"SIMBAD 查询超时，请稍后重试。","retryable":true}}
+E       assert 'error' == 'success'
+E         
+E         - success
+E         + error
+
+tests\test_live.py:19: AssertionError</failure></testcase><testcase classname="tests.test_live" name="test_live_chat_betelgeuse" time="84.498"><failure message="AssertionError: {'status': 'error', 'answer': 'SIMBAD 查询两次均超时（错误码 `simbad_timeout`），因此本次没有取得任何数据库返回的坐标或天体类型数据。&#10;  &#10;  - 查询对象：Betelgeuse&#10;  - 来源链接（查询入口，未成功返回数据）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML&#10;  - 检索时间：2026-10-29T03:20:04Z 与 03:20:45Z（UTC）&#10;  &#10;  按规则，我不能用记忆中的数据替代查询结果，所以暂不给出坐标和类型。可以稍后重试；若你希望，我也可以改用其他标识符（如 HD 39801、HIP 27989）再试一次。', 'results': [{'object_name': 'Betelgeuse', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML', 'retrieved_at': '2026-10-29T03:20:04.558866Z'}, 'data': None, ...}, {'object_name': 'Betelgeuse', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML', 'retrieved_at': '2026-10-29T03:20:45.317710Z'}, 'data': None, ...}], 'literature_results': [], ...}&#10;assert 'error' == 'success'&#10;  &#10;  - success&#10;  + error">def test_live_chat_betelgeuse():
+        with TestClient(app) as client:
+            response = client.post(
+                "/api/v1/chat", json={"message": "请查询 Betelgeuse 的坐标和天体类型，并给出数据来源。"}
+            )
+        assert response.status_code == 200, response.text
+        body = response.json()
+&gt;       assert body["status"] == "success", body
+E       AssertionError: {'status': 'error', 'answer': 'SIMBAD 查询两次均超时（错误码 `simbad_timeout`），因此本次没有取得任何数据库返回的坐标或天体类型数据。
+E         
+E         - 查询对象：Betelgeuse
+E         - 来源链接（查询入口，未成功返回数据）：https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML
+E         - 检索时间：2026-10-29T03:20:04Z 与 03:20:45Z（UTC）
+E         
+E         按规则，我不能用记忆中的数据替代查询结果，所以暂不给出坐标和类型。可以稍后重试；若你希望，我也可以改用其他标识符（如 HD 39801、HIP 27989）再试一次。', 'results': [{'object_name': 'Betelgeuse', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML', 'retrieved_at': '2026-10-29T03:20:04.558866Z'}, 'data': None, ...}, {'object_name': 'Betelgeuse', 'status': 'error', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cds.unistra.fr/simbad/sim-id?Ident=Betelgeuse&amp;output.format=HTML', 'retrieved_at': '2026-10-29T03:20:45.317710Z'}, 'data': None, ...}], 'literature_results': [], ...}
+E       assert 'error' == 'success'
+E         
+E         - success
+E         + error
+
+tests\test_live.py:33: AssertionError</failure></testcase></testsuite></testsuites>

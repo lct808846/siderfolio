@@ -1,0 +1,49 @@
+{
+  "verified_at": "2026-10-29T03:22:45.283645+00:00",
+  "scope": "2026-10-29 live retest records only; no release audit",
+  "conversation_report": "live-conversation-tests\\20261029T031842403688Z\\report.json",
+  "regression_report": "live-tests\\20261029T031912587483Z\\report.json",
+  "conversation_checks": {
+    "passed": 14,
+    "total": 16
+  },
+  "regression_checks": {
+    "passed": 0,
+    "failed": 2
+  },
+  "scientific_acceptance": "failed_simbad_timeout",
+  "secrets_scan": {
+    "file_count": 21,
+    "zip_members": 34,
+    "configured_secret_count": 2,
+    "matched_paths": []
+  },
+  "visual_review": [
+    {
+      "file": "live-conversation-tests\\20261029T031842403688Z\\filtered-proper_motion.png",
+      "sha256": "16ccd8b7fdb9aa9e9bb8514b63b7600b664b5c8475eed4aa3492c497ca34a64f",
+      "review": "opened_and_visually_inspected",
+      "result": "axes_units_count_truncation_warning_readable"
+    },
+    {
+      "file": "live-conversation-tests\\20261029T031842403688Z\\filtered-parallax_histogram.png",
+      "sha256": "16ea96c7482924f78b34599e6c3d354440d1a335ab722c0fb9769fe94b618898",
+      "review": "opened_and_visually_inspected",
+      "result": "axes_units_count_truncation_warning_readable"
+    },
+    {
+      "file": "live-conversation-tests\\20261029T031842403688Z\\filtered-observed_cmd.png",
+      "sha256": "ab7193698b1a647a2178db9fe485bf91b7396ab46b7d50ac28474872a4e1b836",
+      "review": "opened_and_visually_inspected",
+      "result": "axes_units_count_truncation_warning_readable"
+    }
+  ],
+  "cleanup": {
+    "method": "native Windows Get-NetTCPConnection and Get-Process",
+    "pid": 35484,
+    "port": 51945,
+    "process_alive": false,
+    "listener_count": 0
+  },
+  "audit_outcome": "passed"
+}

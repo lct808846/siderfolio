@@ -1,0 +1,146 @@
+"""本机 Host / Origin 与会话接收边界；不依赖模型配置或数据库可用性。"""
+
+from fastapi.responses import JSONResponse
+
+from astroagent.config import LocalSettings
+
+CONVERSATION_BODY_LIMIT = 32 * 1024
+
+
+class LocalAccess:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        try:
+            settings = LocalSettings()
+        except Exception:
+            settings = LocalSettings.model_construct(allowed_origins=[])
+        headers = {k.lower(): v.decode("latin1") for k, v in scope.get("headers", [])}
+        host = headers.get(b"host", "")
+        hostname = host.split("]", 1)[0] + "]" if host.startswith("[") else host.split(":", 1)[0]
+        origin = headers.get(b"origin")
+        api = scope["path"].startswith("/api/")
+
+        async def with_headers(message):
+            if message["type"] == "http.response.start":
+                values = list(message.get("headers", []))
+                existing = {k.lower() for k, v in values}
+                if b"x-content-type-options" not in existing:
+                    values.append((b"x-content-type-options", b"nosniff"))
+                if api and b"cache-control" not in existing:
+                    values.append((b"cache-control", b"no-store"))
+                if origin in settings.allowed_origins:
+                    values.extend(
+                        [
+                            (b"access-control-allow-origin", origin.encode("latin1")),
+                            (b"vary", b"Origin"),
+                        ]
+                    )
+                message = {**message, "headers": values}
+            await send(message)
+
+        async def failure(code, name, text):
+            return await JSONResponse(
+                status_code=code,
+                content={
+                    "error": {
+                        "code": name,
+                        "message": text,
+                        "retryable": False,
+                    }
+                },
+            )(scope, receive, with_headers)
+
+        if hostname.lower() not in settings.allowed_hosts:
+            return await failure(400, "invalid_host", "仅接受已配置的本机主机。")
+        if api and origin is not None and origin not in settings.allowed_origins:
+            return await failure(403, "origin_not_allowed", "此网页来源未获允许。")
+        if api and scope["method"] == "OPTIONS":
+            method = headers.get(b"access-control-request-method", "")
+            requested_headers = {
+                h.strip().lower()
+                for h in headers.get(b"access-control-request-headers", "").split(",")
+                if h.strip()
+            }
+            if method not in {"GET", "POST", "PATCH", "DELETE"} or not requested_headers <= {
+                "content-type"
+            }:
+                return await failure(403, "origin_not_allowed", "不支持此预检请求。")
+            response = JSONResponse(
+                content={},
+                headers={
+                    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type",
+                },
+            )
+            return await response(scope, receive, with_headers)
+        if scope["path"].startswith("/api/v1/conversations") and scope["method"] in {
+            "POST",
+            "PATCH",
+        }:
+            if (
+                headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
+                != "application/json"
+                or headers.get(b"content-encoding", "identity").strip().lower() != "identity"
+            ):
+                return await failure(
+                    415, "unsupported_conversation_media_type", "仅支持未压缩JSON请求。"
+                )
+            body = bytearray()
+            while True:
+                message = await receive()
+                if message["type"] == "http.disconnect":
+                    return
+                chunk = message.get("body", b"")
+                if len(body) + len(chunk) > CONVERSATION_BODY_LIMIT:
+                    return await failure(
+                        413, "conversation_request_too_large", "会话请求超过32 KiB。"
+                    )
+                body.extend(chunk)
+                if not message.get("more_body", False):
+                    break
+            # Guard decoder recursion and non-finite / duplicated JSON keys before FastAPI.
+            import json
+
+            try:
+
+                def pairs(values):
+                    result = {}
+                    for k, v in values:
+                        if k in result:
+                            raise ValueError("Duplicate key")
+                        result[k] = v
+                    return result
+
+                def constant(value):
+                    raise ValueError("Non-finite constant")
+
+                parsed = json.loads(body, object_pairs_hook=pairs, parse_constant=constant)
+
+                def depth(value, level=0):
+                    if level > 32:
+                        raise ValueError("Nested JSON")
+                    if isinstance(value, dict):
+                        for child in value.values():
+                            depth(child, level + 1)
+                    if isinstance(value, list):
+                        for child in value:
+                            depth(child, level + 1)
+
+                depth(parsed)
+            except (ValueError, TypeError, RecursionError, UnicodeError):
+                return await failure(422, "invalid_conversation_request", "会话请求无效。")
+            delivered = False
+
+            async def replay():
+                nonlocal delivered
+                if not delivered:
+                    delivered = True
+                    return {"type": "http.request", "body": bytes(body), "more_body": False}
+                return await receive()
+
+            return await self.app(scope, replay, with_headers)
+        return await self.app(scope, receive, with_headers)

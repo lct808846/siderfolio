@@ -1,0 +1,142 @@
+{
+  "outcome": "passed",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.5.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "670ffe5e4e1428b4a039b0b0bdb8e7bbfc343b99",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M .github/workflows/test.yml\n M .gitignore\n M README.md\n M docs/PROJECT_PLAN_V0.1.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M pyproject.toml\n M src/astroagent/__init__.py\n M src/astroagent/agent.py\n M src/astroagent/api/chat.py\n M src/astroagent/config.py\n M src/astroagent/main.py\n M tests/conftest.py\n?? docs/PROJECT_PLAN_V0.5.md\n?? docs/ROADMAP.md\n?? docs/releases/v0.5.0.md\n?? docs/test-records/v0.5.0/\n?? frontend/\n?? scripts/fixture_server.py\n?? scripts/generate_frontend_types.py\n?? scripts/run_frontend_checks.py\n?? scripts/verify_package.py\n?? scripts/verify_v05.py\n?? src/astroagent/api/artifacts.py\n?? src/astroagent/api/conversations.py\n?? src/astroagent/artifacts.py\n?? src/astroagent/context.py\n?? src/astroagent/conversation_schemas.py\n?? src/astroagent/conversation_service.py\n?? src/astroagent/conversations.py\n?? src/astroagent/execution.py\n?? src/astroagent/local_access.py\n?? tests/test_conversations.py",
+  "files": [
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\chromium-empty.png",
+      "sha256": "c1ebee9724c6639701164cb013b96cbb1c8ce219086ce6a0c1f4337c8844e771",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\chromium-full.png",
+      "sha256": "c8875f813b8997d4150b8bc540aeca65a8ff13a654c9ddc9da8d32a8f948182b",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\chromium-mobile.png",
+      "sha256": "7cbcb98d91c798d8b29f37bc2e40724275e2ed172f6e5b8a92f5057e80526032",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\chromium-preview.png",
+      "sha256": "fe9ba7f13b348fd62d71b22cef46ad7e31b16770615ab792549c64c607171c14",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\edge-empty.png",
+      "sha256": "13ec6d809d9ffe2f509d02e6fce91d0ba0f880a006f89c58d78ba64313af8672",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\edge-full.png",
+      "sha256": "ea39df2e430043ff1072785c0d172730ad4c57d1e54f9a115dea4e4405c331f1",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\edge-mobile.png",
+      "sha256": "05b2486f0f5f368d0100cdce8dd5e35430a3f3144a8909712e480cfd285af6ef",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\browser-tests\\20261028T144226388853Z\\edge-preview.png",
+      "sha256": "7df50907bd025b148924e086e1e215f8cd72ec39c0fccf36a5085484749a9e6b",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\cone-observed_cmd.png",
+      "sha256": "2169601a49f523f711147bf0f462273d64c627078f509b42a46ccb59ffed8033",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-observed-cmd.png"
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\cone-parallax_histogram.png",
+      "sha256": "ae1325ce376c68d868f05ff9d73c1a670539a596c330499bb66760bf392cab3a",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-parallax-histogram.png"
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\cone-proper_motion.png",
+      "sha256": "54b8ca3fbe3ee07e3d96563acd4ac072461c5047e97a14075a6871c725a72d28",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\cone-gaia-000-proper-motion.png"
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\exact-observed_cmd.png",
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-observed-cmd.png"
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\exact-proper_motion.png",
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-proper-motion.png"
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\filtered-observed_cmd.png",
+      "sha256": "ab7193698b1a647a2178db9fe485bf91b7396ab46b7d50ac28474872a4e1b836",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\filtered-parallax_histogram.png",
+      "sha256": "16ea96c7482924f78b34599e6c3d354440d1a335ab722c0fb9769fe94b618898",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\filtered-proper_motion.png",
+      "sha256": "16ccd8b7fdb9aa9e9bb8514b63b7600b664b5c8475eed4aa3492c497ca34a64f",
+      "review": "opened_with_view_image",
+      "previous_review_image": null
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\three-tools-observed_cmd.png",
+      "sha256": "12dfe5a9e3970f7a3d4e0005021dac9bb16a62e772604e625322e1907ffaa35a",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-observed-cmd.png"
+    },
+    {
+      "path": "docs\\test-records\\v0.5.0\\live-conversation-tests\\20261028T142242131739Z\\three-tools-proper_motion.png",
+      "sha256": "8a3e264d7e6d53f2ed1d11a05040258da77935d844fc8deac78ec3175e7a8b84",
+      "review": "matched_previously_inspected_bytes",
+      "previous_review_image": "docs\\test-records\\v0.4.0\\live-export-tests\\20261028T071634276277Z\\exact-gaia-000-proper-motion.png"
+    }
+  ],
+  "browser_screenshots_opened": 8,
+  "new_live_figures_opened": 3,
+  "live_figures_matched_prior_review": 7,
+  "checks": [
+    "Desktop 1440x900 and narrow 390x844 have readable controls and no text clipping.",
+    "History is marked by turn; examples remain pending questions and the empty plot panel has no synthetic measurements.",
+    "Preview images retain axis labels/units and expose full-size links.",
+    "Real filtered plots retain negative parallax, count axes, equal proper-motion scaling and inverted apparent G.",
+    "Truncation/overflow labels and included-row counts agree with the generated manifests."
+  ],
+  "scope": "Visual inspection and byte identity, not scientific membership inference or source authentication."
+}

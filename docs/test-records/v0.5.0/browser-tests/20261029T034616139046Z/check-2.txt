@@ -1,0 +1,27 @@
+[WebServer] INFO:     Started server process [17296]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[WebServer] (node:21768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:25792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (4.8s)
+  ok  2 [chromium] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (983ms)
+  ok  3 [chromium] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (749ms)
+  ok  4 [chromium] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (291ms)
+  ok  5 [chromium] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (609ms)
+  ok  6 [chromium] › tests\browser\workbench.spec.ts:97:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (28ms)
+(node:32084) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.2s)
+  ok  8 [edge] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (981ms)
+  ok  9 [edge] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (788ms)
+  ok 10 [edge] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (417ms)
+  ok 11 [edge] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (676ms)
+  ok 12 [edge] › tests\browser\workbench.spec.ts:97:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (30ms)
+
+  12 passed (24.9s)

@@ -1,0 +1,25 @@
+[WebServer] INFO:     Started server process [25892]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[WebServer] (node:11688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:12008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.1s)
+  ok  2 [chromium] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (971ms)
+  ok  3 [chromium] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (737ms)
+  ok  4 [chromium] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (345ms)
+  ok  5 [chromium] › tests\browser\workbench.spec.ts:80:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (30ms)
+(node:9672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.4s)
+  ok  7 [edge] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (999ms)
+  ok  8 [edge] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (792ms)
+  ok  9 [edge] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (435ms)
+  ok 10 [edge] › tests\browser\workbench.spec.ts:80:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (34ms)
+
+  10 passed (19.1s)

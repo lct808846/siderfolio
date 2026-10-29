@@ -1,0 +1,4128 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AstroAgent",
+    "version": "0.5.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Get Health",
+        "description": "返回服务存活状态。",
+        "operationId": "get_health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Get Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "自然语言天文查询",
+        "description": "单次无状态 SIMBAD、ADS 与 Gaia DR3 查询。天体结果在 results，文献结果在 literature_results，Gaia 数据与程序统计在 gaia_results；数据库失败也逐次保留，status 可为 partial 或 error。",
+        "operationId": "chat_api_v1_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports": {
+      "post": {
+        "tags": [
+          "exports"
+        ],
+        "summary": "导出完整客户端查询快照与可选 Gaia 图表",
+        "operationId": "export_api_v1_exports_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported Media Type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations": {
+      "get": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "List Conversations",
+        "operationId": "list_conversations_api_v1_conversations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Conversation"
+                  },
+                  "type": "array",
+                  "title": "Response List Conversations Api V1 Conversations Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported Media Type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Create",
+        "operationId": "create_api_v1_conversations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported Media Type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Detail",
+        "operationId": "detail_api_v1_conversations__conversation_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Rename",
+        "operationId": "rename_api_v1_conversations__conversation_id__patch",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationRename"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Delete",
+        "operationId": "delete_api_v1_conversations__conversation_id__delete",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{conversation_id}/turns": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Submit",
+        "operationId": "submit_api_v1_conversations__conversation_id__turns_post",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TurnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Turn"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnFailureResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Turn"
+                }
+              }
+            },
+            "description": "Accepted"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnFailureResponse"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnFailureResponse"
+                }
+              }
+            },
+            "description": "Gateway Timeout"
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{conversation_id}/turns/{turn_id}": {
+      "get": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Read Turn",
+        "operationId": "read_turn_api_v1_conversations__conversation_id__turns__turn_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "turn_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Turn Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Turn"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{conversation_id}/turns/{turn_id}/artifacts": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Generate",
+        "operationId": "generate_api_v1_conversations__conversation_id__turns__turn_id__artifacts_post",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "turn_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Turn Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/artifacts/{artifact_id}/manifest": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Manifest",
+        "operationId": "manifest_api_v1_artifacts__artifact_id__manifest_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportManifest"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/artifacts/{artifact_id}/figures/{figure_id}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Figure",
+        "operationId": "figure_api_v1_artifacts__artifact_id__figures__figure_id__get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "figure_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Figure Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/artifacts/{artifact_id}/download": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Download",
+        "operationId": "download_api_v1_artifacts__artifact_id__download_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArtifactInfo": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "turn_id": {
+            "type": "string",
+            "title": "Turn Id"
+          },
+          "snapshot_sha256": {
+            "type": "string",
+            "title": "Snapshot Sha256"
+          },
+          "exporter_version": {
+            "type": "string",
+            "title": "Exporter Version"
+          },
+          "export_status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "partial"
+            ],
+            "title": "Export Status"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "expires_at": {
+            "type": "string",
+            "title": "Expires At"
+          },
+          "manifest_url": {
+            "type": "string",
+            "title": "Manifest Url"
+          },
+          "download_url": {
+            "type": "string",
+            "title": "Download Url"
+          },
+          "figures": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Figures"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "conversation_id",
+          "turn_id",
+          "snapshot_sha256",
+          "exporter_version",
+          "export_status",
+          "created_at",
+          "expires_at",
+          "manifest_url",
+          "download_url",
+          "figures"
+        ],
+        "title": "ArtifactInfo"
+      },
+      "ArtifactRequest": {
+        "properties": {
+          "plots": {
+            "items": {
+              "$ref": "#/components/schemas/PlotSpec"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Plots"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ArtifactRequest"
+      },
+      "ChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Message",
+            "examples": [
+              "请查询 Betelgeuse 的坐标和类型"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ChatRequest"
+      },
+      "ChatResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "partial",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/QueryResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "literature_results": {
+            "items": {
+              "$ref": "#/components/schemas/LiteratureSearchResult"
+            },
+            "type": "array",
+            "title": "Literature Results"
+          },
+          "gaia_results": {
+            "items": {
+              "$ref": "#/components/schemas/GaiaQueryResult"
+            },
+            "type": "array",
+            "title": "Gaia Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/ErrorInfo"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "answer"
+        ],
+        "title": "ChatResponse"
+      },
+      "ContextRecord": {
+        "properties": {
+          "strategy_version": {
+            "type": "string",
+            "title": "Strategy Version",
+            "default": "1"
+          },
+          "included_turn_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Included Turn Ids"
+          },
+          "omitted_turn_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Omitted Turn Ids"
+          },
+          "omissions": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Omissions"
+          },
+          "referenced_results": {
+            "items": {
+              "$ref": "#/components/schemas/ResultReference"
+            },
+            "type": "array",
+            "title": "Referenced Results"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "delivered_characters": {
+            "type": "integer",
+            "title": "Delivered Characters",
+            "default": 0
+          },
+          "delivered_bytes": {
+            "type": "integer",
+            "title": "Delivered Bytes",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ContextRecord"
+      },
+      "Conversation": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at",
+          "revision"
+        ],
+        "title": "Conversation"
+      },
+      "ConversationCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title",
+            "default": "新会话"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ConversationCreate"
+      },
+      "ConversationDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "turns": {
+            "items": {
+              "$ref": "#/components/schemas/TurnSummary"
+            },
+            "type": "array",
+            "title": "Turns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at",
+          "revision",
+          "turns"
+        ],
+        "title": "ConversationDetail"
+      },
+      "ConversationRename": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "ConversationRename"
+      },
+      "ErrorInfo": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "retryable": {
+            "type": "boolean",
+            "title": "Retryable",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorInfo"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorInfo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "ExportManifest": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1",
+            "title": "Schema Version",
+            "default": "1"
+          },
+          "exporter_version": {
+            "type": "string",
+            "title": "Exporter Version"
+          },
+          "git_commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Git Commit"
+          },
+          "git_dirty": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Git Dirty"
+          },
+          "exported_at": {
+            "type": "string",
+            "title": "Exported At"
+          },
+          "runtime": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Runtime"
+          },
+          "plot_style_version": {
+            "type": "string",
+            "title": "Plot Style Version"
+          },
+          "provenance": {
+            "type": "string",
+            "const": "client_supplied_snapshot",
+            "title": "Provenance",
+            "default": "client_supplied_snapshot"
+          },
+          "source_authenticity_verified": {
+            "type": "boolean",
+            "const": false,
+            "title": "Source Authenticity Verified",
+            "default": false
+          },
+          "snapshot_status": {
+            "type": "string",
+            "title": "Snapshot Status"
+          },
+          "export_status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "partial"
+            ],
+            "title": "Export Status"
+          },
+          "queries": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Queries"
+          },
+          "plots": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Plots"
+          },
+          "csv_policy": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Csv Policy"
+          },
+          "csv_changes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Csv Changes"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/FileRecord"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exporter_version",
+          "git_commit",
+          "git_dirty",
+          "exported_at",
+          "runtime",
+          "plot_style_version",
+          "snapshot_status",
+          "export_status",
+          "queries",
+          "plots",
+          "csv_policy",
+          "csv_changes",
+          "files"
+        ],
+        "title": "ExportManifest"
+      },
+      "FileRecord": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "bytes": {
+            "type": "integer",
+            "title": "Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "title": "FileRecord"
+      },
+      "GaiaAnalysis": {
+        "properties": {
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          },
+          "scope": {
+            "type": "string",
+            "const": "returned_rows",
+            "title": "Scope",
+            "default": "returned_rows"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated"
+          },
+          "quality_filters": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Quality Filters"
+          },
+          "statistics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GaiaStatistic"
+            },
+            "type": "object",
+            "title": "Statistics"
+          },
+          "negative_parallax_count": {
+            "type": "integer",
+            "title": "Negative Parallax Count"
+          },
+          "zero_parallax_count": {
+            "type": "integer",
+            "title": "Zero Parallax Count"
+          },
+          "missing_parallax_count": {
+            "type": "integer",
+            "title": "Missing Parallax Count"
+          },
+          "estimate_distance": {
+            "type": "boolean",
+            "title": "Estimate Distance"
+          },
+          "distance_estimates": {
+            "items": {
+              "$ref": "#/components/schemas/GaiaDistanceEstimate"
+            },
+            "type": "array",
+            "title": "Distance Estimates"
+          },
+          "distance_computed_count": {
+            "type": "integer",
+            "title": "Distance Computed Count",
+            "default": 0
+          },
+          "distance_skipped_count": {
+            "type": "integer",
+            "title": "Distance Skipped Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "sample_size",
+          "truncated",
+          "statistics",
+          "negative_parallax_count",
+          "zero_parallax_count",
+          "missing_parallax_count",
+          "estimate_distance"
+        ],
+        "title": "GaiaAnalysis"
+      },
+      "GaiaDistanceEstimate": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "distance_pc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Pc"
+          },
+          "distance_error_pc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Error Pc"
+          },
+          "method": {
+            "type": "string",
+            "const": "inverse_parallax_high_snr",
+            "title": "Method",
+            "default": "inverse_parallax_high_snr"
+          },
+          "zero_point_corrected": {
+            "type": "boolean",
+            "const": false,
+            "title": "Zero Point Corrected",
+            "default": false
+          },
+          "skipped_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "missing_parallax",
+                  "non_positive_parallax",
+                  "invalid_or_missing_error",
+                  "low_parallax_snr",
+                  "numerical_overflow"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skipped Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id"
+        ],
+        "title": "GaiaDistanceEstimate"
+      },
+      "GaiaQueryResult": {
+        "properties": {
+          "query": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Query"
+          },
+          "release": {
+            "type": "string",
+            "const": "Gaia DR3",
+            "title": "Release",
+            "default": "Gaia DR3"
+          },
+          "table": {
+            "type": "string",
+            "const": "gaiadr3.gaia_source",
+            "title": "Table",
+            "default": "gaiadr3.gaia_source"
+          },
+          "endpoint": {
+            "type": "string",
+            "const": "https://gea.esac.esa.int/tap-server/tap/sync",
+            "title": "Endpoint",
+            "default": "https://gea.esac.esa.int/tap-server/tap/sync"
+          },
+          "adql": {
+            "type": "string",
+            "title": "Adql"
+          },
+          "maxrec": {
+            "type": "integer",
+            "title": "Maxrec"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "returned_count": {
+            "type": "integer",
+            "title": "Returned Count",
+            "default": 0
+          },
+          "total_found": {
+            "type": "null",
+            "title": "Total Found"
+          },
+          "has_more": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has More"
+          },
+          "truncated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Truncated"
+          },
+          "archive_overflow": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Overflow"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/GaiaSourceData"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GaiaAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Units"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "adql",
+          "maxrec",
+          "status",
+          "source"
+        ],
+        "title": "GaiaQueryResult"
+      },
+      "GaiaSourceData": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "title": "Source Id"
+          },
+          "ra": {
+            "type": "number",
+            "exclusiveMaximum": 360.0,
+            "minimum": 0.0,
+            "title": "Ra",
+            "description": "ICRS degrees"
+          },
+          "dec": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Dec",
+            "description": "ICRS degrees"
+          },
+          "ref_epoch": {
+            "type": "number",
+            "title": "Ref Epoch",
+            "description": "Julian year"
+          },
+          "ra_error": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ra Error",
+            "description": "mas"
+          },
+          "dec_error": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dec Error",
+            "description": "mas"
+          },
+          "parallax": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parallax",
+            "description": "mas; negative values retained"
+          },
+          "parallax_error": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parallax Error",
+            "description": "mas"
+          },
+          "pmra": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmra",
+            "description": "mas/yr, includes cos(dec)"
+          },
+          "pmra_error": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmra Error",
+            "description": "mas/yr"
+          },
+          "pmdec": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmdec",
+            "description": "mas/yr"
+          },
+          "pmdec_error": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmdec Error",
+            "description": "mas/yr"
+          },
+          "phot_g_mean_mag": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phot G Mean Mag",
+            "description": "mag"
+          },
+          "phot_bp_mean_mag": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phot Bp Mean Mag",
+            "description": "mag"
+          },
+          "phot_rp_mean_mag": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phot Rp Mean Mag",
+            "description": "mag"
+          },
+          "bp_rp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bp Rp",
+            "description": "mag"
+          },
+          "radial_velocity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radial Velocity",
+            "description": "km/s"
+          },
+          "radial_velocity_error": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radial Velocity Error",
+            "description": "km/s"
+          },
+          "ruwe": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ruwe"
+          },
+          "astrometric_params_solved": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astrometric Params Solved"
+          },
+          "duplicated_source": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicated Source"
+          },
+          "separation_arcsec": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Separation Arcsec",
+            "description": "arcsec"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "ra",
+          "dec",
+          "ref_epoch"
+        ],
+        "title": "GaiaSourceData"
+      },
+      "GaiaStatistic": {
+        "properties": {
+          "valid_count": {
+            "type": "integer",
+            "title": "Valid Count"
+          },
+          "missing_count": {
+            "type": "integer",
+            "title": "Missing Count"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "valid_count",
+          "missing_count",
+          "median",
+          "minimum",
+          "maximum",
+          "unit"
+        ],
+        "title": "GaiaStatistic"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LiteratureSearchResult": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "rows": {
+            "type": "integer",
+            "title": "Rows"
+          },
+          "start": {
+            "type": "integer",
+            "title": "Start"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "relevance",
+              "date_desc",
+              "citation_count_desc"
+            ],
+            "title": "Sort"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "total_found": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Found"
+          },
+          "returned_count": {
+            "type": "integer",
+            "title": "Returned Count",
+            "default": 0
+          },
+          "has_more": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has More"
+          },
+          "papers": {
+            "items": {
+              "$ref": "#/components/schemas/PaperData"
+            },
+            "type": "array",
+            "title": "Papers"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "rows",
+          "start",
+          "sort",
+          "status",
+          "source"
+        ],
+        "title": "LiteratureSearchResult"
+      },
+      "ObjectData": {
+        "properties": {
+          "main_id": {
+            "type": "string",
+            "title": "Main Id"
+          },
+          "ra_deg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ra Deg"
+          },
+          "dec_deg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 90.0,
+                "minimum": -90.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dec Deg"
+          },
+          "coordinate_frame": {
+            "type": "string",
+            "const": "ICRS",
+            "title": "Coordinate Frame",
+            "default": "ICRS"
+          },
+          "object_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Object Type"
+          },
+          "spectral_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spectral Type"
+          },
+          "coordinate_bibcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coordinate Bibcode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "main_id"
+        ],
+        "title": "ObjectData"
+      },
+      "PaperData": {
+        "properties": {
+          "bibcode": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Bibcode"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "authors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Authors"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9999.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "publication": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication"
+          },
+          "doi": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Doi"
+          },
+          "abstract": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstract"
+          },
+          "citation_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Citation Count"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bibcode",
+          "source"
+        ],
+        "title": "PaperData"
+      },
+      "PlotSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "gaia_result_index": {
+            "minimum": 0,
+            "title": "Gaia Result Index",
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "proper_motion",
+              "parallax_histogram",
+              "observed_cmd"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gaia_result_index",
+          "kind"
+        ],
+        "title": "PlotSpec",
+        "type": "object"
+      },
+      "QueryResult": {
+        "properties": {
+          "object_name": {
+            "type": "string",
+            "title": "Object Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObjectData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "object_name",
+          "status",
+          "source"
+        ],
+        "title": "QueryResult"
+      },
+      "ResultReference": {
+        "properties": {
+          "turn_id": {
+            "type": "string",
+            "title": "Turn Id"
+          },
+          "family": {
+            "type": "string",
+            "enum": [
+              "simbad",
+              "ads",
+              "gaia"
+            ],
+            "title": "Family"
+          },
+          "result_index": {
+            "type": "integer",
+            "title": "Result Index"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn_id",
+          "family",
+          "result_index"
+        ],
+        "title": "ResultReference"
+      },
+      "Source": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "SIMBAD",
+              "ADS",
+              "Gaia"
+            ],
+            "title": "Name",
+            "default": "SIMBAD"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "retrieved_at"
+        ],
+        "title": "Source"
+      },
+      "Turn": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "turn_id": {
+            "type": "string",
+            "title": "Turn Id"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "client_request_id": {
+            "type": "string",
+            "title": "Client Request Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "execution_status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "completed",
+              "failed",
+              "interrupted"
+            ],
+            "title": "Execution Status"
+          },
+          "received_at": {
+            "type": "string",
+            "title": "Received At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "context": {
+            "$ref": "#/components/schemas/ContextRecord"
+          },
+          "response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "turn_id",
+          "revision",
+          "client_request_id",
+          "message",
+          "execution_status",
+          "received_at"
+        ],
+        "title": "Turn"
+      },
+      "TurnFailureResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorInfo"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "turn_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "TurnFailureResponse"
+      },
+      "TurnRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "client_request_id": {
+            "type": "string",
+            "title": "Client Request Id"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message",
+          "client_request_id",
+          "expected_revision"
+        ],
+        "title": "TurnRequest"
+      },
+      "TurnSummary": {
+        "properties": {
+          "turn_id": {
+            "type": "string",
+            "title": "Turn Id"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "execution_status": {
+            "type": "string",
+            "title": "Execution Status"
+          },
+          "received_at": {
+            "type": "string",
+            "title": "Received At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "response_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn_id",
+          "revision",
+          "message",
+          "execution_status",
+          "received_at",
+          "completed_at",
+          "response_status"
+        ],
+        "title": "TurnSummary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ExportChatResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "success",
+              "partial",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ExportQueryResult"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "literature_results": {
+            "items": {
+              "$ref": "#/components/schemas/ExportLiteratureSearchResult"
+            },
+            "title": "Literature Results",
+            "type": "array"
+          },
+          "gaia_results": {
+            "items": {
+              "$ref": "#/components/schemas/ExportGaiaQueryResult"
+            },
+            "title": "Gaia Results",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ExportSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/ExportErrorInfo"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "answer",
+          "results",
+          "literature_results",
+          "gaia_results",
+          "sources",
+          "warnings"
+        ],
+        "title": "ExportChatResponse",
+        "type": "object"
+      },
+      "ExportErrorInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "ExportErrorInfo",
+        "type": "object"
+      },
+      "ExportGaiaAnalysis": {
+        "additionalProperties": false,
+        "properties": {
+          "sample_size": {
+            "title": "Sample Size",
+            "type": "integer"
+          },
+          "scope": {
+            "const": "returned_rows",
+            "title": "Scope",
+            "type": "string"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "quality_filters": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Quality Filters",
+            "type": "object"
+          },
+          "statistics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExportGaiaStatistic"
+            },
+            "title": "Statistics",
+            "type": "object"
+          },
+          "negative_parallax_count": {
+            "title": "Negative Parallax Count",
+            "type": "integer"
+          },
+          "zero_parallax_count": {
+            "title": "Zero Parallax Count",
+            "type": "integer"
+          },
+          "missing_parallax_count": {
+            "title": "Missing Parallax Count",
+            "type": "integer"
+          },
+          "estimate_distance": {
+            "title": "Estimate Distance",
+            "type": "boolean"
+          },
+          "distance_estimates": {
+            "items": {
+              "$ref": "#/components/schemas/ExportGaiaDistanceEstimate"
+            },
+            "title": "Distance Estimates",
+            "type": "array"
+          },
+          "distance_computed_count": {
+            "title": "Distance Computed Count",
+            "type": "integer"
+          },
+          "distance_skipped_count": {
+            "title": "Distance Skipped Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_size",
+          "scope",
+          "truncated",
+          "quality_filters",
+          "statistics",
+          "negative_parallax_count",
+          "zero_parallax_count",
+          "missing_parallax_count",
+          "estimate_distance",
+          "distance_estimates",
+          "distance_computed_count",
+          "distance_skipped_count"
+        ],
+        "title": "ExportGaiaAnalysis",
+        "type": "object"
+      },
+      "ExportGaiaDistanceEstimate": {
+        "additionalProperties": false,
+        "properties": {
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "distance_pc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Pc"
+          },
+          "distance_error_pc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Error Pc"
+          },
+          "method": {
+            "const": "inverse_parallax_high_snr",
+            "title": "Method",
+            "type": "string"
+          },
+          "zero_point_corrected": {
+            "const": false,
+            "title": "Zero Point Corrected",
+            "type": "boolean"
+          },
+          "skipped_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_parallax",
+                  "non_positive_parallax",
+                  "invalid_or_missing_error",
+                  "low_parallax_snr",
+                  "numerical_overflow"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skipped Reason"
+          }
+        },
+        "required": [
+          "source_id",
+          "distance_pc",
+          "distance_error_pc",
+          "method",
+          "zero_point_corrected",
+          "skipped_reason"
+        ],
+        "title": "ExportGaiaDistanceEstimate",
+        "type": "object"
+      },
+      "ExportGaiaQueryResult": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "additionalProperties": true,
+            "title": "Query",
+            "type": "object"
+          },
+          "release": {
+            "const": "Gaia DR3",
+            "title": "Release",
+            "type": "string"
+          },
+          "table": {
+            "const": "gaiadr3.gaia_source",
+            "title": "Table",
+            "type": "string"
+          },
+          "endpoint": {
+            "const": "https://gea.esac.esa.int/tap-server/tap/sync",
+            "title": "Endpoint",
+            "type": "string"
+          },
+          "adql": {
+            "title": "Adql",
+            "type": "string"
+          },
+          "maxrec": {
+            "title": "Maxrec",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "returned_count": {
+            "title": "Returned Count",
+            "type": "integer"
+          },
+          "total_found": {
+            "title": "Total Found",
+            "type": "null"
+          },
+          "has_more": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has More"
+          },
+          "truncated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Truncated"
+          },
+          "archive_overflow": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Overflow"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ExportGaiaSourceData"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExportGaiaAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Units",
+            "type": "object"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExportSource"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExportErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "query",
+          "release",
+          "table",
+          "endpoint",
+          "adql",
+          "maxrec",
+          "status",
+          "returned_count",
+          "total_found",
+          "has_more",
+          "truncated",
+          "archive_overflow",
+          "data",
+          "analysis",
+          "units",
+          "source",
+          "warnings",
+          "error"
+        ],
+        "title": "ExportGaiaQueryResult",
+        "type": "object"
+      },
+      "ExportGaiaSourceData": {
+        "additionalProperties": false,
+        "properties": {
+          "source_id": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "ra": {
+            "description": "ICRS degrees",
+            "exclusiveMaximum": 360,
+            "minimum": 0,
+            "title": "Ra",
+            "type": "number"
+          },
+          "dec": {
+            "description": "ICRS degrees",
+            "maximum": 90,
+            "minimum": -90,
+            "title": "Dec",
+            "type": "number"
+          },
+          "ref_epoch": {
+            "description": "Julian year",
+            "title": "Ref Epoch",
+            "type": "number"
+          },
+          "ra_error": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas",
+            "title": "Ra Error"
+          },
+          "dec_error": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas",
+            "title": "Dec Error"
+          },
+          "parallax": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas; negative values retained",
+            "title": "Parallax"
+          },
+          "parallax_error": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas",
+            "title": "Parallax Error"
+          },
+          "pmra": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas/yr, includes cos(dec)",
+            "title": "Pmra"
+          },
+          "pmra_error": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas/yr",
+            "title": "Pmra Error"
+          },
+          "pmdec": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas/yr",
+            "title": "Pmdec"
+          },
+          "pmdec_error": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mas/yr",
+            "title": "Pmdec Error"
+          },
+          "phot_g_mean_mag": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mag",
+            "title": "Phot G Mean Mag"
+          },
+          "phot_bp_mean_mag": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mag",
+            "title": "Phot Bp Mean Mag"
+          },
+          "phot_rp_mean_mag": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mag",
+            "title": "Phot Rp Mean Mag"
+          },
+          "bp_rp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mag",
+            "title": "Bp Rp"
+          },
+          "radial_velocity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "km/s",
+            "title": "Radial Velocity"
+          },
+          "radial_velocity_error": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "km/s",
+            "title": "Radial Velocity Error"
+          },
+          "ruwe": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ruwe"
+          },
+          "astrometric_params_solved": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astrometric Params Solved"
+          },
+          "duplicated_source": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicated Source"
+          },
+          "separation_arcsec": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "arcsec",
+            "title": "Separation Arcsec"
+          }
+        },
+        "required": [
+          "source_id",
+          "ra",
+          "dec",
+          "ref_epoch",
+          "ra_error",
+          "dec_error",
+          "parallax",
+          "parallax_error",
+          "pmra",
+          "pmra_error",
+          "pmdec",
+          "pmdec_error",
+          "phot_g_mean_mag",
+          "phot_bp_mean_mag",
+          "phot_rp_mean_mag",
+          "bp_rp",
+          "radial_velocity",
+          "radial_velocity_error",
+          "ruwe",
+          "astrometric_params_solved",
+          "duplicated_source",
+          "separation_arcsec"
+        ],
+        "title": "ExportGaiaSourceData",
+        "type": "object"
+      },
+      "ExportGaiaStatistic": {
+        "additionalProperties": false,
+        "properties": {
+          "valid_count": {
+            "title": "Valid Count",
+            "type": "integer"
+          },
+          "missing_count": {
+            "title": "Missing Count",
+            "type": "integer"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "valid_count",
+          "missing_count",
+          "median",
+          "minimum",
+          "maximum",
+          "unit"
+        ],
+        "title": "ExportGaiaStatistic",
+        "type": "object"
+      },
+      "ExportLiteratureSearchResult": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Filters",
+            "type": "array"
+          },
+          "rows": {
+            "title": "Rows",
+            "type": "integer"
+          },
+          "start": {
+            "title": "Start",
+            "type": "integer"
+          },
+          "sort": {
+            "enum": [
+              "relevance",
+              "date_desc",
+              "citation_count_desc"
+            ],
+            "title": "Sort",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "total_found": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Found"
+          },
+          "returned_count": {
+            "title": "Returned Count",
+            "type": "integer"
+          },
+          "has_more": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has More"
+          },
+          "papers": {
+            "items": {
+              "$ref": "#/components/schemas/ExportPaperData"
+            },
+            "title": "Papers",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExportSource"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExportErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "query",
+          "filters",
+          "rows",
+          "start",
+          "sort",
+          "status",
+          "total_found",
+          "returned_count",
+          "has_more",
+          "papers",
+          "source",
+          "error"
+        ],
+        "title": "ExportLiteratureSearchResult",
+        "type": "object"
+      },
+      "ExportObjectData": {
+        "additionalProperties": false,
+        "properties": {
+          "main_id": {
+            "title": "Main Id",
+            "type": "string"
+          },
+          "ra_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ra Deg"
+          },
+          "dec_deg": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dec Deg"
+          },
+          "coordinate_frame": {
+            "const": "ICRS",
+            "title": "Coordinate Frame",
+            "type": "string"
+          },
+          "object_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Object Type"
+          },
+          "spectral_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spectral Type"
+          },
+          "coordinate_bibcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coordinate Bibcode"
+          }
+        },
+        "required": [
+          "main_id",
+          "ra_deg",
+          "dec_deg",
+          "coordinate_frame",
+          "object_type",
+          "spectral_type",
+          "coordinate_bibcode"
+        ],
+        "title": "ExportObjectData",
+        "type": "object"
+      },
+      "ExportPaperData": {
+        "additionalProperties": false,
+        "properties": {
+          "bibcode": {
+            "minLength": 1,
+            "title": "Bibcode",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "authors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Authors",
+            "type": "array"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 9999,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "publication": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication"
+          },
+          "doi": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Doi",
+            "type": "array"
+          },
+          "abstract": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstract"
+          },
+          "citation_count": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Citation Count"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExportSource"
+          }
+        },
+        "required": [
+          "bibcode",
+          "title",
+          "authors",
+          "year",
+          "publication",
+          "doi",
+          "abstract",
+          "citation_count",
+          "source"
+        ],
+        "title": "ExportPaperData",
+        "type": "object"
+      },
+      "ExportQueryResult": {
+        "additionalProperties": false,
+        "properties": {
+          "object_name": {
+            "title": "Object Name",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExportSource"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExportObjectData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExportErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "object_name",
+          "status",
+          "source",
+          "data",
+          "error"
+        ],
+        "title": "ExportQueryResult",
+        "type": "object"
+      },
+      "ExportSource": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "enum": [
+              "SIMBAD",
+              "ADS",
+              "Gaia"
+            ],
+            "title": "Name",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "retrieved_at"
+        ],
+        "title": "ExportSource",
+        "type": "object"
+      },
+      "ExportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/ExportChatResponse"
+          },
+          "plots": {
+            "items": {
+              "$ref": "#/components/schemas/PlotSpec"
+            },
+            "maxItems": 3,
+            "title": "Plots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schema_version",
+          "snapshot"
+        ],
+        "title": "ExportRequest",
+        "type": "object"
+      }
+    }
+  }
+}

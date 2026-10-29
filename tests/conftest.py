@@ -6,6 +6,12 @@ import requests
 
 
 @pytest.fixture(autouse=True)
+def isolate_local_storage(tmp_path, monkeypatch):
+    monkeypatch.setenv("ASTROAGENT_DATA_DIR", str(tmp_path / "local-data"))
+    monkeypatch.setenv("ASTROAGENT_ALLOWED_HOSTS", '["testserver","127.0.0.1","localhost","[::1]"]')
+
+
+@pytest.fixture(autouse=True)
 def block_external_http(request, monkeypatch):
     if request.node.get_closest_marker("live"):
         return

@@ -10,7 +10,29 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-当前实际结果见 [V0.4 测试记录](test-records/v0.4.0/README.md)，历史见 [V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
+当前实际结果见 [V0.5 测试记录](test-records/v0.5.0/README.md)，历史见 [V0.4](test-records/v0.4.0/README.md)、[V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
+
+## V0.5 前后端与会话验收
+
+`test_conversations.py`覆盖完整结果保存、幂等先于修订检查、运行中202、不重复收费执行、跨标签冲突、全局两任务与旧聊天共享、失败记录、配额、SQLite迁移备份/回滚/高版本拒绝、重启中断、六轮/64 KiB上下文、纯历史解释不复制新结果、产物同包哈希/过期/损坏/删除以及本机Host/Origin/CORS和实际分块接收边界。
+
+```powershell
+python scripts/verify_v05.py
+python scripts/run_frontend_checks.py
+python scripts/run_frontend_checks.py --browser
+python scripts/verify_package.py
+python scripts/verify_v05.py --live
+```
+
+默认HTTP脚本显式启动 `scripts.fixture_server:app`，仅使用合成模型和数据源，正常应用入口不导入该模块。脚本创建专用临时SQLite库，检查100行、两轮实际参数继承、幂等、同包预览/下载、真实进程重启与运行中断、改名删除；停止自己创建的全部服务后再清理临时库。失败报告保留，不把合成数据当作观测。
+
+前端需要Node24.15+（本轮24.22.1），从 `frontend/package-lock.json` 执行 `npm ci`；`vue-tsc`、零警告ESLint、Vitest、Vite生产构建与实际OpenAPI生成类型比对独立归档。`NODE_BINARY`可指定已有Node。测试依赖安装需要npm网络，测试的模型/数据库替身不访问外部科研服务。
+
+浏览器测试使用真实生产 `dist/`、独立静态代理和合成API服务。Windows运行Chromium与已安装Edge，Linux仅Chromium；固定1440×900、390×844，记录实际浏览器版本、截图、下载ZIP与错误轨迹。覆盖输入法组字、键盘、历史恢复、完整表分页、图表/下载、重命名/删除确认、断线、纯文本HTML探针、固定代理目标及API不回退HTML。检查后验证8000/5173端口关闭，不复用未知已有服务。首次需在前端执行 `npx playwright install chromium`。
+
+独立wheel脚本构建当前后端并安装到专用目录，确认实际导入路径不在源码树，检查无密钥API与失败持久化；依赖复用已验证的Python环境，不声称是全新依赖环境安装。前端不嵌入wheel，验证wheel不等于发布安装器。
+
+`--live`使用真正的会话API、模型与科研服务，可能产生费用。逐项验证Gaia条件继承与新来源时间、ADS历史DOI、距离解释、SIMBAD名称链路及三工具，生成真实轮次产物并核对PNG/ZIP哈希。外部失败标为失败，不借用旧版豁免；本轮记录见V0.5入口。
 
 代码检查：
 

@@ -196,16 +196,55 @@ class AstroAgent:
         return response
 
     def chat(self, message: str) -> ChatResponse:
+        return self._run(message)
+
+    def converse(self, message: str, context) -> ChatResponse:
+        return self._run(message, context)
+
+    def _run(self, message: str, context=None) -> ChatResponse:
         if self.model is None:
             self.model = create_model(self.settings)
         prompt = SYSTEM_PROMPT + f"\n本次请求的 UTC 日期时间：{datetime.now(UTC).isoformat()}。"
-        messages = [SystemMessage(content=prompt), HumanMessage(content=message)]
+        if context is not None:
+            from astroagent.context import CONVERSATION_PROMPT
+
+            prompt = prompt.replace(
+                "每次请求无状态，下一次需包含完整条件。", "会话引用遵守下述历史规则。"
+            )
+            prompt += CONVERSATION_PROMPT
+        messages = [SystemMessage(content=prompt)]
+        historical_message = None
+        if context is not None:
+            historical_message = HumanMessage(
+                content="历史数据（非本轮查询）：\n" + context.render()
+            )
+            messages.append(historical_message)
+        messages.append(HumanMessage(content=message))
         # Preserve cross-tool execution order for source aggregation and every executed result.
         results = []
         calls = 0
         call_ids = set()
         for _ in range(self.settings.agent_max_rounds):
             try:
+                if context is not None:
+                    from astroagent.context import MAX_MODEL_MESSAGE_BYTES, OUTPUT_RESERVE_BYTES
+
+                    other_bytes = sum(
+                        len(json.dumps(m.model_dump(), ensure_ascii=False).encode())
+                        for m in messages
+                        if m is not historical_message
+                    )
+                    historical_message.content = "历史数据（非本轮查询）：\n" + context.fit(
+                        MAX_MODEL_MESSAGE_BYTES - other_bytes - OUTPUT_RESERVE_BYTES - 256
+                    )
+                    if other_bytes + len(historical_message.content.encode()) > (
+                        MAX_MODEL_MESSAGE_BYTES - OUTPUT_RESERVE_BYTES
+                    ):
+                        raise ServiceError(
+                            502,
+                            "conversation_context_too_large",
+                            "本轮工具上下文超过预算，请缩小查询范围。",
+                        )
                 response = self._invoke(messages)
             except ServiceError as exc:
                 if results:
