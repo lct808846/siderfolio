@@ -1,0 +1,88 @@
+{
+  "started_at": "2026-10-29T14:41:41.125683+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.6.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "f9deedd26e9ea83c401aec8659eddc83127a95fb",
+  "git_dirty": true,
+  "git_status": "M frontend/tests/browser/projects.spec.ts",
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "ci",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "exit_code": 0,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "test"
+      ],
+      "exit_code": 0,
+      "transcript": "check-4.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "transcript": "check-5.txt"
+    },
+    {
+      "command": [
+        "E:\\miniconda3\\envs\\agent\\python.exe",
+        "D:\\project\\astroagent\\scripts\\generate_frontend_types.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "transcript": "check-6.txt"
+    }
+  ],
+  "node": "v24.22.1",
+  "data_kind": "synthetic_not_observations",
+  "visual_review": null,
+  "outcome": "passed",
+  "finished_at": "2026-10-29T14:42:07.633462+00:00"
+}

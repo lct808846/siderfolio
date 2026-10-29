@@ -1,0 +1,15 @@
+{
+  "version": "0.6.0",
+  "commit": "f9deedd26e9ea83c401aec8659eddc83127a95fb",
+  "run_id": 40893293240,
+  "run_url": "https://github.com/lct808846/astroagent/actions/runs/40893293240",
+  "job_id": 123515532506,
+  "outcome": "failed",
+  "backend": "passed",
+  "frontend": "build,type,lint,unit,contract passed; browser 6/7 passed",
+  "failed_check": "project archive import navigation after download",
+  "cause": "Playwright setInputFiles does not wait for a disabled file input; export refresh was still in progress and the guarded action did not send an import request. Local artifact writes hid the timing window.",
+  "fix": "Explicitly gate the export refresh, assert import input disabled while refresh is pending, release it, wait for input enabled and require import response HTTP201; also wait for input enabled before malformed-archive check.",
+  "application_source_changed": false,
+  "log": "frontend-job.log"
+}

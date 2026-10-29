@@ -48,11 +48,27 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
     await page.getByLabel('按精确 source_id / bibcode 比较交付编号').check()
     await page.getByRole('button', { name: '比较已存快照' }).click()
     await expect(page.getByText('仅比较交付样本与查询元数据；不表示总体增减、显著性或成员变化。')).toBeVisible(); await screenshot('comparison')
-    const download = page.waitForEvent('download'); await page.getByRole('button', { name: '导出项目 ZIP' }).click()
-    const file = await download; expect(file.suggestedFilename()).toBe('astroagent-project.zip')
+    const importControl = page.getByLabel('导入项目 ZIP', { exact: true })
+    await expect(importControl).toBeEnabled()
+    let releaseRefresh!: () => void, observeRefresh!: () => void
+    const refreshGate = new Promise<void>(resolve => { releaseRefresh = resolve })
+    const refreshStarted = new Promise<void>(resolve => { observeRefresh = resolve })
+    await page.route('**/api/v1/projects/memberships', async route => { observeRefresh(); await refreshGate; await route.continue() }, { times: 1 })
+    let file
+    try {
+      const download = page.waitForEvent('download'); await page.getByRole('button', { name: '导出项目 ZIP' }).click()
+      file = await download; expect(file.suggestedFilename()).toBe('astroagent-project.zip')
+      await refreshStarted
+      await expect(importControl).toBeDisabled()
+    } finally { releaseRefresh() }
     const raw = readFileSync((await file.path())!)
     if (process.env.ASTROAGENT_RECORD_DIR) await file.saveAs(path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-project.zip`))
-    await page.getByLabel('导入项目 ZIP', { exact: true }).setInputFiles({ name: 'restored.zip', mimeType: 'application/zip', buffer: raw })
+    // setInputFiles bypasses disabled-control actionability; wait for the export refresh.
+    await expect(importControl).toBeEnabled()
+    const importedResponse = page.waitForResponse(response => response.request().method() === 'POST' && response.url().endsWith('/api/v1/projects/import'))
+    await importControl.setInputFiles({ name: 'restored.zip', mimeType: 'application/zip', buffer: raw })
+    const upload = await importedResponse
+    expect(upload.status(), await upload.text()).toBe(201)
     await expect(page).not.toHaveURL(new RegExp(`/projects/${id}`))
     await expect(page.getByText('导入来源未经认证。哈希只验证包内完整性；历史数据不会因导入而重新查询。')).toBeVisible()
     const importedId = new URL(page.url()).pathname.split('/').at(-1)!; ownedProjects.add(importedId)
@@ -71,7 +87,8 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
     await page.getByRole('button', { name: '确认删除', exact: true }).click()
     await expect(page).toHaveURL(/\/projects$/)
     for (const cid of imported.conversation_ids) expect((await request.get(`/api/v1/conversations/${cid}`)).ok()).toBe(true)
-    await page.getByLabel('导入项目 ZIP', { exact: true }).setInputFiles({ name: 'broken.zip', mimeType: 'application/zip', buffer: Buffer.from('broken') })
+    await expect(importControl).toBeEnabled()
+    await importControl.setInputFiles({ name: 'broken.zip', mimeType: 'application/zip', buffer: Buffer.from('broken') })
     await expect(page.getByRole('alert')).toContainText('项目包校验失败')
     expect(errors).toEqual([])
   } finally {

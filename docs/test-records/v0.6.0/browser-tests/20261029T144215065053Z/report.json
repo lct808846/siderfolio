@@ -1,0 +1,53 @@
+{
+  "started_at": "2026-10-29T14:42:15.080828+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.6.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "f9deedd26e9ea83c401aec8659eddc83127a95fb",
+  "git_dirty": true,
+  "git_status": "M frontend/tests/browser/projects.spec.ts\n?? docs/test-records/v0.6.0/frontend-tests/20261029T144141109350Z/",
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "D:\\project\\astroagent\\frontend\\node_modules\\playwright\\cli.js",
+        "test",
+        "--output",
+        "D:\\project\\astroagent\\docs\\test-records\\v0.6.0\\browser-tests\\20261029T144215065053Z\\artifacts"
+      ],
+      "exit_code": 0,
+      "transcript": "check-2.txt"
+    }
+  ],
+  "node": "v24.22.1",
+  "data_kind": "synthetic_not_observations",
+  "visual_review": "pending_manual_inspection",
+  "server_ports_closed": {
+    "8000": true,
+    "5173": true
+  },
+  "outcome": "passed",
+  "finished_at": "2026-10-29T14:42:50.033506+00:00"
+}
