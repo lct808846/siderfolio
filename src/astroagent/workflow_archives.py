@@ -357,10 +357,15 @@ def validate_workflows(value, project_id, snapshots):
                     raise ValueError("Workflow manifest download differs")
                 if info.media_type == "image/png":
                     original = next(
-                        members[path]
-                        for path in members
-                        if path.rsplit("/", 1)[-1] == info.filename
+                        (
+                            members[path]
+                            for path in members
+                            if path.rsplit("/", 1)[-1] == info.filename
+                        ),
+                        None,
                     )
+                    if original is None:
+                        raise ValueError("PNG preview missing from its ZIP")
                     if output_contents[info.id] != original:
                         raise ValueError("PNG preview differs from its ZIP")
     return {
