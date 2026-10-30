@@ -1,0 +1,33 @@
+[WebServer] INFO:     Started server process [37720]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[WebServer] (node:30988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 18 tests using 1 worker
+
+(node:39140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (4.5s)
+  ok  2 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.2s)
+  ok  3 [chromium] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (1.4s)
+  ok  4 [chromium] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (979ms)
+  ok  5 [chromium] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (397ms)
+  ok  6 [chromium] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (685ms)
+  ok  7 [chromium] › tests\browser\workbench.spec.ts:97:1 › a late initial list does not clear a send error after navigation (626ms)
+  ok  8 [chromium] › tests\browser\workbench.spec.ts:120:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (41ms)
+  ok  9 [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (3.6s)
+(node:13976) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (4.7s)
+  ok 11 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.6s)
+  ok 12 [edge] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (1.2s)
+  ok 13 [edge] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (829ms)
+  ok 14 [edge] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (512ms)
+  ok 15 [edge] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (800ms)
+  ok 16 [edge] › tests\browser\workbench.spec.ts:97:1 › a late initial list does not clear a send error after navigation (692ms)
+  ok 17 [edge] › tests\browser\workbench.spec.ts:120:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (21ms)
+  ok 18 [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (3.7s)
+
+  18 passed (42.0s)

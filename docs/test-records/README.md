@@ -2,7 +2,7 @@
 
 按 `v<版本号>/<测试类型>/<UTC运行时间>/` 保存；同一版本多次运行各有独立目录，历史记录不覆盖。版本来自 `pyproject.toml`；延迟测试读取被测服务的 OpenAPI 版本，避免误归档到本地代码的版本。
 
-当前版本：[v0.6.0](v0.6.0/README.md)。历史版本：[v0.5.0](v0.5.0/README.md)、[v0.4.0](v0.4.0/README.md)、[v0.3.0](v0.3.0/README.md)、[v0.2.0](v0.2.0/README.md)、[v0.1.0](v0.1.0/README.md)。
+当前开发版本：[v0.7.0](v0.7.0/README.md)。历史版本：[v0.6.0](v0.6.0/README.md)、[v0.5.0](v0.5.0/README.md)、[v0.4.0](v0.4.0/README.md)、[v0.3.0](v0.3.0/README.md)、[v0.2.0](v0.2.0/README.md)、[v0.1.0](v0.1.0/README.md)。
 
 ```powershell
 python scripts/run_tests.py                 # 离线测试、Ruff、依赖检查

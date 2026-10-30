@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useWorkbench } from '../stores/workbench'
 import ResultPanel from '../components/ResultPanel.vue'
 import ProjectWorkspace from './ProjectWorkspace.vue'
+import WorkflowWorkspace from './WorkflowWorkspace.vue'
 import { safeLink } from '../api'
 
 const store = useWorkbench(), route = useRoute(), router = useRouter()
@@ -32,13 +33,20 @@ function dialogKey(event: KeyboardEvent) {
 }
 watch(() => route.params.id, id => { if (typeof id === 'string' && id !== store.current?.id) void store.load(id); if (!id) { store.loadToken++; store.current = null; store.turns = []; store.selectedTurnId = '' }; store.panel = 'chat' })
 watch([titleEditing, confirmDelete], async ([editing, removing]) => { if (editing || removing) { await nextTick(); document.querySelector<HTMLElement>('[role="dialog"] input, [role="dialog"] button')?.focus() } })
-onMounted(async () => { try { await store.refreshList(); if (typeof route.params.id === 'string') await store.load(route.params.id) } catch (error) { store.report(error) } })
+onMounted(async () => {
+  const initialId = route.params.id
+  try {
+    await store.refreshList()
+    if (typeof initialId === 'string' && route.params.id === initialId && initialId !== store.current?.id) await store.load(initialId)
+  } catch (error) { store.report(error) }
+})
 </script>
 
 <template>
-  <ProjectWorkspace v-if="route.path.startsWith('/projects')" />
+  <WorkflowWorkspace v-if="route.path.includes('/workflows')" />
+  <ProjectWorkspace v-else-if="route.path.startsWith('/projects')" />
   <div v-else class="workbench" :data-panel="store.panel">
-    <header class="topbar"><a class="brand" href="/" @click.prevent="router.push('/')"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.6</span></a><div class="topbar-caption"><span class="status-dot"></span>本地科研工作台</div><RouterLink class="project-link" to="/projects">项目归档 →</RouterLink><a href="http://127.0.0.1:8000/docs" target="_blank" rel="noopener noreferrer" class="docs-link">接口文档 ↗</a></header>
+    <header class="topbar"><a class="brand" href="/" @click.prevent="router.push('/')"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.7</span></a><div class="topbar-caption"><span class="status-dot"></span>本地科研工作台</div><RouterLink class="project-link" to="/projects">项目归档 →</RouterLink><a href="http://127.0.0.1:8000/docs" target="_blank" rel="noopener noreferrer" class="docs-link">接口文档 ↗</a></header>
     <nav class="mobile-panels" aria-label="工作区面板"><button :class="{active:store.panel==='history'}" @click="store.panel='history'">会话</button><button :class="{active:store.panel==='chat'}" @click="store.panel='chat'">对话</button><button :class="{active:store.panel==='results'}" @click="store.panel='results'">结果</button></nav>
     <aside class="history-panel" aria-label="会话列表"><div class="history-title"><span class="eyebrow">WORKSPACE</span><span class="small muted">{{ store.conversations.length }}/20</span></div><button class="new-conversation" @click="create"><span aria-hidden="true">＋</span>新建会话</button><p class="history-label">本地会话</p><nav><button v-for="conversation in store.conversations" :key="conversation.id" class="conversation-item" :class="{selected:store.current?.id===conversation.id}" @click="router.push(`/conversations/${conversation.id}`)"><span class="conversation-symbol" aria-hidden="true">◌</span><span><b>{{ conversation.title }}</b><small>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span></button></nav><p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p><footer class="history-footer"><span>SIMBAD / ADS / Gaia</span><small>测量 · 文献 · 可追溯结果</small></footer></aside>
     <main class="chat-panel">

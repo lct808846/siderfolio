@@ -15,6 +15,7 @@ from astroagent.project_schemas import (
     ImportResult,
     Membership,
     Project,
+    ProjectArchiveRequest,
     ProjectCreate,
     ProjectDelete,
     ProjectDetail,
@@ -215,11 +216,13 @@ def read_rerun(project_id: UUID, rerun_id: UUID, service: Projects):
         200: {"content": {"application/zip": {"schema": {"type": "string", "format": "binary"}}}}
     },
 )
-def archive(project_id: UUID, request: Revision, service: Projects):
+def archive(project_id: UUID, request: ProjectArchiveRequest, service: Projects):
     if not service.archive_export_slot.acquire(blocking=False):
         raise ServiceError(503, "project_archive_busy", "已有项目正在归档，请稍后重试。")
     try:
-        payload = export_archive(service.repository, str(project_id), request.expected_revision)
+        payload = export_archive(
+            service.repository, str(project_id), request.expected_revision, request.format_version
+        )
         return Response(
             payload,
             media_type="application/zip",

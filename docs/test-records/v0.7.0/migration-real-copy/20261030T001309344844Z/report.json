@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-10-30T00:13:09.345344+00:00",
+  "scope": "SQLite backup into temporary directory; personal contents and counts not recorded",
+  "checks": {
+    "source_schema1": true,
+    "migrated_schema3": true,
+    "existing_records_unchanged": true,
+    "schema2_backup": true,
+    "schema2_backup_created": true,
+    "source_not_modified": true
+  },
+  "outcome": "passed",
+  "finished_at": "2026-10-30T00:13:09.483019+00:00"
+}

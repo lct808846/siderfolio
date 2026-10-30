@@ -1,0 +1,88 @@
+{
+  "started_at": "2026-10-30T00:04:38.328236+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.6.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "2bda44a9373c169e8f99364af48daa9e91ece371",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/ROADMAP.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/projects.ts\n M frontend/src/components/ResultPanel.vue\n M frontend/src/main.ts\n M frontend/src/style.css\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/src/views/ProjectWorkspace.vue\n M pyproject.toml\n M scripts/generate_frontend_types.py\n M scripts/verify_v06.py\n M src/astroagent/__init__.py\n M src/astroagent/api/projects.py\n M src/astroagent/conversations.py\n M src/astroagent/main.py\n M src/astroagent/project_archives.py\n M src/astroagent/project_schemas.py\n M src/astroagent/projects.py\n M tests/test_projects.py\n?? docs/PROJECT_PLAN_V0.7.md\n?? docs/development/\n?? docs/releases/v0.7.0.md\n?? docs/test-records/v0.7.0/\n?? frontend/src/api/workflows.ts\n?? frontend/src/views/WorkflowWorkspace.vue\n?? src/astroagent/api/workflows.py\n?? src/astroagent/workflow_archives.py\n?? src/astroagent/workflow_io.py\n?? src/astroagent/workflow_schemas.py\n?? src/astroagent/workflow_service.py\n?? src/astroagent/workflow_templates.py\n?? src/astroagent/workflows.py\n?? tests/test_workflows.py",
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "ci",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "exit_code": 0,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "test"
+      ],
+      "exit_code": 0,
+      "transcript": "check-4.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "transcript": "check-5.txt"
+    },
+    {
+      "command": [
+        "E:\\miniconda3\\envs\\agent\\python.exe",
+        "D:\\project\\astroagent\\scripts\\generate_frontend_types.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "transcript": "check-6.txt"
+    }
+  ],
+  "node": "v24.22.1",
+  "data_kind": "synthetic_not_observations",
+  "visual_review": null,
+  "outcome": "passed",
+  "finished_at": "2026-10-30T00:05:09.955647+00:00"
+}

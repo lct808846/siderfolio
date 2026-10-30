@@ -2,17 +2,26 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：`v0.6.0`，新增项目管理、完整命名快照、单工具直接重跑、快照比较和项目 ZIP 归档恢复。见 [版本说明](docs/releases/v0.6.0.md)、[实际测试记录](docs/test-records/v0.6.0/README.md) 与[源码发布页](https://github.com/lct808846/astroagent/releases/tag/v0.6.0)。本次真实联网21/21项通过，已接入主站故障时的哈佛镜像。
+当前版本：`0.7.0`。已加入两条固定科研流程、逐步执行记录、显式继续、持久输出及包含流程的项目归档。2026-10-30 本地与真实联网验收范围见 [测试记录](docs/test-records/v0.7.0/README.md)、[版本说明](docs/releases/v0.7.0.md) 和 [源码发布页](https://github.com/lct808846/astroagent/releases/tag/v0.7.0)。
 
-上一版本为 [`v0.5.0`](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)，该版保留 SIMBAD 超时限制及发布记录；历史授权不自动适用于 V0.6。历史版本见 [`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
+上一发布版本为 [`v0.6.0`](https://github.com/lct808846/astroagent/releases/tag/v0.6.0)，其[测试记录](docs/test-records/v0.6.0/README.md)只对应当时版本，不证明 V0.7 已通过。历史版本见 [`v0.5.0`](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)、[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
 
-开发依据为 [V0.6 开发文档](docs/PROJECT_PLAN_V0.6.md)，会话基线见 [V0.5](docs/PROJECT_PLAN_V0.5.md)。网页通过独立会话接口保存历史；原 `POST /api/v1/chat` 保持单次、无状态语义。本版仅面向可信本机的单用户使用，不包含账号、多用户、公网/LAN 部署、MCP、RAG 或复杂科研工作流。
+前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，FastAPI 独立提供 API，SQLite 保存本机业务状态。旧聊天、项目、快照及 V0.4 科学导出契约继续保留；后续目标见 [版本路线图](docs/ROADMAP.md)。本版面向可信本机的单用户使用。
 
-导出契约与完成门槛见 [V0.4 开发文档：查询结果可视化与可复现导出](docs/PROJECT_PLAN_V0.4.md)。`POST /api/v1/exports` 接收完整客户端快照，独立于模型和外部数据库，可无密钥使用。
+按用户约定，开发阶段不主动运行测试；发布前由用户安排测试验收。代码生成和源码格式化不作为验证通过的证据。
 
-前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，后端使用 FastAPI 与标准库 SQLite。后续 V0.6–V2.0 的目标、依赖与验收门槛统一见 [版本路线图](docs/ROADMAP.md)。
+## 固定科研流程（V0.7，待验收）
 
-V0.6 已在本地实现与验收，接入哈佛镜像后本次完整联网21/21通过。下一阶段V0.7科研流程为规划范围，尚未实现。
+在项目页面点击“科研流程”，进入 `/projects/{project_id}/workflows`。选择模板、填写明确参数、创建待执行记录，再核对保存的参数及步骤，确认启动。浏览历史只读；流程不调用语言模型，执行时按需访问科研服务。
+
+- **Gaia 视场候选源**：明确的 ICRS 坐标或 SIMBAD 名称二选一；半径和数量必填，可选质量条件、距离估计及三种图表。名称解析失败则停止依赖查询，沿用现有主站→哈佛镜像策略。结果含完整交付样本、程序统计、命名快照和导出文件。
+- **ADS 摘要证据表**：按用户确认的实际检索式、排序、页数提交，不翻译或扩展检索词；整理原书目、原摘要及缺失标记，下载 UTF-8 BOM CSV 和保留原值的 JSON。长文本在 CSV 中明确标为预览，JSON 保留完整值。
+
+每一步保存实际输入、依赖、软件版本、UTC 时间、耗时、状态、错误和哈希。失败或重启中断后，需要明确确认继续；成功检查点在输入、版本及内容完整性一致时复用，失效时要求新建运行。断线先刷新读取状态，或使用原请求编号核对；远端调用不能保证恰好一次，服务不自动重放。
+
+查询、快照和导出分别记录。绘图不足或失败保留具体原因，导出失败不删除已经保存的查询快照。图片与下载 ZIP 来自同一份保存产物；文件按项目、流程和 UUID 读取。导入流程只读并标记 `imported_unverified`，可复制参数到新的本机运行。
+
+每项目最多50次运行、每步5次尝试、每运行20次执行请求；每模板4步、单文件及流程记录16 MiB，共用全库256 MiB业务预算和两个执行槽。成功保存快照会建立一条独立会话，计入原20会话配额；流程引用中的快照须先删除关联流程才能删除，单独删除流程保留命名快照和会话。
 
 ## 项目、快照与恢复
 
@@ -22,15 +31,15 @@ V0.6 已在本地实现与验收，接入哈佛镜像后本次完整联网21/21�
 
 两份快照可并列比较条件、状态、交付数量、截断、来源和版本，并可显式比较精确 `source_id` / bibcode 的交集。编号保持字符串，未知不当作零；交付样本差异不能解释为总体、显著性或成员变化。
 
-“导出项目 ZIP”保存完整项目会话、轮次、快照和重跑关系。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；图表缓存不随项目包保存，可从恢复后的快照重新生成。
+“导出项目 ZIP”默认生成格式2，保存完整项目会话、轮次、快照、重跑、流程及持久输出。格式2固定包含 `manifest.json`、`project.json`、`conversations.json`、`snapshots.json`、`workflows.json`，流程文件以带哈希的 base64 内容嵌入。仍支持格式1导入；只有无流程项目可显式选择格式1导出。V0.6不能读取格式2。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；旧预览缓存不随项目包保存，可从恢复后的快照重新生成；流程中已登记的持久文件随格式2恢复。
 
-首次V0.6启动将本地schema1升级至2，迁移前通过SQLite备份接口在数据目录生成 `migration-v2-<UTC时间>.sqlite3`。如需回滚到V0.5，应先停止服务并使用迁移前备份，在独立目录恢复；V0.5会拒绝schema2，不直接降级写入。验收使用临时库，未升级或归档你的个人数据库。
+V0.7 首次启动将 SQLite schema2 升级至3，迁移前通过 SQLite 备份接口生成 `migration-v3-<UTC时间>.sqlite3`；更早的库顺序迁移。迁移失败回滚，未知更高版本拒绝写入。回到 V0.6 时先停止服务，在独立目录恢复迁移前 schema2 备份；V0.6会拒绝 schema3。本轮未启动服务或操作个人数据库，迁移和恢复均待发布前验收。
 
 最多20项目、全库20会话、每会话40轮、每项目100快照及100重跑记录；所有副本、导入来源信息和运行预留计入同一256 MiB业务预算。项目ZIP接收32 MiB、解压总量128 MiB、单成员64 MiB；项目归档与单轮2 MiB快照导出是独立边界。归档生成与导入各最多一项，外部查询共用最多两个执行槽。项目或会话变化发生修订冲突时，先刷新核对再明确执行。
 
 ## 本机网页使用
 
-需要 Python 3.12+ 和 Node.js 24.15+（本轮验证版本24.22.1，npm10.9.2）。先按下节安装后端并在服务端配置密钥。前端不接收或保存模型密钥、ADS token。
+需要 Python 3.12+ 和 Node.js 24.15+（V0.7本地验收使用Python 3.12.13、Node 24.22.1）。先按下节安装后端并在服务端配置密钥。前端不接收或保存模型密钥、ADS token。
 
 在第一个 PowerShell 终端启动后端，保持单进程、单 worker：
 
@@ -131,6 +140,7 @@ python -m uvicorn astroagent.main:app --reload
 - 本地会话：`/api/v1/conversations`、`/{id}/turns`
 - 轮次产物：`/api/v1/conversations/{id}/turns/{turn_id}/artifacts`
 - 清单/图片/下载：`/api/v1/artifacts/{artifact_id}/...`
+- 科研流程：`/api/v1/workflow-templates`、`/api/v1/projects/{id}/workflows`、`/{run_id}/execute`、`/{run_id}/outputs/{output_id}`
 - 交互接口文档：<http://127.0.0.1:8000/docs>
 - OpenAPI 定义：<http://127.0.0.1:8000/openapi.json>
 
@@ -313,7 +323,7 @@ Gaia 的 pytest 独立开关为 `ASTROAGENT_RUN_LIVE_GAIA=1`；ADS 使用 `ASTRO
 
 浏览器检查前在 `frontend/` 执行 `npx playwright install chromium`；Windows同时使用已安装的Edge，Linux仅运行Chromium。检查脚本可用 `NODE_BINARY` 指定已安装的受支持Node可执行文件；浏览器测试采用专用合成库，不访问个人会话库。
 
-记录入口见 [分版本测试记录](docs/test-records/README.md)，当前记录见 [v0.5.0](docs/test-records/v0.5.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 包含后端检查、独立前端构建与浏览器任务；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
+记录入口见 [分版本测试记录](docs/test-records/README.md)，最近已有记录见 [v0.6.0](docs/test-records/v0.6.0/README.md)；V0.7尚无测试结果，见 [开发记录](docs/development/v0.7.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 包含后端检查、独立前端构建与浏览器任务；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
 
 ## 目录
 

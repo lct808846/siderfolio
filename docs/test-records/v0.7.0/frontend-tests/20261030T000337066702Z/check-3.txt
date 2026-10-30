@@ -1,0 +1,14 @@
+
+> astroagent-workbench@0.7.0 lint
+> eslint . --max-warnings 0
+
+
+D:\project\astroagent\frontend\src\views\WorkflowWorkspace.vue
+  155:48   warning  Expected 1 line break after opening tag (`<fieldset>`), but no line breaks found  vue/multiline-html-element-content-newline
+  168:165  warning  Expected to be enclosed by double quotes                                          vue/html-quotes
+  178:41   warning  Expected 1 line break after opening tag (`<header>`), but no line breaks found    vue/multiline-html-element-content-newline
+
+✖ 3 problems (0 errors, 3 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.
+
+ESLint found too many warnings (maximum: 0).

@@ -1,0 +1,77 @@
+{
+  "application_version": "0.7.0",
+  "started_at": "2026-10-30T00:02:54.917305+00:00",
+  "kind": "offline-tests",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.6.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "2bda44a9373c169e8f99364af48daa9e91ece371",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/ROADMAP.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/projects.ts\n M frontend/src/components/ResultPanel.vue\n M frontend/src/main.ts\n M frontend/src/style.css\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/src/views/ProjectWorkspace.vue\n M pyproject.toml\n M scripts/generate_frontend_types.py\n M scripts/verify_v06.py\n M src/astroagent/__init__.py\n M src/astroagent/api/projects.py\n M src/astroagent/conversations.py\n M src/astroagent/main.py\n M src/astroagent/project_archives.py\n M src/astroagent/project_schemas.py\n M src/astroagent/projects.py\n M tests/test_projects.py\n?? docs/PROJECT_PLAN_V0.7.md\n?? docs/development/\n?? docs/releases/v0.7.0.md\n?? frontend/src/api/workflows.ts\n?? frontend/src/views/WorkflowWorkspace.vue\n?? src/astroagent/api/workflows.py\n?? src/astroagent/workflow_archives.py\n?? src/astroagent/workflow_io.py\n?? src/astroagent/workflow_schemas.py\n?? src/astroagent/workflow_service.py\n?? src/astroagent/workflow_templates.py\n?? src/astroagent/workflows.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.7.0\\offline-tests\\20261030T000254915244Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 56.9318,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 1,
+      "seconds": 0.2779,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1665,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.3211,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "failed",
+  "finished_at": "2026-10-30T00:03:53.792676+00:00"
+}

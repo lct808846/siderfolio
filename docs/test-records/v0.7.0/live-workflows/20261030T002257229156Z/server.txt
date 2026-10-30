@@ -1,0 +1,31 @@
+INFO:     Started server process [25848]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:61362 (Press CTRL+C to quit)
+INFO:     127.0.0.1:61379 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects HTTP/1.1" 201 Created
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows HTTP/1.1" 201 Created
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/cd4dcddf-28c7-4805-b3ce-154e880a0d01/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/cd4dcddf-28c7-4805-b3ce-154e880a0d01/outputs/c991964f-d74b-418f-8d17-5527fd30d49f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/cd4dcddf-28c7-4805-b3ce-154e880a0d01/outputs/4756aa2e-2324-4d4f-b315-2e41c126eea7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/cd4dcddf-28c7-4805-b3ce-154e880a0d01/outputs/f82699cc-cf13-4b60-bcc7-087aa09e1961 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/cd4dcddf-28c7-4805-b3ce-154e880a0d01/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows HTTP/1.1" 201 Created
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/d443bd13-b15b-4932-9942-bcf991bfe1bf/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/d443bd13-b15b-4932-9942-bcf991bfe1bf/outputs/8cf228bf-b043-4d6b-896a-1689a39331c0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/d443bd13-b15b-4932-9942-bcf991bfe1bf/outputs/a35dfe82-060f-4893-96fd-5347ddbe8c9e HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/d443bd13-b15b-4932-9942-bcf991bfe1bf/outputs/e276a60d-d2e2-4c43-b199-7fec3fe209db HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/d443bd13-b15b-4932-9942-bcf991bfe1bf/outputs/c58f9112-b4bd-499b-a9d4-1551798e6e86 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/d443bd13-b15b-4932-9942-bcf991bfe1bf/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows HTTP/1.1" 201 Created
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/afc2e8cc-d01d-45fe-8f0f-80cead3442cb/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/afc2e8cc-d01d-45fe-8f0f-80cead3442cb/outputs/f1cdb3b3-448e-447a-b740-fe25026d9c5d HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/afc2e8cc-d01d-45fe-8f0f-80cead3442cb/outputs/7e6ffd39-7e28-4df6-94fe-e6f4cf63813a HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/workflows/afc2e8cc-d01d-45fe-8f0f-80cead3442cb/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/e7622af9-6cf5-4ac3-93dd-5191a7753bf9/archive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61379 - "POST /api/v1/projects/import HTTP/1.1" 201 Created
+INFO:     127.0.0.1:61379 - "GET /api/v1/projects/fc488c72-3771-44de-8264-5bde8e9ea3b5/workflows HTTP/1.1" 200 OK

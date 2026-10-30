@@ -94,6 +94,29 @@ test('a rejected send preserves the question and only retries on explicit action
   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible(); expect(calls).toBe(2)
 })
 
+test('a late initial list does not clear a send error after navigation', async ({ page }) => {
+  let release!: () => void, started!: () => void
+  const gate = new Promise<void>(resolve => { release = resolve })
+  const waiting = new Promise<void>(resolve => { started = resolve })
+  await page.route('**/api/v1/conversations', async route => {
+    if (route.request().method() === 'GET') { started(); await gate }
+    await route.continue()
+  }, { times: 1 })
+  try {
+    await page.goto('/'); await waiting
+    await page.getByRole('button', { name: '新建会话' }).click()
+    await expect(page).toHaveURL(/conversations\/[0-9a-f-]+/)
+    await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) }))
+    await page.getByRole('textbox', { name: '天文问题' }).fill('测试异步加载')
+    await page.getByRole('button', { name: '发送', exact: true }).click()
+    await expect(page.getByRole('alert')).toContainText('已有两轮正在处理')
+    const initialList = page.waitForResponse(response => response.request().method() === 'GET' && response.url().endsWith('/api/v1/conversations'))
+    release()
+    await initialList
+    await expect(page.getByRole('alert')).toContainText('已有两轮正在处理')
+  } finally { release() }
+})
+
 test('local static proxy keeps its API target and never returns SPA HTML for API errors', async ({ request }) => {
   const missing = await request.get('/api/v1/nonexistent')
   expect(missing.status()).toBe(404); expect(missing.headers()['content-type']).toContain('application/json')

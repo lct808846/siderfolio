@@ -114,7 +114,7 @@ def rerun(client, p, s, family="gaia", key=None, revision=None):
 def archive(client, p):
     response = client.post(
         f"/api/v1/projects/{p['id']}/archive",
-        json={"expected_revision": detail(client, p)["revision"]},
+        json={"expected_revision": detail(client, p)["revision"], "format_version": 1},
     )
     assert response.status_code == 200, response.text
     return response.content
@@ -610,7 +610,7 @@ def test_v05_migration_backup_and_v2_failure_rollback(tmp_path, monkeypatch):
     try:
         assert repo.list()[0]["metadata_revision"] == 0
         with repo.connection() as db:
-            assert db.execute("PRAGMA user_version").fetchone()[0] == 2
+            assert db.execute("PRAGMA user_version").fetchone()[0] == 3
             assert (
                 db.execute("SELECT record FROM turns WHERE id=?", (tid,)).fetchone()[0]
                 == legacy_turn

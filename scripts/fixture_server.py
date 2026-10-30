@@ -8,7 +8,7 @@ from uuid import uuid4
 from langchain_core.messages import AIMessage
 
 from astroagent.agent import AstroAgent
-from astroagent.api import conversations, projects
+from astroagent.api import conversations, projects, workflows
 from astroagent.config import Settings
 from astroagent.main import app as app
 from scripts.synthetic_services import SyntheticAds, SyntheticGaia, SyntheticSimbad
@@ -113,3 +113,4 @@ def fixture_executor():
 
 
 projects.get_executor = fixture_executor
+workflows.get_executor = fixture_executor

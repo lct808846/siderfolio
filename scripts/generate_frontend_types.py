@@ -44,7 +44,11 @@ def main():
     else:
         (frontend / "openapi.json").write_text(schema, encoding="utf-8")
         (frontend / "src/types/generated.ts").write_text(generated, encoding="utf-8")
-    print("OpenAPI / TypeScript contract matches")
+    print(
+        "OpenAPI / TypeScript contract matches"
+        if args.check
+        else "Generated OpenAPI / TypeScript files; validation was not run"
+    )
 
 
 if __name__ == "__main__":

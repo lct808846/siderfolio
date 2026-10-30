@@ -1,5 +1,7 @@
 # 测试说明
 
+V0.7.0 已于 2026-10-30 开始执行本地、浏览器和真实服务验收，结果与未覆盖范围见 [V0.7测试记录](test-records/v0.7.0/README.md)，验收要求见 [清单](development/v0.7.0/ACCEPTANCE.md)。历史V0.6结果不代表当前工作区已通过。
+
 ## 准备与执行
 
 在项目根目录使用 conda 的 `agent` 环境：
@@ -10,7 +12,7 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-当前实际结果见 [V0.6 测试记录](test-records/v0.6.0/README.md)，历史见 [V0.5](test-records/v0.5.0/README.md)、[V0.4](test-records/v0.4.0/README.md)、[V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
+最近已有实际结果见 [V0.6 测试记录](test-records/v0.6.0/README.md)，历史见 [V0.5](test-records/v0.5.0/README.md)、[V0.4](test-records/v0.4.0/README.md)、[V0.3](test-records/v0.3.0/README.md)、[V0.2](test-records/v0.2.0/README.md)。查看各项名称可使用 `python -m pytest -v`。离线测试通过 fixture 阻止外部 HTTP 请求，不会消耗模型额度。`scripts/run_tests.py` 默认强制关闭全部三个联网开关，避免继承终端设置误用真实服务。
 
 ## V0.6 网页手动测试
 

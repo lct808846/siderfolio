@@ -1,0 +1,11 @@
+B017 Do not assert blind exception: `Exception`
+  --> tests\test_workflows.py:34:10
+   |
+33 |     monkeypatch.setattr(repo, "_migrate_v3", broken)
+34 |     with pytest.raises(Exception):
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^
+35 |         repo.initialize()
+36 |     with sqlite3.connect(repo.path) as db:
+   |
+
+Found 1 error.

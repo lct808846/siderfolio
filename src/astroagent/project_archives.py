@@ -1,4 +1,4 @@
-"""固定四成员项目 ZIP；完整校验后单事务恢复，不解压到文件系统。"""
+"""固定四/五成员项目 ZIP（schema1/2）；完整校验后单事务恢复，不解压到文件系统。"""
 
 import hashlib
 import json
@@ -54,7 +54,7 @@ def strict_json(raw):
     return value
 
 
-def export_archive(repository, identifier, revision):
+def export_archive(repository, identifier, revision, format_version=2):
     with repository.repo.connection() as db:
         db.execute("BEGIN")
         project = repository._project(db, identifier, revision)
@@ -91,6 +91,13 @@ def export_archive(repository, identifier, revision):
                 "SELECT record FROM reruns WHERE project_id=? ORDER BY id", (identifier,)
             )
         ]
+        from astroagent.workflow_archives import read_workflows
+
+        workflows = read_workflows(db, identifier)
+        if format_version == 1 and workflows["runs"]:
+            raise ServiceError(
+                409, "workflow_archive_requires_v2", "项目含科研流程，不能丢弃流程后导出旧格式。"
+            )
     # Origin IDs are immutable provenance. Active references outside this bundle are detached.
     for value in [*snapshots, *reruns]:
         if value["conversation_id"] not in ids or value["turn_id"] not in turn_ids:
@@ -100,9 +107,11 @@ def export_archive(repository, identifier, revision):
         "conversations.json": encode(conversations).encode(),
         "snapshots.json": encode(snapshots).encode(),
     }
+    if format_version == 2:
+        payloads["workflows.json"] = encode(workflows).encode()
     manifest = ArchiveManifest(
         format="astroagent-project",
-        version=1,
+        version=format_version,
         exported_at=utc_now(),
         application_version=__version__,
         files={
@@ -132,7 +141,11 @@ def decode_archive(raw):
         data, total = {}, 0
         with ZipFile(BytesIO(raw)) as archive:
             infos = archive.infolist()
-            if len(infos) != 4 or {i.filename for i in infos} != MEMBERS:
+            member_names = {i.filename for i in infos}
+            if len(infos) != len(member_names) or member_names not in (
+                MEMBERS,
+                MEMBERS | {"workflows.json"},
+            ):
                 raise ValueError("Fixed unique members required")
             for info in infos:
                 mode = stat.S_IFMT(info.external_attr >> 16)
@@ -158,8 +171,11 @@ def decode_archive(raw):
         if not isinstance(manifest_raw, dict) or type(manifest_raw.get("version")) is not int:
             raise ValueError("Integer archive version required")
         manifest = ArchiveManifest.model_validate(manifest_raw)
+        expected_members = MEMBERS if manifest.version == 1 else MEMBERS | {"workflows.json"}
+        if set(data) != expected_members:
+            raise ValueError("Archive members differ from format version")
         Project.utc(manifest.exported_at)
-        if set(manifest.files) != MEMBERS - {"manifest.json"}:
+        if set(manifest.files) != expected_members - {"manifest.json"}:
             raise ValueError("Incomplete manifest")
         for name, entry in manifest.files.items():
             if (
@@ -317,11 +333,19 @@ def decode_archive(raw):
             Project.utc(value["created_at"])
             if value["completed_at"]:
                 Project.utc(value["completed_at"])
+        from astroagent.workflow_archives import validate_workflows
+
+        workflows = (
+            validate_workflows(strict_json(data["workflows.json"]), project.id, snapshots)
+            if manifest.version == 2
+            else {"runs": [], "operations": [], "outputs": [], "snapshot_refs": []}
+        )
         return {
             "project": project.model_dump(),
             "conversations": conversations,
             "snapshots": snapshots,
             "reruns": reruns,
+            "workflows": workflows,
         }
     except ServiceError:
         raise
@@ -371,6 +395,14 @@ def import_archive(repository, raw):
     incoming += sum(
         len(encode(c["conversation"]).encode()) + sum(len(encode(t).encode()) for t in c["turns"])
         for c in bundle["conversations"]
+    )
+    incoming += sum(len(encode(run).encode()) for run in bundle["workflows"]["runs"])
+    incoming += sum(
+        len(encode(operation).encode()) for operation in bundle["workflows"]["operations"]
+    )
+    incoming += sum(
+        len(record["content"]) + len(encode(record["info"]).encode())
+        for record in bundle["workflows"]["outputs"]
     )
     incoming += sum(
         len(encode(value).encode()) for kind in ("snapshots", "reruns") for value in bundle[kind]
@@ -507,5 +539,10 @@ def import_archive(repository, raw):
                     encode(value),
                 ),
             )
+        from astroagent.workflow_archives import import_workflows
+
+        import_workflows(db, bundle["workflows"], project_id, id_map, digest)
+        project["import_map"] = id_map
+        repository._put(db, "projects", project)
         repository._budget(db)
     return {"project": project, "id_map": id_map, "archive_sha256": digest}

@@ -1,0 +1,70 @@
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests\test_workflows.py:3:1
+  |
+1 |   """V0.7 固定流程：合成数据端到端、幂等与项目归档恢复。"""
+2 |
+3 | / import hashlib
+4 | | from uuid import uuid4
+5 | |
+6 | | import pytest
+7 | |
+8 | | from test_projects import client, project  # noqa: F401
+  | |_________________________________________^
+help: Organize imports
+  |
+6 | import pytest
+  -
+7 | from test_projects import client, project  # noqa: F401
+  |
+
+F811 Redefinition of unused `client` from line 8
+  --> tests\test_workflows.py:29:39
+   |
+27 |     ],
+28 | )
+29 | def test_flow_archive_and_idempotency(client, monkeypatch, template, parameters, family):
+   |                                       ^^^^^^ `client` redefined here
+30 |     from astroagent.api import projects, workflows
+   |
+  ::: tests\test_workflows.py:8:27
+   |
+ 6 | import pytest
+ 7 |
+ 8 | from test_projects import client, project  # noqa: F401
+   |                           ------ previous definition of `client` here
+help: Remove definition: `client`
+
+F811 Redefinition of unused `client` from line 8
+  --> tests\test_workflows.py:87:54
+   |
+87 | def test_name_and_coordinates_are_mutually_exclusive(client):
+   |                                                      ^^^^^^ `client` redefined here
+88 |     p = project(client)
+89 |     r = client.post(
+   |
+  ::: tests\test_workflows.py:8:27
+   |
+ 6 | import pytest
+ 7 |
+ 8 | from test_projects import client, project  # noqa: F401
+   |                           ------ previous definition of `client` here
+help: Remove definition: `client`
+
+F811 Redefinition of unused `client` from line 8
+   --> tests\test_workflows.py:108:62
+    |
+108 | def test_resume_reuses_successful_query_after_export_failure(client, monkeypatch):
+    |                                                              ^^^^^^ `client` redefined here
+109 |     from astroagent.api import projects, workflows
+110 |     from astroagent.schemas import ErrorInfo
+    |
+   ::: tests\test_workflows.py:8:27
+    |
+  6 | import pytest
+  7 |
+  8 | from test_projects import client, project  # noqa: F401
+    |                           ------ previous definition of `client` here
+help: Remove definition: `client`
+
+Found 4 errors.
+[*] 1 fixable with `--fix`.

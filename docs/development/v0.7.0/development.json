@@ -1,0 +1,20 @@
+{
+  "version": "0.7.0",
+  "started_date": "2026-10-29",
+  "updated_date": "2026-10-30",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "2bda44a",
+  "status": "implementation_written_pending_acceptance",
+  "tests_run": [],
+  "builds_run": [],
+  "live_acceptance_run": false,
+  "ci_triggered": false,
+  "application_started": false,
+  "personal_database_migrated": false,
+  "committed": false,
+  "tagged": false,
+  "released": false,
+  "development_actions": ["source_and_document_edits", "source_formatting", "openapi_and_typescript_generation"],
+  "user_instruction": "Do not run tests during development; user arranges acceptance before release.",
+  "acceptance_checklist": "ACCEPTANCE.md"
+}

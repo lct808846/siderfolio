@@ -15,6 +15,7 @@ const moveId = ref(''), saveConversation = ref(''), saveTurn = ref(''), snapshot
 const conversationDetail = ref<ConversationDetail | null>(null)
 const leftId = ref(''), rightId = ref(''), matchIds = ref(false), comparison = ref<Comparison | null>(null)
 const tool = ref(''), dialog = ref<HTMLDialogElement | null>(null), action = ref<'project-delete' | 'snapshot-delete' | 'rerun' | ''>('')
+const archiveFormat = ref<1 | 2>(2)
 const mobilePanel = ref('project'), pending = ref<{ project: string; snapshot: string; payload: RerunRequest } | null>(null)
 let navigation = 0, selection = 0, conversationSelection = 0
 const unassigned = computed(() => conversations.value.filter(c => !memberships.value[c.id]))
@@ -51,7 +52,7 @@ async function act(task: () => Promise<unknown>) {
   busy.value = true; error.value = ''; errorCode.value = ''; message.value = ''
   try { await task(); await refresh() } catch (e) { report(e) } finally { busy.value = false }
 }
-async function downloadArchive() { const p = current.value; if (p) await act(() => exportProject(p)) }
+async function downloadArchive() { const p = current.value; if (p) await act(() => exportProject(p, archiveFormat.value)) }
 async function updateProject() { const p = current.value; if (p) await act(() => projectsApi.update(p, editName.value.trim(), editDescription.value)) }
 async function renameSnapshot() { const p = current.value, s = snapshot.value; if (p && s) await act(() => projectsApi.renameSnapshot(p, s.id, renameName.value.trim())) }
 async function create() { await act(async () => { const p = await projectsApi.create(newName.value.trim(), newDescription.value); newName.value = ''; newDescription.value = ''; await router.push(`/projects/${p.id}`) }) }
@@ -131,7 +132,7 @@ watch(() => route.params.projectId, () => {
 
 <template>
   <div class="project-workspace" :data-panel="mobilePanel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.6</span></RouterLink><span class="topbar-caption">项目与查询归档</span><RouterLink class="project-link" to="/">返回对话 ↗</RouterLink></header>
+    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.7</span></RouterLink><span class="topbar-caption">项目与查询归档</span><RouterLink class="project-link" to="/">返回对话 ↗</RouterLink></header>
     <nav class="project-mobile" aria-label="项目面板"><button @click="mobilePanel='project'">项目记录</button><button @click="mobilePanel='results'">快照结果</button></nav>
     <aside class="project-sidebar" aria-label="项目列表">
       <p class="eyebrow">RESEARCH PROJECTS · {{ projects.length }}/20</p>
@@ -146,7 +147,7 @@ watch(() => route.params.projectId, () => {
       <p v-if="busy" class="processing" role="status">正在处理，请稍候。不会自动重复提交。</p>
       <div v-if="pending" class="notice"><p>重跑请求尚未确认。先刷新项目核对记录，断线不会取消后台查询。</p><button :disabled="busy" @click="executePending">用原请求编号核对重跑</button></div>
       <template v-if="current">
-        <header class="project-heading"><p class="eyebrow">PROJECT / r{{ current.revision }}</p><h1>{{ current.name }}</h1><p>{{ current.description || '暂无项目说明' }}</p><code>{{ current.id }}</code><p v-if="current.provenance==='imported_unverified'" class="notice">导入来源未经认证。哈希只验证包内完整性；历史数据不会因导入而重新查询。</p><div class="project-actions"><button :disabled="busy" @click="downloadArchive">导出项目 ZIP</button><button :disabled="busy" @click="openConfirm('project-delete')">删除项目</button><button :disabled="busy" @click="act(refresh)">刷新项目</button></div></header>
+        <header class="project-heading"><p class="eyebrow">PROJECT / r{{ current.revision }}</p><h1>{{ current.name }}</h1><p>{{ current.description || '暂无项目说明' }}</p><code>{{ current.id }}</code><p v-if="current.provenance==='imported_unverified'" class="notice">导入来源未经认证。哈希只验证包内完整性；历史数据不会因导入而重新查询。</p><div class="project-actions"><RouterLink :to="`/projects/${current.id}/workflows`">科研流程 · {{ current.workflow_count }} →</RouterLink><label class="small">归档格式<select v-model="archiveFormat" aria-label="项目归档格式"><option :value="2">V0.7格式2（含流程）</option><option :value="1" :disabled="current.workflow_count > 0">V0.6格式1（仅无流程项目）</option></select></label><button :disabled="busy" @click="downloadArchive">导出项目 ZIP</button><button :disabled="busy" @click="openConfirm('project-delete')">删除项目</button><button :disabled="busy" @click="act(refresh)">刷新项目</button></div></header>
         <details class="project-section"><summary>修改项目名称与说明</summary><form class="project-form" @submit.prevent="updateProject"><label for="edit-project-name">修改项目名称</label><input id="edit-project-name" v-model="editName" maxlength="100"><label for="edit-project-description">修改项目说明</label><textarea id="edit-project-description" v-model="editDescription" maxlength="2000"></textarea><button :disabled="busy || !editName.trim()">保存项目修改</button></form></details>
         <section class="project-section"><h2>项目会话 <span class="small muted">{{ members.length }}/20</span></h2><div v-for="c in members" :key="c.id" class="project-row"><RouterLink :to="`/conversations/${c.id}`">{{ c.title }} <small>· {{ c.revision }}轮</small></RouterLink><button :disabled="busy" @click="move(c.id,true)">移出项目</button></div><p v-if="!members.length" class="small muted">选择已有会话加入项目，或先返回对话创建会话。</p><form class="inline-form" @submit.prevent="move(moveId)"><label class="sr-only" for="move-conversation">选择要加入的会话</label><select id="move-conversation" v-model="moveId"><option value="">选择会话加入 / 移动</option><option v-for="c in movable" :key="c.id" :value="c.id">{{ c.title }}{{ memberships[c.id] ? '（从其他项目移动）' : '（未归档）' }}</option></select><button :disabled="busy || !moveId">加入项目</button></form></section>
         <section class="project-section"><h2>保存命名快照</h2><form class="project-form" @submit.prevent="save"><label for="save-conversation">项目内会话</label><select id="save-conversation" v-model="saveConversation"><option value="">选择会话</option><option v-for="c in members" :key="c.id" :value="c.id">{{ c.title }}</option></select><label for="save-turn">完整响应轮次</label><select id="save-turn" v-model="saveTurn"><option value="">选择可交付轮次</option><option v-for="t in deliverable" :key="t.turn_id" :value="t.turn_id">第{{ t.revision }}轮 · {{ t.response_status }} · {{ t.message.slice(0,50) }}</option></select><label for="snapshot-name">快照名称</label><input id="snapshot-name" v-model="snapshotName" maxlength="100"><button :disabled="busy || !saveTurn || !snapshotName.trim()">保存完整快照</button></form></section>
@@ -158,6 +159,6 @@ watch(() => route.params.projectId, () => {
       <div v-else class="project-empty"><p class="eyebrow">PRESERVE / COMPARE / REVISIT</p><h1>把查询留成可核对的项目记录</h1><p>创建或选择项目，组织会话、保存完整快照，再比较、显式重跑或导出归档。</p><p class="small muted">旧会话保留在“未归档会话”中。</p></div>
     </main>
     <ResultPanel :turn="snapshotTurn" :historical="!!snapshot" :heading="snapshot?.name || '选择一份快照'" :artifact-path="snapshot ? `/api/v1/projects/${snapshot.project_id}/snapshots/${snapshot.id}/artifacts` : undefined" />
-    <dialog ref="dialog" class="modal project-dialog" @close="action=''" @cancel="action=''"><form @submit.prevent="confirm"><h2>{{ action==='rerun' ? '确认执行这条工具查询？' : action==='project-delete' ? '删除这个项目？' : '删除这份命名快照？' }}</h2><template v-if="action==='rerun'"><p>将按下列参数访问真实数据源，保存独立轮次和快照。旧响应不覆盖；本操作不调用语言模型，断线不代表取消。</p><pre>{{ format(selectedTool) }}</pre></template><p v-else-if="action==='project-delete'">将删除此项目、命名快照和重跑关系。会话及其轮次保留并移至未归档；已下载文件保留。</p><p v-else>只删除这份快照，原会话和轮次保留。</p><div class="modal-actions"><button type="button" @click="dialog?.close()">取消</button><button :disabled="busy" class="button-primary" type="submit">{{ action==='rerun' ? '确认访问数据源并重跑' : '确认删除' }}</button></div></form></dialog>
+    <dialog ref="dialog" class="modal project-dialog" @close="action=''" @cancel="action=''"><form @submit.prevent="confirm"><h2>{{ action==='rerun' ? '确认执行这条工具查询？' : action==='project-delete' ? '删除这个项目？' : '删除这份命名快照？' }}</h2><template v-if="action==='rerun'"><p>将按下列参数访问真实数据源，保存独立轮次和快照。旧响应不覆盖；本操作不调用语言模型，断线不代表取消。</p><pre>{{ format(selectedTool) }}</pre></template><p v-else-if="action==='project-delete'">将删除此项目、命名快照、重跑关系，以及 {{ current?.workflow_count || 0 }} 次科研流程及其专属输出。会话及其轮次保留并移至未归档；已下载文件保留。</p><p v-else>只删除这份快照，原会话和轮次保留。</p><div class="modal-actions"><button type="button" @click="dialog?.close()">取消</button><button :disabled="busy" class="button-primary" type="submit">{{ action==='rerun' ? '确认访问数据源并重跑' : '确认删除' }}</button></div></form></dialog>
   </div>
 </template>

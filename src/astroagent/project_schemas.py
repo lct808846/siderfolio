@@ -192,6 +192,8 @@ class ProjectDetail(Project):
     conversation_ids: list[str]
     snapshots: list[SnapshotSummary]
     reruns: list[Rerun]
+    workflow_count: int = 0
+    running_workflow_count: int = 0
 
 
 class Comparison(Contract):
@@ -206,10 +208,14 @@ class Comparison(Contract):
 
 class ArchiveManifest(Contract):
     format: Literal["astroagent-project"]
-    version: Literal[1]
+    version: Literal[1, 2]
     exported_at: str
     application_version: str
     files: dict[str, dict]
+
+
+class ProjectArchiveRequest(Revision):
+    format_version: StrictInt = Field(default=2, ge=1, le=2)
 
 
 class ImportResult(Contract):

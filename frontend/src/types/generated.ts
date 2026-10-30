@@ -411,10 +411,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workflow-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalog */
+        get: operations["catalog_api_v1_workflow_templates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/workflows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Runs */
+        get: operations["list_runs_api_v1_projects__project_id__workflows_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_api_v1_projects__project_id__workflows_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/workflows/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detail */
+        get: operations["detail_api_v1_projects__project_id__workflows__run_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete */
+        delete: operations["delete_api_v1_projects__project_id__workflows__run_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/workflows/{run_id}/execute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Execute */
+        post: operations["execute_api_v1_projects__project_id__workflows__run_id__execute_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/workflows/{run_id}/outputs/{output_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Output */
+        get: operations["output_api_v1_projects__project_id__workflows__run_id__outputs__output_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AdsEvidenceParameters
+         * @description 年份等条件由用户写在实际检索式中，服务端不静默改写。
+         */
+        AdsEvidenceParameters: {
+            /**
+             * Query
+             * @description ADS 检索式
+             */
+            query: string;
+            /**
+             * Rows
+             * @default 5
+             */
+            rows: number;
+            /**
+             * Start
+             * @default 0
+             */
+            start: number;
+            /**
+             * Sort
+             * @default relevance
+             * @enum {string}
+             */
+            sort: "relevance" | "date_desc" | "citation_count_desc";
+        };
         /** ArtifactInfo */
         ArtifactInfo: {
             /** Artifact Id */
@@ -747,6 +861,35 @@ export interface components {
             /** Skipped Reason */
             skipped_reason?: ("missing_parallax" | "non_positive_parallax" | "invalid_or_missing_error" | "low_parallax_snr" | "numerical_overflow") | null;
         };
+        /** GaiaFieldParameters */
+        GaiaFieldParameters: {
+            /**
+             * Input Mode
+             * @enum {string}
+             */
+            input_mode: "name" | "coordinates";
+            /** Object Name */
+            object_name?: string | null;
+            /** Ra Deg */
+            ra_deg?: number | null;
+            /** Dec Deg */
+            dec_deg?: number | null;
+            /** Radius Arcmin */
+            radius_arcmin: number;
+            /** Limit */
+            limit: number;
+            /** Ruwe Max */
+            ruwe_max?: number | null;
+            /** Parallax Snr Min */
+            parallax_snr_min?: number | null;
+            /**
+             * Estimate Distance
+             * @default false
+             */
+            estimate_distance: boolean;
+            /** Plots */
+            plots?: ("proper_motion" | "parallax_histogram" | "observed_cmd")[];
+        };
         /** GaiaQueryResult */
         GaiaQueryResult: {
             /** Query */
@@ -1070,6 +1213,16 @@ export interface components {
             /** Archive Sha256 */
             archive_sha256?: string | null;
         };
+        /** ProjectArchiveRequest */
+        ProjectArchiveRequest: {
+            /** Expected Revision */
+            expected_revision: number;
+            /**
+             * Format Version
+             * @default 2
+             */
+            format_version: number;
+        };
         /** ProjectCreate */
         ProjectCreate: {
             /** Name */
@@ -1126,6 +1279,16 @@ export interface components {
             snapshots: components["schemas"]["SnapshotSummary"][];
             /** Reruns */
             reruns: components["schemas"]["Rerun"][];
+            /**
+             * Workflow Count
+             * @default 0
+             */
+            workflow_count: number;
+            /**
+             * Running Workflow Count
+             * @default 0
+             */
+            running_workflow_count: number;
         };
         /** ProjectUpdate */
         ProjectUpdate: {
@@ -1328,6 +1491,66 @@ export interface components {
              */
             retrieved_at: string;
         };
+        /** StepAttempt */
+        StepAttempt: {
+            /** Id */
+            id: string;
+            /** Operation Id */
+            operation_id: string;
+            /** Client Request Id */
+            client_request_id: string;
+            /** Sequence */
+            sequence: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "running" | "succeeded" | "failed" | "skipped" | "interrupted";
+            /** Input */
+            input: {
+                [key: string]: unknown;
+            };
+            /** Input Sha256 */
+            input_sha256: string;
+            /** Dependencies */
+            dependencies: components["schemas"]["StepDependency"][];
+            /** Software */
+            software: {
+                [key: string]: string;
+            };
+            /** Started At */
+            started_at: string;
+            /** Completed At */
+            completed_at?: string | null;
+            /** Elapsed Seconds */
+            elapsed_seconds?: number | null;
+            /** Output */
+            output?: {
+                [key: string]: unknown;
+            } | null;
+            /** Output Sha256 */
+            output_sha256?: string | null;
+            /** Snapshot Id */
+            snapshot_id?: string | null;
+            /** Output Ids */
+            output_ids?: string[];
+            /** Query Status */
+            query_status?: ("success" | "not_found" | "error") | null;
+            /** Export Status */
+            export_status?: ("success" | "partial") | null;
+            error?: components["schemas"]["ErrorInfo"] | null;
+            /** Warnings */
+            warnings?: string[];
+        };
+        /** StepDependency */
+        StepDependency: {
+            /** Step Id */
+            step_id: string;
+            /** Attempt Id */
+            attempt_id: string;
+            /** Sha256 */
+            sha256: string;
+        };
         /** Turn */
         Turn: {
             /** Conversation Id */
@@ -1399,6 +1622,219 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WorkflowCreate */
+        WorkflowCreate: {
+            /** Expected Revision */
+            expected_revision: number;
+            /**
+             * Template Id
+             * @enum {string}
+             */
+            template_id: "gaia_field" | "ads_evidence";
+            /** Name */
+            name: string;
+            /** Parameters */
+            parameters: components["schemas"]["GaiaFieldParameters"] | components["schemas"]["AdsEvidenceParameters"];
+        };
+        /** WorkflowDelete */
+        WorkflowDelete: {
+            /** Expected Revision */
+            expected_revision: number;
+            /** Confirmed */
+            confirmed: boolean;
+        };
+        /** WorkflowDetail */
+        WorkflowDetail: {
+            /** Id */
+            id: string;
+            /** Project Id */
+            project_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Template Id
+             * @enum {string}
+             */
+            template_id: "gaia_field" | "ads_evidence";
+            /** Template Version */
+            template_version: string;
+            /** Parameters */
+            parameters: {
+                [key: string]: unknown;
+            };
+            /** Requested Parameters */
+            requested_parameters: {
+                [key: string]: unknown;
+            };
+            /** Revision */
+            revision: number;
+            /**
+             * State
+             * @default pending
+             * @enum {string}
+             */
+            state: "pending" | "running" | "succeeded" | "failed" | "skipped" | "interrupted";
+            /** Current Step Id */
+            current_step_id?: string | null;
+            /** Created At */
+            created_at: string;
+            /** Updated At */
+            updated_at: string;
+            /** Software */
+            software: {
+                [key: string]: string;
+            };
+            /**
+             * Provenance
+             * @default local
+             * @enum {string}
+             */
+            provenance: "local" | "imported_unverified";
+            /** Original Id */
+            original_id?: string | null;
+            /** Archive Sha256 */
+            archive_sha256?: string | null;
+            /** Steps */
+            steps: components["schemas"]["WorkflowStep"][];
+            error?: components["schemas"]["ErrorInfo"] | null;
+            /** Outputs */
+            outputs: components["schemas"]["WorkflowOutput"][];
+            /** Operations */
+            operations: components["schemas"]["WorkflowOperation"][];
+        };
+        /** WorkflowExecute */
+        WorkflowExecute: {
+            /** Expected Revision */
+            expected_revision: number;
+            /** Client Request Id */
+            client_request_id: string;
+            /** Confirmed */
+            confirmed: boolean;
+        };
+        /** WorkflowExecution */
+        WorkflowExecution: {
+            operation: components["schemas"]["WorkflowOperation"];
+            run: components["schemas"]["WorkflowDetail"];
+        };
+        /** WorkflowOperation */
+        WorkflowOperation: {
+            /** Id */
+            id: string;
+            /** Run Id */
+            run_id: string;
+            /** Client Request Id */
+            client_request_id: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "running" | "succeeded" | "failed" | "skipped" | "interrupted";
+            /** Created At */
+            created_at: string;
+            /** Completed At */
+            completed_at?: string | null;
+            error?: components["schemas"]["ErrorInfo"] | null;
+        };
+        /** WorkflowOutput */
+        WorkflowOutput: {
+            /** Id */
+            id: string;
+            /** Run Id */
+            run_id: string;
+            /** Project Id */
+            project_id: string;
+            /** Attempt Id */
+            attempt_id: string;
+            /** Filename */
+            filename: string;
+            /**
+             * Media Type
+             * @enum {string}
+             */
+            media_type: "application/zip" | "application/json" | "image/png" | "text/csv";
+            /** Bytes */
+            bytes: number;
+            /** Sha256 */
+            sha256: string;
+            /** Created At */
+            created_at: string;
+            /**
+             * Provenance
+             * @default local
+             * @enum {string}
+             */
+            provenance: "local" | "imported_unverified";
+            /** Original Id */
+            original_id?: string | null;
+        };
+        /** WorkflowStep */
+        WorkflowStep: {
+            /** Id */
+            id: string;
+            /**
+             * Version
+             * @default 1
+             */
+            version: string;
+            /** Title */
+            title: string;
+            /**
+             * State
+             * @default pending
+             * @enum {string}
+             */
+            state: "pending" | "running" | "succeeded" | "failed" | "skipped" | "interrupted";
+            /** Skip Reason */
+            skip_reason?: string | null;
+            /** Attempts */
+            attempts?: components["schemas"]["StepAttempt"][];
+            error?: components["schemas"]["ErrorInfo"] | null;
+        };
+        /** WorkflowSummary */
+        WorkflowSummary: {
+            /** Id */
+            id: string;
+            /** Project Id */
+            project_id: string;
+            /** Name */
+            name: string;
+            /** Template Id */
+            template_id: string;
+            /** Template Version */
+            template_version: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "running" | "succeeded" | "failed" | "skipped" | "interrupted";
+            /** Revision */
+            revision: number;
+            /** Updated At */
+            updated_at: string;
+            /** Provenance */
+            provenance: string;
+        };
+        /** WorkflowTemplate */
+        WorkflowTemplate: {
+            /** Id */
+            id: string;
+            /** Version */
+            version: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Steps */
+            steps: {
+                [key: string]: string;
+            }[];
+            /** Input Schema */
+            input_schema: {
+                [key: string]: unknown;
+            };
+            /** Warnings */
+            warnings: string[];
         };
         /** ExportChatResponse */
         ExportChatResponse: {
@@ -4203,7 +4639,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Revision"];
+                "application/json": components["schemas"]["ProjectArchiveRequest"];
             };
         };
         responses: {
@@ -4245,6 +4681,500 @@ export interface operations {
             };
             /** @description Unsupported Media Type */
             415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    catalog_api_v1_workflow_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowTemplate"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_runs_api_v1_projects__project_id__workflows_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowSummary"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_api_v1_projects__project_id__workflows_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkflowCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    detail_api_v1_projects__project_id__workflows__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_api_v1_projects__project_id__workflows__run_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkflowDelete"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    execute_api_v1_projects__project_id__workflows__run_id__execute_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkflowExecute"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowExecution"];
+                };
+            };
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowExecution"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    output_api_v1_projects__project_id__workflows__run_id__outputs__output_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                run_id: string;
+                output_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": string;
+                    "application/json": string;
+                    "image/png": string;
+                    "text/csv": string;
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
                 headers: {
                     [name: string]: unknown;
                 };

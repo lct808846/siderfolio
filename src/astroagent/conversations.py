@@ -64,7 +64,7 @@ class ConversationRepository:
                 fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             with self.connection() as db:
                 version = db.execute("PRAGMA user_version").fetchone()[0]
-                if version not in (0, 1, 2):
+                if version not in (0, 1, 2, 3):
                     raise storage_error()
                 if version == 0:
                     tables = db.execute(
@@ -92,6 +92,16 @@ class ConversationRepository:
                         db.backup(target)
                     with self.transaction(db):
                         self._migrate_v2(db)
+                if version < 3:
+                    backup = self.path.with_name(
+                        "migration-v3-"
+                        + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+                        + ".sqlite3"
+                    )
+                    with sqlite3.connect(backup) as target:
+                        db.backup(target)
+                    with self.transaction(db):
+                        self._migrate_v3(db)
                 db.execute("PRAGMA journal_mode=WAL")
                 with self.transaction(db):
                     for row in db.execute(
@@ -108,6 +118,9 @@ class ConversationRepository:
                     from astroagent.projects import ProjectRepository
 
                     ProjectRepository.recover(db)
+                    from astroagent.workflows import WorkflowRepository
+
+                    WorkflowRepository.recover(db)
         except (OSError, sqlite3.Error) as exc:
             self.close()
             raise storage_error() from exc
@@ -158,6 +171,27 @@ class ConversationRepository:
             turn_id TEXT PRIMARY KEY REFERENCES turns(id) ON DELETE CASCADE,
             record TEXT NOT NULL)""")
         db.execute("PRAGMA user_version=2")
+
+    @staticmethod
+    def _migrate_v3(db):
+        db.execute("""CREATE TABLE workflows (
+            id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            state TEXT NOT NULL, record TEXT NOT NULL,
+            reserved_bytes INTEGER NOT NULL DEFAULT 0)""")
+        db.execute("CREATE INDEX workflow_project ON workflows(project_id)")
+        db.execute("""CREATE TABLE workflow_operations (
+            id TEXT PRIMARY KEY, run_id TEXT NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+            request_id TEXT NOT NULL, request_hash TEXT NOT NULL, state TEXT NOT NULL,
+            record TEXT NOT NULL, reserved_bytes INTEGER NOT NULL DEFAULT 0,
+            UNIQUE(run_id, request_id))""")
+        db.execute("""CREATE TABLE workflow_outputs (
+            id TEXT PRIMARY KEY, run_id TEXT NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+            record TEXT NOT NULL, content BLOB NOT NULL)""")
+        db.execute("""CREATE TABLE workflow_snapshot_refs (
+            run_id TEXT NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+            snapshot_id TEXT NOT NULL REFERENCES snapshots(id) ON DELETE RESTRICT,
+            PRIMARY KEY(run_id,snapshot_id))""")
+        db.execute("PRAGMA user_version=3")
 
     @contextmanager
     def connection(self):
@@ -219,9 +253,26 @@ class ConversationRepository:
         base = turns + sum(
             len(encode(dict(row)).encode()) for row in db.execute("SELECT * FROM conversations")
         )
-        for table in ("projects", "snapshots", "reruns", "imported_turn_origins"):
+        for table in (
+            "projects",
+            "snapshots",
+            "reruns",
+            "imported_turn_origins",
+            "workflows",
+            "workflow_operations",
+            "workflow_outputs",
+        ):
             base += sum(len(row[0].encode()) for row in db.execute(f"SELECT record FROM {table}"))
         base += db.execute("SELECT coalesce(sum(reserved_bytes),0) FROM reruns").fetchone()[0]
+        for table in ("workflows", "workflow_operations"):
+            base += db.execute(f"SELECT coalesce(sum(reserved_bytes),0) FROM {table}").fetchone()[0]
+        base += db.execute(
+            "SELECT coalesce(sum(length(content)),0) FROM workflow_outputs"
+        ).fetchone()[0]
+        base += sum(
+            len(encode(dict(row)).encode())
+            for row in db.execute("SELECT * FROM workflow_snapshot_refs")
+        )
         return base + sum(
             len(encode(dict(r)).encode()) for r in db.execute("SELECT * FROM project_conversations")
         )
@@ -330,6 +381,12 @@ class ConversationRepository:
             self._idle(db, identifier)
             from astroagent.projects import ProjectRepository
 
+            owner = db.execute(
+                "SELECT project_id FROM project_conversations WHERE conversation_id=?",
+                (identifier,),
+            ).fetchone()
+            if owner:
+                ProjectRepository._idle(db, owner[0])
             ProjectRepository.detach_conversation(db, identifier)
             db.execute("DELETE FROM conversations WHERE id=?", (identifier,))
 

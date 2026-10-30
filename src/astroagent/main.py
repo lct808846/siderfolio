@@ -15,6 +15,7 @@ from astroagent.api.exports import ExportBodyLimit
 from astroagent.api.exports import router as exports_router
 from astroagent.api.health import router as health_router
 from astroagent.api.projects import router as projects_router
+from astroagent.api.workflows import router as workflows_router
 from astroagent.artifacts import ArtifactCache
 from astroagent.config import LocalSettings
 from astroagent.conversation_service import ConversationService
@@ -23,6 +24,7 @@ from astroagent.errors import ServiceError
 from astroagent.export_schemas import ExportRequest
 from astroagent.local_access import LocalAccess
 from astroagent.project_service import ProjectService
+from astroagent.workflow_service import WorkflowService
 
 
 @asynccontextmanager
@@ -36,6 +38,7 @@ async def lifespan(app):
         service = ConversationService(repository)
         ArtifactCache(service, settings)
         service.projects = ProjectService(service)
+        service.workflows = WorkflowService(service)
         app.state.conversation_service = service
     except Exception:
         if repository is not None:
@@ -55,6 +58,7 @@ app.include_router(exports_router)
 app.include_router(conversations_router)
 app.include_router(artifacts_router)
 app.include_router(projects_router)
+app.include_router(workflows_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 

@@ -1,0 +1,11 @@
+{
+  "head": "2bda44a9373c169e8f99364af48daa9e91ece371",
+  "target_version": "0.7.0",
+  "status": "development_only_not_tested",
+  "tests_run": [],
+  "preserved_files": [
+    "README.md",
+    "docs/ROADMAP.md",
+    "docs/PROJECT_PLAN_V0.7.md"
+  ]
+}

@@ -1,0 +1,74 @@
+E501 Line too long (101 > 100)
+   --> src\astroagent\conversations.py:179:101
+    |
+177 |         db.execute("""CREATE TABLE workflows (
+178 |             id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+179 |             state TEXT NOT NULL, record TEXT NOT NULL, reserved_bytes INTEGER NOT NULL DEFAULT 0)""")
+    |                                                                                                     ^
+180 |         db.execute("CREATE INDEX workflow_project ON workflows(project_id)")
+181 |         db.execute("""CREATE TABLE workflow_operations (
+    |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\workflow_archives.py:68:101
+   |
+66 |             {"run_id": run_id, "snapshot_id": row[0]}
+67 |             for row in db.execute(
+68 |                 "SELECT snapshot_id FROM workflow_snapshot_refs WHERE run_id=? ORDER BY snapshot_id",
+   |                                                                                                     ^
+69 |                 (run_id,),
+70 |             )
+   |
+
+F401 [*] `astroagent.conversations.encode` imported but unused
+  --> src\astroagent\workflows.py:9:38
+   |
+ 8 | from astroagent.conversation_schemas import Turn
+ 9 | from astroagent.conversations import encode, utc_now
+   |                                      ^^^^^^
+10 | from astroagent.errors import ServiceError
+11 | from astroagent.project_schemas import Snapshot
+   |
+help: Remove unused import: `astroagent.conversations.encode`
+   |
+8  | from astroagent.conversation_schemas import Turn
+   - from astroagent.conversations import encode, utc_now
+9  + from astroagent.conversations import utc_now
+10 | from astroagent.errors import ServiceError
+   |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\workflows.py:171:101
+    |
+169 |             self._run(db, project_id, run_id)
+170 |             row = db.execute(
+171 |                 "SELECT request_hash,record FROM workflow_operations WHERE run_id=? AND request_id=?",
+    |                                                                                                     ^^
+172 |                 (run_id, request.client_request_id),
+173 |             ).fetchone()
+    |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\workflows.py:233:101
+    |
+231 | …                     snapshot.sha256 != attempt.output["response_sha256"]
+232 | …                     or not db.execute(
+233 | …                         "SELECT 1 FROM workflow_snapshot_refs WHERE run_id=? AND snapshot_id=?",
+    |                                                                                               ^^^^
+234 | …                         (run.id, snapshot.id),
+235 | …                     ).fetchone()
+    |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\workflows.py:528:101
+    |
+526 |             )
+527 |             db.execute(
+528 |                 "UPDATE workflow_operations SET state='interrupted',record=?,reserved_bytes=0 WHERE id=?",
+    |                                                                                                     ^^^^^^
+529 |                 (operation.model_dump_json(), operation.id),
+530 |             )
+    |
+
+Found 6 errors.
+[*] 1 fixable with `--fix`.

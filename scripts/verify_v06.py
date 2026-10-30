@@ -399,7 +399,8 @@ def main():
                 checked("deterministic-comparison", compare)
                 before = detail(p)
                 code, package = request(
-                    f"/api/v1/projects/{p['id']}/archive", {"expected_revision": before["revision"]}
+                    f"/api/v1/projects/{p['id']}/archive",
+                    {"expected_revision": before["revision"], "format_version": 1},
                 )
                 assert code == 200
                 (out / "project.zip").write_bytes(package)

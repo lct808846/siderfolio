@@ -66,6 +66,10 @@ class ProjectRepository:
     @staticmethod
     def _idle(db, project_id):
         if db.execute(
+            "SELECT 1 FROM workflows WHERE project_id=? AND state='running'", (project_id,)
+        ).fetchone():
+            raise ServiceError(409, "project_busy", "项目中有运行中的科研流程，请先读取其状态。")
+        if db.execute(
             "SELECT 1 FROM reruns WHERE project_id=? AND state='running'", (project_id,)
         ).fetchone():
             raise ServiceError(409, "project_busy", "项目正在重跑查询，请等待完成或恢复状态。")
@@ -121,6 +125,13 @@ class ProjectRepository:
                     "SELECT record FROM reruns WHERE project_id=? ORDER BY rowid", (identifier,)
                 )
             ]
+            value["workflow_count"] = db.execute(
+                "SELECT count(*) FROM workflows WHERE project_id=?", (identifier,)
+            ).fetchone()[0]
+            value["running_workflow_count"] = db.execute(
+                "SELECT count(*) FROM workflows WHERE project_id=? AND state='running'",
+                (identifier,),
+            ).fetchone()[0]
             return value
 
     def update(self, identifier, request):
@@ -144,6 +155,7 @@ class ProjectRepository:
                     "UPDATE conversations SET metadata_revision=metadata_revision+1 WHERE id=?",
                     (row[0],),
                 )
+            db.execute("DELETE FROM workflows WHERE project_id=?", (identifier,))
             db.execute("DELETE FROM projects WHERE id=?", (identifier,))
 
     def membership(self, identifier, conversation_id, request, *, remove=False):
@@ -281,6 +293,14 @@ class ProjectRepository:
                 value["name"] = name
                 self._put(db, "snapshots", value)
             else:
+                if db.execute(
+                    "SELECT 1 FROM workflow_snapshot_refs WHERE snapshot_id=?", (identifier,)
+                ).fetchone():
+                    raise ServiceError(
+                        409,
+                        "snapshot_used_by_workflow",
+                        "快照被科研流程引用；请先明确删除相关流程。",
+                    )
                 db.execute("DELETE FROM snapshots WHERE id=?", (identifier,))
                 for row in db.execute(
                     "SELECT record FROM snapshots WHERE project_id=?", (project_id,)

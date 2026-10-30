@@ -1,0 +1,8 @@
+
+> astroagent-workbench@0.7.0 typecheck
+> vue-tsc --noEmit
+
+src/views/WorkflowWorkspace.vue(28,87): error TS18048: 'a' is possibly 'undefined'.
+src/views/WorkflowWorkspace.vue(31,10): error TS18048: 'step.attempts' is possibly 'undefined'.
+src/views/WorkflowWorkspace.vue(39,33): error TS2532: Object is possibly 'undefined'.
+src/views/WorkflowWorkspace.vue(183,427): error TS18048: 'step.attempts' is possibly 'undefined'.
