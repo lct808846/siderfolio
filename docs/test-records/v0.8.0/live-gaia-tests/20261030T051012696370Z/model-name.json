@@ -1,0 +1,241 @@
+{
+  "message": "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。",
+  "http_status": 200,
+  "body": {
+    "status": "success",
+    "answer": "## 1. SIMBAD 查询结果（M45）\n\n| 项目 | 值 |\n|---|---|\n| 主标识符 | Cl Melotte 22 |\n| ICRS 赤经 | 56.600833° |\n| ICRS 赤纬 | +24.113889° |\n| 天体类型 | OpC（疏散星团） |\n| 光谱类型 | 未提供 |\n| 坐标文献 | 2021A&A...647A..19T |\n\n来源：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML\n\n## 2. Gaia DR3 圆锥查询\n\n- 发布版/表：Gaia DR3，`gaiadr3.gaia_source`\n- 中心：RA 56.600833°、Dec 24.113889°（ICRS，取自上述 SIMBAD 结果）\n- 半径：5 角分；limit=3；未设 ruwe_max / parallax_snr_min；未做距离估算\n- 返回 3 行，按角距升序；`total_found=null`（总数未知），`has_more=true`、`truncated=true`、`archive_overflow=true`（服务器截断结果，未自动翻页）\n\n| # | source_id | 角距 (″) | RA (°) | Dec (°) | G (mag) | BP−RP | 视差 (mas) | pmra, pmdec (mas/yr) | RUWE | 备注 |\n|---|---|---|---|---|---|---|---|---|---|---|\n| 1 | 65225091345088128 | 22.33 | 56.599638 | 24.107784 | 19.484 | 0.947 | 1.002 ± 0.476 | +9.239, −7.679 | 1.015 | 5 参数解 |\n| 2 | 65225130001307776 | 23.83 | 56.607920 | 24.115292 | 20.634 | 1.604 | 未提供 | 未提供 | 未提供 | 仅 2 参数解，duplicated_source=true，位置误差大（15.1/8.4 mas） |\n| 3 | 65225095641479808 | 32.32 | 56.603196 | 24.105173 | 16.918 | 1.638 | 0.848 ± 0.082 | +3.162, −10.340 | 0.954 | 5 参数解 |\n\n单位：ra/dec 为度，视差/误差为 mas，自行为 mas/yr（pmra 已含 cos(dec)），测光为 mag。径向速度三行均未提供。\n\n程序对交付行的统计（scope=returned_rows，仅代表这 3 行）：视差有效 2 行、缺失 1 行，中位数 0.925 mas；G 中位数 19.48 mag；BP−RP 中位数 1.60 mag。\n\n## 3. 视场样本总结与限制\n\n- **位置候选 ≠ 成员**：这 3 个源只是落在以 SIMBAD 中心为圆心、5 角分内的位置候选。最近一行（22.3″）也不等于确认对应 M45 中心或任何已知成员。样本仅 3 行且被截断，不能代表视场总体。\n- **成员判定**：未做任何成员筛选（无自行/视差聚类、无 ruwe 或视差信噪比阈值）。表中视差约 0.85–1.0 mas 与自行值差异明显，且第 2 行无视差，无法据此判断星团归属；不能据此断言星团距离、年龄或质量。\n- **参考历元**：三行 `ref_epoch` 均为 2016.0（Gaia DR3 参考历元）。SIMBAD 坐标未给出历元信息，本次未做自行传播；ICRS 坐标相同不代表历元相同，高自行源或拥挤视场可能漏配或错配。\n- **数据缺失**：第 2 行视差、自行、RUWE 均未提供（2 参数解），不能补写；径向速度全部缺失。\n- **截断**：Archive 报告 OVERFLOW，`total_found` 未知，本页 3 行不是全部候选。\n\n来源：Gaia Archive https://gea.esac.esa.int/archive/ ；SIMBAD 链接同上。",
+    "results": [
+      {
+        "object_name": "M45",
+        "status": "success",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-30T05:11:40.521698Z"
+        },
+        "data": {
+          "main_id": "Cl Melotte   22",
+          "ra_deg": 56.600833333333334,
+          "dec_deg": 24.11388888888889,
+          "coordinate_frame": "ICRS",
+          "object_type": "OpC",
+          "spectral_type": null,
+          "coordinate_bibcode": "2021A&A...647A..19T"
+        },
+        "error": null
+      }
+    ],
+    "literature_results": [],
+    "gaia_results": [
+      {
+        "query": {
+          "mode": "cone",
+          "ra_deg": 56.600833333333334,
+          "dec_deg": 24.11388888888889,
+          "radius_arcmin": 5.0,
+          "limit": 3,
+          "ruwe_max": null,
+          "parallax_snr_min": null,
+          "estimate_distance": false
+        },
+        "release": "Gaia DR3",
+        "table": "gaiadr3.gaia_source",
+        "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+        "adql": "SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.600833333333334, 24.11388888888889)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.600833333333334, 24.11388888888889, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC",
+        "maxrec": 4,
+        "status": "success",
+        "returned_count": 3,
+        "total_found": null,
+        "has_more": true,
+        "truncated": true,
+        "archive_overflow": true,
+        "data": [
+          {
+            "source_id": "65225091345088128",
+            "ra": 56.59963810201321,
+            "dec": 24.10778382493263,
+            "ref_epoch": 2016.0,
+            "ra_error": 0.3717882037162781,
+            "dec_error": 0.2891402840614319,
+            "parallax": 1.0024194299286826,
+            "parallax_error": 0.4763944149017334,
+            "pmra": 9.238974686426307,
+            "pmra_error": 0.5781055688858032,
+            "pmdec": -7.678633066848878,
+            "pmdec_error": 0.3980918824672699,
+            "phot_g_mean_mag": 19.484384536743164,
+            "phot_bp_mean_mag": 19.80606460571289,
+            "phot_rp_mean_mag": 18.858680725097656,
+            "bp_rp": 0.9473838806152344,
+            "radial_velocity": null,
+            "radial_velocity_error": null,
+            "ruwe": 1.0145269632339478,
+            "astrometric_params_solved": 95,
+            "duplicated_source": false,
+            "separation_arcsec": 22.32638333640733
+          },
+          {
+            "source_id": "65225130001307776",
+            "ra": 56.60792029955101,
+            "dec": 24.1152923724622,
+            "ref_epoch": 2016.0,
+            "ra_error": 15.12077808380127,
+            "dec_error": 8.427679061889648,
+            "parallax": null,
+            "parallax_error": null,
+            "pmra": null,
+            "pmra_error": null,
+            "pmdec": null,
+            "pmdec_error": null,
+            "phot_g_mean_mag": 20.633689880371094,
+            "phot_bp_mean_mag": 20.745132446289062,
+            "phot_rp_mean_mag": 19.141138076782227,
+            "bp_rp": 1.603994369506836,
+            "radial_velocity": null,
+            "radial_velocity_error": null,
+            "ruwe": null,
+            "astrometric_params_solved": 3,
+            "duplicated_source": true,
+            "separation_arcsec": 23.82838370495334
+          },
+          {
+            "source_id": "65225095641479808",
+            "ra": 56.60319572733449,
+            "dec": 24.10517294472472,
+            "ref_epoch": 2016.0,
+            "ra_error": 0.06596642732620239,
+            "dec_error": 0.052051037549972534,
+            "parallax": 0.8483908501350274,
+            "parallax_error": 0.0824783444404602,
+            "pmra": 3.1623928051887726,
+            "pmra_error": 0.0935123860836029,
+            "pmdec": -10.339946365819499,
+            "pmdec_error": 0.070689357817173,
+            "phot_g_mean_mag": 16.917551040649414,
+            "phot_bp_mean_mag": 17.698301315307617,
+            "phot_rp_mean_mag": 16.0601749420166,
+            "bp_rp": 1.6381263732910156,
+            "radial_velocity": null,
+            "radial_velocity_error": null,
+            "ruwe": 0.9536473155021667,
+            "astrometric_params_solved": 31,
+            "duplicated_source": false,
+            "separation_arcsec": 32.323383518289766
+          }
+        ],
+        "analysis": {
+          "sample_size": 3,
+          "scope": "returned_rows",
+          "truncated": true,
+          "quality_filters": {},
+          "statistics": {
+            "parallax": {
+              "valid_count": 2,
+              "missing_count": 1,
+              "median": 0.925405140031855,
+              "minimum": 0.8483908501350274,
+              "maximum": 1.0024194299286826,
+              "unit": "mas"
+            },
+            "pmra": {
+              "valid_count": 2,
+              "missing_count": 1,
+              "median": 6.20068374580754,
+              "minimum": 3.1623928051887726,
+              "maximum": 9.238974686426307,
+              "unit": "mas/yr"
+            },
+            "pmdec": {
+              "valid_count": 2,
+              "missing_count": 1,
+              "median": -9.009289716334187,
+              "minimum": -10.339946365819499,
+              "maximum": -7.678633066848878,
+              "unit": "mas/yr"
+            },
+            "phot_g_mean_mag": {
+              "valid_count": 3,
+              "missing_count": 0,
+              "median": 19.484384536743164,
+              "minimum": 16.917551040649414,
+              "maximum": 20.633689880371094,
+              "unit": "mag"
+            },
+            "bp_rp": {
+              "valid_count": 3,
+              "missing_count": 0,
+              "median": 1.603994369506836,
+              "minimum": 0.9473838806152344,
+              "maximum": 1.6381263732910156,
+              "unit": "mag"
+            },
+            "radial_velocity": {
+              "valid_count": 0,
+              "missing_count": 3,
+              "median": null,
+              "minimum": null,
+              "maximum": null,
+              "unit": "km/s"
+            }
+          },
+          "negative_parallax_count": 0,
+          "zero_parallax_count": 0,
+          "missing_parallax_count": 1,
+          "estimate_distance": false,
+          "distance_estimates": [],
+          "distance_computed_count": 0,
+          "distance_skipped_count": 0
+        },
+        "units": {
+          "source_id": "1",
+          "ra": "deg",
+          "dec": "deg",
+          "ref_epoch": "yr",
+          "ra_error": "mas",
+          "dec_error": "mas",
+          "parallax": "mas",
+          "parallax_error": "mas",
+          "pmra": "mas/yr",
+          "pmra_error": "mas/yr",
+          "pmdec": "mas/yr",
+          "pmdec_error": "mas/yr",
+          "phot_g_mean_mag": "mag",
+          "phot_bp_mean_mag": "mag",
+          "phot_rp_mean_mag": "mag",
+          "bp_rp": "mag",
+          "radial_velocity": "km/s",
+          "radial_velocity_error": "km/s",
+          "ruwe": "1",
+          "astrometric_params_solved": "1",
+          "duplicated_source": "1",
+          "separation_arcsec": "arcsec"
+        },
+        "source": {
+          "name": "Gaia",
+          "url": "https://gea.esac.esa.int/archive/",
+          "retrieved_at": "2026-10-30T05:11:44.172047Z"
+        },
+        "warnings": [
+          "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。",
+          "圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。",
+          "结果已截断，统计仅限交付行；未执行总数查询或自动翻页。",
+          "Gaia Archive 报告 OVERFLOW：服务器截断了结果。"
+        ],
+        "error": null
+      }
+    ],
+    "sources": [
+      {
+        "name": "SIMBAD",
+        "url": "https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML",
+        "retrieved_at": "2026-10-30T05:11:40.521698Z"
+      },
+      {
+        "name": "Gaia",
+        "url": "https://gea.esac.esa.int/archive/",
+        "retrieved_at": "2026-10-30T05:11:44.172047Z"
+      }
+    ],
+    "warnings": []
+  }
+}

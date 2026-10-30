@@ -1,0 +1,77 @@
+{
+  "application_version": "0.8.0",
+  "started_at": "2026-10-30T08:45:49.756373+00:00",
+  "kind": "offline-tests",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.8.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "9b16fe9523eea826aa5c36f42c24cce384004ed2",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/ROADMAP.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/projects.ts\n M frontend/src/main.ts\n M frontend/src/style.css\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/src/views/ProjectWorkspace.vue\n M frontend/src/views/WorkflowWorkspace.vue\n M pyproject.toml\n M scripts/verify_v06.py\n M src/astroagent/__init__.py\n M src/astroagent/api/projects.py\n M src/astroagent/conversations.py\n M src/astroagent/local_access.py\n M src/astroagent/main.py\n M src/astroagent/project_archives.py\n M src/astroagent/project_schemas.py\n M src/astroagent/projects.py\n M tests/test_projects.py\n M tests/test_workflows.py\n?? docs/PROJECT_PLAN_V0.8.md\n?? docs/development/v0.8.0/\n?? docs/releases/v0.8.0.md\n?? docs/test-records/v0.8.0/\n?? frontend/src/api/knowledge.ts\n?? frontend/src/views/KnowledgeWorkspace.vue\n?? frontend/tests/browser/knowledge.spec.ts\n?? scripts/evaluate_knowledge.py\n?? scripts/knowledge_eval/\n?? src/astroagent/api/knowledge.py\n?? src/astroagent/knowledge.py\n?? src/astroagent/knowledge_archives.py\n?? src/astroagent/knowledge_parser.py\n?? src/astroagent/knowledge_schemas.py\n?? src/astroagent/knowledge_service.py\n?? src/astroagent/knowledge_text.py\n?? src/astroagent/knowledge_worker.py\n?? tests/test_knowledge.py\n?? tests/test_linux_resource_limits.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\offline-tests\\20261030T084549755374Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 98.7094,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1241,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1159,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.7999,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-30T08:47:30.023950+00:00"
+}

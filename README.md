@@ -2,15 +2,33 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：`0.7.0`。已加入两条固定科研流程、逐步执行记录、显式继续、持久输出及包含流程的项目归档。2026-10-30 本地与真实联网验收范围见 [测试记录](docs/test-records/v0.7.0/README.md)、[版本说明](docs/releases/v0.7.0.md) 和 [源码发布页](https://github.com/lct808846/astroagent/releases/tag/v0.7.0)。
+当前版本：`0.8.0`。本版提供项目本地 PDF/Markdown 知识库、原文定位、关键词检索、摘录式回答及格式3归档。见 [V0.8版本说明](docs/releases/v0.8.0.md)、[测试记录](docs/test-records/v0.8.0/README.md) 与 [验收清单](docs/development/v0.8.0/ACCEPTANCE.md)；远端发布状态以 [GitHub Releases](https://github.com/lct808846/astroagent/releases) 为准。
 
-上一发布版本为 [`v0.6.0`](https://github.com/lct808846/astroagent/releases/tag/v0.6.0)，其[测试记录](docs/test-records/v0.6.0/README.md)只对应当时版本，不证明 V0.7 已通过。历史版本见 [`v0.5.0`](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)、[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
+上一版本为V0.7.0，其当次[测试记录](docs/test-records/v0.7.0/README.md)与[版本说明](docs/releases/v0.7.0.md)保持原样，不作为本版通过证据。
+
+更早版本 [`v0.6.0`](https://github.com/lct808846/astroagent/releases/tag/v0.6.0) 的[测试记录](docs/test-records/v0.6.0/README.md)只对应当时版本，不证明当前工作区已通过。历史版本见 [`v0.5.0`](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)、[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
 
 前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，FastAPI 独立提供 API，SQLite 保存本机业务状态。旧聊天、项目、快照及 V0.4 科学导出契约继续保留；后续目标见 [版本路线图](docs/ROADMAP.md)。本版面向可信本机的单用户使用。
 
+本版依据 [V0.8开发契约](docs/PROJECT_PLAN_V0.8.md)实施，V0.9集成与稳定工作继续按路线图规划。
+
 按用户约定，开发阶段不主动运行测试；发布前由用户安排测试验收。代码生成和源码格式化不作为验证通过的证据。
 
-## 固定科研流程（V0.7，待验收）
+## 本地知识库（V0.8）
+
+项目页点击“本地知识库”，进入 `/projects/{id}/knowledge`。选择本机PDF或UTF-8 Markdown，填写已知元数据（未知留空），点击保存。文件原始字节、版本、提取文本、位置、索引和引用均保存在后端本机SQLite，旧聊天不会自动读取文献，也不调用模型、ADS或远程嵌入。
+
+PDF仅提取文本，不执行OCR。按物理页记录空页和失败页，文档可能部分可用；复杂排版、公式、表格和双栏不能保证正确提取。Markdown保留原始行号、章节和文本，代码/HTML只作数据展示。每段最多1200字符、重叠最多120字符；可查看实际提取文本、受限PDF预览或下载原文件，不能精确高亮时以页码/行号核对。
+
+检索使用本地FTS5词法索引，所有关键词同时匹配；英文按词、较长中日韩字符使用trigram，短中文采用有界扫描。每次最多20段，没有命中返回 `insufficient_evidence`，不根据模型记忆补答。命中只是相关原文，不代表文献支持问题中的科学命题。
+
+替换文件会新建版本，旧版本及引用保留。确认重建/恢复旧版本后才改变当前索引；旧引用不会跳到新文件。删除文档撤销全部版本与索引，引用保留最小定位元数据并标为失效；不表示安全擦除SQLite空闲页、旧备份或已导出的副本。仅元数据恢复的文档不可检索原文，可重新上传同哈希文件恢复对应版本，提取或位置变化时要求新建版本。
+
+限制：单文件20 MiB、每项目100文档/200版本、PDF500页、Markdown200000行、单版本文本20 MiB/25000段、候选扫描20 MiB；另有每项目500次文档操作/1000条引用。所有原始文件、文本、FTS实际持久载荷与运行预留计入同一256 MiB业务预算。解析使用独立进程：30秒超时、768 MiB内存和64 MiB输出边界；Windows Job Object和Linux资源保护已做专项检查，无法实施保护则明确失败，不降低保护运行。实际覆盖范围见 [测试记录](docs/test-records/v0.8.0/README.md)。
+
+下次准备运行时需按“环境与安装”更新后端依赖，包含锁定的 `pypdf==6.21.4`、`python-multipart==0.0.32` 及兼容Starlette；本轮未安装这些依赖、启动服务或迁移个人库。FTS5/trigram不可用时知识库检索明确报错，旧聊天和项目仍保留。
+
+## 固定科研流程（V0.7起）
 
 在项目页面点击“科研流程”，进入 `/projects/{project_id}/workflows`。选择模板、填写明确参数、创建待执行记录，再核对保存的参数及步骤，确认启动。浏览历史只读；流程不调用语言模型，执行时按需访问科研服务。
 
@@ -31,9 +49,9 @@
 
 两份快照可并列比较条件、状态、交付数量、截断、来源和版本，并可显式比较精确 `source_id` / bibcode 的交集。编号保持字符串，未知不当作零；交付样本差异不能解释为总体、显著性或成员变化。
 
-“导出项目 ZIP”默认生成格式2，保存完整项目会话、轮次、快照、重跑、流程及持久输出。格式2固定包含 `manifest.json`、`project.json`、`conversations.json`、`snapshots.json`、`workflows.json`，流程文件以带哈希的 base64 内容嵌入。仍支持格式1导入；只有无流程项目可显式选择格式1导出。V0.6不能读取格式2。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；旧预览缓存不随项目包保存，可从恢复后的快照重新生成；流程中已登记的持久文件随格式2恢复。
+“导出项目ZIP”默认格式3，固定包含 `manifest.json`、`project.json`、`conversations.json`、`snapshots.json`、`workflows.json` 和 `knowledge.json`。明确选择“仅元数据”或“完整备份（含原文）”；含原文导出另行显示文档数、版本数及字节数并确认。仅元数据包标记不完整，恢复后原文不可用；完整备份遇到原文缺失/坏哈希会拒绝，不能静默省略。仍支持格式1/2导入，旧包知识库为空；只有不含知识库或相关历史的项目可显式导出格式2，格式1另要求不含流程。V0.7不能读取格式3。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；旧预览缓存不随项目包保存，可从恢复后的快照重新生成；流程中已登记的持久文件随格式2恢复。
 
-V0.7 首次启动将 SQLite schema2 升级至3，迁移前通过 SQLite 备份接口生成 `migration-v3-<UTC时间>.sqlite3`；更早的库顺序迁移。迁移失败回滚，未知更高版本拒绝写入。回到 V0.6 时先停止服务，在独立目录恢复迁移前 schema2 备份；V0.6会拒绝 schema3。本轮未启动服务或操作个人数据库，迁移和恢复均待发布前验收。
+V0.8首次启动将SQLite schema3升级至4，迁移前使用一致性备份接口保存 `migration-v4-<UTC时间>.sqlite3`；旧库顺序升级。失败回滚、未知高版本拒绝写入。回到V0.7须停服，在独立目录恢复schema3备份，不能直接降级写入schema4。已用临时库检查旧库升级、schema3 备份独立目录恢复、失败回滚及 FTS 支持；个人库未用于测试。
 
 最多20项目、全库20会话、每会话40轮、每项目100快照及100重跑记录；所有副本、导入来源信息和运行预留计入同一256 MiB业务预算。项目ZIP接收32 MiB、解压总量128 MiB、单成员64 MiB；项目归档与单轮2 MiB快照导出是独立边界。归档生成与导入各最多一项，外部查询共用最多两个执行槽。项目或会话变化发生修订冲突时，先刷新核对再明确执行。
 
@@ -323,7 +341,7 @@ Gaia 的 pytest 独立开关为 `ASTROAGENT_RUN_LIVE_GAIA=1`；ADS 使用 `ASTRO
 
 浏览器检查前在 `frontend/` 执行 `npx playwright install chromium`；Windows同时使用已安装的Edge，Linux仅运行Chromium。检查脚本可用 `NODE_BINARY` 指定已安装的受支持Node可执行文件；浏览器测试采用专用合成库，不访问个人会话库。
 
-记录入口见 [分版本测试记录](docs/test-records/README.md)，最近已有记录见 [v0.6.0](docs/test-records/v0.6.0/README.md)；V0.7尚无测试结果，见 [开发记录](docs/development/v0.7.0/README.md)。完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 包含后端检查、独立前端构建与浏览器任务；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
+记录入口见 [分版本测试记录](docs/test-records/README.md)；V0.8 当前结果见 [本版记录](docs/test-records/v0.8.0/README.md)，完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 包含后端检查、独立前端构建与浏览器任务；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
 
 ## 目录
 

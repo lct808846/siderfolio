@@ -1,0 +1,1124 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\playwright\\cli.js",
+      "test",
+      "--output",
+      "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/docs/test-records/v0.8.0/browser-tests/20261030T112307253795Z/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/project/astroagent/docs/test-records/v0.8.0/browser-tests/20261030T112307253795Z/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "knowledge.spec.ts",
+      "file": "knowledge.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "local documents can be uploaded, searched, cited and downloaded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1521,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:23:19.078Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-16c7bb46130b5e060c6d",
+          "file": "knowledge.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "public PDF citation opens its original and downloads identical bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5634,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:23:21.018Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-7457d714d4e0bde208f7",
+          "file": "knowledge.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "long Chinese filename remains usable on a narrow screen",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 30486,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\nExpected: visible\nReceived: hidden\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first() with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\u001b[22m\n\u001b[2m    59 × locator resolved to <b>中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中…</b>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\nExpected: visible\nReceived: hidden\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first() with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\u001b[22m\n\u001b[2m    59 × locator resolved to <b>中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中…</b>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts:83:69",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                      "column": 69,
+                      "line": 83
+                    },
+                    "snippet": "  81 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: filename, mimeType: 'text/markdown', buffer: Buffer.from('# 合成\\n长文件名验收\\n') })\n  82 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 83 |     await expect(page.getByText(filename, { exact: true }).first()).toBeVisible({ timeout: 30000 })\n     |                                                                     ^\n  84 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)\n  85 |     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-knowledge-long-name.png`) })\n  86 |   } finally {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                        "column": 69,
+                        "line": 83
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\nExpected: visible\nReceived: hidden\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first() with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\u001b[22m\n\u001b[2m    59 × locator resolved to <b>中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中…</b>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  81 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: filename, mimeType: 'text/markdown', buffer: Buffer.from('# 合成\\n长文件名验收\\n') })\n  82 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 83 |     await expect(page.getByText(filename, { exact: true }).first()).toBeVisible({ timeout: 30000 })\n     |                                                                     ^\n  84 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)\n  85 |     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-knowledge-long-name.png`) })\n  86 |   } finally {\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts:83:69"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:23:26.663Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts\\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts\\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts\\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                    "column": 69,
+                    "line": 83
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-7d4da0b7d59f116f94ec",
+          "file": "knowledge.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "local documents can be uploaded, searched, cited and downloaded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2193,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:12.278Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-428d685cc579e29b3dcc",
+          "file": "knowledge.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "public PDF citation opens its original and downloads identical bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5821,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:15.083Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-d7229fd8be7caf1376b9",
+          "file": "knowledge.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "long Chinese filename remains usable on a narrow screen",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 30662,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\nExpected: visible\nReceived: hidden\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first() with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\u001b[22m\n\u001b[2m    59 × locator resolved to <b>中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中…</b>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\nExpected: visible\nReceived: hidden\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first() with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\u001b[22m\n\u001b[2m    59 × locator resolved to <b>中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中…</b>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts:83:69",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                      "column": 69,
+                      "line": 83
+                    },
+                    "snippet": "  81 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: filename, mimeType: 'text/markdown', buffer: Buffer.from('# 合成\\n长文件名验收\\n') })\n  82 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 83 |     await expect(page.getByText(filename, { exact: true }).first()).toBeVisible({ timeout: 30000 })\n     |                                                                     ^\n  84 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)\n  85 |     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-knowledge-long-name.png`) })\n  86 |   } finally {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                        "column": 69,
+                        "line": 83
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\nExpected: visible\nReceived: hidden\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first() with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText('中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名.md', { exact: true }).first()\u001b[22m\n\u001b[2m    59 × locator resolved to <b>中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中文长文件名中…</b>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  81 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: filename, mimeType: 'text/markdown', buffer: Buffer.from('# 合成\\n长文件名验收\\n') })\n  82 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 83 |     await expect(page.getByText(filename, { exact: true }).first()).toBeVisible({ timeout: 30000 })\n     |                                                                     ^\n  84 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)\n  85 |     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-knowledge-long-name.png`) })\n  86 |   } finally {\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts:83:69"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:20.920Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts\\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts\\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.8.0\\browser-tests\\20261030T112307253795Z\\artifacts\\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                    "column": 69,
+                    "line": 83
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-f2eeded12bd313af2274",
+          "file": "knowledge.spec.ts",
+          "line": 74,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "projects.spec.ts",
+      "file": "projects.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.8078.4"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3863,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:23:57.745Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.8078.4"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3a2958b1096c5d9a8472-67397c9f887423ec96ae",
+          "file": "projects.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.4314.50"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5378,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:52.718Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.4314.50"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3a2958b1096c5d9a8472-d363d49310840143438d",
+          "file": "projects.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workbench.spec.ts",
+      "file": "workbench.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production build: conversation, follow-up, complete table, preview, download and restore",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.8078.4"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2794,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:01.890Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.8078.4"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-7a84d1b4043fcc979e24",
+          "file": "workbench.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "IME composition, explicit examples, plain text literature, rename and delete",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1088,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:04.697Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-705e08751c9a17b77433",
+          "file": "workbench.spec.ts",
+          "line": 45,
+          "column": 1
+        },
+        {
+          "title": "narrow viewport has usable panel navigation and no page overflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 732,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:05.796Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-4bfbdfaa404ac4a2485b",
+          "file": "workbench.spec.ts",
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "backend connection error is explicit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 353,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:06.540Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-07d0c520548227ad0c54",
+          "file": "workbench.spec.ts",
+          "line": 75,
+          "column": 1
+        },
+        {
+          "title": "a rejected send preserves the question and only retries on explicit action",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 620,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:06.903Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-c08a2ba5b12b461f3e8f",
+          "file": "workbench.spec.ts",
+          "line": 80,
+          "column": 1
+        },
+        {
+          "title": "a late initial list does not clear a send error after navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 585,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:07.533Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-b5cce396a9cd368e62b2",
+          "file": "workbench.spec.ts",
+          "line": 97,
+          "column": 1
+        },
+        {
+          "title": "local static proxy keeps its API target and never returns SPA HTML for API errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:08.127Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-ae8cf3653592a0ec7fc3",
+          "file": "workbench.spec.ts",
+          "line": 120,
+          "column": 1
+        },
+        {
+          "title": "production build: conversation, follow-up, complete table, preview, download and restore",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.4314.50"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3673,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:58.796Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.4314.50"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-57c9eb40976db4fc78f2",
+          "file": "workbench.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "IME composition, explicit examples, plain text literature, rename and delete",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1597,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:02.489Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-68c9514870631eb2218a",
+          "file": "workbench.spec.ts",
+          "line": 45,
+          "column": 1
+        },
+        {
+          "title": "narrow viewport has usable panel navigation and no page overflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1071,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:04.109Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-63245390283688dabf92",
+          "file": "workbench.spec.ts",
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "backend connection error is explicit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 513,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:05.195Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-91dd152359441f912175",
+          "file": "workbench.spec.ts",
+          "line": 75,
+          "column": 1
+        },
+        {
+          "title": "a rejected send preserves the question and only retries on explicit action",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1022,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:05.720Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-95cd61de6a8e6f8272c8",
+          "file": "workbench.spec.ts",
+          "line": 80,
+          "column": 1
+        },
+        {
+          "title": "a late initial list does not clear a send error after navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1011,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:06.757Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-c1dc56150c7d86f1caf8",
+          "file": "workbench.spec.ts",
+          "line": 97,
+          "column": 1
+        },
+        {
+          "title": "local static proxy keeps its API target and never returns SPA HTML for API errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 44,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:07.783Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-f095c7fe45b6e8037ce0",
+          "file": "workbench.spec.ts",
+          "line": 120,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workflows.spec.ts",
+      "file": "workflows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3401,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:24:08.164Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-d825ce04b4ceccf16d00",
+          "file": "workflows.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4647,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T11:25:07.861Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-bd5e789dfd84d94ef68c",
+          "file": "workflows.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T11:23:13.151Z",
+    "duration": 120813.292,
+    "expected": 22,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

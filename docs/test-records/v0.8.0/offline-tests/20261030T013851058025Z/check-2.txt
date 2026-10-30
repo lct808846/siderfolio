@@ -1,0 +1,232 @@
+E501 Line too long (150 > 100)
+  --> src\astroagent\api\knowledge.py:63:99
+   |
+61 | …
+62 | …
+63 | …load：expected_revision、client_request_id、metadata、allow_duplicate、restore_version_id",
+   |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+64 | …
+65 | …
+   |
+
+E501 Line too long (182 > 100)
+   --> src\astroagent\api\knowledge.py:164:101
+    |
+162 | …
+163 | …
+164 | …f version.media_type == 'application/pdf' else 'md'}; filename*=UTF-8''{quote(version.filename, safe='')}",
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+165 | …
+166 | …
+    |
+
+E501 Line too long (107 > 100)
+  --> src\astroagent\knowledge.py:29:101
+   |
+27 |         db.execute(
+28 |             "CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_words USING "
+29 |             "fts5(unit_id UNINDEXED, project_id UNINDEXED, text, tokenize='unicode61 remove_diacritics 0')"
+   |                                                                                                     ^^^^^^^
+30 |         )
+31 |         db.execute(
+   |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\knowledge.py:78:101
+   |
+76 |     db.execute(
+77 |         "CREATE TABLE knowledge_evidence (id TEXT PRIMARY KEY, project_id TEXT NOT NULL "
+78 |         "REFERENCES projects(id) ON DELETE CASCADE, document_id TEXT NOT NULL, record TEXT NOT NULL)"
+   |                                                                                                     ^
+79 |     )
+80 |     db.execute(
+   |
+
+E501 Line too long (107 > 100)
+  --> src\astroagent\knowledge.py:82:101
+   |
+80 |     db.execute(
+81 |         "CREATE TABLE knowledge_operations (id TEXT PRIMARY KEY, project_id TEXT NOT NULL "
+82 |         "REFERENCES projects(id) ON DELETE CASCADE, request_id TEXT NOT NULL, request_hash TEXT NOT NULL, "
+   |                                                                                                     ^^^^^^^
+83 |         "state TEXT NOT NULL, record TEXT NOT NULL, reserved_bytes INTEGER NOT NULL DEFAULT 0, "
+84 |         "UNIQUE(project_id, request_id))"
+   |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\knowledge.py:165:101
+    |
+163 |         self._document(db, project_id, document_id)
+164 |         row = db.execute(
+165 |             "SELECT record,content FROM knowledge_versions WHERE id=? AND document_id=? AND project_id=?",
+    |                                                                                                     ^^^^^^
+166 |             (version_id, document_id, project_id),
+167 |         ).fetchone()
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\knowledge.py:219:101
+    |
+217 |         self.projects._project(db, project_id)
+218 |         row = db.execute(
+219 |             "SELECT request_hash,record FROM knowledge_operations WHERE project_id=? AND request_id=?",
+    |                                                                                                     ^^^
+220 |             (project_id, request_id),
+221 |         ).fetchone()
+    |
+
+E501 Line too long (122 > 100)
+   --> src\astroagent\knowledge.py:477:101
+    |
+475 |                     json.loads(row[0])
+476 |                     for row in db.execute(
+477 |                         "SELECT record FROM knowledge_units WHERE version_id=? ORDER BY json_extract(record,'$.ordinal')",
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+478 |                         (version.id,),
+479 |                     )
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\knowledge.py:621:101
+    |
+619 |             operation.message = "服务重启中断本地解析；未自动重试，需要明确确认。"
+620 |             db.execute(
+621 |                 "UPDATE knowledge_operations SET state='interrupted',record=?,reserved_bytes=0 WHERE id=?",
+    |                                                                                                     ^^^^^^^
+622 |                 (operation.model_dump_json(), operation.id),
+623 |             )
+    |
+
+E501 Line too long (124 > 100)
+  --> src\astroagent\knowledge_archives.py:68:101
+   |
+66 |     # Reject before building base64 envelopes that cannot fit the fixed 64 MiB member.
+67 |     size = db.execute(
+68 |         "SELECT coalesce(sum(length(record)+coalesce(length(content),0)*4/3),0) FROM knowledge_versions WHERE project_id=?",
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+69 |         (project_id,),
+70 |     ).fetchone()[0]
+   |
+
+E501 Line too long (152 > 100)
+   --> src\astroagent\knowledge_archives.py:99:101
+    |
+ 97 | …
+ 98 | …
+ 99 | …edge_versions v ON v.id=s.version_id WHERE v.project_id=? ORDER BY s.version_id,s.position",
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+100 | …
+101 | …
+    |
+
+E501 Line too long (108 > 100)
+   --> src\astroagent\knowledge_service.py:150:101
+    |
+148 |                 json.loads(r[0])
+149 |                 for r in db.execute(
+150 |                     "SELECT record FROM knowledge_evidence WHERE project_id=? ORDER BY rowid DESC LIMIT 50",
+    |                                                                                                     ^^^^^^^^
+151 |                     (project_id,),
+152 |                 )
+    |
+
+E501 Line too long (114 > 100)
+   --> src\astroagent\knowledge_service.py:195:101
+    |
+193 |                 validity = "corrupt"
+194 |             elif cache[info.id] and info.sha256 == evidence.document_sha256:
+195 |                 url = f"/api/v1/projects/{evidence.project_id}/documents/{document.id}/versions/{info.id}/content"
+    |                                                                                                     ^^^^^^^^^^^^^^
+196 |                 if row:
+197 |                     unit = TextUnit.model_validate_json(row[0])
+    |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\knowledge_service.py:219:66
+    |
+217 |         evidence = evidence.model_copy(update={"validity": validity})
+218 |         warning = {
+219 |             "available": "用户文档提取原文；关键词命中不代表支持问题中的命题，PDF复杂排版可能缺漏。",
+    |                                                                                                     ^
+220 |             "deleted": "原文已删除；仅保留最小定位元数据与哈希，不能恢复原文。",
+221 |             "original_unavailable": "缺少原文或可核对的提取内容；需重新提供同哈希文件，不展示新版本冒充旧证据。",
+    |
+
+E501 Line too long (113 > 100)
+   --> src\astroagent\knowledge_service.py:221:70
+    |
+219 |             "available": "用户文档提取原文；关键词命中不代表支持问题中的命题，PDF复杂排版可能缺漏。",
+220 |             "deleted": "原文已删除；仅保留最小定位元数据与哈希，不能恢复原文。",
+221 |             "original_unavailable": "缺少原文或可核对的提取内容；需重新提供同哈希文件，不展示新版本冒充旧证据。",
+    |                                                                                                      ^^^^^^^^^^^^
+222 |             "corrupt": "原文、位置或摘要不一致，引用失效。",
+223 |         }[validity]
+    |
+
+E501 Line too long (144 > 100)
+   --> src\astroagent\knowledge_service.py:275:101
+    |
+273 | …""') + '"', project_id])
+274 | …
+275 | …documents d ON d.id=u.document_id JOIN knowledge_versions v ON v.id=u.version_id WHERE "
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+276 | …
+277 | …
+    |
+
+E501 Line too long (130 > 100)
+   --> src\astroagent\knowledge_service.py:380:101
+    |
+378 |                 self.repository.projects._budget(db)
+379 |             unavailable = db.execute(
+380 |                 "SELECT count(*) FROM knowledge_documents WHERE project_id=? AND json_extract(record,'$.state') NOT IN ('ready')",
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+381 |                 (project_id,),
+382 |             ).fetchone()[0]
+    |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\knowledge_service.py:387:62
+    |
+385 |                 "answer": "找到以下相关原文。这里只提供摘录和位置，不据关键词命中推断科学结论。"
+386 |                 if hits
+387 |                 else "未找到满足这些关键词的可用原文证据。请修改关键词或补充文档；不凭模型记忆补答。",
+    |                                                                                                     ^^
+388 |                 "project_id": project_id,
+389 |                 "query": request.query,
+    |
+
+E501 Line too long (140 > 100)
+   --> src\astroagent\knowledge_service.py:393:101
+    |
+391 | …an" if short else "fts5_lexical",
+392 | …
+393 | …normalized_query:+100; term_occurrences_capped_at_10; ties:document/version/position",
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+394 | …
+395 | …
+    |
+
+E501 Line too long (106 > 100)
+  --> src\astroagent\knowledge_worker.py:67:83
+   |
+65 |         if state != "text":
+66 |             warnings.append(
+67 |                 f"物理页{position}：{'未提取到文本（不执行OCR）' if state == 'no_text' else '提取失败'}。"
+   |                                                                                                      ^^^^^
+68 |             )
+69 |     return {
+   |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\projects.py:143:101
+    |
+141 |             ).fetchone()[0]
+142 |             value["document_bytes"] = db.execute(
+143 |                 "SELECT coalesce(sum(length(content)),0) FROM knowledge_versions WHERE project_id=?",
+    |                                                                                                     ^
+144 |                 (identifier,),
+145 |             ).fetchone()[0]
+    |
+
+Found 21 errors.

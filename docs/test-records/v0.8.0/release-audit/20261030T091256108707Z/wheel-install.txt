@@ -1,0 +1,3 @@
+Processing C:\Users\lct\AppData\Local\Temp\astroagent-wheel-ba_3q4p1\wheels\astroagent-0.8.0-py3-none-any.whl
+Installing collected packages: astroagent
+Successfully installed astroagent-0.8.0

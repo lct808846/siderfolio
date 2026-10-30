@@ -221,7 +221,12 @@ def archive(project_id: UUID, request: ProjectArchiveRequest, service: Projects)
         raise ServiceError(503, "project_archive_busy", "已有项目正在归档，请稍后重试。")
     try:
         payload = export_archive(
-            service.repository, str(project_id), request.expected_revision, request.format_version
+            service.repository,
+            str(project_id),
+            request.expected_revision,
+            request.format_version,
+            request.knowledge_mode,
+            request.confirmed_include_originals,
         )
         return Response(
             payload,

@@ -66,6 +66,11 @@ class ProjectRepository:
     @staticmethod
     def _idle(db, project_id):
         if db.execute(
+            "SELECT 1 FROM knowledge_operations WHERE project_id=? AND state='parsing'",
+            (project_id,),
+        ).fetchone():
+            raise ServiceError(409, "project_busy", "项目正在解析文档，请先核对状态。")
+        if db.execute(
             "SELECT 1 FROM workflows WHERE project_id=? AND state='running'", (project_id,)
         ).fetchone():
             raise ServiceError(409, "project_busy", "项目中有运行中的科研流程，请先读取其状态。")
@@ -128,6 +133,20 @@ class ProjectRepository:
             value["workflow_count"] = db.execute(
                 "SELECT count(*) FROM workflows WHERE project_id=?", (identifier,)
             ).fetchone()[0]
+            value["document_count"] = db.execute(
+                "SELECT count(*) FROM knowledge_documents WHERE project_id=?", (identifier,)
+            ).fetchone()[0]
+            value["document_version_count"] = db.execute(
+                "SELECT count(*) FROM knowledge_versions WHERE project_id=?", (identifier,)
+            ).fetchone()[0]
+            value["document_bytes"] = db.execute(
+                "SELECT coalesce(sum(length(content)),0) FROM "
+                "knowledge_versions WHERE project_id=?",
+                (identifier,),
+            ).fetchone()[0]
+            value["knowledge_evidence_count"] = db.execute(
+                "SELECT count(*) FROM knowledge_evidence WHERE project_id=?", (identifier,)
+            ).fetchone()[0]
             value["running_workflow_count"] = db.execute(
                 "SELECT count(*) FROM workflows WHERE project_id=? AND state='running'",
                 (identifier,),
@@ -156,6 +175,9 @@ class ProjectRepository:
                     (row[0],),
                 )
             db.execute("DELETE FROM workflows WHERE project_id=?", (identifier,))
+            from astroagent.knowledge import clear_index
+
+            clear_index(db, project_id=identifier)
             db.execute("DELETE FROM projects WHERE id=?", (identifier,))
 
     def membership(self, identifier, conversation_id, request, *, remove=False):

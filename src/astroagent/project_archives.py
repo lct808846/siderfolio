@@ -1,4 +1,4 @@
-"""固定四/五成员项目 ZIP（schema1/2）；完整校验后单事务恢复，不解压到文件系统。"""
+"""固定四/五/六成员项目 ZIP（schema1/2/3）；完整校验后单事务恢复，不解压到文件系统。"""
 
 import hashlib
 import json
@@ -54,7 +54,14 @@ def strict_json(raw):
     return value
 
 
-def export_archive(repository, identifier, revision, format_version=2):
+def export_archive(
+    repository,
+    identifier,
+    revision,
+    format_version=3,
+    knowledge_mode="metadata",
+    confirmed_include_originals=False,
+):
     with repository.repo.connection() as db:
         db.execute("BEGIN")
         project = repository._project(db, identifier, revision)
@@ -94,6 +101,22 @@ def export_archive(repository, identifier, revision, format_version=2):
         from astroagent.workflow_archives import read_workflows
 
         workflows = read_workflows(db, identifier)
+        from astroagent.knowledge_archives import read_knowledge
+
+        knowledge = read_knowledge(
+            db,
+            identifier,
+            knowledge_mode if format_version == 3 else "metadata",
+            confirmed_include_originals,
+        )
+        if format_version < 3 and any(
+            knowledge[key] for key in ("documents", "versions", "evidence", "operations")
+        ):
+            raise ServiceError(
+                409,
+                "knowledge_archive_requires_v3",
+                "项目含知识库或历史引用，不能丢弃后导出旧格式。",
+            )
         if format_version == 1 and workflows["runs"]:
             raise ServiceError(
                 409, "workflow_archive_requires_v2", "项目含科研流程，不能丢弃流程后导出旧格式。"
@@ -107,19 +130,23 @@ def export_archive(repository, identifier, revision, format_version=2):
         "conversations.json": encode(conversations).encode(),
         "snapshots.json": encode(snapshots).encode(),
     }
-    if format_version == 2:
+    if format_version >= 2:
         payloads["workflows.json"] = encode(workflows).encode()
+    if format_version == 3:
+        payloads["knowledge.json"] = encode(knowledge).encode()
     manifest = ArchiveManifest(
         format="astroagent-project",
         version=format_version,
         exported_at=utc_now(),
         application_version=__version__,
+        knowledge_mode=knowledge["mode"] if format_version == 3 else None,
+        sources_complete=knowledge["sources_complete"] if format_version == 3 else None,
         files={
             name: {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
             for name, raw in payloads.items()
         },
     )
-    payloads["manifest.json"] = encode(manifest.model_dump()).encode()
+    payloads["manifest.json"] = encode(manifest.model_dump(exclude_none=True)).encode()
     if sum(map(len, payloads.values())) > MAX_TOTAL or any(
         len(b) > MAX_MEMBER for b in payloads.values()
     ):
@@ -145,6 +172,7 @@ def decode_archive(raw):
             if len(infos) != len(member_names) or member_names not in (
                 MEMBERS,
                 MEMBERS | {"workflows.json"},
+                MEMBERS | {"workflows.json", "knowledge.json"},
             ):
                 raise ValueError("Fixed unique members required")
             for info in infos:
@@ -172,6 +200,10 @@ def decode_archive(raw):
             raise ValueError("Integer archive version required")
         manifest = ArchiveManifest.model_validate(manifest_raw)
         expected_members = MEMBERS if manifest.version == 1 else MEMBERS | {"workflows.json"}
+        if manifest.version == 3:
+            expected_members |= {"knowledge.json"}
+        elif manifest.knowledge_mode is not None or manifest.sources_complete is not None:
+            raise ValueError("Knowledge metadata requires archive format3")
         if set(data) != expected_members:
             raise ValueError("Archive members differ from format version")
         Project.utc(manifest.exported_at)
@@ -337,10 +369,23 @@ def decode_archive(raw):
 
         workflows = (
             validate_workflows(strict_json(data["workflows.json"]), project.id, snapshots)
-            if manifest.version == 2
+            if manifest.version >= 2
             else {"runs": [], "operations": [], "outputs": [], "snapshot_refs": []}
         )
+        from astroagent.knowledge_archives import empty_bundle, validate_knowledge
+
+        knowledge = (
+            validate_knowledge(strict_json(data["knowledge.json"]), project.id)
+            if manifest.version == 3
+            else empty_bundle()
+        )
+        if manifest.version == 3 and (
+            manifest.knowledge_mode != knowledge["mode"]
+            or manifest.sources_complete != knowledge["sources_complete"]
+        ):
+            raise ValueError("Original inclusion policy differs from manifest")
         return {
+            "knowledge": knowledge,
             "project": project.model_dump(),
             "conversations": conversations,
             "snapshots": snapshots,
@@ -406,6 +451,15 @@ def import_archive(repository, raw):
     )
     incoming += sum(
         len(encode(value).encode()) for kind in ("snapshots", "reruns") for value in bundle[kind]
+    )
+    incoming += sum(
+        len(encode(v).encode())
+        for key in ("documents", "sources", "units", "evidence", "operations")
+        for v in bundle["knowledge"][key]
+    )
+    incoming += sum(
+        len(encode(v["info"]).encode()) + len(v["content"] or b"")
+        for v in bundle["knowledge"]["versions"]
     )
     # Preflight before any write; exact normalized bytes are checked in-transaction.
     with repository.repo.connection() as db:
@@ -542,6 +596,9 @@ def import_archive(repository, raw):
         from astroagent.workflow_archives import import_workflows
 
         import_workflows(db, bundle["workflows"], project_id, id_map, digest)
+        from astroagent.knowledge_archives import import_knowledge
+
+        import_knowledge(db, bundle["knowledge"], project_id, id_map)
         project["import_map"] = id_map
         repository._put(db, "projects", project)
         repository._budget(db)

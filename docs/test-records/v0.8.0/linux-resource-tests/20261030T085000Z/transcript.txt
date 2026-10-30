@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.2.0, pluggy-1.7.0 -- /root/.venvs/astroagent-v08-qa/bin/python
+cachedir: .pytest_cache
+rootdir: /mnt/d/project/astroagent
+configfile: pyproject.toml
+plugins: langsmith-0.14.16, anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_linux_resource_limits.py::test_linux_worker_memory_and_output_limits PASSED [ 50%]
+tests/test_linux_resource_limits.py::test_linux_worker_cpu_limit_kills_child PASSED [100%]
+
+=============================== warnings summary ===============================
+../../../../root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/langsmith/_internal/_beta_decorator.py:92: 13 warnings
+  /root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/langsmith/_internal/_beta_decorator.py:92: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if asyncio.iscoroutinefunction(func):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/d/project/astroagent/docs/test-records/v0.8.0/linux-resource-tests/20261030T085000Z/pytest.xml -
+======================= 2 passed, 13 warnings in 25.78s ========================

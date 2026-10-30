@@ -14,6 +14,7 @@ from astroagent.api.conversations import router as conversations_router
 from astroagent.api.exports import ExportBodyLimit
 from astroagent.api.exports import router as exports_router
 from astroagent.api.health import router as health_router
+from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.projects import router as projects_router
 from astroagent.api.workflows import router as workflows_router
 from astroagent.artifacts import ArtifactCache
@@ -22,6 +23,8 @@ from astroagent.conversation_service import ConversationService
 from astroagent.conversations import ConversationRepository
 from astroagent.errors import ServiceError
 from astroagent.export_schemas import ExportRequest
+from astroagent.knowledge_schemas import DocumentUpload
+from astroagent.knowledge_service import KnowledgeService
 from astroagent.local_access import LocalAccess
 from astroagent.project_service import ProjectService
 from astroagent.workflow_service import WorkflowService
@@ -39,6 +42,7 @@ async def lifespan(app):
         ArtifactCache(service, settings)
         service.projects = ProjectService(service)
         service.workflows = WorkflowService(service)
+        service.knowledge = KnowledgeService(service)
         app.state.conversation_service = service
     except Exception:
         if repository is not None:
@@ -59,6 +63,7 @@ app.include_router(conversations_router)
 app.include_router(artifacts_router)
 app.include_router(projects_router)
 app.include_router(workflows_router)
+app.include_router(knowledge_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 
@@ -80,6 +85,11 @@ def export_openapi():
                 }
             },
         }
+        upload_schema = DocumentUpload.model_json_schema(
+            ref_template="#/components/schemas/{model}"
+        )
+        schema["components"]["schemas"].update(upload_schema.pop("$defs", {}))
+        schema["components"]["schemas"]["DocumentUpload"] = upload_schema
         app.openapi_schema = schema
     return app.openapi_schema
 

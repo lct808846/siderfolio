@@ -64,7 +64,11 @@ def main():
         **runtime_metadata(),
         "checks": [],
         "node": subprocess.check_output([node, "--version"], text=True).strip(),
-        "data_kind": "synthetic_not_observations",
+        "data_kind": (
+            "synthetic_and_public_pdf_not_observations"
+            if args.browser and os.getenv("ASTROAGENT_ACCEPTANCE_PUBLIC_PDF")
+            else "synthetic_not_observations"
+        ),
         "visual_review": "pending_manual_inspection" if args.browser else None,
     }
     for i, command in enumerate(commands):

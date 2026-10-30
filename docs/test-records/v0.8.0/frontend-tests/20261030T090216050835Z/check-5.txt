@@ -1,0 +1,13 @@
+
+> astroagent-workbench@0.8.0 build
+> vue-tsc --noEmit && vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.43 kB │ gzip:  0.33 kB
+dist/assets/index-D71XlHbz.css   26.63 kB │ gzip:  6.22 kB
+dist/assets/index-BrX8pmpK.js   198.78 kB │ gzip: 69.85 kB
+✓ built in 1.32s

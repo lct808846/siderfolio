@@ -194,6 +194,10 @@ class ProjectDetail(Project):
     reruns: list[Rerun]
     workflow_count: int = 0
     running_workflow_count: int = 0
+    document_count: int = 0
+    document_version_count: int = 0
+    document_bytes: int = 0
+    knowledge_evidence_count: int = 0
 
 
 class Comparison(Contract):
@@ -208,14 +212,18 @@ class Comparison(Contract):
 
 class ArchiveManifest(Contract):
     format: Literal["astroagent-project"]
-    version: Literal[1, 2]
+    version: Literal[1, 2, 3]
     exported_at: str
     application_version: str
     files: dict[str, dict]
+    knowledge_mode: Literal["full", "metadata"] | None = None
+    sources_complete: StrictBool | None = None
 
 
 class ProjectArchiveRequest(Revision):
-    format_version: StrictInt = Field(default=2, ge=1, le=2)
+    format_version: StrictInt = Field(default=3, ge=1, le=3)
+    knowledge_mode: Literal["full", "metadata"] = "metadata"
+    confirmed_include_originals: StrictBool = False
 
 
 class ImportResult(Contract):

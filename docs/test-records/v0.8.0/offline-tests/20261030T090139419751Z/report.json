@@ -1,0 +1,77 @@
+{
+  "application_version": "0.8.0",
+  "started_at": "2026-10-30T09:01:39.425250+00:00",
+  "kind": "offline-tests",
+  "python": "3.14.4",
+  "versions": {
+    "astroagent": "0.8.0",
+    "fastapi": "0.162.0",
+    "langchain-core": "1.7.3",
+    "langchain-openai": "1.7.3",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.14.2",
+    "pytest": "9.2.0"
+  },
+  "git_head": "9b16fe9523eea826aa5c36f42c24cce384004ed2",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M README.md\n M docs/PROJECT_PLAN_V0.1.md\n M docs/PROJECT_PLAN_V0.5.md\n M docs/PROJECT_PLAN_V0.6.md\n M docs/PROJECT_PLAN_V0.7.md\n M docs/ROADMAP.md\n M docs/TESTING.md\n M docs/development/v0.7.0/baseline/20261029T145405532374Z/README.md\n M docs/development/v0.7.0/baseline/20261029T145405532374Z/ROADMAP.md\n M docs/development/v0.7.0/baseline/20261029T145405532374Z/baseline.json\n M docs/releases/v0.6.0.md\n M docs/test-records/README.md\n M docs/test-records/v0.1.0/acceptance/20261026T110938318990Z/archive.json\n M docs/test-records/v0.1.0/acceptance/20261026T110938318990Z/report.json\n M docs/test-records/v0.1.0/acceptance/20261026T110938318990Z/uvicorn.txt\n M docs/test-records/v0.1.0/latency/20261026T111909735226Z/archive.json\n M docs/test-records/v0.1.0/latency/20261026T111909735226Z/report.json\n M docs/test-records/v0.1.0/offline-tests/20261026T112501898813Z/check-1.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T112501898813Z/check-2.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T112501898813Z/check-3.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T112501898813Z/check-4.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T112501898813Z/report.json\n M docs/test-records/v0.1.0/offline-tests/20261026T113344647924Z/check-1.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T113344647924Z/check-2.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T113344647924Z/check-3.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T113344647924Z/check-4.txt\n M docs/test-records/v0.1.0/offline-tests/20261026T113344647924Z/report.json\n M docs/test-records/v0.2.0/acceptance-v02/20261026T115913244911Z/report.json\n M docs/test-records/v0.2.0/acceptance-v02/20261026T115913244911Z/uvicorn.txt\n M docs/test-records/v0.2.0/acceptance-v02/20261026T121214590921Z/report.json\n M docs/test-records/v0.2.0/acceptance-v02/20261026T121214590921Z/uvicorn.txt\n M docs/test-records/v0.2.0/acceptance-v02/20261026T121628737110Z/report.json\n M docs/test-records/v0.2.0/acceptance-v02/20261026T121628737110Z/uvicorn.txt\n M docs/test-records/v0.2.0/acceptance-v02/20261026T122019496830Z/report.json\n M docs/test-records/v0.2.0/acceptance-v02/20261026T122019496830Z/uvicorn.txt\n M docs/test-records/v0.2.0/live-ads-tests/20261026T115824398061Z/check-1.txt\n M docs/test-records/v0.2.0/live-ads-tests/20261026T115824398061Z/report.json\n M docs/test-records/v0.2.0/live-ads-tests/20261026T120749586866Z/check-1.txt\n M docs/test-records/v0.2.0/live-ads-tests/20261026T120749586866Z/report.json\n M docs/test-records/v0.2.0/live-tests/20261026T120250374162Z/check-1.txt\n M docs/test-records/v0.2.0/live-tests/20261026T120250374162Z/report.json\n M docs/test-records/v0.2.0/offline-tests/20261026T115856968037Z/check-1.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T115856968037Z/check-2.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T115856968037Z/check-3.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T115856968037Z/check-4.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T115856968037Z/report.json\n M docs/test-records/v0.2.0/offline-tests/20261026T120901459233Z/check-1.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T120901459233Z/check-2.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T120901459233Z/check-3.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T120901459233Z/check-4.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T120901459233Z/report.json\n M docs/test-records/v0.2.0/offline-tests/20261026T121258182635Z/check-1.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T121258182635Z/check-2.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T121258182635Z/check-3.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T121258182635Z/check-4.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T121258182635Z/report.json\n M docs/test-records/v0.2.0/offline-tests/20261026T122342987210Z/check-1.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T122342987210Z/check-2.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T122342987210Z/check-3.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T122342987210Z/check-4.txt\n M docs/test-records/v0.2.0/offline-tests/20261026T122342987210Z/report.json\n M docs/test-records/v0.2.0/ui-link-check/20261026T120835835467Z/report.json\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/projects.ts\n M frontend/src/components/ResultPanel.vue\n M frontend/src/main.ts\n M frontend/src/stores/workbench.ts\n M frontend/src/style.css\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/src/views/ProjectWorkspace.vue\n M frontend/src/views/WorkflowWorkspace.vue\n M frontend/tests/browser/workflows.spec.ts\n M frontend/tests/unit/workbench.test.ts\n M pyproject.toml\n M scripts/fixture_server.py\n M scripts/synthetic_services.py\n M scripts/verify_v06.py\n M src/astroagent/__init__.py\n M src/astroagent/api/projects.py\n M src/astroagent/conversations.py\n M src/astroagent/local_access.py\n M src/astroagent/main.py\n M src/astroagent/project_archives.py\n M src/astroagent/project_schemas.py\n M src/astroagent/projects.py\n M src/astroagent/workflow_archives.py\n M src/astroagent/workflow_io.py\n M src/astroagent/workflow_templates.py\n M src/astroagent/workflows.py\n M tests/test_projects.py\n M tests/test_workflows.py\n?? docs/PROJECT_PLAN_V0.8.md\n?? docs/development/v0.8.0/\n?? docs/releases/v0.8.0.md\n?? docs/test-records/v0.8.0/\n?? frontend/src/api/knowledge.ts\n?? frontend/src/views/KnowledgeWorkspace.vue\n?? frontend/tests/browser/knowledge.spec.ts\n?? scripts/evaluate_knowledge.py\n?? scripts/knowledge_eval/\n?? scripts/windows_tcp_listeners.py\n?? src/astroagent/api/knowledge.py\n?? src/astroagent/knowledge.py\n?? src/astroagent/knowledge_archives.py\n?? src/astroagent/knowledge_parser.py\n?? src/astroagent/knowledge_schemas.py\n?? src/astroagent/knowledge_service.py\n?? src/astroagent/knowledge_text.py\n?? src/astroagent/knowledge_worker.py\n?? tests/test_knowledge.py\n?? tests/test_linux_resource_limits.py\n?? tests/test_windows_tcp_listeners.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/mnt/d/project/astroagent/docs/test-records/v0.8.0/offline-tests/20261030T090139419751Z/pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 174.8058,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.209,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1229,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5349,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-10-30T09:04:47.962567+00:00"
+}

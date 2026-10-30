@@ -101,25 +101,22 @@ def main():
             connect_code=code,
         )
         if os.name == "nt":
-            check = subprocess.run(
-                [
-                    "powershell",
-                    "-NoProfile",
-                    "-Command",
-                    "$ErrorActionPreference='Stop'; "
-                    "@(Get-NetTCPConnection -State Listen | "
-                    f"Where-Object LocalPort -eq {port}).Count",
-                ],
-                capture_output=True,
-                text=True,
-                timeout=30,
-                creationflags=subprocess.CREATE_NO_WINDOW,
-            )
-            count = check.stdout.strip()
+            from windows_tcp_listeners import listeners as windows_listeners
+
+            deadline = time.monotonic() + 10
+            while True:
+                try:
+                    listeners = windows_listeners(port)
+                except OSError:
+                    listeners = None
+                if listeners == [] or time.monotonic() >= deadline:
+                    break
+                time.sleep(0.5)
             report["servers"][-1].update(
-                port_closed=check.returncode == 0 and count == "0",
-                listener_count=int(count) if count.isdigit() else None,
-                port_check="native Windows TCP listener table",
+                port_closed=listeners == [],
+                listener_count=len(listeners) if listeners is not None else None,
+                listeners=listeners,
+                port_check="GetExtendedTcpTable IPv4 listener table",
             )
         process = None
 

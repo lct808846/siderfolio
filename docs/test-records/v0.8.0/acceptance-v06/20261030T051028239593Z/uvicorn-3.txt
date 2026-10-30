@@ -1,0 +1,33 @@
+INFO:     Started server process [3460]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:59236 (Press CTRL+C to quit)
+INFO:     127.0.0.1:59512 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59515 - "POST /api/v1/projects/import HTTP/1.1" 201 Created
+INFO:     127.0.0.1:59516 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/4d335e75-fe6c-4da5-9966-413aa996cd15 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59517 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/2603661d-2b08-4769-8c4f-71a065aef69c HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59518 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/09452b53-60bf-4310-9266-7145f9cef863 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59519 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/87dcbdf4-d057-4e8c-af5f-961366ca6117 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59520 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/49265c93-889a-489d-8ac6-1de133f5aeac HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59521 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/e47e2177-0825-4e95-b9de-8cdc1ef0f1d9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59522 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/db9fb858-b40f-4378-acbf-6b0e068aa3c4 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59523 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/4d335e75-fe6c-4da5-9966-413aa996cd15 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59524 - "POST /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5/snapshots/4d335e75-fe6c-4da5-9966-413aa996cd15/artifacts HTTP/1.1" 201 Created
+INFO:     127.0.0.1:59525 - "GET /api/v1/artifacts/97e237af-363a-4521-9ddc-06ae6131eb64/download HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59526 - "GET /api/v1/artifacts/97e237af-363a-4521-9ddc-06ae6131eb64/manifest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59527 - "GET /api/v1/artifacts/97e237af-363a-4521-9ddc-06ae6131eb64/figures/88814484-b8c8-4664-a9b3-5291f8d7e533 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59528 - "GET /api/v1/artifacts/97e237af-363a-4521-9ddc-06ae6131eb64/figures/0a19ef67-aa59-4939-8248-6e13612eb2e6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59529 - "GET /api/v1/artifacts/97e237af-363a-4521-9ddc-06ae6131eb64/figures/e3fb52d4-ac81-40a2-9753-3f3c2e12615a HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59530 - "GET /api/v1/projects HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59531 - "POST /api/v1/projects/import HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:59532 - "GET /api/v1/projects HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59533 - "GET /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59534 - "DELETE /api/v1/projects/238a5a04-6189-4741-b7ec-92cf8edc64e5 HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:59535 - "GET /api/v1/conversations/01dbb455-e177-45ef-88c8-262d2a0e6f1b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59536 - "GET /api/v1/conversations/04e769b0-ebbe-4b37-8062-b560c2bcd0ff HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59537 - "GET /api/v1/conversations/3399427e-b5cf-4811-a0f6-23f181281e3f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59538 - "GET /api/v1/conversations/4e84280e-51d0-4de2-aed8-821621897c57 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59539 - "GET /api/v1/conversations/5ba3c138-5408-42fb-8a90-fa01470918ee HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59540 - "GET /api/v1/conversations/8661f919-c7ce-4103-97bc-8c8f8776a49f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59541 - "GET /api/v1/conversations/c83d9d7e-5e1d-4ef0-9b95-823f8b7a2256 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59542 - "GET /api/v1/conversations/efe7bf1f-48bf-460b-b131-77f4f4627cd3 HTTP/1.1" 200 OK

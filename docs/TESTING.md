@@ -1,5 +1,7 @@
 # 测试说明
 
+V0.8.0 已执行的测试及适用范围见 [本版测试记录](test-records/v0.8.0/README.md) 和 [验收清单](development/v0.8.0/ACCEPTANCE.md)；远端发布状态以 GitHub Releases 为准。旧版本报告不能代替本版通过。
+
 V0.7.0 已于 2026-10-30 开始执行本地、浏览器和真实服务验收，结果与未覆盖范围见 [V0.7测试记录](test-records/v0.7.0/README.md)，验收要求见 [清单](development/v0.7.0/ACCEPTANCE.md)。历史V0.6结果不代表当前工作区已通过。
 
 ## 准备与执行

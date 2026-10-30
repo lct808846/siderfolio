@@ -64,7 +64,7 @@ class ConversationRepository:
                 fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             with self.connection() as db:
                 version = db.execute("PRAGMA user_version").fetchone()[0]
-                if version not in (0, 1, 2, 3):
+                if version not in (0, 1, 2, 3, 4):
                     raise storage_error()
                 if version == 0:
                     tables = db.execute(
@@ -102,6 +102,18 @@ class ConversationRepository:
                         db.backup(target)
                     with self.transaction(db):
                         self._migrate_v3(db)
+                if version < 4:
+                    backup = self.path.with_name(
+                        "migration-v4-"
+                        + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+                        + ".sqlite3"
+                    )
+                    with sqlite3.connect(backup) as target:
+                        db.backup(target)
+                    from astroagent.knowledge import migrate
+
+                    with self.transaction(db):
+                        migrate(db)
                 db.execute("PRAGMA journal_mode=WAL")
                 with self.transaction(db):
                     for row in db.execute(
@@ -121,6 +133,9 @@ class ConversationRepository:
                     from astroagent.workflows import WorkflowRepository
 
                     WorkflowRepository.recover(db)
+                    from astroagent.knowledge import KnowledgeRepository
+
+                    KnowledgeRepository.recover(db)
         except (OSError, sqlite3.Error) as exc:
             self.close()
             raise storage_error() from exc
@@ -247,11 +262,17 @@ class ConversationRepository:
 
     @staticmethod
     def _used(db):
+        from astroagent.knowledge import used_bytes
+
         turns = db.execute(
             "SELECT coalesce(sum(size_bytes+reserved_bytes),0) FROM turns"
         ).fetchone()[0]
-        base = turns + sum(
-            len(encode(dict(row)).encode()) for row in db.execute("SELECT * FROM conversations")
+        base = (
+            used_bytes(db)
+            + turns
+            + sum(
+                len(encode(dict(row)).encode()) for row in db.execute("SELECT * FROM conversations")
+            )
         )
         for table in (
             "projects",

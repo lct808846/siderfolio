@@ -1,0 +1,14 @@
+
+> astroagent-workbench@0.8.0 lint
+> eslint . --max-warnings 0
+
+
+D:\project\astroagent\frontend\src\views\KnowledgeWorkspace.vue
+  173:76   warning  Expected 1 line break after opening tag (`<form>`), but no line breaks found    vue/multiline-html-element-content-newline
+  178:171  warning  Expected 1 line break before closing tag (`</form>`), but no line breaks found  vue/multiline-html-element-content-newline
+  187:61   warning  Expected 1 line break after opening tag (`<aside>`), but no line breaks found   vue/multiline-html-element-content-newline
+
+✖ 3 problems (0 errors, 3 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.
+
+ESLint found too many warnings (maximum: 0).

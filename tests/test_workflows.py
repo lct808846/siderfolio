@@ -48,7 +48,7 @@ def test_schema2_migration_backup_and_failure_rollback(tmp_path, monkeypatch):
     repo.initialize()
     try:
         with sqlite3.connect(repo.path) as db:
-            assert db.execute("PRAGMA user_version").fetchone()[0] == 3
+            assert db.execute("PRAGMA user_version").fetchone()[0] == 4
             assert db.execute("SELECT title FROM conversations").fetchone()[0] == "旧会话"
     finally:
         repo.close()

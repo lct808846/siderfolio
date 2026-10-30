@@ -610,7 +610,7 @@ def test_v05_migration_backup_and_v2_failure_rollback(tmp_path, monkeypatch):
     try:
         assert repo.list()[0]["metadata_revision"] == 0
         with repo.connection() as db:
-            assert db.execute("PRAGMA user_version").fetchone()[0] == 3
+            assert db.execute("PRAGMA user_version").fetchone()[0] == 4
             assert (
                 db.execute("SELECT record FROM turns WHERE id=?", (tid,)).fetchone()[0]
                 == legacy_turn

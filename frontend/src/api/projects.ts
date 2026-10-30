@@ -35,8 +35,8 @@ export async function importProject(file: File): Promise<ImportResult> {
   const response = await binaryRequest(`${prefix}/import`, file, 'application/zip')
   return response.json() as Promise<ImportResult>
 }
-export async function exportProject(project: Project, format_version: 1 | 2 = 2): Promise<void> {
-  const response = await binaryRequest(`${prefix}/${project.id}/archive`, JSON.stringify({ expected_revision: project.revision, format_version }), 'application/json')
+export async function exportProject(project: Project, format_version: 1 | 2 | 3 = 3, knowledge_mode: 'full' | 'metadata' = 'metadata', confirmed_include_originals = false): Promise<void> {
+  const response = await binaryRequest(`${prefix}/${project.id}/archive`, JSON.stringify({ expected_revision: project.revision, format_version, knowledge_mode, confirmed_include_originals }), 'application/json')
   if (!(response.headers.get('content-type') || '').includes('application/zip')) throw new ApiError('invalid_archive_response', '服务没有返回项目归档。')
   const url = URL.createObjectURL(await response.blob())
   const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'astroagent-project.zip'; anchor.click()

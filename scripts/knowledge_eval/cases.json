@@ -1,0 +1,236 @@
+{
+  "fixture_version": "1",
+  "notes": "Predeclared artificial cases; no evaluation has been run.",
+  "thresholds": {
+    "positive_top5_coverage": 0.9,
+    "no_answer_refusal_rate": 1.0,
+    "invalid_references": 0,
+    "p95_seconds": 2.0
+  },
+  "cases": [
+    {
+      "id": "positive-01",
+      "query": "binary cluster",
+      "expected_status": "evidence_found",
+      "expected_line": 5,
+      "expected_phrase": "binary cluster fixture alpha"
+    },
+    {
+      "id": "positive-02",
+      "query": "proper motion",
+      "expected_status": "evidence_found",
+      "expected_line": 8,
+      "expected_phrase": "proper motion fixture beta"
+    },
+    {
+      "id": "positive-03",
+      "query": "parallax",
+      "expected_status": "evidence_found",
+      "expected_line": 11,
+      "expected_phrase": "parallax fixture gamma"
+    },
+    {
+      "id": "positive-04",
+      "query": "photometry",
+      "expected_status": "evidence_found",
+      "expected_line": 14,
+      "expected_phrase": "photometry fixture delta"
+    },
+    {
+      "id": "positive-05",
+      "query": "stellar dynamics",
+      "expected_status": "evidence_found",
+      "expected_line": 17,
+      "expected_phrase": "stellar dynamics fixture epsilon"
+    },
+    {
+      "id": "positive-06",
+      "query": "tidal field",
+      "expected_status": "evidence_found",
+      "expected_line": 20,
+      "expected_phrase": "tidal field fixture zeta"
+    },
+    {
+      "id": "positive-07",
+      "query": "GAIA",
+      "expected_status": "evidence_found",
+      "expected_line": 23,
+      "expected_phrase": "Gaia fixture eta"
+    },
+    {
+      "id": "positive-08",
+      "query": "ADS metadata",
+      "expected_status": "evidence_found",
+      "expected_line": 26,
+      "expected_phrase": "ADS metadata fixture theta"
+    },
+    {
+      "id": "positive-09",
+      "query": "distance uncertainty",
+      "expected_status": "evidence_found",
+      "expected_line": 29,
+      "expected_phrase": "distance uncertainty fixture iota"
+    },
+    {
+      "id": "positive-10",
+      "query": "open cluster",
+      "expected_status": "evidence_found",
+      "expected_line": 32,
+      "expected_phrase": "open cluster fixture kappa"
+    },
+    {
+      "id": "positive-11",
+      "query": "spectral type",
+      "expected_status": "evidence_found",
+      "expected_line": 35,
+      "expected_phrase": "spectral type fixture lambda"
+    },
+    {
+      "id": "positive-12",
+      "query": "mass ratio",
+      "expected_status": "evidence_found",
+      "expected_line": 38,
+      "expected_phrase": "mass ratio fixture mu"
+    },
+    {
+      "id": "positive-13",
+      "query": "星",
+      "expected_status": "evidence_found",
+      "expected_line": 41,
+      "expected_phrase": "星际样本一"
+    },
+    {
+      "id": "positive-14",
+      "query": "团",
+      "expected_status": "evidence_found",
+      "expected_line": 44,
+      "expected_phrase": "星团样本二"
+    },
+    {
+      "id": "positive-15",
+      "query": "双星",
+      "expected_status": "evidence_found",
+      "expected_line": 47,
+      "expected_phrase": "双星样本三"
+    },
+    {
+      "id": "positive-16",
+      "query": "星团",
+      "expected_status": "evidence_found",
+      "expected_line": 50,
+      "expected_phrase": "星团样本四"
+    },
+    {
+      "id": "positive-17",
+      "query": "双星团",
+      "expected_status": "evidence_found",
+      "expected_line": 53,
+      "expected_phrase": "双星团样本五"
+    },
+    {
+      "id": "positive-18",
+      "query": "外部环境",
+      "expected_status": "evidence_found",
+      "expected_line": 56,
+      "expected_phrase": "外部环境样本六"
+    },
+    {
+      "id": "positive-19",
+      "query": "银河潮汐",
+      "expected_status": "evidence_found",
+      "expected_line": 59,
+      "expected_phrase": "银河潮汐样本七"
+    },
+    {
+      "id": "positive-20",
+      "query": "自行测量",
+      "expected_status": "evidence_found",
+      "expected_line": 62,
+      "expected_phrase": "自行测量样本八"
+    },
+    {
+      "id": "positive-21",
+      "query": "视差误差",
+      "expected_status": "evidence_found",
+      "expected_line": 65,
+      "expected_phrase": "视差误差样本九"
+    },
+    {
+      "id": "positive-22",
+      "query": "文献摘要",
+      "expected_status": "evidence_found",
+      "expected_line": 68,
+      "expected_phrase": "文献摘要样本十"
+    },
+    {
+      "id": "positive-23",
+      "query": "质量比",
+      "expected_status": "evidence_found",
+      "expected_line": 71,
+      "expected_phrase": "质量比样本十一"
+    },
+    {
+      "id": "positive-24",
+      "query": "原文证据",
+      "expected_status": "evidence_found",
+      "expected_line": 74,
+      "expected_phrase": "原文证据样本十二"
+    },
+    {
+      "id": "negative-01",
+      "query": "absentuniqueterm1missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-02",
+      "query": "absentuniqueterm2missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-03",
+      "query": "absentuniqueterm3missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-04",
+      "query": "absentuniqueterm4missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-05",
+      "query": "absentuniqueterm5missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-06",
+      "query": "absentuniqueterm6missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-07",
+      "query": "absentuniqueterm7missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    },
+    {
+      "id": "negative-08",
+      "query": "absentuniqueterm8missing",
+      "expected_status": "insufficient_evidence",
+      "expected_line": null,
+      "expected_phrase": null
+    }
+  ]
+}

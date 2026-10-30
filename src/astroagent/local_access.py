@@ -1,5 +1,8 @@
 """本机 Host / Origin 与会话接收边界；不依赖模型配置或数据库可用性。"""
 
+import re
+import tempfile
+
 from fastapi.responses import JSONResponse
 
 from astroagent.config import LocalSettings
@@ -78,6 +81,47 @@ class LocalAccess:
             )
             return await response(scope, receive, with_headers)
         importing = scope["path"] == "/api/v1/projects/import" and scope["method"] == "POST"
+        uploading = scope["method"] == "POST" and re.fullmatch(
+            r"/api/v1/projects/[0-9a-f-]{36}/documents(?:/[0-9a-f-]{36}/versions)?", scope["path"]
+        )
+        if uploading:
+            if (
+                headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
+                != "multipart/form-data"
+                or headers.get(b"content-encoding", "identity").lower() != "identity"
+            ):
+                return await failure(
+                    415, "knowledge_upload_media", "仅接受未压缩multipart单文件上传。"
+                )
+            # Bound actual transport bytes, spool to disk above 1 MiB, and replay in chunks.
+            # Never allocate a 20 MiB multipart bytearray in the ASGI middleware.
+            with tempfile.SpooledTemporaryFile(max_size=1024**2) as spool:
+                received = 0
+                while True:
+                    message = await receive()
+                    if message["type"] == "http.disconnect":
+                        return
+                    chunk = message.get("body", b"")
+                    received += len(chunk)
+                    if received > 20 * 1024**2 + 64 * 1024:
+                        return await failure(
+                            413, "knowledge_upload_too_large", "文件及multipart开销超过接收上限。"
+                        )
+                    spool.write(chunk)
+                    if not message.get("more_body", False):
+                        break
+                spool.seek(0)
+                remaining = received
+
+                async def replay_upload():
+                    nonlocal remaining
+                    if remaining:
+                        chunk = spool.read(min(65536, remaining))
+                        remaining -= len(chunk)
+                        return {"type": "http.request", "body": chunk, "more_body": remaining > 0}
+                    return {"type": "http.request", "body": b"", "more_body": False}
+
+                return await self.app(scope, replay_upload, with_headers)
         if scope["path"].startswith(("/api/v1/conversations", "/api/v1/projects")) and scope[
             "method"
         ] in {

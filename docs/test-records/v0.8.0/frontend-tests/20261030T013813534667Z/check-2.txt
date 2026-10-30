@@ -1,0 +1,4 @@
+
+> astroagent-workbench@0.8.0 typecheck
+> vue-tsc --noEmit
+

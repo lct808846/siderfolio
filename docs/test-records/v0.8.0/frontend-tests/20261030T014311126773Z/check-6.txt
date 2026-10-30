@@ -1,0 +1,3 @@
+✨ openapi-typescript 7.13.0
+🚀 C:\Users\lct\AppData\Local\Temp\tmpi36dg6vj\openapi.json → C:\Users\lct\AppData\Local\Temp\tmpi36dg6vj\generated.ts [187.9ms]
+OpenAPI / TypeScript contract matches

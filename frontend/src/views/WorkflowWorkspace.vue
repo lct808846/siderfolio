@@ -145,7 +145,7 @@ watch(() => route.fullPath, () => {
 
 <template>
   <div class="project-workspace workflow-workspace" :data-panel="mobilePanel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.7</span></RouterLink><span class="topbar-caption">固定科研流程</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">返回项目 ↗</RouterLink></header>
+    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.8</span></RouterLink><span class="topbar-caption">固定科研流程</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">返回项目 ↗</RouterLink></header>
     <nav class="workflow-mobile" aria-label="流程面板"><button @click="mobilePanel='project'">流程与参数</button><button @click="mobilePanel='steps'">执行记录</button><button @click="mobilePanel='results'">结果与下载</button></nav>
     <aside class="project-sidebar workflow-sidebar" aria-label="流程列表与新建">
       <RouterLink :to="`/projects/${route.params.projectId}/workflows`"><p class="eyebrow">WORKFLOWS · {{ runs.length }}/50</p><h2>{{ project?.name || '正在读取项目' }}</h2></RouterLink>
