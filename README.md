@@ -2,19 +2,31 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：`0.8.0`。本版提供项目本地 PDF/Markdown 知识库、原文定位、关键词检索、摘录式回答及格式3归档。见 [V0.8版本说明](docs/releases/v0.8.0.md)、[测试记录](docs/test-records/v0.8.0/README.md) 与 [验收清单](docs/development/v0.8.0/ACCEPTANCE.md)；远端发布状态以 [GitHub Releases](https://github.com/lct808846/astroagent/releases) 为准。
+当前版本：`0.9.0`。提供项目总览、结果与本地文献证据的显式关联、失效跟踪、格式4归档及维护工具。Gaia 真实查询验收因超时未通过，按用户决定留待后续版本；见 [版本说明](docs/releases/v0.9.0.md) 和 [测试记录](docs/test-records/v0.9.0/README.md)。
 
-上一版本为V0.7.0，其当次[测试记录](docs/test-records/v0.7.0/README.md)与[版本说明](docs/releases/v0.7.0.md)保持原样，不作为本版通过证据。
+源码基线为本地V0.8.0提交 `4d92db2`；[V0.8测试记录](docs/test-records/v0.8.0/README.md)保持原样，只代表旧版当次结果。
+
+更早的V0.7.0当次[测试记录](docs/test-records/v0.7.0/README.md)与[版本说明](docs/releases/v0.7.0.md)保持原样，不作为本版通过证据。
 
 更早版本 [`v0.6.0`](https://github.com/lct808846/astroagent/releases/tag/v0.6.0) 的[测试记录](docs/test-records/v0.6.0/README.md)只对应当时版本，不证明当前工作区已通过。历史版本见 [`v0.5.0`](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)、[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
 
 前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，FastAPI 独立提供 API，SQLite 保存本机业务状态。旧聊天、项目、快照及 V0.4 科学导出契约继续保留；后续目标见 [版本路线图](docs/ROADMAP.md)。本版面向可信本机的单用户使用。
 
-本版依据 [V0.8开发契约](docs/PROJECT_PLAN_V0.8.md)实施，V0.9集成与稳定工作继续按路线图规划。
+本版依据 [V0.9开发契约](docs/PROJECT_PLAN_V0.9.md)实施；安装/备份/恢复/卸载见 [操作稿](docs/OPERATIONS_V0.9.md)，支持矩阵与数据边界见 [V1.0候选兼容契约](docs/V1_CANDIDATE_CONTRACT.md)。候选文档不表示V1.0已完成或发布。
 
 按用户约定，开发阶段不主动运行测试；发布前由用户安排测试验收。代码生成和源码格式化不作为验证通过的证据。
 
-## 本地知识库（V0.8）
+## 项目总览与用户引用（V0.9）
+
+在项目页点击“项目总览与关联”，进入 `/projects/{id}/overview`。总览集中查看会话轮次、快照、流程、文档与关联；先选择项目结果，再到同项目知识库检索并选择固定原文证据，核对两端、页码/行号和用户备注后确认关联。可以从快照、流程或文献证据直接进入。
+
+关联类型只有 `user_reference`，表示用户选择的引用关系，不自动表示支持、反驳、因果证明或成员判定。不会修改旧ChatResponse、sources、原测量、统计或文献原文，也不会把文献交给模型。备注是独立用户文本，最多1000字符。
+
+两端保持固定ID、原文版本与内容摘要。目标删除、会话移出项目、文档删除保留失效记录，移回会话或出现同名文档不自动复活；仅元数据缺失可在同哈希且位置一致的原文件恢复后重新核对。流程后续明确继续时展示“关联后更新”，关联仍指整个运行，不猜测哪一步获得文献支持。
+
+已有相同两端返回原关联，不用重复创建覆盖备注。修改备注使用项目与关联双修订号；解绑保留原结果与文献，原请求重放不会重新建关系。列表API最多100条、页面25条，按不可变关联ID分页。每项目1000关联/3000创建历史，记录及身份映射计入原256 MiB业务预算。
+
+## 本地知识库（V0.8起）
 
 项目页点击“本地知识库”，进入 `/projects/{id}/knowledge`。选择本机PDF或UTF-8 Markdown，填写已知元数据（未知留空），点击保存。文件原始字节、版本、提取文本、位置、索引和引用均保存在后端本机SQLite，旧聊天不会自动读取文献，也不调用模型、ADS或远程嵌入。
 
@@ -49,9 +61,9 @@ PDF仅提取文本，不执行OCR。按物理页记录空页和失败页，文�
 
 两份快照可并列比较条件、状态、交付数量、截断、来源和版本，并可显式比较精确 `source_id` / bibcode 的交集。编号保持字符串，未知不当作零；交付样本差异不能解释为总体、显著性或成员变化。
 
-“导出项目ZIP”默认格式3，固定包含 `manifest.json`、`project.json`、`conversations.json`、`snapshots.json`、`workflows.json` 和 `knowledge.json`。明确选择“仅元数据”或“完整备份（含原文）”；含原文导出另行显示文档数、版本数及字节数并确认。仅元数据包标记不完整，恢复后原文不可用；完整备份遇到原文缺失/坏哈希会拒绝，不能静默省略。仍支持格式1/2导入，旧包知识库为空；只有不含知识库或相关历史的项目可显式导出格式2，格式1另要求不含流程。V0.7不能读取格式3。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；旧预览缓存不随项目包保存，可从恢复后的快照重新生成；流程中已登记的持久文件随格式2恢复。
+“导出项目ZIP”默认格式4，固定包含 `manifest.json`、`project.json`、`conversations.json`、`snapshots.json`、`workflows.json`、`knowledge.json` 和 `links.json`，新增关联、失效与操作历史。明确选择“仅元数据”或“完整备份（含原文）”；含原文导出另行显示文档数、版本数及字节数并确认。仅元数据包标记不完整，恢复后原文不可用；完整备份遇到原文缺失/坏哈希会拒绝，不能静默省略。仍支持格式1–3导入，旧包关联为空；有知识库但无关联/操作历史时可显式导出格式3，格式2另要求无知识库历史，格式1另要求无流程。V0.8不能读取格式4；任何不支持数据都不能静默丢弃。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；旧预览缓存不随项目包保存，可从恢复后的快照重新生成；流程中已登记的持久文件随格式2恢复。
 
-V0.8首次启动将SQLite schema3升级至4，迁移前使用一致性备份接口保存 `migration-v4-<UTC时间>.sqlite3`；旧库顺序升级。失败回滚、未知高版本拒绝写入。回到V0.7须停服，在独立目录恢复schema3备份，不能直接降级写入schema4。已用临时库检查旧库升级、schema3 备份独立目录恢复、失败回滚及 FTS 支持；个人库未用于测试。
+V0.9首次启动将SQLite schema4升级至5，迁移前使用一致性备份保存 `migration-v5-<UTC时间>.sqlite3`；旧库顺序迁移、失败回滚、高版本拒绝。回到V0.8需先停服，在独立目录恢复schema4备份，不能直接降级写入。新增整库一致性备份/独立目录恢复工具 `scripts/manage_data.py`，本轮未执行、未迁移或操作个人库；操作方式及数据保留卸载见 [维护说明](docs/OPERATIONS_V0.9.md)。
 
 最多20项目、全库20会话、每会话40轮、每项目100快照及100重跑记录；所有副本、导入来源信息和运行预留计入同一256 MiB业务预算。项目ZIP接收32 MiB、解压总量128 MiB、单成员64 MiB；项目归档与单轮2 MiB快照导出是独立边界。归档生成与导入各最多一项，外部查询共用最多两个执行槽。项目或会话变化发生修订冲突时，先刷新核对再明确执行。
 
@@ -158,6 +170,7 @@ python -m uvicorn astroagent.main:app --reload
 - 本地会话：`/api/v1/conversations`、`/{id}/turns`
 - 轮次产物：`/api/v1/conversations/{id}/turns/{turn_id}/artifacts`
 - 清单/图片/下载：`/api/v1/artifacts/{artifact_id}/...`
+- 项目总览与关联：`/api/v1/projects/{id}/overview`、`/links`、`/links/{link_id}`
 - 科研流程：`/api/v1/workflow-templates`、`/api/v1/projects/{id}/workflows`、`/{run_id}/execute`、`/{run_id}/outputs/{output_id}`
 - 交互接口文档：<http://127.0.0.1:8000/docs>
 - OpenAPI 定义：<http://127.0.0.1:8000/openapi.json>

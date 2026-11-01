@@ -1,0 +1,166 @@
+{
+  "message": "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。",
+  "http_status": 200,
+  "body": {
+    "status": "partial",
+    "answer": "## 结果\n\n**1. SIMBAD 查询（成功）**\n- 查询名：M45 → 主标识符 **Cl Melotte 22**（昴星团）\n- 类型：OpC（疏散星团）\n- ICRS 坐标：**RA = 56.600833°**，**Dec = +24.113889°**\n- 坐标文献：2021A&A...647A..19T\n- 来源：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML\n\n**2. Gaia DR3 圆锥查询（失败）**\n- 参数：中心 (56.600833°, +24.113889°)，半径 5 角分，limit=3，按角距升序\n- 发布版/表：Gaia DR3，`gaiadr3.gaia_source`\n- 结果：**两次尝试均返回 `gaia_timeout`（查询超时）**，返回 0 行，total_found 未知。\n- 因此**本次没有获得任何 Gaia 源编号、坐标、视差、自行或测光数据**，无法给出“最近的 3 个源”，也不会用记忆中的数据替代。\n\n## 限制说明（即使查询成功也适用）\n- **位置候选 ≠ 成员**：圆锥视场内的源只是位置候选；最近或唯一一行都不等于确认匹配，更不能认定为昴星团成员。成员判定需要自行、视差、径向速度等运动学/测光依据。\n- **参考历元**：SIMBAD 坐标与 Gaia 的 `ref_epoch` 可能不同；本次未提供输入历元，也未做自行传播，ICRS 坐标相同不代表历元相同。高自行源或拥挤视场可能漏配。\n- **视场样本**：圆锥样本不能用于断言星团距离、年龄或质量；统计只描述实际交付行，不代表视场总体。\n- 本次未设置 ruwe_max / parallax_snr_min 筛选，也未请求距离估算。\n\n## 来源\n- SIMBAD：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML\n- Gaia 归档（查询端点，本次超时）：https://gea.esac.esa.int/archive/\n\n如需继续，我可以稍后重试 Gaia 圆锥查询（相同中心/半径），或改用更小半径/更大 limit 再试。",
+    "results": [
+      {
+        "object_name": "M45",
+        "status": "success",
+        "source": {
+          "name": "SIMBAD",
+          "url": "https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML",
+          "retrieved_at": "2026-10-31T02:23:38.120823Z"
+        },
+        "data": {
+          "main_id": "Cl Melotte   22",
+          "ra_deg": 56.600833333333334,
+          "dec_deg": 24.11388888888889,
+          "coordinate_frame": "ICRS",
+          "object_type": "OpC",
+          "spectral_type": null,
+          "coordinate_bibcode": "2021A&A...647A..19T"
+        },
+        "error": null
+      }
+    ],
+    "literature_results": [],
+    "gaia_results": [
+      {
+        "query": {
+          "mode": "cone",
+          "ra_deg": 56.600833333333334,
+          "dec_deg": 24.11388888888889,
+          "radius_arcmin": 5.0,
+          "limit": 3,
+          "ruwe_max": null,
+          "parallax_snr_min": null,
+          "estimate_distance": false
+        },
+        "release": "Gaia DR3",
+        "table": "gaiadr3.gaia_source",
+        "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+        "adql": "SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.600833333333334, 24.11388888888889)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.600833333333334, 24.11388888888889, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC",
+        "maxrec": 4,
+        "status": "error",
+        "returned_count": 0,
+        "total_found": null,
+        "has_more": null,
+        "truncated": null,
+        "archive_overflow": null,
+        "data": [],
+        "analysis": null,
+        "units": {
+          "source_id": "1",
+          "ra": "deg",
+          "dec": "deg",
+          "ref_epoch": "yr",
+          "ra_error": "mas",
+          "dec_error": "mas",
+          "parallax": "mas",
+          "parallax_error": "mas",
+          "pmra": "mas/yr",
+          "pmra_error": "mas/yr",
+          "pmdec": "mas/yr",
+          "pmdec_error": "mas/yr",
+          "phot_g_mean_mag": "mag",
+          "phot_bp_mean_mag": "mag",
+          "phot_rp_mean_mag": "mag",
+          "bp_rp": "mag",
+          "radial_velocity": "km/s",
+          "radial_velocity_error": "km/s",
+          "ruwe": "1",
+          "astrometric_params_solved": "1",
+          "duplicated_source": "1",
+          "separation_arcsec": "arcsec"
+        },
+        "source": {
+          "name": "Gaia",
+          "url": "https://gea.esac.esa.int/archive/",
+          "retrieved_at": "2026-10-31T02:23:41.907253Z"
+        },
+        "warnings": [
+          "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。",
+          "圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。"
+        ],
+        "error": {
+          "code": "gaia_timeout",
+          "message": "Gaia 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      },
+      {
+        "query": {
+          "mode": "cone",
+          "ra_deg": 56.600833333333334,
+          "dec_deg": 24.11388888888889,
+          "radius_arcmin": 5.0,
+          "limit": 3,
+          "ruwe_max": null,
+          "parallax_snr_min": null,
+          "estimate_distance": false
+        },
+        "release": "Gaia DR3",
+        "table": "gaiadr3.gaia_source",
+        "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+        "adql": "SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.600833333333334, 24.11388888888889)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.600833333333334, 24.11388888888889, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC",
+        "maxrec": 4,
+        "status": "error",
+        "returned_count": 0,
+        "total_found": null,
+        "has_more": null,
+        "truncated": null,
+        "archive_overflow": null,
+        "data": [],
+        "analysis": null,
+        "units": {
+          "source_id": "1",
+          "ra": "deg",
+          "dec": "deg",
+          "ref_epoch": "yr",
+          "ra_error": "mas",
+          "dec_error": "mas",
+          "parallax": "mas",
+          "parallax_error": "mas",
+          "pmra": "mas/yr",
+          "pmra_error": "mas/yr",
+          "pmdec": "mas/yr",
+          "pmdec_error": "mas/yr",
+          "phot_g_mean_mag": "mag",
+          "phot_bp_mean_mag": "mag",
+          "phot_rp_mean_mag": "mag",
+          "bp_rp": "mag",
+          "radial_velocity": "km/s",
+          "radial_velocity_error": "km/s",
+          "ruwe": "1",
+          "astrometric_params_solved": "1",
+          "duplicated_source": "1",
+          "separation_arcsec": "arcsec"
+        },
+        "source": {
+          "name": "Gaia",
+          "url": "https://gea.esac.esa.int/archive/",
+          "retrieved_at": "2026-10-31T02:24:04.101105Z"
+        },
+        "warnings": [
+          "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。",
+          "圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。"
+        ],
+        "error": {
+          "code": "gaia_timeout",
+          "message": "Gaia 查询超时，请稍后重试。",
+          "retryable": true
+        }
+      }
+    ],
+    "sources": [
+      {
+        "name": "SIMBAD",
+        "url": "https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&output.format=HTML",
+        "retrieved_at": "2026-10-31T02:23:38.120823Z"
+      }
+    ],
+    "warnings": []
+  }
+}

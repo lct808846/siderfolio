@@ -1,0 +1,59 @@
+........................................................................ [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+........................................................................ [ 56%]
+................................................ssTimeout (0:00:30)!
+Thread 0x000070feb688d1c0 [python] (most recent call first):
+  File "/usr/lib/python3.14/subprocess.py", line 2078 in _wait
+  File "/usr/lib/python3.14/subprocess.py", line 1279 in wait
+  File "/usr/lib/python3.14/subprocess.py", line 2179 in _communicate
+  File "/usr/lib/python3.14/subprocess.py", line 1221 in communicate
+  File "/mnt/d/project/astroagent/src/astroagent/knowledge_parser.py", line 103 in parse_document
+  File "/mnt/d/project/astroagent/tests/test_knowledge.py", line 228 in test_parser_timeout_terminates_worker_and_cleans_temp
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/python.py", line 187 in pytest_pyfunc_call
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_execution.py", line 147 in _multicall
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_manager.py", line 183 in _hookexec
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_caller.py", line 197 in __call__
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/python.py", line 1798 in runtest
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/runner.py", line 184 in pytest_runtest_call
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_execution.py", line 147 in _multicall
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_manager.py", line 183 in _hookexec
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_caller.py", line 197 in __call__
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/runner.py", line 250 in <lambda>
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/runner.py", line 361 in from_call
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/runner.py", line 249 in call_and_report
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/runner.py", line 139 in runtestprotocol
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/runner.py", line 118 in pytest_runtest_protocol
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_execution.py", line 147 in _multicall
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_manager.py", line 183 in _hookexec
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_caller.py", line 197 in __call__
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/main.py", line 411 in pytest_runtestloop
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_execution.py", line 147 in _multicall
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_manager.py", line 183 in _hookexec
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_caller.py", line 197 in __call__
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/main.py", line 387 in _main
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/main.py", line 333 in wrap_session
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/main.py", line 380 in pytest_cmdline_main
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_execution.py", line 147 in _multicall
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_manager.py", line 183 in _hookexec
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pluggy/_caller.py", line 197 in __call__
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/config/__init__.py", line 262 in _main
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/_pytest/config/__init__.py", line 286 in _console_main
+  File "/root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/pytest/__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+.s............s....... [ 70%]
+............................................sssssssssssssss............. [ 84%]
+.............................................s.......................... [ 98%]
+......                                                                   [100%]
+=============================== warnings summary ===============================
+../../../../root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/langsmith/_internal/_beta_decorator.py:92: 13 warnings
+  /root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/langsmith/_internal/_beta_decorator.py:92: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if asyncio.iscoroutinefunction(func):
+
+../../../../root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/starlette/testclient.py:45
+  /root/.venvs/astroagent-v08-qa/lib/python3.14/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+490 passed, 20 skipped, 14 warnings in 176.23s (0:02:56)

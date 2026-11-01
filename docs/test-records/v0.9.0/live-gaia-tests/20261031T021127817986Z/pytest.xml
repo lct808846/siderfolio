@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="278.663" timestamp="2026-10-31T10:11:31.216543+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_live_gaia" name="test_live_gaia_exact_id" time="21.449"><failure message="AssertionError: {&quot;query&quot;:{&quot;mode&quot;:&quot;source_id&quot;,&quot;source_id&quot;:&quot;5853498713190525696&quot;,&quot;estimate_distance&quot;:true},&quot;release&quot;:&quot;Gaia DR3&quot;,&quot;table&quot;:&quot;gaiadr3.gaia_source&quot;,&quot;endpoint&quot;:&quot;https://gea.esac.esa.int/tap-server/tap/sync&quot;,&quot;adql&quot;:&quot;SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 5853498713190525696&quot;,&quot;maxrec&quot;:2,&quot;status&quot;:&quot;error&quot;,&quot;returned_count&quot;:0,&quot;total_found&quot;:null,&quot;has_more&quot;:null,&quot;truncated&quot;:null,&quot;archive_overflow&quot;:null,&quot;data&quot;:[],&quot;analysis&quot;:null,&quot;units&quot;:{&quot;source_id&quot;:&quot;1&quot;,&quot;ra&quot;:&quot;deg&quot;,&quot;dec&quot;:&quot;deg&quot;,&quot;ref_epoch&quot;:&quot;yr&quot;,&quot;ra_error&quot;:&quot;mas&quot;,&quot;dec_error&quot;:&quot;mas&quot;,&quot;parallax&quot;:&quot;mas&quot;,&quot;parallax_error&quot;:&quot;mas&quot;,&quot;pmra&quot;:&quot;mas/yr&quot;,&quot;pmra_error&quot;:&quot;mas/yr&quot;,&quot;pmdec&quot;:&quot;mas/yr&quot;,&quot;pmdec_error&quot;:&quot;mas/yr&quot;,&quot;phot_g_mean_mag&quot;:&quot;mag&quot;,&quot;phot_bp_mean_mag&quot;:&quot;mag&quot;,&quot;phot_rp_mean_mag&quot;:&quot;mag&quot;,&quot;bp_rp&quot;:&quot;mag&quot;,&quot;radial_velocity&quot;:&quot;km/s&quot;,&quot;radial_velocity_error&quot;:&quot;km/s&quot;,&quot;ruwe&quot;:&quot;1&quot;,&quot;astrometric_params_solved&quot;:&quot;1&quot;,&quot;duplicated_source&quot;:&quot;1&quot;,&quot;separation_arcsec&quot;:&quot;arcsec&quot;},&quot;source&quot;:{&quot;name&quot;:&quot;Gaia&quot;,&quot;url&quot;:&quot;https://gea.esac.esa.int/archive/&quot;,&quot;retrieved_at&quot;:&quot;2026-10-31T02:11:38.115962Z&quot;},&quot;warnings&quot;:[&quot;统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。&quot;,&quot;距离为程序计算的高信噪比视差倒数近似（SNR≥10），不是 Gaia 直接测量的距离。误差仅为一阶随机误差；未校正视差零点、系统误差、消光或选择偏差，未做贝叶斯估计。&quot;],&quot;error&quot;:{&quot;code&quot;:&quot;gaia_timeout&quot;,&quot;message&quot;:&quot;Gaia 查询超时，请稍后重试。&quot;,&quot;retryable&quot;:true}}&#10;assert 'error' == 'success'&#10;  &#10;  - success&#10;  + error">service = &lt;astroagent.gaia.GaiaService object at 0x0000028474FA9DC0&gt;
+
+    def test_live_gaia_exact_id(service):
+        result = service.query(GaiaQuery(mode="source_id", source_id=SOURCE_ID, estimate_distance=True))
+        save("exact-id", result.model_dump(mode="json"))
+&gt;       assert result.status == "success", result.model_dump_json()
+E       AssertionError: {"query":{"mode":"source_id","source_id":"5853498713190525696","estimate_distance":true},"release":"Gaia DR3","table":"gaiadr3.gaia_source","endpoint":"https://gea.esac.esa.int/tap-server/tap/sync","adql":"SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 5853498713190525696","maxrec":2,"status":"error","returned_count":0,"total_found":null,"has_more":null,"truncated":null,"archive_overflow":null,"data":[],"analysis":null,"units":{"source_id":"1","ra":"deg","dec":"deg","ref_epoch":"yr","ra_error":"mas","dec_error":"mas","parallax":"mas","parallax_error":"mas","pmra":"mas/yr","pmra_error":"mas/yr","pmdec":"mas/yr","pmdec_error":"mas/yr","phot_g_mean_mag":"mag","phot_bp_mean_mag":"mag","phot_rp_mean_mag":"mag","bp_rp":"mag","radial_velocity":"km/s","radial_velocity_error":"km/s","ruwe":"1","astrometric_params_solved":"1","duplicated_source":"1","separation_arcsec":"arcsec"},"source":{"name":"Gaia","url":"https://gea.esac.esa.int/archive/","retrieved_at":"2026-10-31T02:11:38.115962Z"},"warnings":["统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。","距离为程序计算的高信噪比视差倒数近似（SNR≥10），不是 Gaia 直接测量的距离。误差仅为一阶随机误差；未校正视差零点、系统误差、消光或选择偏差，未做贝叶斯估计。"],"error":{"code":"gaia_timeout","message":"Gaia 查询超时，请稍后重试。","retryable":true}}
+E       assert 'error' == 'success'
+E         
+E         - success
+E         + error
+
+tests\test_live_gaia.py:38: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_cone[False]" time="20.976"><failure message="AssertionError: {&quot;query&quot;:{&quot;mode&quot;:&quot;cone&quot;,&quot;ra_deg&quot;:56.75,&quot;dec_deg&quot;:24.12,&quot;radius_arcmin&quot;:5.0,&quot;limit&quot;:3,&quot;ruwe_max&quot;:null,&quot;parallax_snr_min&quot;:null,&quot;estimate_distance&quot;:false},&quot;release&quot;:&quot;Gaia DR3&quot;,&quot;table&quot;:&quot;gaiadr3.gaia_source&quot;,&quot;endpoint&quot;:&quot;https://gea.esac.esa.int/tap-server/tap/sync&quot;,&quot;adql&quot;:&quot;SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC&quot;,&quot;maxrec&quot;:4,&quot;status&quot;:&quot;error&quot;,&quot;returned_count&quot;:0,&quot;total_found&quot;:null,&quot;has_more&quot;:null,&quot;truncated&quot;:null,&quot;archive_overflow&quot;:null,&quot;data&quot;:[],&quot;analysis&quot;:null,&quot;units&quot;:{&quot;source_id&quot;:&quot;1&quot;,&quot;ra&quot;:&quot;deg&quot;,&quot;dec&quot;:&quot;deg&quot;,&quot;ref_epoch&quot;:&quot;yr&quot;,&quot;ra_error&quot;:&quot;mas&quot;,&quot;dec_error&quot;:&quot;mas&quot;,&quot;parallax&quot;:&quot;mas&quot;,&quot;parallax_error&quot;:&quot;mas&quot;,&quot;pmra&quot;:&quot;mas/yr&quot;,&quot;pmra_error&quot;:&quot;mas/yr&quot;,&quot;pmdec&quot;:&quot;mas/yr&quot;,&quot;pmdec_error&quot;:&quot;mas/yr&quot;,&quot;phot_g_mean_mag&quot;:&quot;mag&quot;,&quot;phot_bp_mean_mag&quot;:&quot;mag&quot;,&quot;phot_rp_mean_mag&quot;:&quot;mag&quot;,&quot;bp_rp&quot;:&quot;mag&quot;,&quot;radial_velocity&quot;:&quot;km/s&quot;,&quot;radial_velocity_error&quot;:&quot;km/s&quot;,&quot;ruwe&quot;:&quot;1&quot;,&quot;astrometric_params_solved&quot;:&quot;1&quot;,&quot;duplicated_source&quot;:&quot;1&quot;,&quot;separation_arcsec&quot;:&quot;arcsec&quot;},&quot;source&quot;:{&quot;name&quot;:&quot;Gaia&quot;,&quot;url&quot;:&quot;https://gea.esac.esa.int/archive/&quot;,&quot;retrieved_at&quot;:&quot;2026-10-31T02:11:59.578318Z&quot;},&quot;warnings&quot;:[&quot;统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。&quot;,&quot;圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。&quot;],&quot;error&quot;:{&quot;code&quot;:&quot;gaia_timeout&quot;,&quot;message&quot;:&quot;Gaia 查询超时，请稍后重试。&quot;,&quot;retryable&quot;:true}}&#10;assert 'error' == 'success'&#10;  &#10;  - success&#10;  + error">service = &lt;astroagent.gaia.GaiaService object at 0x000002847546B5C0&gt;
+filtered = False
+
+    @pytest.mark.parametrize("filtered", [False, True])
+    def test_live_gaia_cone(service, filtered):
+        query = GaiaQuery(
+            mode="cone",
+            ra_deg=56.75,
+            dec_deg=24.12,
+            radius_arcmin=5,
+            limit=3,
+            **({"ruwe_max": 1.4, "parallax_snr_min": 10} if filtered else {}),
+        )
+        result = service.query(query)
+        save(f"cone-{filtered}", result.model_dump(mode="json"))
+&gt;       assert result.status == "success", result.model_dump_json()
+E       AssertionError: {"query":{"mode":"cone","ra_deg":56.75,"dec_deg":24.12,"radius_arcmin":5.0,"limit":3,"ruwe_max":null,"parallax_snr_min":null,"estimate_distance":false},"release":"Gaia DR3","table":"gaiadr3.gaia_source","endpoint":"https://gea.esac.esa.int/tap-server/tap/sync","adql":"SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) ORDER BY separation_deg ASC, source_id ASC","maxrec":4,"status":"error","returned_count":0,"total_found":null,"has_more":null,"truncated":null,"archive_overflow":null,"data":[],"analysis":null,"units":{"source_id":"1","ra":"deg","dec":"deg","ref_epoch":"yr","ra_error":"mas","dec_error":"mas","parallax":"mas","parallax_error":"mas","pmra":"mas/yr","pmra_error":"mas/yr","pmdec":"mas/yr","pmdec_error":"mas/yr","phot_g_mean_mag":"mag","phot_bp_mean_mag":"mag","phot_rp_mean_mag":"mag","bp_rp":"mag","radial_velocity":"km/s","radial_velocity_error":"km/s","ruwe":"1","astrometric_params_solved":"1","duplicated_source":"1","separation_arcsec":"arcsec"},"source":{"name":"Gaia","url":"https://gea.esac.esa.int/archive/","retrieved_at":"2026-10-31T02:11:59.578318Z"},"warnings":["统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。","圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。"],"error":{"code":"gaia_timeout","message":"Gaia 查询超时，请稍后重试。","retryable":true}}
+E       assert 'error' == 'success'
+E         
+E         - success
+E         + error
+
+tests\test_live_gaia.py:60: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_cone[True]" time="21.069"><failure message="AssertionError: {&quot;query&quot;:{&quot;mode&quot;:&quot;cone&quot;,&quot;ra_deg&quot;:56.75,&quot;dec_deg&quot;:24.12,&quot;radius_arcmin&quot;:5.0,&quot;limit&quot;:3,&quot;ruwe_max&quot;:1.4,&quot;parallax_snr_min&quot;:10.0,&quot;estimate_distance&quot;:false},&quot;release&quot;:&quot;Gaia DR3&quot;,&quot;table&quot;:&quot;gaiadr3.gaia_source&quot;,&quot;endpoint&quot;:&quot;https://gea.esac.esa.int/tap-server/tap/sync&quot;,&quot;adql&quot;:&quot;SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) AND ruwe &lt;= 1.4 AND parallax &gt; 0 AND parallax_error &gt; 0 AND parallax / parallax_error &gt;= 10.0 ORDER BY separation_deg ASC, source_id ASC&quot;,&quot;maxrec&quot;:4,&quot;status&quot;:&quot;error&quot;,&quot;returned_count&quot;:0,&quot;total_found&quot;:null,&quot;has_more&quot;:null,&quot;truncated&quot;:null,&quot;archive_overflow&quot;:null,&quot;data&quot;:[],&quot;analysis&quot;:null,&quot;units&quot;:{&quot;source_id&quot;:&quot;1&quot;,&quot;ra&quot;:&quot;deg&quot;,&quot;dec&quot;:&quot;deg&quot;,&quot;ref_epoch&quot;:&quot;yr&quot;,&quot;ra_error&quot;:&quot;mas&quot;,&quot;dec_error&quot;:&quot;mas&quot;,&quot;parallax&quot;:&quot;mas&quot;,&quot;parallax_error&quot;:&quot;mas&quot;,&quot;pmra&quot;:&quot;mas/yr&quot;,&quot;pmra_error&quot;:&quot;mas/yr&quot;,&quot;pmdec&quot;:&quot;mas/yr&quot;,&quot;pmdec_error&quot;:&quot;mas/yr&quot;,&quot;phot_g_mean_mag&quot;:&quot;mag&quot;,&quot;phot_bp_mean_mag&quot;:&quot;mag&quot;,&quot;phot_rp_mean_mag&quot;:&quot;mag&quot;,&quot;bp_rp&quot;:&quot;mag&quot;,&quot;radial_velocity&quot;:&quot;km/s&quot;,&quot;radial_velocity_error&quot;:&quot;km/s&quot;,&quot;ruwe&quot;:&quot;1&quot;,&quot;astrometric_params_solved&quot;:&quot;1&quot;,&quot;duplicated_source&quot;:&quot;1&quot;,&quot;separation_arcsec&quot;:&quot;arcsec&quot;},&quot;source&quot;:{&quot;name&quot;:&quot;Gaia&quot;,&quot;url&quot;:&quot;https://gea.esac.esa.int/archive/&quot;,&quot;retrieved_at&quot;:&quot;2026-10-31T02:12:20.566263Z&quot;},&quot;warnings&quot;:[&quot;统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。&quot;,&quot;圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。&quot;],&quot;error&quot;:{&quot;code&quot;:&quot;gaia_timeout&quot;,&quot;message&quot;:&quot;Gaia 查询超时，请稍后重试。&quot;,&quot;retryable&quot;:true}}&#10;assert 'error' == 'success'&#10;  &#10;  - success&#10;  + error">service = &lt;astroagent.gaia.GaiaService object at 0x000002847546AF30&gt;
+filtered = True
+
+    @pytest.mark.parametrize("filtered", [False, True])
+    def test_live_gaia_cone(service, filtered):
+        query = GaiaQuery(
+            mode="cone",
+            ra_deg=56.75,
+            dec_deg=24.12,
+            radius_arcmin=5,
+            limit=3,
+            **({"ruwe_max": 1.4, "parallax_snr_min": 10} if filtered else {}),
+        )
+        result = service.query(query)
+        save(f"cone-{filtered}", result.model_dump(mode="json"))
+&gt;       assert result.status == "success", result.model_dump_json()
+E       AssertionError: {"query":{"mode":"cone","ra_deg":56.75,"dec_deg":24.12,"radius_arcmin":5.0,"limit":3,"ruwe_max":1.4,"parallax_snr_min":10.0,"estimate_distance":false},"release":"Gaia DR3","table":"gaiadr3.gaia_source","endpoint":"https://gea.esac.esa.int/tap-server/tap/sync","adql":"SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) AND ruwe &lt;= 1.4 AND parallax &gt; 0 AND parallax_error &gt; 0 AND parallax / parallax_error &gt;= 10.0 ORDER BY separation_deg ASC, source_id ASC","maxrec":4,"status":"error","returned_count":0,"total_found":null,"has_more":null,"truncated":null,"archive_overflow":null,"data":[],"analysis":null,"units":{"source_id":"1","ra":"deg","dec":"deg","ref_epoch":"yr","ra_error":"mas","dec_error":"mas","parallax":"mas","parallax_error":"mas","pmra":"mas/yr","pmra_error":"mas/yr","pmdec":"mas/yr","pmdec_error":"mas/yr","phot_g_mean_mag":"mag","phot_bp_mean_mag":"mag","phot_rp_mean_mag":"mag","bp_rp":"mag","radial_velocity":"km/s","radial_velocity_error":"km/s","ruwe":"1","astrometric_params_solved":"1","duplicated_source":"1","separation_arcsec":"arcsec"},"source":{"name":"Gaia","url":"https://gea.esac.esa.int/archive/","retrieved_at":"2026-10-31T02:12:20.566263Z"},"warnings":["统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。","圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。"],"error":{"code":"gaia_timeout","message":"Gaia 查询超时，请稍后重试。","retryable":true}}
+E       assert 'error' == 'success'
+E         
+E         - success
+E         + error
+
+tests\test_live_gaia.py:60: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_confirm_empty_condition" time="20.980"><failure message="AssertionError: {&quot;query&quot;:{&quot;mode&quot;:&quot;source_id&quot;,&quot;source_id&quot;:&quot;1&quot;,&quot;estimate_distance&quot;:false},&quot;release&quot;:&quot;Gaia DR3&quot;,&quot;table&quot;:&quot;gaiadr3.gaia_source&quot;,&quot;endpoint&quot;:&quot;https://gea.esac.esa.int/tap-server/tap/sync&quot;,&quot;adql&quot;:&quot;SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 1&quot;,&quot;maxrec&quot;:2,&quot;status&quot;:&quot;error&quot;,&quot;returned_count&quot;:0,&quot;total_found&quot;:null,&quot;has_more&quot;:null,&quot;truncated&quot;:null,&quot;archive_overflow&quot;:null,&quot;data&quot;:[],&quot;analysis&quot;:null,&quot;units&quot;:{&quot;source_id&quot;:&quot;1&quot;,&quot;ra&quot;:&quot;deg&quot;,&quot;dec&quot;:&quot;deg&quot;,&quot;ref_epoch&quot;:&quot;yr&quot;,&quot;ra_error&quot;:&quot;mas&quot;,&quot;dec_error&quot;:&quot;mas&quot;,&quot;parallax&quot;:&quot;mas&quot;,&quot;parallax_error&quot;:&quot;mas&quot;,&quot;pmra&quot;:&quot;mas/yr&quot;,&quot;pmra_error&quot;:&quot;mas/yr&quot;,&quot;pmdec&quot;:&quot;mas/yr&quot;,&quot;pmdec_error&quot;:&quot;mas/yr&quot;,&quot;phot_g_mean_mag&quot;:&quot;mag&quot;,&quot;phot_bp_mean_mag&quot;:&quot;mag&quot;,&quot;phot_rp_mean_mag&quot;:&quot;mag&quot;,&quot;bp_rp&quot;:&quot;mag&quot;,&quot;radial_velocity&quot;:&quot;km/s&quot;,&quot;radial_velocity_error&quot;:&quot;km/s&quot;,&quot;ruwe&quot;:&quot;1&quot;,&quot;astrometric_params_solved&quot;:&quot;1&quot;,&quot;duplicated_source&quot;:&quot;1&quot;,&quot;separation_arcsec&quot;:&quot;arcsec&quot;},&quot;source&quot;:{&quot;name&quot;:&quot;Gaia&quot;,&quot;url&quot;:&quot;https://gea.esac.esa.int/archive/&quot;,&quot;retrieved_at&quot;:&quot;2026-10-31T02:12:41.643610Z&quot;},&quot;warnings&quot;:[&quot;统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。&quot;],&quot;error&quot;:{&quot;code&quot;:&quot;gaia_timeout&quot;,&quot;message&quot;:&quot;Gaia 查询超时，请稍后重试。&quot;,&quot;retryable&quot;:true}}&#10;assert 'error' == 'not_found'&#10;  &#10;  - not_found&#10;  + error">service = &lt;astroagent.gaia.GaiaService object at 0x000002847546B3E0&gt;
+
+    def test_live_gaia_confirm_empty_condition(service):
+        # Confirm rather than assuming that a fixed identifier will always be absent.
+        attempts = []
+        for identifier in ("1", "2", "3"):
+            result = service.query(GaiaQuery(mode="source_id", source_id=identifier))
+            attempts.append(result.model_dump(mode="json"))
+            if result.status != "success":
+                break
+        save("confirmed-empty", {"attempts": attempts})
+&gt;       assert result.status == "not_found", result.model_dump_json()
+E       AssertionError: {"query":{"mode":"source_id","source_id":"1","estimate_distance":false},"release":"Gaia DR3","table":"gaiadr3.gaia_source","endpoint":"https://gea.esac.esa.int/tap-server/tap/sync","adql":"SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 1","maxrec":2,"status":"error","returned_count":0,"total_found":null,"has_more":null,"truncated":null,"archive_overflow":null,"data":[],"analysis":null,"units":{"source_id":"1","ra":"deg","dec":"deg","ref_epoch":"yr","ra_error":"mas","dec_error":"mas","parallax":"mas","parallax_error":"mas","pmra":"mas/yr","pmra_error":"mas/yr","pmdec":"mas/yr","pmdec_error":"mas/yr","phot_g_mean_mag":"mag","phot_bp_mean_mag":"mag","phot_rp_mean_mag":"mag","bp_rp":"mag","radial_velocity":"km/s","radial_velocity_error":"km/s","ruwe":"1","astrometric_params_solved":"1","duplicated_source":"1","separation_arcsec":"arcsec"},"source":{"name":"Gaia","url":"https://gea.esac.esa.int/archive/","retrieved_at":"2026-10-31T02:12:41.643610Z"},"warnings":["统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。"],"error":{"code":"gaia_timeout","message":"Gaia 查询超时，请稍后重试。","retryable":true}}
+E       assert 'error' == 'not_found'
+E         
+E         - not_found
+E         + error
+
+tests\test_live_gaia.py:81: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_model[source]" time="25.309"><failure message="AssertionError: {'status': 'error', 'answer': '查询失败，未获得任何测量数据。&#10;  &#10;  - 查询：Gaia DR3，表 `gaiadr3.gaia_source`，按 `source_id = 5853498713190525696` 精确匹配&#10;  - 结果：`status = error`，错误码 `gaia_timeout`（“Gaia 查询超时，请稍后重试”），返回 0 行&#10;  - 因此：坐标、视差、自行、测光、径向速度、RUWE 等均无数据可报告；距离估算也未生成（距离估算依赖视差及其误差，且需视差信噪比 ≥10）&#10;  &#10;  说明：本次没有成功返回的字段，我不会用记忆中的数据替代，也不能声称查询成功。单位与历元（ra/dec 为度、视差/误差为 mas、自行为 mas/yr、测光为 mag、径向速度为 km/s；参考历元字段 ref_epoch 以 yr 计）仅为该表字段定义，本次无实际取值。&#10;  &#10;  来源：Gaia Archive（https://gea.esac.esa.int/archive/），检索时间 2026-10-31T02:13:04Z。&#10;  &#10;  该错误标记为可重试。需要我重新发起一次同样的查询吗？', 'results': [], 'literature_results': [], ...}&#10;assert (200 == 200 and 'error' == 'success'&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code&#10;  &#10;  - success&#10;  + error)">kind = 'source'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&amp;A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+&gt;       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'error', 'answer': '查询失败，未获得任何测量数据。
+E         
+E         - 查询：Gaia DR3，表 `gaiadr3.gaia_source`，按 `source_id = 5853498713190525696` 精确匹配
+E         - 结果：`status = error`，错误码 `gaia_timeout`（“Gaia 查询超时，请稍后重试”），返回 0 行
+E         - 因此：坐标、视差、自行、测光、径向速度、RUWE 等均无数据可报告；距离估算也未生成（距离估算依赖视差及其误差，且需视差信噪比 ≥10）
+E         
+E         说明：本次没有成功返回的字段，我不会用记忆中的数据替代，也不能声称查询成功。单位与历元（ra/dec 为度、视差/误差为 mas、自行为 mas/yr、测光为 mag、径向速度为 km/s；参考历元字段 ref_epoch 以 yr 计）仅为该表字段定义，本次无实际取值。
+E         
+E         来源：Gaia Archive（https://gea.esac.esa.int/archive/），检索时间 2026-10-31T02:13:04Z。
+E         
+E         该错误标记为可重试。需要我重新发起一次同样的查询吗？', 'results': [], 'literature_results': [], ...}
+E       assert (200 == 200 and 'error' == 'success'
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+E         
+E         - success
+E         + error)
+
+tests\test_live_gaia.py:110: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_model[name]" time="91.602"><failure message="AssertionError: {'status': 'partial', 'answer': '## 结果&#10;  &#10;  **1. SIMBAD 查询（成功）**&#10;  - 查询名：M45 → 主标识符 **Cl Melotte 22**&#10;  - 类型：OpC（疏散星团）&#10;  - ICRS 坐标：**RA = 56.600833°**，**Dec = 24.113889°**&#10;  - 坐标文献：2021A&amp;A...647A..19T&#10;  - 来源：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML&#10;  &#10;  **2. Gaia DR3 圆锥查询（失败，无数据）**&#10;  - 条件：中心 (56.600833°, 24.113889°)，半径 5 角分，limit=3，无质量筛选，未启用距离估算&#10;  - 表：gaiadr3.gaia_source，发布版 Gaia DR3&#10;  - 结果：连续两次返回 `gaia_timeout`（查询超时，可重试），**返回 0 行，total_found 未知**&#10;  - 来源：https://gea.esac.esa.int/archive/&#10;  &#10;  因此本次**没有获得任何 Gaia 源**，无法给出“最近的 3 个源”的编号、坐标、视差、自行或测光值。我不会用记忆中的数据替代，也不声称查询成功。如需继续，可稍后重试同一查询，或改用更小半径/更少字段。&#10;  &#10;  ## 限制说明&#10;  &#10;  - **位置候选 ≠ 成员**：即使查询成功，圆锥视场内的源也只是位置候选；最近或唯一一行都不等于确认匹配。判定昴星团成员需结合自行、视差、径向速度与测光（如颜色–星等序列），本次未做任何成员判定。&#10;  - **参考历元**：SIMBAD 坐标未给出历元信息，Gaia 查询也未指定输入历元，未做自行传播；ICRS 坐标相同不代表历元相同，高自行源或拥挤视场可能漏配或错配。&#10;  - **视场样本**：本次无交付行，不能对视场总体、星团距离、年龄或质量作任何推断。&#10;  - **未查询项**：亮度、距离、质量 SIMBAD 不提供；本次也未调用 Gaia 测光/距离估算，故无相关数值。', 'results': [{'object_name': 'M45', 'status': 'success', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-31T02:14:09.291856Z'}, 'data': {'main_id': 'Cl Melotte   22', 'ra_deg': 56.600833333333334, 'dec_deg': 24.11388888888889, 'coordinate_frame': 'ICRS', ...}, ...}], 'literature_results': [], ...}&#10;assert (200 == 200 and 'partial' == 'success'&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code&#10;  &#10;  - success&#10;  + partial)">kind = 'name'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&amp;A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+&gt;       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'partial', 'answer': '## 结果
+E         
+E         **1. SIMBAD 查询（成功）**
+E         - 查询名：M45 → 主标识符 **Cl Melotte 22**
+E         - 类型：OpC（疏散星团）
+E         - ICRS 坐标：**RA = 56.600833°**，**Dec = 24.113889°**
+E         - 坐标文献：2021A&amp;A...647A..19T
+E         - 来源：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML
+E         
+E         **2. Gaia DR3 圆锥查询（失败，无数据）**
+E         - 条件：中心 (56.600833°, 24.113889°)，半径 5 角分，limit=3，无质量筛选，未启用距离估算
+E         - 表：gaiadr3.gaia_source，发布版 Gaia DR3
+E         - 结果：连续两次返回 `gaia_timeout`（查询超时，可重试），**返回 0 行，total_found 未知**
+E         - 来源：https://gea.esac.esa.int/archive/
+E         
+E         因此本次**没有获得任何 Gaia 源**，无法给出“最近的 3 个源”的编号、坐标、视差、自行或测光值。我不会用记忆中的数据替代，也不声称查询成功。如需继续，可稍后重试同一查询，或改用更小半径/更少字段。
+E         
+E         ## 限制说明
+E         
+E         - **位置候选 ≠ 成员**：即使查询成功，圆锥视场内的源也只是位置候选；最近或唯一一行都不等于确认匹配。判定昴星团成员需结合自行、视差、径向速度与测光（如颜色–星等序列），本次未做任何成员判定。
+E         - **参考历元**：SIMBAD 坐标未给出历元信息，Gaia 查询也未指定输入历元，未做自行传播；ICRS 坐标相同不代表历元相同，高自行源或拥挤视场可能漏配或错配。
+E         - **视场样本**：本次无交付行，不能对视场总体、星团距离、年龄或质量作任何推断。
+E         - **未查询项**：亮度、距离、质量 SIMBAD 不提供；本次也未调用 Gaia 测光/距离估算，故无相关数值。', 'results': [{'object_name': 'M45', 'status': 'success', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-31T02:14:09.291856Z'}, 'data': {'main_id': 'Cl Melotte   22', 'ra_deg': 56.600833333333334, 'dec_deg': 24.11388888888889, 'coordinate_frame': 'ICRS', ...}, ...}], 'literature_results': [], ...}
+E       assert (200 == 200 and 'partial' == 'success'
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+E         
+E         - success
+E         + partial)
+
+tests\test_live_gaia.py:110: AssertionError</failure></testcase><testcase classname="tests.test_live_gaia" name="test_live_gaia_model[three-tools]" time="70.314"><failure message="AssertionError: {'status': 'partial', 'answer': '三项查询结果如下，来源彼此独立：&#10;  &#10;  ## 1. SIMBAD：M45&#10;  - 主标识符：Cl Melotte 22&#10;  - ICRS 赤经：56.600833°；赤纬：+24.113889°&#10;  - 天体类型：OpC（疏散星团）&#10;  - 光谱类型：未提供（null）&#10;  - 坐标文献：2021A&amp;A...647A..19T&#10;  - 来源：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML&#10;  &#10;  ## 2. Gaia DR3：source_id 5853498713190525696&#10;  **查询失败**：工具返回 `gaia_timeout`（Gaia 查询超时，可重试），返回 0 行，无任何测量值。因此本次没有该源的坐标、视差、自行、测光或 RUWE 等数据可报告；我不会用记忆中的数据替代。如需，可稍后重试同一 source_id 查询。&#10;  - 来源（查询端点）：https://gea.esac.esa.int/archive/&#10;  &#10;  ## 3. ADS：bibcode:2016A&amp;A...595A...2G&#10;  - 实际 query：`bibcode:2016A&amp;A...595A...2G`；范围 database:astronomy；sort: relevance；本页 1 条；total_found = 1&#10;  - 标题：Gaia Data Release 1. Summary of the astrometric, photometric, and survey properties&#10;  - 作者：Gaia Collaboration, Brown, A. G. A., Vallenari, A., Prusti, T., de Bruijne, J. H. J.（作者列表被截断）&#10;  - 年份/期刊：2016，Astronomy and Astrophysics&#10;  - DOI：10.1051/0004-6361/201629512；10.48550/arXiv.1609.04172&#10;  - 被引次数：2085（查询时记录，不代表质量）&#10;  - 链接：https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...2G/abstract&#10;  - 根据摘要（摘要被截断，未读全文）：该文总结 Gaia 首次数据发布 DR1，包含约 10 亿颗亮于 20.7 等源的天测与测光；主要天测集（TGAS，约 200 万颗与 Hipparcos/Tycho-2 共有的最亮星）给出位置、视差和平均自行，位置与视差典型不确定度约 0.3 mas、自行约 1 mas/yr，视差不确定度需另加 0.3 mas 系统项；次级天测集含额外 11 亿源的位置（典型 10 mas）；测光集为 G 波段平均星等；第三部分为南黄极附近 3000 颗造父变星与天琴座 RR 型星的光变曲线。&#10;  &#10;  **独立性说明**：以上三项互不关联——SIMBAD 的 M45 坐标、Gaia 源编号查询（本次失败）、以及该 ADS 文献（Gaia DR1 概述论文）之间没有建立任何成员关系或研究对象对应关系。', 'results': [{'object_name': 'M45', 'status': 'success', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-31T02:15:40.864512Z'}, 'data': {'main_id': 'Cl Melotte   22', 'ra_deg': 56.600833333333334, 'dec_deg': 24.11388888888889, 'coordinate_frame': 'ICRS', ...}, ...}], 'literature_results': [{'query': 'bibcode:2016A&amp;A...595A...2G', 'filters': ['database:astronomy'], 'rows': 5, 'start': 0, ...}], ...}&#10;assert (200 == 200 and 'partial' == 'success'&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code&#10;  &#10;  - success&#10;  + partial)">kind = 'three-tools'
+
+    @pytest.mark.parametrize("kind", ["source", "name", "three-tools"])
+    def test_live_gaia_model(kind):
+        settings = Settings()
+        assert settings.deepseek_api_key.get_secret_value().strip(), "DEEPSEEK_API_KEY is required"
+        message = (
+            f"查询 Gaia DR3 source_id {SOURCE_ID} 的测量信息并估算距离，"
+            "说明单位、历元、距离近似条件与未做的校正，给出来源。"
+        )
+        if kind == "name":
+            message = (
+                "先通过 SIMBAD 查 M45 的坐标，再查中心附近 5 角分内最近的 3 个 Gaia DR3 源，"
+                "总结视场样本自行。说明位置候选、成员和参考历元的限制，给出来源。"
+            )
+        if kind == "three-tools":
+            assert settings.ads_api_token.get_secret_value().strip(), "ADS_API_TOKEN is required"
+            message = (
+                f"分别完成三项查询并区分来源：SIMBAD 的 M45 坐标，Gaia DR3 source_id "
+                f"{SOURCE_ID} 的测量信息，ADS 的 bibcode:2016A&amp;A...595A...2G 文献。"
+                "这三项独立，不假定该 Gaia 源是 M45 成员或该文的研究对象。"
+            )
+        with TestClient(app) as client:
+            response = client.post("/api/v1/chat", json={"message": message})
+        body = response.json()
+        save(f"model-{kind}", {"message": message, "http_status": response.status_code, "body": body})
+&gt;       assert response.status_code == 200 and body["status"] == "success", body
+E       AssertionError: {'status': 'partial', 'answer': '三项查询结果如下，来源彼此独立：
+E         
+E         ## 1. SIMBAD：M45
+E         - 主标识符：Cl Melotte 22
+E         - ICRS 赤经：56.600833°；赤纬：+24.113889°
+E         - 天体类型：OpC（疏散星团）
+E         - 光谱类型：未提供（null）
+E         - 坐标文献：2021A&amp;A...647A..19T
+E         - 来源：https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML
+E         
+E         ## 2. Gaia DR3：source_id 5853498713190525696
+E         **查询失败**：工具返回 `gaia_timeout`（Gaia 查询超时，可重试），返回 0 行，无任何测量值。因此本次没有该源的坐标、视差、自行、测光或 RUWE 等数据可报告；我不会用记忆中的数据替代。如需，可稍后重试同一 source_id 查询。
+E         - 来源（查询端点）：https://gea.esac.esa.int/archive/
+E         
+E         ## 3. ADS：bibcode:2016A&amp;A...595A...2G
+E         - 实际 query：`bibcode:2016A&amp;A...595A...2G`；范围 database:astronomy；sort: relevance；本页 1 条；total_found = 1
+E         - 标题：Gaia Data Release 1. Summary of the astrometric, photometric, and survey properties
+E         - 作者：Gaia Collaboration, Brown, A. G. A., Vallenari, A., Prusti, T., de Bruijne, J. H. J.（作者列表被截断）
+E         - 年份/期刊：2016，Astronomy and Astrophysics
+E         - DOI：10.1051/0004-6361/201629512；10.48550/arXiv.1609.04172
+E         - 被引次数：2085（查询时记录，不代表质量）
+E         - 链接：https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...2G/abstract
+E         - 根据摘要（摘要被截断，未读全文）：该文总结 Gaia 首次数据发布 DR1，包含约 10 亿颗亮于 20.7 等源的天测与测光；主要天测集（TGAS，约 200 万颗与 Hipparcos/Tycho-2 共有的最亮星）给出位置、视差和平均自行，位置与视差典型不确定度约 0.3 mas、自行约 1 mas/yr，视差不确定度需另加 0.3 mas 系统项；次级天测集含额外 11 亿源的位置（典型 10 mas）；测光集为 G 波段平均星等；第三部分为南黄极附近 3000 颗造父变星与天琴座 RR 型星的光变曲线。
+E         
+E         **独立性说明**：以上三项互不关联——SIMBAD 的 M45 坐标、Gaia 源编号查询（本次失败）、以及该 ADS 文献（Gaia DR1 概述论文）之间没有建立任何成员关系或研究对象对应关系。', 'results': [{'object_name': 'M45', 'status': 'success', 'source': {'name': 'SIMBAD', 'url': 'https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=M45&amp;output.format=HTML', 'retrieved_at': '2026-10-31T02:15:40.864512Z'}, 'data': {'main_id': 'Cl Melotte   22', 'ra_deg': 56.600833333333334, 'dec_deg': 24.11388888888889, 'coordinate_frame': 'ICRS', ...}, ...}], 'literature_results': [{'query': 'bibcode:2016A&amp;A...595A...2G', 'filters': ['database:astronomy'], 'rows': 5, 'start': 0, ...}], ...}
+E       assert (200 == 200 and 'partial' == 'success'
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+E         
+E         - success
+E         + partial)
+
+tests\test_live_gaia.py:110: AssertionError</failure></testcase></testsuite></testsuites>

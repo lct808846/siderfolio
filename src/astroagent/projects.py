@@ -130,6 +130,12 @@ class ProjectRepository:
                     "SELECT record FROM reruns WHERE project_id=? ORDER BY rowid", (identifier,)
                 )
             ]
+            value["link_count"] = db.execute(
+                "SELECT count(*) FROM project_links WHERE project_id=?", (identifier,)
+            ).fetchone()[0]
+            value["link_request_count"] = db.execute(
+                "SELECT count(*) FROM project_link_requests WHERE project_id=?", (identifier,)
+            ).fetchone()[0]
             value["workflow_count"] = db.execute(
                 "SELECT count(*) FROM workflows WHERE project_id=?", (identifier,)
             ).fetchone()[0]
@@ -204,6 +210,12 @@ class ProjectRepository:
             if source:
                 self._idle(db, source)
             self._idle(db, identifier)
+            if source and (remove or source != identifier):
+                from astroagent.project_links import invalidate_conversation
+
+                invalidate_conversation(
+                    db, source, conversation_id, "conversation_moved_or_removed"
+                )
             db.execute(
                 "DELETE FROM project_conversations WHERE conversation_id=?", (conversation_id,)
             )
@@ -323,6 +335,15 @@ class ProjectRepository:
                         "snapshot_used_by_workflow",
                         "快照被科研流程引用；请先明确删除相关流程。",
                     )
+                from astroagent.project_links import invalidate
+
+                invalidate(
+                    db,
+                    project_id,
+                    target_type="snapshot",
+                    target_ids=[identifier],
+                    reason="snapshot_deleted",
+                )
                 db.execute("DELETE FROM snapshots WHERE id=?", (identifier,))
                 for row in db.execute(
                     "SELECT record FROM snapshots WHERE project_id=?", (project_id,)
@@ -348,6 +369,10 @@ class ProjectRepository:
         rows = db.execute(
             "SELECT project_id FROM project_conversations WHERE conversation_id=?", (identifier,)
         ).fetchall()
+        from astroagent.project_links import invalidate_conversation
+
+        for owner in rows:
+            invalidate_conversation(db, owner[0], identifier, "conversation_deleted")
         for table in ("snapshots", "reruns"):
             for row in db.execute(f"SELECT record FROM {table}").fetchall():
                 value = json.loads(row[0])

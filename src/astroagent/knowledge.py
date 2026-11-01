@@ -602,6 +602,9 @@ class KnowledgeRepository:
                     "knowledge_confirmation_required",
                     "请确认删除原文、所有版本和索引，并使历史引用失效。",
                 )
+            from astroagent.project_links import invalidate
+
+            invalidate(db, project_id, document_id=document_id, reason="document_deleted")
             clear_index(db, document_id=document_id)
             for row in db.execute(
                 "SELECT record FROM knowledge_evidence WHERE project_id=? AND document_id=?",

@@ -1,0 +1,147 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts\verify_v09.py:45:5
+   |
+43 |               return None
+44 |
+45 | /     import httpx
+46 | |     import requests
+47 | |     import sqlite3
+48 | |     from fastapi.testclient import TestClient
+49 | |
+50 | |     from astroagent import __version__
+51 | |     from astroagent.api import conversations, workflows
+52 | |     from astroagent.main import app
+53 | |     from astroagent.schemas import ChatResponse, GaiaQuery, LiteratureQuery
+54 | |     from scripts.export_samples import synthetic_request
+55 | |     from scripts.synthetic_services import SyntheticAds, SyntheticGaia, SyntheticSimbad
+   | |_______________________________________________________________________________________^
+56 |
+57 |       class Agent:
+   |
+help: Organize imports
+   |
+44 |
+45 +     import sqlite3
+46 +
+47 |     import httpx
+48 |     import requests
+   -     import sqlite3
+49 |     from fastapi.testclient import TestClient
+   |
+
+F401 [*] `json` imported but unused
+ --> src\astroagent\project_links.py:3:8
+  |
+1 | """关联短事务、来源解析与失效；不调用模型、检索或外部科研服务。"""
+2 |
+3 | import json
+  |        ^^^^
+4 | from uuid import uuid4
+  |
+help: Remove unused import: `json`
+  |
+2 |
+  - import json
+3 | from uuid import uuid4
+  |
+
+E501 Line too long (227 > 100)
+  --> src\astroagent\project_links.py:19:101
+   |
+17 | …
+18 | …
+19 | …rojects(id) ON DELETE CASCADE, target_type TEXT NOT NULL, target_id TEXT NOT NULL, evidence_id TEXT NOT NULL, record TEXT NOT NULL)"
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 | …
+21 | …
+   |
+
+E501 Line too long (108 > 100)
+  --> src\astroagent\project_links.py:22:101
+   |
+20 |     )
+21 |     db.execute(
+22 |         "CREATE INDEX project_link_target ON project_links(project_id,target_type,target_id,evidence_id,id)"
+   |                                                                                                     ^^^^^^^^
+23 |     )
+24 |     db.execute(
+   |
+
+E501 Line too long (243 > 100)
+  --> src\astroagent\project_links.py:25:101
+   |
+23 | …
+24 | …
+25 | …RENCES projects(id) ON DELETE CASCADE, request_id TEXT NOT NULL, request_sha256 TEXT NOT NULL, record TEXT NOT NULL, UNIQUE(project_id,request_id))"
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+26 | …
+27 | …
+   |
+
+E501 Line too long (109 > 100)
+  --> src\astroagent\project_links.py:33:101
+   |
+31 |     sql, values = "SELECT record FROM project_links WHERE project_id=?", [project_id]
+32 |     if document_id:
+33 |         sql += " AND evidence_id IN (SELECT id FROM knowledge_evidence WHERE project_id=? AND document_id=?)"
+   |                                                                                                     ^^^^^^^^^
+34 |         values.extend([project_id, document_id])
+35 |     else:
+   |
+
+E501 Line too long (202 > 100)
+   --> src\astroagent\project_links.py:160:101
+    |
+158 | …
+159 | …
+160 | … m.conversation_id=t.conversation_id JOIN conversations c ON c.id=t.conversation_id WHERE t.id=? AND m.project_id=?",
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+161 | …
+162 | …
+    |
+
+E501 Line too long (110 > 100)
+   --> src\astroagent\project_links.py:332:101
+    |
+330 |             self.projects._project(db, project_id)
+331 |             previous = db.execute(
+332 |                 "SELECT request_sha256,record FROM project_link_requests WHERE project_id=? AND request_id=?",
+    |                                                                                                     ^^^^^^^^^^
+333 |                 (project_id, request.client_request_id),
+334 |             ).fetchone()
+    |
+
+E501 Line too long (134 > 100)
+   --> src\astroagent\project_links.py:411:101
+    |
+409 |             duplicate, link = False, None
+410 |             for row in db.execute(
+411 |                 "SELECT record FROM project_links WHERE project_id=? AND target_type=? AND target_id=? AND evidence_id=? ORDER BY id",
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+412 |                 (project_id, request.target_type, request.target_id, request.evidence_id),
+413 |             ):
+    |
+
+E501 Line too long (162 > 100)
+   --> src\astroagent\project_links.py:576:101
+    |
+574 | …
+575 | …
+576 | …ons c JOIN project_conversations m ON m.conversation_id=c.id WHERE m.project_id=? ORDER BY c.id",
+    |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+577 | …
+578 | …
+    |
+
+E501 Line too long (134 > 100)
+   --> src\astroagent\project_links.py:622:65
+    |
+620 |                 ).fetchone()[0],
+621 |                 "first_links": self._page(db, project_id, 25),
+622 |                 "warning": "总览只读取保存的记录，不查询外部服务、不检索全文、不调用模型。用户备注和手动关联不改写原回答或科研统计。",
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+623 |             }
+    |
+
+Found 11 errors.
+[*] 2 fixable with `--fix`.

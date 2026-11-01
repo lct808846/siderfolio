@@ -1,0 +1,58 @@
+{
+  "query": {
+    "mode": "source_id",
+    "source_id": "5853498713190525696",
+    "estimate_distance": true
+  },
+  "release": "Gaia DR3",
+  "table": "gaiadr3.gaia_source",
+  "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+  "adql": "SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 5853498713190525696",
+  "maxrec": 2,
+  "status": "error",
+  "returned_count": 0,
+  "total_found": null,
+  "has_more": null,
+  "truncated": null,
+  "archive_overflow": null,
+  "data": [],
+  "analysis": null,
+  "units": {
+    "source_id": "1",
+    "ra": "deg",
+    "dec": "deg",
+    "ref_epoch": "yr",
+    "ra_error": "mas",
+    "dec_error": "mas",
+    "parallax": "mas",
+    "parallax_error": "mas",
+    "pmra": "mas/yr",
+    "pmra_error": "mas/yr",
+    "pmdec": "mas/yr",
+    "pmdec_error": "mas/yr",
+    "phot_g_mean_mag": "mag",
+    "phot_bp_mean_mag": "mag",
+    "phot_rp_mean_mag": "mag",
+    "bp_rp": "mag",
+    "radial_velocity": "km/s",
+    "radial_velocity_error": "km/s",
+    "ruwe": "1",
+    "astrometric_params_solved": "1",
+    "duplicated_source": "1",
+    "separation_arcsec": "arcsec"
+  },
+  "source": {
+    "name": "Gaia",
+    "url": "https://gea.esac.esa.int/archive/",
+    "retrieved_at": "2026-10-31T02:11:38.115962Z"
+  },
+  "warnings": [
+    "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。",
+    "距离为程序计算的高信噪比视差倒数近似（SNR≥10），不是 Gaia 直接测量的距离。误差仅为一阶随机误差；未校正视差零点、系统误差、消光或选择偏差，未做贝叶斯估计。"
+  ],
+  "error": {
+    "code": "gaia_timeout",
+    "message": "Gaia 查询超时，请稍后重试。",
+    "retryable": true
+  }
+}

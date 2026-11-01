@@ -1,0 +1,54 @@
+........................................................................ [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+........................................................................ [ 56%]
+..................................................Timeout (0:00:30)!
+Thread 0x00007984 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 1590 in _wait
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 1264 in wait
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 1228 in communicate
+  File "D:\project\astroagent\src\astroagent\knowledge_parser.py", line 103 in parse_document
+  File "D:\project\astroagent\tests\test_knowledge.py", line 228 in test_parser_timeout_terminates_worker_and_cleans_temp
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\python.py", line 187 in pytest_pyfunc_call
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\python.py", line 1798 in runtest
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\main.py", line 411 in pytest_runtestloop
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\main.py", line 387 in _main
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\main.py", line 333 in wrap_session
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\main.py", line 380 in pytest_cmdline_main
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\config\__init__.py", line 262 in _main
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\_pytest\config\__init__.py", line 286 in _console_main
+  File "D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+.s............s....... [ 70%]
+.............ss.............................sssssssssssssss............. [ 84%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+============================== warnings summary ===============================
+.acceptance-v09-windows\Lib\site-packages\starlette\testclient.py:45
+  D:\project\astroagent\.acceptance-v09-windows\Lib\site-packages\starlette\testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+493 passed, 19 skipped, 1 warning in 141.41s (0:02:21)

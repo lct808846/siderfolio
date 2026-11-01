@@ -145,7 +145,7 @@ watch(() => route.fullPath, () => {
 
 <template>
   <div class="project-workspace workflow-workspace" :data-panel="mobilePanel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.8</span></RouterLink><span class="topbar-caption">固定科研流程</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">返回项目 ↗</RouterLink></header>
+    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.9</span></RouterLink><span class="topbar-caption">固定科研流程</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">返回项目 ↗</RouterLink></header>
     <nav class="workflow-mobile" aria-label="流程面板"><button @click="mobilePanel='project'">流程与参数</button><button @click="mobilePanel='steps'">执行记录</button><button @click="mobilePanel='results'">结果与下载</button></nav>
     <aside class="project-sidebar workflow-sidebar" aria-label="流程列表与新建">
       <RouterLink :to="`/projects/${route.params.projectId}/workflows`"><p class="eyebrow">WORKFLOWS · {{ runs.length }}/50</p><h2>{{ project?.name || '正在读取项目' }}</h2></RouterLink>
@@ -178,7 +178,7 @@ watch(() => route.fullPath, () => {
       <template v-if="run">
         <header class="project-heading">
 <p class="eyebrow">{{ run.template_id }} / v{{ run.template_version }} / r{{ run.revision }}</p><h1>{{ run.name }}</h1><p>{{ state(run.state) }} · {{ completed }}/{{ run.steps.length }} 步已完成或跳过</p><code>{{ run.id }}</code><p v-if="run.provenance==='imported_unverified'" class="notice">导入只读 · 来源未经认证。包内哈希不证明来源真实性；需要重新查询时，复制参数并建立本机新运行。</p><p v-if="run.error" class="notice danger">{{ run.error.message }} <code>{{ run.error.code }}</code></p>
-          <div class="project-actions"><button v-if="canExecute" class="button-primary" :disabled="busy" @click="confirm('execute')">{{ run.state==='pending' ? '核对并启动' : '核对并继续' }}</button><button :disabled="busy" @click="copyParameters">复制参数，新建运行</button><button :disabled="busy || run.state==='running' || !!pending" @click="confirm('delete')">删除流程</button><RouterLink v-if="snapshotId" :to="`/projects/${run.project_id}?snapshot=${snapshotId}`">查看保存快照 →</RouterLink></div>
+          <div class="project-actions"><RouterLink :to="{path:`/projects/${run.project_id}/overview`,query:{target_type:'workflow_run',target_id:run.id}}">关联本地原文证据 →</RouterLink><button v-if="canExecute" class="button-primary" :disabled="busy" @click="confirm('execute')">{{ run.state==='pending' ? '核对并启动' : '核对并继续' }}</button><button :disabled="busy" @click="copyParameters">复制参数，新建运行</button><button :disabled="busy || run.state==='running' || !!pending" @click="confirm('delete')">删除流程</button><RouterLink v-if="snapshotId" :to="`/projects/${run.project_id}?snapshot=${snapshotId}`">查看保存快照 →</RouterLink></div>
           <div v-if="pending" class="notice"><p>此请求还未确认结束。刷新只读取状态；下方按钮使用原请求编号核对，不会自动重放步骤。</p><code>{{ pending.client_request_id }}</code><button :disabled="busy" @click="executePending">用原请求编号核对</button></div>
           <details open><summary>保存的明确参数 · 不随继续操作改变</summary><pre>{{ print(run.parameters) }}</pre></details><details><summary>创建时输入与软件版本</summary><pre>{{ print({requested_parameters:run.requested_parameters,software:run.software,created_at:run.created_at,updated_at:run.updated_at,original_id:run.original_id,archive_sha256:run.archive_sha256}) }}</pre></details>
         </header>

@@ -1,0 +1,25 @@
+INFO:     Started server process [700]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:54342 (Press CTRL+C to quit)
+INFO:     127.0.0.1:51523 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/1265d0e6-16d1-42c0-9986-e4162be48864/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/1265d0e6-16d1-42c0-9986-e4162be48864/outputs/161ff83f-7b1f-4ff3-b52b-be367d0e982d HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/1265d0e6-16d1-42c0-9986-e4162be48864/outputs/9a062c9b-0fe5-4412-99d8-29cc886fea8a HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/1265d0e6-16d1-42c0-9986-e4162be48864/outputs/73e31198-f459-49f9-b441-c1c2b4f74e77 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/1265d0e6-16d1-42c0-9986-e4162be48864/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/01de1c84-f5ed-4ef6-a26e-796c0aea349a/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/01de1c84-f5ed-4ef6-a26e-796c0aea349a/outputs/1f654bc7-fe41-4546-a701-7ca261c286fa HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/01de1c84-f5ed-4ef6-a26e-796c0aea349a/outputs/166f1d55-5119-4cb4-9619-cb3ab41dc396 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/01de1c84-f5ed-4ef6-a26e-796c0aea349a/outputs/3b9b448a-37e3-4758-817e-abc09c1438d2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/01de1c84-f5ed-4ef6-a26e-796c0aea349a/outputs/1b65081b-7710-4def-b3ee-8caa067d5879 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/workflows/01de1c84-f5ed-4ef6-a26e-796c0aea349a/execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/397d86b6-b8c2-4298-b6e9-35f7584e2eb6/archive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51523 - "POST /api/v1/projects/import HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51523 - "GET /api/v1/projects/ce514686-e793-4c9d-b749-fe0902f8b741/workflows HTTP/1.1" 200 OK

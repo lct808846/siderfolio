@@ -1,0 +1,40 @@
+{
+  "fixture_version": "1",
+  "status": "authored_not_executed",
+  "thresholds": {
+    "declared_synthetic_scenarios_pass_rate": 1.0,
+    "cross_project_rejection_rate": 1.0,
+    "deleted_original_exposure_count": 0,
+    "silently_changed_frozen_identity_count": 0,
+    "additional_creation_on_same_key_count": 0
+  },
+  "scenarios": [
+    "three_target_types_same_project",
+    "target_or_evidence_wrong_project_404",
+    "invalid_original_or_position_422",
+    "same_request_replay_before_revision_check",
+    "same_key_changed_body_409",
+    "duplicate_pair_preserves_note",
+    "note_patch_requires_both_revisions",
+    "unlink_replay_does_not_recreate",
+    "conversation_move_back_does_not_revive",
+    "snapshot_or_workflow_delete_tombstone",
+    "document_delete_hides_original",
+    "metadata_restore_requires_same_hash_and_location",
+    "format4_full_and_metadata_roundtrip",
+    "old_formats_import_empty_links",
+    "old_format_export_refuses_link_history",
+    "bad_link_reference_rejected_atomically",
+    "limits_and_budget_rollback",
+    "overview_and_exact_turn_navigation",
+    "windows_linux_backup_restore_in_new_directory",
+    "chromium_edge_keyboard_narrow_screen_and_literal_html"
+  ],
+  "synthetic_runner": "scripts/verify_v09.py --run",
+  "runner_boundary": "subset of synthetic scenarios, temporary SQLite and in-process HTTP; not TCP/browser/real-corpus evaluation",
+  "real_literature_corpus": {
+    "status": "pending_authorization_selection_and_annotation",
+    "must_freeze_before_evaluation": true,
+    "legacy_v08_results_are_not_new_results": true
+  }
+}

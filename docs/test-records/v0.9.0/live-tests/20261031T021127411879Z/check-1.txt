@@ -1,0 +1,164 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 2 items
+
+tests/test_live.py::test_live_simbad_betelgeuse Timeout (0:00:30)!
+Thread 0x00008590 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1319 in do_handshake
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1041 in _create
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 455 in wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 477 in _ssl_wrap_socket_impl
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 433 in ssl_wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 975 in _ssl_wrap_socket_and_match_hostname
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 796 in connect
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 1106 in _validate_conn
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 464 in _make_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 788 in urlopen
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\adapters.py", line 696 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 784 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 651 in request
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 27 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 671 in get
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 104 in _get_endpoint
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 171 in _capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\utils\decorators.py", line 9 in wrapper
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 175 in capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astropy\utils\decorators.py", line 949 in __get__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\simbad\core.py", line 160 in timeout
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 126 in _query
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 97 in query
+  File "D:\project\astroagent\tests\test_live.py", line 19 in test_live_simbad_betelgeuse
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+PASSED                   [ 50%]
+tests/test_live.py::test_live_chat_betelgeuse Timeout (0:00:30)!
+Thread 0x000050c4 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1319 in do_handshake
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 1041 in _create
+  File "E:\miniconda3\envs\agent\Lib\ssl.py", line 455 in wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 477 in _ssl_wrap_socket_impl
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\util\ssl_.py", line 433 in ssl_wrap_socket
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 975 in _ssl_wrap_socket_and_match_hostname
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connection.py", line 796 in connect
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 1106 in _validate_conn
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 464 in _make_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\urllib3\connectionpool.py", line 788 in urlopen
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\adapters.py", line 696 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 784 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 651 in request
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 27 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\requests\sessions.py", line 671 in get
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 104 in _get_endpoint
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 171 in _capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\utils\decorators.py", line 9 in wrapper
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pyvo\dal\vosi.py", line 175 in capabilities
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astropy\utils\decorators.py", line 949 in __get__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\astroquery\simbad\core.py", line 160 in timeout
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 126 in _query
+  File "D:\project\astroagent\src\astroagent\simbad.py", line 97 in query
+  File "D:\project\astroagent\src\astroagent\agent.py", line 299 in _run
+  File "D:\project\astroagent\src\astroagent\agent.py", line 199 in chat
+  File "D:\project\astroagent\src\astroagent\api\chat.py", line 51 in chat
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x000075bc (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 774 in _poll
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 445 in select
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 1961 in _run_once
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 645 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\windows_events.py", line 322 in run_forever
+  File "E:\miniconda3\envs\agent\Lib\asyncio\base_events.py", line 678 in run_until_complete
+  File "E:\miniconda3\envs\agent\Lib\asyncio\runners.py", line 118 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2481 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_core\_eventloop.py", line 83 in run
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 536 in run_blocking_portal
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1012 in run
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00008590 (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\threading.py", line 355 in wait
+  File "E:\miniconda3\envs\agent\Lib\concurrent\futures\_base.py", line 451 in result
+  File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py", line 338 in call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 345 in handle_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py", line 1014 in _send_single_request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py", line 979 in _send_handling_redirects
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py", line 942 in _send_handling_auth
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py", line 914 in send
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py", line 825 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 445 in request
+  File "E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py", line 1144 in post
+  File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py", line 546 in post
+  File "D:\project\astroagent\tests\test_live.py", line 29 in test_live_chat_betelgeuse
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+PASSED                     [100%]
+
+- generated xml file: D:\project\astroagent\docs\test-records\v0.9.0\live-tests\20261031T021127411879Z\pytest.xml -
+======================== 2 passed in 96.14s (0:01:36) =========================

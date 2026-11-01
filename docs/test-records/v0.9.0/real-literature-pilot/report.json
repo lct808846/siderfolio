@@ -1,0 +1,82 @@
+{
+  "case_sha256": "2529e0069642a26bde3bf8667961e4754c7d4a88b5a41a89e4fa406442293322",
+  "results": [
+    {
+      "id": "title",
+      "status": "evidence_found",
+      "covered": true,
+      "returned_pages": [
+        3,
+        5,
+        9,
+        1,
+        5
+      ],
+      "invalid_references": 0,
+      "seconds": 0.191
+    },
+    {
+      "id": "momentum",
+      "status": "evidence_found",
+      "covered": true,
+      "returned_pages": [
+        3,
+        10,
+        3,
+        3,
+        3
+      ],
+      "invalid_references": 0,
+      "seconds": 0.223
+    },
+    {
+      "id": "model",
+      "status": "evidence_found",
+      "covered": true,
+      "returned_pages": [
+        9,
+        5,
+        9,
+        1,
+        7
+      ],
+      "invalid_references": 0,
+      "seconds": 0.236
+    },
+    {
+      "id": "decay",
+      "status": "evidence_found",
+      "covered": true,
+      "returned_pages": [
+        3,
+        9,
+        10
+      ],
+      "invalid_references": 0,
+      "seconds": 0.146
+    },
+    {
+      "id": "absent-1",
+      "status": "insufficient_evidence",
+      "covered": true,
+      "returned_pages": [],
+      "invalid_references": 0,
+      "seconds": 0.024
+    },
+    {
+      "id": "absent-2",
+      "status": "insufficient_evidence",
+      "covered": true,
+      "returned_pages": [],
+      "invalid_references": 0,
+      "seconds": 0.018
+    }
+  ],
+  "limitations": "single paper, manually located with same text extractor, not independent representative corpus",
+  "metrics": {
+    "top5_coverage": 1.0,
+    "refusal_rate": 1.0,
+    "invalid_references": 0
+  },
+  "passed": true
+}

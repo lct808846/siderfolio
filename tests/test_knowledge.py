@@ -45,7 +45,7 @@ def test_older_schema_migrates_with_original_data_and_backup(tmp_path, old_versi
     repo.initialize()
     try:
         with sqlite3.connect(repo.path) as db:
-            assert db.execute("PRAGMA user_version").fetchone()[0] == 4
+            assert db.execute("PRAGMA user_version").fetchone()[0] == 5
             assert db.execute("SELECT title FROM conversations").fetchone()[0] == "旧会话"
         backups = list(tmp_path.glob(f"migration-v{old_version + 1}-*.sqlite3"))
         assert backups
@@ -85,7 +85,7 @@ def test_schema3_backup_restores_in_separate_directory(tmp_path):
     restored.initialize()
     try:
         with sqlite3.connect(restored.path) as db:
-            assert db.execute("PRAGMA user_version").fetchone()[0] == 4
+            assert db.execute("PRAGMA user_version").fetchone()[0] == 5
             assert db.execute("SELECT title FROM conversations").fetchone()[0] == "old conversation"
     finally:
         restored.close()
@@ -144,7 +144,7 @@ def test_schema3_migration_backup_and_failed_upgrade_rollback(tmp_path, monkeypa
     repo.initialize()
     try:
         with sqlite3.connect(repo.path) as db:
-            assert db.execute("PRAGMA user_version").fetchone()[0] == 4
+            assert db.execute("PRAGMA user_version").fetchone()[0] == 5
             assert db.execute("SELECT title FROM conversations").fetchone()[0] == "旧会话"
             assert db.execute("SELECT json_extract('{\"v\":1}', '$.v')").fetchone()[0] == 1
             assert (

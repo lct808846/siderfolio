@@ -165,15 +165,30 @@ class KnowledgeService:
                 raise ServiceError(404, "knowledge_evidence_not_found", "该项目没有此引用。")
             return self.view(db, EvidenceRecord.model_validate_json(row[0]), {})
 
+    @staticmethod
+    def source_digest(source, cache):
+        key = ("source_digest", source.version_id, source.position)
+        if key not in cache:
+            cache[key] = checksum(source.text)
+        return cache[key]
+
     def view(self, db, evidence, cache):
         doc = db.execute(
             "SELECT record FROM knowledge_documents WHERE id=? AND project_id=?",
             (evidence.document_id, evidence.project_id),
         ).fetchone()
-        version = db.execute(
-            "SELECT record,content FROM knowledge_versions WHERE id=? AND document_id=?",
-            (evidence.version_id, evidence.document_id),
-        ).fetchone()
+        version_key = (
+            "evidence_version",
+            evidence.project_id,
+            evidence.document_id,
+            evidence.version_id,
+        )
+        if version_key not in cache:
+            cache[version_key] = db.execute(
+                "SELECT record,content FROM knowledge_versions WHERE id=? AND document_id=?",
+                (evidence.version_id, evidence.document_id),
+            ).fetchone()
+        version = cache[version_key]
         row = db.execute(
             "SELECT record FROM knowledge_units WHERE id=? AND version_id=? AND project_id=?",
             (evidence.unit_id, evidence.version_id, evidence.project_id),
@@ -207,7 +222,7 @@ class KnowledgeService:
                     if unit.text is not None and original is not None and original.text is not None:
                         if (
                             unit.sha256 == evidence.text_sha256 == checksum(unit.text)
-                            and checksum(original.text) == original.sha256
+                            and self.source_digest(original, cache) == original.sha256
                             and original.text[unit.char_start : unit.char_end] == unit.text
                             and unit.char_start == evidence.char_start
                             and unit.char_end == evidence.char_end

@@ -1,0 +1,277 @@
+{
+  "version": "0.9.0",
+  "fixture_version": "1",
+  "data": "synthetic",
+  "external_services": false,
+  "thresholds": {
+    "positive_top5_coverage": 0.9,
+    "no_answer_refusal_rate": 1.0,
+    "invalid_references": 0,
+    "p95_seconds": 2.0
+  },
+  "cases": [
+    {
+      "id": "positive-01",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.02333540000108769,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-02",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.020463100001506973,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-03",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023629800001799595,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-04",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.021316900005331263,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-05",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.021568500000284985,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-06",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.02242349999869475,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-07",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.0212284000008367,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-08",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023157700001320336,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-09",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.022833399998489767,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-10",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023784400000295136,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-11",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.020919700000376906,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-12",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.02329499999905238,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-13",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.02248449999751756,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-14",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.022478400002000853,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-15",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023576899999170564,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-16",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023864100003265776,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-17",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.022455899998021778,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-18",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.02395729999989271,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-19",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023719299999356735,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-20",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.023426299994753208,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-21",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.025972299998102244,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-22",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.024609300002339296,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-23",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.024044300000241492,
+      "returned_count": 1
+    },
+    {
+      "id": "positive-24",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.02978820000134874,
+      "returned_count": 1
+    },
+    {
+      "id": "negative-01",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.017581100000825245,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-02",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.015836499995202757,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-03",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.014354400002048351,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-04",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.012452099996153265,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-05",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.013150899998436216,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-06",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.012640599998121615,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-07",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.013932699999713805,
+      "returned_count": 0
+    },
+    {
+      "id": "negative-08",
+      "status_matches": true,
+      "covered": true,
+      "references_valid": true,
+      "seconds": 0.014540500000293832,
+      "returned_count": 0
+    }
+  ],
+  "metrics": {
+    "positive_top5_coverage": 1.0,
+    "no_answer_refusal_rate": 1.0,
+    "invalid_references": 0,
+    "p95_seconds": 0.025972299998102244
+  },
+  "passed": true
+}

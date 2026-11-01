@@ -6,12 +6,21 @@ import ResultPanel from '../components/ResultPanel.vue'
 import ProjectWorkspace from './ProjectWorkspace.vue'
 import WorkflowWorkspace from './WorkflowWorkspace.vue'
 import KnowledgeWorkspace from './KnowledgeWorkspace.vue'
+import ProjectOverview from './ProjectOverview.vue'
 import { safeLink } from '../api'
 
 const store = useWorkbench(), route = useRoute(), router = useRouter()
 const draft = ref(''), composing = ref(false), titleEditing = ref(false), title = ref('')
 const confirmDelete = ref(false)
 const input = ref<HTMLTextAreaElement | null>(null)
+let appliedTurnLink = '', requestedTurnLink = ''
+watch([() => route.fullPath, () => store.turns], () => {
+  const turnId = typeof route.query.turn === 'string' ? route.query.turn : ''
+  const key = `${route.params.id || ''}:${turnId}`
+  if (key !== requestedTurnLink) { appliedTurnLink = ''; requestedTurnLink = key }
+  if (turnId && appliedTurnLink !== key && store.current?.id === route.params.id && store.turns.some(t => t.turn_id === turnId)) { store.selectedTurnId = turnId; store.panel = 'results'; appliedTurnLink = key }
+  if (!turnId) appliedTurnLink = ''
+})
 const newest = computed(() => store.turns.at(-1)?.turn_id)
 const examples = [
   { label: '坐标圆锥查询', text: '以 ICRS 赤经56.75度、赤纬24.12度为中心，查5角分内最近100个Gaia DR3位置候选源，不估算距离。' },
@@ -44,11 +53,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <KnowledgeWorkspace v-if="route.path.includes('/knowledge')" />
+  <ProjectOverview v-if="route.path.endsWith('/overview')" />
+  <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />
   <ProjectWorkspace v-else-if="route.path.startsWith('/projects')" />
   <div v-else class="workbench" :data-panel="store.panel">
-    <header class="topbar"><a class="brand" href="/" @click.prevent="router.push('/')"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.8</span></a><div class="topbar-caption"><span class="status-dot"></span>本地科研工作台</div><RouterLink class="project-link" to="/projects">项目归档 →</RouterLink><a href="http://127.0.0.1:8000/docs" target="_blank" rel="noopener noreferrer" class="docs-link">接口文档 ↗</a></header>
+    <header class="topbar"><a class="brand" href="/" @click.prevent="router.push('/')"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">0.9</span></a><div class="topbar-caption"><span class="status-dot"></span>本地科研工作台</div><RouterLink class="project-link" to="/projects">项目归档 →</RouterLink><a href="http://127.0.0.1:8000/docs" target="_blank" rel="noopener noreferrer" class="docs-link">接口文档 ↗</a></header>
     <nav class="mobile-panels" aria-label="工作区面板"><button :class="{active:store.panel==='history'}" @click="store.panel='history'">会话</button><button :class="{active:store.panel==='chat'}" @click="store.panel='chat'">对话</button><button :class="{active:store.panel==='results'}" @click="store.panel='results'">结果</button></nav>
     <aside class="history-panel" aria-label="会话列表"><div class="history-title"><span class="eyebrow">WORKSPACE</span><span class="small muted">{{ store.conversations.length }}/20</span></div><button class="new-conversation" @click="create"><span aria-hidden="true">＋</span>新建会话</button><p class="history-label">本地会话</p><nav><button v-for="conversation in store.conversations" :key="conversation.id" class="conversation-item" :class="{selected:store.current?.id===conversation.id}" @click="router.push(`/conversations/${conversation.id}`)"><span class="conversation-symbol" aria-hidden="true">◌</span><span><b>{{ conversation.title }}</b><small>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span></button></nav><p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p><footer class="history-footer"><span>SIMBAD / ADS / Gaia</span><small>测量 · 文献 · 可追溯结果</small></footer></aside>
     <main class="chat-panel">

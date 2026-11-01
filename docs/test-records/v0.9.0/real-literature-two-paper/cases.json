@@ -1,0 +1,18 @@
+{
+  "description": "Two public arXiv papers; manually selected physical-page anchors. Exploratory sample, not independently annotated or representative.",
+  "sources": [
+    {"id": "clusters", "url": "https://arxiv.org/abs/1601.01752", "sha256": "1d6061aa93ebf27b55dba44c41311d7dfad95f4f8f73161c1802b51f5cb714a2"},
+    {"id": "gaia", "url": "https://arxiv.org/abs/1609.04172", "sha256": "0f1db64da7baba4dcd0f51daa9fd51b0b7b43f276757908e047e01101dad43f4"}
+  ],
+  "thresholds": {"top5_coverage": 0.75, "refusal_rate": 1.0, "invalid_references": 0},
+  "cases": [
+    {"id": "cluster-title", "query": "dynamical fate", "source": "clusters", "page": 1, "phrase": "dynamical fate"},
+    {"id": "cluster-momentum", "query": "angular momentum", "source": "clusters", "page": 3, "phrase": "angular momentum"},
+    {"id": "cluster-decay", "query": "orbital decay", "source": "clusters", "page": 9, "phrase": "orbital decay"},
+    {"id": "gaia-title", "query": "astrometric photometric survey properties", "source": "gaia", "page": 1, "phrase": "astrometric"},
+    {"id": "gaia-focal-plane", "query": "focal plane transits", "source": "gaia", "page": 4, "phrase": "Focal plane transits"},
+    {"id": "gaia-sky-distribution", "query": "sky distribution galactic coordinates", "source": "gaia", "page": 6, "phrase": "Sky distribution"},
+    {"id": "absent-1", "query": "quasarpolarimetryxyz", "source": null},
+    {"id": "absent-2", "query": "exoplanetatmospherexyz", "source": null}
+  ]
+}

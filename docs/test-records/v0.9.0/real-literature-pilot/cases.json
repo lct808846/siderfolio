@@ -1,0 +1,15 @@
+{
+  "frozen_before_evaluation_utc": "2026-10-31T02:24:00Z",
+  "description": "Single-public-paper pilot, manually located physical pages; not a representative independent corpus.",
+  "source": "https://arxiv.org/abs/1601.01752",
+  "sha256": "1d6061aa93ebf27b55dba44c41311d7dfad95f4f8f73161c1802b51f5cb714a2",
+  "thresholds": {"top5_coverage": 0.75, "refusal_rate": 1.0, "invalid_references": 0},
+  "cases": [
+    {"id": "title", "query": "dynamical fate", "page": 1, "phrase": "dynamical fate"},
+    {"id": "momentum", "query": "angular momentum", "page": 3, "phrase": "angular momentum"},
+    {"id": "model", "query": "semi-analytic model", "page": 5, "phrase": "semi-analytic model"},
+    {"id": "decay", "query": "orbital decay", "page": 9, "phrase": "orbital decay"},
+    {"id": "absent-1", "query": "quasarpolarimetryxyz", "page": null},
+    {"id": "absent-2", "query": "exoplanetatmospherexyz", "page": null}
+  ]
+}

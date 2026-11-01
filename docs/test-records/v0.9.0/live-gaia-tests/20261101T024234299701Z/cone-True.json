@@ -1,0 +1,63 @@
+{
+  "query": {
+    "mode": "cone",
+    "ra_deg": 56.75,
+    "dec_deg": 24.12,
+    "radius_arcmin": 5.0,
+    "limit": 3,
+    "ruwe_max": 1.4,
+    "parallax_snr_min": 10.0,
+    "estimate_distance": false
+  },
+  "release": "Gaia DR3",
+  "table": "gaiadr3.gaia_source",
+  "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+  "adql": "SELECT TOP 4 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source, DISTANCE(POINT('ICRS', ra, dec), POINT('ICRS', 56.75, 24.12)) AS separation_deg FROM gaiadr3.gaia_source WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 56.75, 24.12, 0.08333333333333333)) AND ruwe <= 1.4 AND parallax > 0 AND parallax_error > 0 AND parallax / parallax_error >= 10.0 ORDER BY separation_deg ASC, source_id ASC",
+  "maxrec": 4,
+  "status": "error",
+  "returned_count": 0,
+  "total_found": null,
+  "has_more": null,
+  "truncated": null,
+  "archive_overflow": null,
+  "data": [],
+  "analysis": null,
+  "units": {
+    "source_id": "1",
+    "ra": "deg",
+    "dec": "deg",
+    "ref_epoch": "yr",
+    "ra_error": "mas",
+    "dec_error": "mas",
+    "parallax": "mas",
+    "parallax_error": "mas",
+    "pmra": "mas/yr",
+    "pmra_error": "mas/yr",
+    "pmdec": "mas/yr",
+    "pmdec_error": "mas/yr",
+    "phot_g_mean_mag": "mag",
+    "phot_bp_mean_mag": "mag",
+    "phot_rp_mean_mag": "mag",
+    "bp_rp": "mag",
+    "radial_velocity": "km/s",
+    "radial_velocity_error": "km/s",
+    "ruwe": "1",
+    "astrometric_params_solved": "1",
+    "duplicated_source": "1",
+    "separation_arcsec": "arcsec"
+  },
+  "source": {
+    "name": "Gaia",
+    "url": "https://gea.esac.esa.int/archive/",
+    "retrieved_at": "2026-11-01T02:43:25.599250Z"
+  },
+  "warnings": [
+    "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。",
+    "圆锥结果仅为位置候选源；最近或唯一一行也不是确认匹配。输入历元未提供或未校正，未进行自行传播；ICRS 相同不代表历元相同，高自行源或拥挤视场可能漏配。"
+  ],
+  "error": {
+    "code": "gaia_timeout",
+    "message": "Gaia 查询超时，请稍后重试。",
+    "retryable": true
+  }
+}

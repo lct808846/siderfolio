@@ -64,7 +64,7 @@ class ConversationRepository:
                 fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             with self.connection() as db:
                 version = db.execute("PRAGMA user_version").fetchone()[0]
-                if version not in (0, 1, 2, 3, 4):
+                if version not in (0, 1, 2, 3, 4, 5):
                     raise storage_error()
                 if version == 0:
                     tables = db.execute(
@@ -114,6 +114,18 @@ class ConversationRepository:
 
                     with self.transaction(db):
                         migrate(db)
+                if version < 5:
+                    backup = self.path.with_name(
+                        "migration-v5-"
+                        + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+                        + ".sqlite3"
+                    )
+                    with sqlite3.connect(backup) as target:
+                        db.backup(target)
+                    from astroagent.project_links import migrate as migrate_links
+
+                    with self.transaction(db):
+                        migrate_links(db)
                 db.execute("PRAGMA journal_mode=WAL")
                 with self.transaction(db):
                     for row in db.execute(
@@ -282,6 +294,8 @@ class ConversationRepository:
             "workflows",
             "workflow_operations",
             "workflow_outputs",
+            "project_links",
+            "project_link_requests",
         ):
             base += sum(len(row[0].encode()) for row in db.execute(f"SELECT record FROM {table}"))
         base += db.execute("SELECT coalesce(sum(reserved_bytes),0) FROM reruns").fetchone()[0]

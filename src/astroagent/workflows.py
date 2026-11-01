@@ -482,6 +482,15 @@ class WorkflowRepository:
                 )
             if run.state == "running":
                 raise ServiceError(409, "workflow_busy", "运行中的流程不能删除。")
+            from astroagent.project_links import invalidate
+
+            invalidate(
+                db,
+                project_id,
+                target_type="workflow_run",
+                target_ids=[run_id],
+                reason="workflow_deleted",
+            )
             db.execute("DELETE FROM workflows WHERE id=?", (run_id,))
             self.projects._touch(db, project_id)
 

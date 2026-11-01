@@ -1,4 +1,4 @@
-"""固定四/五/六成员项目 ZIP（schema1/2/3）；完整校验后单事务恢复，不解压到文件系统。"""
+"""固定四至七成员项目 ZIP（schema1/2/3/4）；完整校验后单事务恢复，不解压到文件系统。"""
 
 import hashlib
 import json
@@ -58,7 +58,7 @@ def export_archive(
     repository,
     identifier,
     revision,
-    format_version=3,
+    format_version=4,
     knowledge_mode="metadata",
     confirmed_include_originals=False,
 ):
@@ -106,9 +106,18 @@ def export_archive(
         knowledge = read_knowledge(
             db,
             identifier,
-            knowledge_mode if format_version == 3 else "metadata",
+            knowledge_mode if format_version >= 3 else "metadata",
             confirmed_include_originals,
         )
+        from astroagent.link_archives import read_links
+
+        links = read_links(db, identifier, knowledge["mode"], repository.repo)
+        if format_version < 4 and (links["links"] or links["requests"]):
+            raise ServiceError(
+                409,
+                "project_links_archive_requires_v4",
+                "项目含关联或其操作历史，不能丢弃后导出旧格式。",
+            )
         if format_version < 3 and any(
             knowledge[key] for key in ("documents", "versions", "evidence", "operations")
         ):
@@ -132,15 +141,17 @@ def export_archive(
     }
     if format_version >= 2:
         payloads["workflows.json"] = encode(workflows).encode()
-    if format_version == 3:
+    if format_version >= 3:
         payloads["knowledge.json"] = encode(knowledge).encode()
+    if format_version == 4:
+        payloads["links.json"] = encode(links).encode()
     manifest = ArchiveManifest(
         format="astroagent-project",
         version=format_version,
         exported_at=utc_now(),
         application_version=__version__,
-        knowledge_mode=knowledge["mode"] if format_version == 3 else None,
-        sources_complete=knowledge["sources_complete"] if format_version == 3 else None,
+        knowledge_mode=knowledge["mode"] if format_version >= 3 else None,
+        sources_complete=knowledge["sources_complete"] if format_version >= 3 else None,
         files={
             name: {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
             for name, raw in payloads.items()
@@ -173,6 +184,7 @@ def decode_archive(raw):
                 MEMBERS,
                 MEMBERS | {"workflows.json"},
                 MEMBERS | {"workflows.json", "knowledge.json"},
+                MEMBERS | {"workflows.json", "knowledge.json", "links.json"},
             ):
                 raise ValueError("Fixed unique members required")
             for info in infos:
@@ -200,8 +212,10 @@ def decode_archive(raw):
             raise ValueError("Integer archive version required")
         manifest = ArchiveManifest.model_validate(manifest_raw)
         expected_members = MEMBERS if manifest.version == 1 else MEMBERS | {"workflows.json"}
-        if manifest.version == 3:
+        if manifest.version >= 3:
             expected_members |= {"knowledge.json"}
+            if manifest.version == 4:
+                expected_members |= {"links.json"}
         elif manifest.knowledge_mode is not None or manifest.sources_complete is not None:
             raise ValueError("Knowledge metadata requires archive format3")
         if set(data) != expected_members:
@@ -376,15 +390,30 @@ def decode_archive(raw):
 
         knowledge = (
             validate_knowledge(strict_json(data["knowledge.json"]), project.id)
-            if manifest.version == 3
+            if manifest.version >= 3
             else empty_bundle()
         )
-        if manifest.version == 3 and (
+        if manifest.version >= 3 and (
             manifest.knowledge_mode != knowledge["mode"]
             or manifest.sources_complete != knowledge["sources_complete"]
         ):
             raise ValueError("Original inclusion policy differs from manifest")
+        from astroagent.link_archives import empty_links, validate_links
+
+        links = (
+            validate_links(
+                strict_json(data["links.json"]),
+                project.id,
+                conversations,
+                snapshots,
+                workflows,
+                knowledge,
+            )
+            if manifest.version == 4
+            else empty_links()
+        )
         return {
+            "links": links,
             "knowledge": knowledge,
             "project": project.model_dump(),
             "conversations": conversations,
@@ -460,6 +489,11 @@ def import_archive(repository, raw):
     incoming += sum(
         len(encode(v["info"]).encode()) + len(v["content"] or b"")
         for v in bundle["knowledge"]["versions"]
+    )
+    incoming += sum(
+        len(encode(value).encode())
+        for kind in ("links", "requests")
+        for value in bundle["links"][kind]
     )
     # Preflight before any write; exact normalized bytes are checked in-transaction.
     with repository.repo.connection() as db:
@@ -599,6 +633,9 @@ def import_archive(repository, raw):
         from astroagent.knowledge_archives import import_knowledge
 
         import_knowledge(db, bundle["knowledge"], project_id, id_map)
+        from astroagent.link_archives import import_links
+
+        import_links(db, bundle["links"], project_id, id_map, digest, bundle["knowledge"]["mode"])
         project["import_map"] = id_map
         repository._put(db, "projects", project)
         repository._budget(db)

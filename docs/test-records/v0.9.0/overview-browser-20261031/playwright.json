@@ -1,0 +1,315 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\playwright\\cli.js",
+      "test",
+      "overview.spec.ts",
+      "--config",
+      "frontend/playwright.config.ts",
+      "--output",
+      "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/docs/test-records/v0.9.0/overview-browser-20261031/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/project/astroagent/docs/test-records/v0.9.0/overview-browser-20261031/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "overview.spec.ts",
+      "file": "overview.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "project overview creates and removes an explicit evidence link",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6961,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('已解除关联')\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('已解除关联') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('已解除关联')\u001b[22m\n\u001b[2m    12 × locator resolved to <p role=\"status\" class=\"notice\">已解除关联。结果、证据、文档和原回答保留。原创建请求的历史不会再次建立此关联。</p>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('已解除关联')\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('已解除关联') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('已解除关联')\u001b[22m\n\u001b[2m    12 × locator resolved to <p role=\"status\" class=\"notice\">已解除关联。结果、证据、文档和原回答保留。原创建请求的历史不会再次建立此关联。</p>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts:44:61",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                      "column": 61,
+                      "line": 44
+                    },
+                    "snippet": "  42 |     await page.getByRole('button', { name: '仅解除关联' }).click()\n  43 |     await page.getByRole('dialog').getByRole('button', { name: '确认只解除关联' }).click()\n> 44 |     await expect(page.getByText('已解除关联', { exact: false })).toBeVisible()\n     |                                                             ^\n  45 |   } finally {\n  46 |     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()\n  47 |     await request.delete(`/api/v1/projects/${project.id}`, { data: { expected_revision: detail.revision, confirm: true } })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                        "column": 61,
+                        "line": 44
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('已解除关联')\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('已解除关联') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('已解除关联')\u001b[22m\n\u001b[2m    12 × locator resolved to <p role=\"status\" class=\"notice\">已解除关联。结果、证据、文档和原回答保留。原创建请求的历史不会再次建立此关联。</p>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  42 |     await page.getByRole('button', { name: '仅解除关联' }).click()\n  43 |     await page.getByRole('dialog').getByRole('button', { name: '确认只解除关联' }).click()\n> 44 |     await expect(page.getByText('已解除关联', { exact: false })).toBeVisible()\n     |                                                             ^\n  45 |   } finally {\n  46 |     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()\n  47 |     await request.delete(`/api/v1/projects/${project.id}`, { data: { expected_revision: detail.revision, confirm: true } })\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts:44:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-31T02:16:03.741Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts\\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts\\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts\\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                    "column": 61,
+                    "line": 44
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6e2f4ad74dab265ac116-595a3fd380ef1ba31ecb",
+          "file": "overview.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "project overview creates and removes an explicit evidence link",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7309,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('已解除关联')\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('已解除关联') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('已解除关联')\u001b[22m\n\u001b[2m    12 × locator resolved to <p role=\"status\" class=\"notice\">已解除关联。结果、证据、文档和原回答保留。原创建请求的历史不会再次建立此关联。</p>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('已解除关联')\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('已解除关联') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('已解除关联')\u001b[22m\n\u001b[2m    12 × locator resolved to <p role=\"status\" class=\"notice\">已解除关联。结果、证据、文档和原回答保留。原创建请求的历史不会再次建立此关联。</p>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts:44:61",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                      "column": 61,
+                      "line": 44
+                    },
+                    "snippet": "  42 |     await page.getByRole('button', { name: '仅解除关联' }).click()\n  43 |     await page.getByRole('dialog').getByRole('button', { name: '确认只解除关联' }).click()\n> 44 |     await expect(page.getByText('已解除关联', { exact: false })).toBeVisible()\n     |                                                             ^\n  45 |   } finally {\n  46 |     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()\n  47 |     await request.delete(`/api/v1/projects/${project.id}`, { data: { expected_revision: detail.revision, confirm: true } })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                        "column": 61,
+                        "line": 44
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText('已解除关联')\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('已解除关联') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('已解除关联')\u001b[22m\n\u001b[2m    12 × locator resolved to <p role=\"status\" class=\"notice\">已解除关联。结果、证据、文档和原回答保留。原创建请求的历史不会再次建立此关联。</p>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  42 |     await page.getByRole('button', { name: '仅解除关联' }).click()\n  43 |     await page.getByRole('dialog').getByRole('button', { name: '确认只解除关联' }).click()\n> 44 |     await expect(page.getByText('已解除关联', { exact: false })).toBeVisible()\n     |                                                             ^\n  45 |   } finally {\n  46 |     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()\n  47 |     await request.delete(`/api/v1/projects/${project.id}`, { data: { expected_revision: detail.revision, confirm: true } })\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts:44:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-31T02:16:11.668Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts\\overview-project-overview--b2378-s-an-explicit-evidence-link-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts\\overview-project-overview--b2378-s-an-explicit-evidence-link-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\docs\\test-records\\v0.9.0\\overview-browser-20261031\\artifacts\\overview-project-overview--b2378-s-an-explicit-evidence-link-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                    "column": 61,
+                    "line": 44
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6e2f4ad74dab265ac116-fb40298188ff1a8718a9",
+          "file": "overview.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-31T02:15:56.795Z",
+    "duration": 24893.654,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}
