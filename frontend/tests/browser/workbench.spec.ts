@@ -79,6 +79,7 @@ test('backend connection error is explicit', async ({ page }) => {
 
 test('a rejected send preserves the question and only retries on explicit action', async ({ page }) => {
   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()
+  await expect(page).toHaveURL(/conversations\/[0-9a-f-]+/)
   let calls = 0
   await page.route('**/api/v1/conversations/*/turns', async route => {
     calls++

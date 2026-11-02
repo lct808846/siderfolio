@@ -42,3 +42,5 @@
 ## 远程验证通过
 
 验证提交 `a53c6e0e1086b780c518350e84fdf7a83cd441c5` 的 [推送 CI](https://github.com/lct808846/astroagent/actions/runs/41371340439) 和 [合并请求 CI](https://github.com/lct808846/astroagent/actions/runs/41371345451) 均通过后端、PostgreSQL 和前端任务。推送 CI 中后端 508 通过、48 跳过，PostgreSQL 4 通过；前端单元 15 通过，浏览器 12 通过、1 跳过。首次接口快照失败及修正历史保留在前一节。Gaia 网络查询按用户授权作为例外，未重记为通过。
+
+发布准备提交 `064fb6a` 的 [推送 CI](https://github.com/lct808846/astroagent/actions/runs/41372097171) 出现一次浏览器失败：发送被拒绝后未观察到预期提示；同一提交的 [合并请求 CI](https://github.com/lct808846/astroagent/actions/runs/41372100743) 通过。新建会话后的异步跳转可能与测试操作并发，因此补充等待会话 URL，再保留原有错误提示、输入和显式重试断言，修正后的远程结果需另行确认。
