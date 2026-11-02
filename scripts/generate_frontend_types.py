@@ -17,7 +17,7 @@ def main():
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     frontend = ROOT / "frontend"
-    schema = json.dumps(app.openapi(), ensure_ascii=False, indent=2) + "\n"
+    schema = json.dumps(app.openapi(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     with tempfile.TemporaryDirectory() as temporary:
         directory = Path(temporary)
         input_path = directory / "openapi.json"
