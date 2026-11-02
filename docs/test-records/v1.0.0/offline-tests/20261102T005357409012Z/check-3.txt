@@ -1,0 +1,18 @@
+unformatted: File would be reformatted
+  --> tests\test_rag_retrieval.py:15:6
+   |
+14 |     "question",
+   -     ["unknownterm", "NGC999999", "NGC 999999", '"unlisted-id"', "'unknownword'?", "１２３４５", "???"],
+15 +     [
+16 +         "unknownterm",
+17 +         "NGC999999",
+18 +         "NGC 999999",
+19 +         '"unlisted-id"',
+20 +         "'unknownword'?",
+21 +         "１２３４５",
+22 +         "???",
+23 +     ],
+24 | )
+   |
+
+1 file would be reformatted, 118 files already formatted

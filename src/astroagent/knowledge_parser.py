@@ -11,7 +11,7 @@ from astroagent.errors import ServiceError
 from astroagent.project_archives import strict_json
 
 
-def windows_job(process):
+def windows_job(process, memory_bytes=768 * 1024**2):
     from ctypes import wintypes
 
     class Basic(ctypes.Structure):
@@ -59,7 +59,7 @@ def windows_job(process):
         raise OSError("Job object unavailable")
     limits = Extended()
     limits.basic.flags = 0x2000 | 0x100 | 0x200  # kill-on-close, process and job memory
-    limits.process_memory = limits.job_memory = 768 * 1024**2
+    limits.process_memory = limits.job_memory = memory_bytes
     if not kernel.SetInformationJobObject(
         job, 9, ctypes.byref(limits), ctypes.sizeof(limits)
     ) or not kernel.AssignProcessToJobObject(job, wintypes.HANDLE(int(process._handle))):

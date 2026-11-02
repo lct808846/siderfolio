@@ -28,6 +28,37 @@ class LocalSettings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="ASTROAGENT_"
     )
     data_dir: Path = Path(".astroagent")
+    database_url: SecretStr = SecretStr("")
+    rag_model_path: Path | None = None
+    rag_model_sha256: str = ""
+    rag_model_name: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    rag_dimension: int = Field(default=384, ge=32, le=2048)
+    rag_model_bytes: int = Field(default=2 * 1024**3, ge=1024, le=4 * 1024**3)
+    rag_vector_bytes: int = Field(default=128 * 1024**2, ge=1024, le=512 * 1024**2)
+    rag_semantic_enabled: bool = True
+    rag_max_cosine_distance: float = Field(default=0.65, ge=0, le=2)
+    rag_query_cache_size: int = Field(default=32, ge=0, le=128)
+    rag_query_cache_seconds: float = Field(default=300, gt=0, le=900)
+
+    @field_validator("database_url")
+    @classmethod
+    def local_database(cls, value):
+        from urllib.parse import urlsplit
+
+        raw = value.get_secret_value()
+        if not raw:
+            return value
+        parsed = urlsplit(raw)
+        if (
+            parsed.scheme not in ("postgresql", "postgres")
+            or parsed.hostname not in ("localhost", "127.0.0.1", "::1")
+            or not parsed.path.strip("/")
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError("A local PostgreSQL URL without extra connection options is required")
+        return value
+
     allowed_origins: list[str] = [
         "http://127.0.0.1:5173",
         "http://localhost:5173",

@@ -1,17 +1,29 @@
 """仅用于离线验收的合成模型/工具服务；普通应用入口不导入本模块。"""
 
 import json
+import os
 import re
 import time
 from uuid import uuid4
 
 from langchain_core.messages import AIMessage
 
+import astroagent.main as main
+import astroagent.services as services
 from astroagent.agent import AstroAgent
 from astroagent.api import conversations, projects, workflows
 from astroagent.config import Settings
+from astroagent.conversations import ConversationRepository
 from astroagent.main import app as app
+from scripts.legacy_fixture_storage import compose
 from scripts.synthetic_services import SyntheticAds, SyntheticGaia, SyntheticSimbad
+
+# Explicit old-contract fixture, not a PostgreSQL runtime acceptance server.
+# Never inherit an operator's daily database connection from .env.
+
+os.environ["ASTROAGENT_DATABASE_URL"] = ""
+main.PostgresRepository = ConversationRepository
+services.compose = compose
 
 
 class SyntheticModel:

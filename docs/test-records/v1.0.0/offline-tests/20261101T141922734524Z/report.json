@@ -1,0 +1,80 @@
+{
+  "application_version": "1.0.0",
+  "postgres_integration_requested": true,
+  "legacy_storage_is_test_double": true,
+  "real_embedding_or_rag_quality_validated": false,
+  "started_at": "2026-11-01T14:19:22.736523+00:00",
+  "kind": "offline-tests",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.8.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "4abe8cd05739ccacd327e8de457879014c2c7a7f",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M .github/workflows/test.yml\n M README.md\n M docs/ROADMAP.md\n M docs/TESTING.md\n M docs/test-records/README.md\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/projects.ts\n M frontend/src/main.ts\n M frontend/src/style.css\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/src/views/KnowledgeWorkspace.vue\n M frontend/src/views/ProjectOverview.vue\n M frontend/src/views/ProjectWorkspace.vue\n M frontend/src/views/WorkflowWorkspace.vue\n M pyproject.toml\n M scripts/evaluate_knowledge.py\n M scripts/fixture_server.py\n M scripts/run_tests.py\n M scripts/verify_v09.py\n M src/astroagent/__init__.py\n M src/astroagent/config.py\n M src/astroagent/knowledge.py\n M src/astroagent/knowledge_archives.py\n M src/astroagent/knowledge_parser.py\n M src/astroagent/local_access.py\n M src/astroagent/main.py\n M src/astroagent/project_archives.py\n M src/astroagent/project_schemas.py\n M src/astroagent/projects.py\n M tests/conftest.py\n?? .v1-acceptance-model-data/\n?? .v1-acceptance-model/\n?? docs/API_DATA_V1.0.md\n?? docs/OPERATIONS_V1.0.md\n?? docs/PROJECT_PLAN_V1.0.md\n?? docs/RAG_ARCHITECTURE_V1.0.md\n?? docs/development/v1.0.0/\n?? docs/releases/v1.0.0.md\n?? docs/test-records/v1.0.0/\n?? frontend/src/api/rag.ts\n?? frontend/src/views/RagWorkspace.vue\n?? frontend/src/views/SettingsWorkspace.vue\n?? scripts/diagnose_gaia.py\n?? scripts/evaluate_v10_automatic.py\n?? scripts/legacy_fixture_storage.py\n?? scripts/manage_postgres.py\n?? scripts/migrate_sqlite_to_postgres.py\n?? scripts/postgres.ps1\n?? scripts/prepare_embedding_model.py\n?? scripts/verify_v10_browser.mjs\n?? scripts/verify_v10_tcp.py\n?? src/astroagent/api/rag.py\n?? src/astroagent/api/setup.py\n?? src/astroagent/embedding_worker.py\n?? src/astroagent/embeddings.py\n?? src/astroagent/postgres.py\n?? src/astroagent/postgres_knowledge.py\n?? src/astroagent/rag_archives.py\n?? src/astroagent/rag_schemas.py\n?? src/astroagent/rag_service.py\n?? src/astroagent/rag_store.py\n?? src/astroagent/services.py\n?? tests/test_rag_postgres.py\n?? tests/test_v10_migration_postgres.py\n?? tests/test_v10_rag_boundaries.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=D:\\project\\astroagent\\docs\\test-records\\v1.0.0\\offline-tests\\20261101T141922734524Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 187.3221,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1362,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1267,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.1211,
+      "transcript": "check-4.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-11-01T14:22:31.610536+00:00"
+}

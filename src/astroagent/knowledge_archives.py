@@ -440,6 +440,7 @@ def import_knowledge(db, bundle, project_id, id_map):
         if (
             full
             and available
+            and getattr(db, "dialect", None) != "postgresql"
             and original["version_id"] in current_ids
             and version_map[original["version_id"]]["state"] in ("ready", "partial")
             and item["text"] is not None

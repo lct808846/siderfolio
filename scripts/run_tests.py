@@ -25,6 +25,11 @@ def main():
         "--live-ads", action="store_true", help="访问真实 ADS/综合查询，会产生模型用量"
     )
     mode.add_argument("--live-gaia", action="store_true", help="访问真实 Gaia/三工具与模型验收")
+    parser.add_argument(
+        "--postgres",
+        action="store_true",
+        help="同时运行显式隔离的PostgreSQL/pgvector集成；须配置专用测试库",
+    )
     args = parser.parse_args()
     live = args.live or args.live_ads or args.live_gaia
     kind = (
@@ -39,6 +44,7 @@ def main():
     output = create_record_directory(kind)
     environment = os.environ.copy()
     environment["PYTHONIOENCODING"] = "utf-8"
+    environment["ASTROAGENT_RUN_POSTGRES_TESTS"] = "1" if args.postgres else "0"
     environment["ASTROAGENT_RUN_LIVE"] = "1" if args.live else "0"
     environment["ASTROAGENT_RUN_LIVE_ADS"] = "1" if args.live_ads else "0"
     environment["ASTROAGENT_RUN_LIVE_GAIA"] = "1" if args.live_gaia else "0"
@@ -71,6 +77,9 @@ def main():
         )
     report = {
         "application_version": project_version(),
+        "postgres_integration_requested": args.postgres,
+        "legacy_storage_is_test_double": True,
+        "real_embedding_or_rag_quality_validated": False,
         "started_at": datetime.now(UTC).isoformat(),
         "kind": kind,
         **runtime_metadata(),

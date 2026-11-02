@@ -1,0 +1,14 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- E:\miniconda3\envs\agent\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 3 items
+
+tests/test_rag_postgres.py::test_confirmation_idempotency_and_deleted_request_never_resends PASSED [ 33%]
+tests/test_rag_postgres.py::test_scope_changed_original_never_sends PASSED [ 66%]
+tests/test_rag_postgres.py::test_format5_restores_fixed_citations_with_new_ids PASSED [100%]
+
+- generated xml file: D:\project\astroagent\docs\test-records\v1.0.0\postgres-tests\20261101T1342Z\pytest.xml -
+============================== 3 passed in 8.93s ==============================

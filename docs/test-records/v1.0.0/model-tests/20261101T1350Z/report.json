@@ -1,0 +1,15 @@
+{
+  "kind": "real_cpu_embedding_synthetic_text",
+  "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+  "tree_sha256": "1daaecb5ccf506a52cd67ffa88319d56efff7112b6f02b6f3d06a51e92f45d39",
+  "passed": true,
+  "dimension": [
+    384,
+    384
+  ],
+  "norms": [
+    1.0,
+    1.0
+  ],
+  "seconds": 40.416
+}

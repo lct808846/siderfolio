@@ -17,45 +17,43 @@ from astroagent.api.health import router as health_router
 from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
 from astroagent.api.projects import router as projects_router
+from astroagent.api.rag import router as rag_router
+from astroagent.api.setup import router as setup_router
 from astroagent.api.workflows import router as workflows_router
-from astroagent.artifacts import ArtifactCache
 from astroagent.config import LocalSettings
-from astroagent.conversation_service import ConversationService
-from astroagent.conversations import ConversationRepository
 from astroagent.errors import ServiceError
 from astroagent.export_schemas import ExportRequest
 from astroagent.knowledge_schemas import DocumentUpload
-from astroagent.knowledge_service import KnowledgeService
 from astroagent.local_access import LocalAccess
-from astroagent.project_links import ProjectLinks
-from astroagent.project_service import ProjectService
-from astroagent.workflow_service import WorkflowService
+from astroagent.postgres import PostgresRepository
 
 
 @asynccontextmanager
 async def lifespan(app):
     repository = None
     app.state.conversation_service = None
+    app.state.repository = None
     try:
         settings = LocalSettings()
-        repository = ConversationRepository(settings)
+        repository = PostgresRepository(settings)
         repository.initialize()
-        service = ConversationService(repository)
-        ArtifactCache(service, settings)
-        service.projects = ProjectService(service)
-        service.workflows = WorkflowService(service)
-        service.knowledge = KnowledgeService(service)
-        service.links = ProjectLinks(service)
-        app.state.conversation_service = service
-    except Exception:
+        from astroagent.services import compose
+
+        app.state.conversation_service = compose(repository, settings)
+        app.state.repository = repository
+    except Exception as exc:
+        app.state.storage_code = (
+            exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+        )
         if repository is not None:
             repository.close()
     try:
         yield
     finally:
         app.state.conversation_service = None
-        if repository is not None:
-            repository.close()
+        active = getattr(app.state, "repository", repository)
+        if active is not None:
+            active.close()
 
 
 app = FastAPI(title="AstroAgent", version=__version__, lifespan=lifespan)
@@ -68,6 +66,8 @@ app.include_router(projects_router)
 app.include_router(workflows_router)
 app.include_router(knowledge_router)
 app.include_router(links_router)
+app.include_router(rag_router)
+app.include_router(setup_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 
@@ -113,7 +113,7 @@ async def service_error_handler(request: Request, exc: ServiceError):
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(request: Request, exc: RequestValidationError):
     if request.url.path.startswith(
-        ("/api/v1/conversations", "/api/v1/artifacts", "/api/v1/projects")
+        ("/api/v1/conversations", "/api/v1/artifacts", "/api/v1/projects", "/api/v1/setup")
     ):
         return JSONResponse(
             status_code=422,

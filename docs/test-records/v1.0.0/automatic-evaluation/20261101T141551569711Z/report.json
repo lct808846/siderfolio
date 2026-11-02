@@ -1,0 +1,130 @@
+{
+  "kind": "automated_exploratory_public_literature",
+  "plan_sha256": "442decdb30dd54adcba077f7497ca75f89967a2ef0d703a36f4c668e58849c34",
+  "model_sha256": "1daaecb5ccf506a52cd67ffa88319d56efff7112b6f02b6f3d06a51e92f45d39",
+  "limitations": "Two public paper pages and machine-defined anchors are not an independently annotated representative corpus; automatic matches cannot establish scientific faithfulness.",
+  "cases": [
+    {
+      "id": "cluster-en",
+      "group": "english",
+      "covered": true,
+      "status": "evidence_found",
+      "semantic_status": "ready",
+      "lexical_candidates": 1,
+      "semantic_candidates": 6,
+      "returned_sources": [
+        "cluster",
+        "cluster",
+        "cluster",
+        "cluster",
+        "gaia",
+        "gaia"
+      ],
+      "invalid_citations": 0,
+      "seconds": 20.096
+    },
+    {
+      "id": "gaia-en",
+      "group": "english",
+      "covered": true,
+      "status": "evidence_found",
+      "semantic_status": "ready",
+      "lexical_candidates": 1,
+      "semantic_candidates": 1,
+      "returned_sources": [
+        "gaia"
+      ],
+      "invalid_citations": 0,
+      "seconds": 23.26
+    },
+    {
+      "id": "cluster-zh",
+      "group": "chinese",
+      "covered": true,
+      "status": "evidence_found",
+      "semantic_status": "ready",
+      "lexical_candidates": 0,
+      "semantic_candidates": 5,
+      "returned_sources": [
+        "cluster",
+        "cluster",
+        "cluster",
+        "cluster",
+        "gaia"
+      ],
+      "invalid_citations": 0,
+      "seconds": 22.734
+    },
+    {
+      "id": "gaia-zh",
+      "group": "chinese",
+      "covered": true,
+      "status": "evidence_found",
+      "semantic_status": "ready",
+      "lexical_candidates": 0,
+      "semantic_candidates": 5,
+      "returned_sources": [
+        "gaia",
+        "cluster",
+        "cluster",
+        "cluster",
+        "gaia"
+      ],
+      "invalid_citations": 0,
+      "seconds": 18.625
+    },
+    {
+      "id": "none-one",
+      "group": "unanswerable",
+      "covered": false,
+      "status": "evidence_found",
+      "semantic_status": "ready",
+      "lexical_candidates": 0,
+      "semantic_candidates": 6,
+      "returned_sources": [
+        "cluster",
+        "gaia",
+        "cluster",
+        "cluster",
+        "cluster",
+        "gaia"
+      ],
+      "invalid_citations": 0,
+      "seconds": 19.122,
+      "answer_http_status": 200,
+      "answer_state": "insufficient_evidence",
+      "answer_citations": []
+    },
+    {
+      "id": "none-two",
+      "group": "unanswerable",
+      "covered": false,
+      "status": "evidence_found",
+      "semantic_status": "ready",
+      "lexical_candidates": 0,
+      "semantic_candidates": 5,
+      "returned_sources": [
+        "cluster",
+        "cluster",
+        "cluster",
+        "gaia",
+        "cluster"
+      ],
+      "invalid_citations": 0,
+      "seconds": 17.789,
+      "answer_http_status": 200,
+      "answer_state": "insufficient_evidence",
+      "answer_citations": []
+    }
+  ],
+  "passed": false,
+  "answer_plan_sha256": "44b8a7dc0ddcadb063baa25025ba9b654f861d3b6241a0816cc51a71b32006d6",
+  "metrics": {
+    "english_hybrid_recall_at_5": 1.0,
+    "chinese_hybrid_recall_at_5": 1.0,
+    "unanswerable_refusal_rate": 0.0,
+    "invalid_citation_count": 0
+  },
+  "answer_level_refusal_rate": 1.0,
+  "test_database_dropped": true
+}

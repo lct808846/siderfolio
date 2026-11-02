@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "dump_created",
+      "passed": true
+    },
+    {
+      "name": "manifest_sha",
+      "passed": true
+    },
+    {
+      "name": "restore_succeeded",
+      "passed": true
+    },
+    {
+      "name": "record_preserved",
+      "passed": true
+    },
+    {
+      "name": "existing_target_refused",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "test_databases_dropped": true
+}

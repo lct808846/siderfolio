@@ -192,6 +192,8 @@ class ProjectDetail(Project):
     conversation_ids: list[str]
     snapshots: list[SnapshotSummary]
     reruns: list[Rerun]
+    rag_answer_count: int = 0
+    rag_request_count: int = 0
     link_count: int = 0
     link_request_count: int = 0
     workflow_count: int = 0
@@ -214,7 +216,7 @@ class Comparison(Contract):
 
 class ArchiveManifest(Contract):
     format: Literal["astroagent-project"]
-    version: Literal[1, 2, 3, 4]
+    version: Literal[1, 2, 3, 4, 5]
     exported_at: str
     application_version: str
     files: dict[str, dict]
@@ -223,7 +225,7 @@ class ArchiveManifest(Contract):
 
 
 class ProjectArchiveRequest(Revision):
-    format_version: StrictInt = Field(default=4, ge=1, le=4)
+    format_version: StrictInt = Field(default=5, ge=1, le=5)
     knowledge_mode: Literal["full", "metadata"] = "metadata"
     confirmed_include_originals: StrictBool = False
 

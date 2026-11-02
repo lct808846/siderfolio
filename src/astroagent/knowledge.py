@@ -22,6 +22,23 @@ FTS_TABLES = ("knowledge_words", "knowledge_trigrams")
 
 
 def create_indexes(db):
+    if getattr(db, "dialect", None) == "postgresql":
+        db.execute(
+            "CREATE INDEX IF NOT EXISTS knowledge_lex"
+            "ical ON knowledge_units USING gin (to_ts"
+            "vector('simple',normalized))"
+        )
+        db.execute(
+            "CREATE INDEX IF NOT EXISTS knowledge_sub"
+            "string ON knowledge_units USING gin (nor"
+            "malized gin_trgm_ops)"
+        )
+        db.execute(
+            "INSERT INTO knowledge_meta (key,value) V"
+            "ALUES ('fts_available','1') ON CONFLICT "
+            "(key) DO UPDATE SET value='1'"
+        )
+        return True
     db.execute("SAVEPOINT knowledge_fts")
     try:
         db.execute(
@@ -113,7 +130,11 @@ def used_bytes(db):
         "SELECT coalesce(sum(reserved_bytes),0) FROM knowledge_operations"
     ).fetchone()[0]
     # FTS5's own persisted payloads, including the two normalized content copies.
-    if indexes_available(db):
+    if getattr(db, "dialect", None) == "postgresql":
+        size += db.execute(
+            "SELECT pg_relation_size('knowledge_lexical')+pg_relation_size('knowledge_substring')"
+        ).fetchone()[0]
+    if indexes_available(db) and getattr(db, "dialect", None) != "postgresql":
         for name in FTS_TABLES:
             for suffix, columns in (
                 ("data", ("block",)),
@@ -130,6 +151,40 @@ def used_bytes(db):
 
 
 def clear_index(db, *, document_id=None, project_id=None):
+    if getattr(db, "dialect", None) == "postgresql":
+        if document_id:
+            db.execute("DELETE FROM rag_vectors WHERE document_id=?", (document_id,))
+            db.execute(
+                (
+                    "UPDATE rag_indexes SET state='stale',rec"
+                    "ord=jsonb_set(record::jsonb,'{state}','\""
+                    "stale\"')::text WHERE project_id IN (SELE"
+                    "CT project_id FROM knowledge_documents W"
+                    "HERE id=?) AND state='ready'"
+                ),
+                (document_id,),
+            )
+            db.execute(
+                (
+                    "DELETE FROM rag_previews WHERE project_i"
+                    "d IN (SELECT project_id FROM knowledge_d"
+                    "ocuments WHERE id=?)"
+                ),
+                (document_id,),
+            )
+        else:
+            db.execute("DELETE FROM rag_vectors WHERE project_id=?", (project_id,))
+            db.execute(
+                (
+                    "UPDATE rag_indexes SET state='stale',rec"
+                    "ord=jsonb_set(record::jsonb,'{state}','\""
+                    "stale\"')::text WHERE project_id=? AND st"
+                    "ate='ready'"
+                ),
+                (project_id,),
+            )
+            db.execute("DELETE FROM rag_previews WHERE project_id=?", (project_id,))
+        return
     if not indexes_available(db):
         return
     for table in FTS_TABLES:
@@ -539,7 +594,7 @@ class KnowledgeRepository:
                             normalized,
                         ),
                     )
-                    if available:
+                    if available and getattr(db, "dialect", None) != "postgresql":
                         for table in FTS_TABLES:
                             db.execute(
                                 f"INSERT INTO {table}(unit_id,project_id,text) VALUES (?,?,?)",

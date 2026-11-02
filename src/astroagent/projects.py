@@ -65,6 +65,19 @@ class ProjectRepository:
 
     @staticmethod
     def _idle(db, project_id):
+        if getattr(db, "dialect", None) == "postgresql":
+            if db.execute(
+                (
+                    "SELECT 1 FROM rag_answers WHERE project_"
+                    "id=? AND state='running' UNION ALL SELEC"
+                    "T 1 FROM rag_indexes WHERE project_id=? "
+                    "AND state='running'"
+                ),
+                (project_id, project_id),
+            ).fetchone():
+                raise ServiceError(
+                    409, "project_busy", "项目正在构建索引或生成文献问答，请先核对保存状态。"
+                )
         if db.execute(
             "SELECT 1 FROM knowledge_operations WHERE project_id=? AND state='parsing'",
             (project_id,),
@@ -130,6 +143,13 @@ class ProjectRepository:
                     "SELECT record FROM reruns WHERE project_id=? ORDER BY rowid", (identifier,)
                 )
             ]
+            if getattr(db, "dialect", None) == "postgresql":
+                value["rag_answer_count"] = db.execute(
+                    "SELECT count(*) FROM rag_answers WHERE project_id=?", (identifier,)
+                ).fetchone()[0]
+                value["rag_request_count"] = db.execute(
+                    "SELECT count(*) FROM rag_answer_requests WHERE project_id=?", (identifier,)
+                ).fetchone()[0]
             value["link_count"] = db.execute(
                 "SELECT count(*) FROM project_links WHERE project_id=?", (identifier,)
             ).fetchone()[0]

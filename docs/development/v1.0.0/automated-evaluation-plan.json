@@ -1,0 +1,22 @@
+{
+  "version": "1",
+  "status": "frozen_before_execution",
+  "evaluation_kind": "automated_exploratory_public_literature",
+  "user_instruction": "No manual acceptance; automatic matching only. Gaia network checks are an explicit exception.",
+  "limitations": "Two public paper pages and machine-defined anchors are not an independently annotated representative corpus; automatic matches cannot establish scientific faithfulness.",
+  "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+  "model_tree_sha256": "1daaecb5ccf506a52cd67ffa88319d56efff7112b6f02b6f3d06a51e92f45d39",
+  "corpus": [
+    {"id": "cluster", "source": "https://arxiv.org/pdf/1601.01752", "original_sha256": "1d6061aa93ebf27b55dba44c41311d7dfad95f4f8f73161c1802b51f5cb714a2", "physical_page": 1},
+    {"id": "gaia", "source": "https://arxiv.org/pdf/1609.04172", "original_sha256": "0f1db64da7baba4dcd0f51daa9fd51b0b7b43f276757908e047e01101dad43f4", "physical_page": 1}
+  ],
+  "thresholds": {"english_hybrid_recall_at_5": 1.0, "chinese_hybrid_recall_at_5": 0.5, "unanswerable_refusal_rate": 1.0, "invalid_citation_count": 0},
+  "cases": [
+    {"id": "cluster-en", "query": "dynamical fate of binary star clusters", "expected": "cluster", "group": "english"},
+    {"id": "gaia-en", "query": "Gaia Data Release 1 survey properties", "expected": "gaia", "group": "english"},
+    {"id": "cluster-zh", "query": "双星团银河潮汐作用", "expected": "cluster", "group": "chinese"},
+    {"id": "gaia-zh", "query": "盖亚数据发布天体测量", "expected": "gaia", "group": "chinese"},
+    {"id": "none-one", "query": "quasarpolarimetryxyz", "expected": null, "group": "unanswerable"},
+    {"id": "none-two", "query": "exoplanetatmospherexyz", "expected": null, "group": "unanswerable"}
+  ]
+}

@@ -741,6 +741,161 @@ export interface paths {
         patch: operations["update_api_v1_projects__project_id__links__link_id__patch"];
         trace?: never;
     };
+    "/api/v1/projects/{project_id}/rag/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Status */
+        get: operations["status_api_v1_projects__project_id__rag_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/rag/indexes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Build */
+        post: operations["build_api_v1_projects__project_id__rag_indexes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/rag/indexes/{index_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Index */
+        delete: operations["delete_index_api_v1_projects__project_id__rag_indexes__index_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/rag/previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview */
+        post: operations["preview_api_v1_projects__project_id__rag_previews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/rag/previews/{preview_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Discard */
+        delete: operations["discard_api_v1_projects__project_id__rag_previews__preview_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/rag/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_projects__project_id__rag_answers_get"];
+        put?: never;
+        /** Generate */
+        post: operations["generate_api_v1_projects__project_id__rag_answers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/rag/answers/{answer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detail */
+        get: operations["detail_api_v1_projects__project_id__rag_answers__answer_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete */
+        delete: operations["delete_api_v1_projects__project_id__rag_answers__answer_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/setup/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Status */
+        get: operations["status_api_v1_setup_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/setup/initialize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initialize */
+        post: operations["initialize_api_v1_setup_initialize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -871,6 +1026,11 @@ export interface components {
             }[];
             /** Warnings */
             warnings: string[];
+        };
+        /** Confirm */
+        Confirm: {
+            /** Confirmed */
+            confirmed: boolean;
         };
         /** ContextRecord */
         ContextRecord: {
@@ -1522,10 +1682,30 @@ export interface components {
             /** Unit */
             unit: string;
         };
+        /** GenerateRequest */
+        GenerateRequest: {
+            /** Client Request Id */
+            client_request_id: string;
+            /** Preview Id */
+            preview_id: string;
+            /** Confirmation Token */
+            confirmation_token: string;
+            /** Confirmed */
+            confirmed: boolean;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HistoryText */
+        HistoryText: {
+            /** Id */
+            id: string;
+            /** Question */
+            question: string;
+            /** Answer */
+            answer: string;
         };
         /** ImportResult */
         ImportResult: {
@@ -1538,6 +1718,59 @@ export interface components {
             };
             /** Archive Sha256 */
             archive_sha256: string;
+        };
+        /** IndexRequest */
+        IndexRequest: {
+            /** Expected Revision */
+            expected_revision: number;
+            /** Client Request Id */
+            client_request_id: string;
+            /** Confirmed */
+            confirmed: boolean;
+        };
+        /** IndexStatus */
+        IndexStatus: {
+            /** Id */
+            id: string;
+            /** Project Id */
+            project_id: string;
+            /** Client Request Id */
+            client_request_id: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "running" | "ready" | "failed" | "stale" | "interrupted";
+            /** Model Sha256 */
+            model_sha256: string;
+            /** Model Name */
+            model_name: string;
+            /** Dimension */
+            dimension: number;
+            /**
+             * Normalized
+             * @default true
+             * @constant
+             */
+            normalized: true;
+            /**
+             * Algorithm
+             * @default sentence-transformers-cpu-v1
+             * @constant
+             */
+            algorithm: "sentence-transformers-cpu-v1";
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Created At */
+            created_at: string;
+            /** Completed At */
+            completed_at?: string | null;
+            /** Total */
+            total: number;
+            /** Processed */
+            processed: number;
+            /** Error */
+            error?: string | null;
         };
         /** KnowledgeDocument */
         KnowledgeDocument: {
@@ -1864,6 +2097,53 @@ export interface components {
              */
             kind: "proper_motion" | "parallax_histogram" | "observed_cmd";
         };
+        /** Preview */
+        Preview: {
+            /** Id */
+            id: string;
+            /** Project Id */
+            project_id: string;
+            /** Question */
+            question: string;
+            /** Document Ids */
+            document_ids: string[];
+            /** Version Ids */
+            version_ids: string[];
+            /** Provider */
+            provider: string;
+            /** Model */
+            model: string;
+            /** Model Fingerprint */
+            model_fingerprint: string;
+            /** Created At */
+            created_at: string;
+            /** Expires At */
+            expires_at: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "evidence_found" | "no_results";
+            /** Evidence */
+            evidence: components["schemas"]["RagEvidence"][];
+            /** History */
+            history: components["schemas"]["HistoryText"][];
+            /** Index Id */
+            index_id: string | null;
+            /** Lexical Status */
+            lexical_status: string;
+            /** Semantic Status */
+            semantic_status: string;
+            /** Lexical Candidates */
+            lexical_candidates: number;
+            /** Semantic Candidates */
+            semantic_candidates: number;
+            /** Warnings */
+            warnings: string[];
+            retrieval: components["schemas"]["RetrievalTrace"];
+            /** Confirmation Token */
+            confirmation_token: string;
+        };
         /** Project */
         Project: {
             /** Name */
@@ -1904,7 +2184,7 @@ export interface components {
             expected_revision: number;
             /**
              * Format Version
-             * @default 4
+             * @default 5
              */
             format_version: number;
             /**
@@ -1975,6 +2255,16 @@ export interface components {
             snapshots: components["schemas"]["SnapshotSummary"][];
             /** Reruns */
             reruns: components["schemas"]["Rerun"][];
+            /**
+             * Rag Answer Count
+             * @default 0
+             */
+            rag_answer_count: number;
+            /**
+             * Rag Request Count
+             * @default 0
+             */
+            rag_request_count: number;
             /**
              * Link Count
              * @default 0
@@ -2142,6 +2432,127 @@ export interface components {
             data?: components["schemas"]["ObjectData"] | null;
             error?: components["schemas"]["ErrorInfo"] | null;
         };
+        /** RagAnswer */
+        RagAnswer: {
+            /** Id */
+            id: string;
+            /** Project Id */
+            project_id: string;
+            /** Client Request Id */
+            client_request_id: string;
+            /** Preview Id */
+            preview_id: string;
+            /** Question */
+            question: string;
+            /**
+             * Answer
+             * @default
+             */
+            answer: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "running" | "completed" | "insufficient_evidence" | "failed" | "interrupted";
+            /** Created At */
+            created_at: string;
+            /** Completed At */
+            completed_at?: string | null;
+            /** Provider */
+            provider: string;
+            /** Model */
+            model: string;
+            /** Model Version */
+            model_version?: string | null;
+            /** Evidence */
+            evidence: components["schemas"]["RagEvidence"][];
+            /** Citation Labels */
+            citation_labels?: string[];
+            /** History Ids */
+            history_ids: string[];
+            /** Document Ids */
+            document_ids?: string[];
+            /** Version Ids */
+            version_ids?: string[];
+            /** Index Id */
+            index_id: string | null;
+            retrieval: components["schemas"]["RetrievalTrace"];
+            /** User Confirmed */
+            user_confirmed: boolean;
+            /** Confirmation Sha256 */
+            confirmation_sha256: string;
+            /** Error */
+            error?: string | null;
+            /**
+             * Provenance
+             * @default local
+             * @enum {string}
+             */
+            provenance: "local" | "imported_unverified";
+            /** Original Id */
+            original_id?: string | null;
+            /** Archive Sha256 */
+            archive_sha256?: string | null;
+        };
+        /** RagAnswerView */
+        RagAnswerView: {
+            record: components["schemas"]["RagAnswer"];
+            /** Current Evidence */
+            current_evidence: components["schemas"]["RagEvidence"][];
+            /** Warning */
+            warning: string;
+        };
+        /** RagEvidence */
+        RagEvidence: {
+            /** Label */
+            label: string;
+            view: components["schemas"]["EvidenceView"];
+            /** Lexical Rank */
+            lexical_rank?: number | null;
+            /** Semantic Rank */
+            semantic_rank?: number | null;
+            /** Rrf Score */
+            rrf_score: number;
+        };
+        /** RagPage */
+        RagPage: {
+            /** Items */
+            items: components["schemas"]["RagAnswerView"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Total */
+            total: number;
+        };
+        /** RagQuery */
+        RagQuery: {
+            /** Question */
+            question: string;
+            /** Document Ids */
+            document_ids?: string[];
+            /** Version Ids */
+            version_ids?: string[];
+            /** History Ids */
+            history_ids?: string[];
+        };
+        /** RagStatus */
+        RagStatus: {
+            /** Project Id */
+            project_id: string;
+            /** Indexes */
+            indexes: components["schemas"]["IndexStatus"][];
+            /** Active Index Id */
+            active_index_id: string | null;
+            /** Model Configured */
+            model_configured: boolean;
+            /** Semantic Enabled */
+            semantic_enabled: boolean;
+            /** Vector Budget Bytes */
+            vector_budget_bytes: number;
+            /** Vector Used Bytes */
+            vector_used_bytes: number;
+            /** Answer Count */
+            answer_count: number;
+        };
         /** Rerun */
         Rerun: {
             /** Id */
@@ -2219,10 +2630,102 @@ export interface components {
             /** Result Index */
             result_index: number;
         };
+        /** RetrievalTrace */
+        RetrievalTrace: {
+            /**
+             * Version
+             * @default pg-rrf-v1
+             * @enum {string}
+             */
+            version: "pg-rrf-v1" | "pg-rrf-v2";
+            /**
+             * Lexical Algorithm
+             * @default nfkc-pg-simple-cjk-substring-v1
+             * @constant
+             */
+            lexical_algorithm: "nfkc-pg-simple-cjk-substring-v1";
+            /**
+             * Rrf K
+             * @default 60
+             * @constant
+             */
+            rrf_k: 60;
+            /**
+             * Per Route Limit
+             * @default 20
+             * @constant
+             */
+            per_route_limit: 20;
+            /**
+             * Selected Limit
+             * @default 8
+             * @constant
+             */
+            selected_limit: 8;
+            /** Embedding Model Name */
+            embedding_model_name?: string | null;
+            /** Embedding Model Sha256 */
+            embedding_model_sha256?: string | null;
+            /** Embedding Dimension */
+            embedding_dimension?: number | null;
+            /** Index Source Sha256 */
+            index_source_sha256?: string | null;
+            /** Max Cosine Distance */
+            max_cosine_distance: number;
+            /** Embedding Cache Hit */
+            embedding_cache_hit?: boolean | null;
+        };
         /** Revision */
         Revision: {
             /** Expected Revision */
             expected_revision: number;
+        };
+        /** SetupStatus */
+        SetupStatus: {
+            /**
+             * Runtime Database
+             * @default postgresql
+             * @constant
+             */
+            runtime_database: "postgresql";
+            /** Configured */
+            configured: boolean;
+            /** Ready */
+            ready: boolean;
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /** Database Schema */
+            database_schema?: number | null;
+            /** Database Version */
+            database_version?: string | null;
+            /** Vector Version */
+            vector_version?: string | null;
+            /** Database Used Bytes */
+            database_used_bytes?: number | null;
+            /** Business Budget Bytes */
+            business_budget_bytes: number;
+            /** Vector Budget Bytes */
+            vector_budget_bytes: number;
+            /** Embedding Configured */
+            embedding_configured: boolean;
+            /** Embedding Model */
+            embedding_model: string;
+            /** Embedding Dimension */
+            embedding_dimension: number;
+            /** Answering Configured */
+            answering_configured: boolean;
+            /** Answering Provider */
+            answering_provider: string;
+            /** Answering Model */
+            answering_model: string;
+            /**
+             * Credentials Location
+             * @default server_environment_only
+             * @constant
+             */
+            credentials_location: "server_environment_only";
         };
         /** Snapshot */
         Snapshot: {
@@ -7594,6 +8097,682 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    status_api_v1_projects__project_id__rag_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RagStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    build_api_v1_projects__project_id__rag_indexes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IndexRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndexStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_index_api_v1_projects__project_id__rag_indexes__index_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                index_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Confirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    preview_api_v1_projects__project_id__rag_previews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RagQuery"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preview"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    discard_api_v1_projects__project_id__rag_previews__preview_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    history_api_v1_projects__project_id__rag_answers_get: {
+        parameters: {
+            query?: {
+                after?: string | null;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RagPage"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    generate_api_v1_projects__project_id__rag_answers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RagAnswerView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    detail_api_v1_projects__project_id__rag_answers__answer_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                answer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RagAnswerView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_api_v1_projects__project_id__rag_answers__answer_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                answer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Confirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    status_api_v1_setup_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupStatus"];
+                };
+            };
+        };
+    };
+    initialize_api_v1_setup_initialize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Confirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

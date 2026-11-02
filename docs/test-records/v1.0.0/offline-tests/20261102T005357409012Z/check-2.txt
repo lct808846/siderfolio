@@ -1,0 +1,12 @@
+E501 Line too long (103 > 100)
+  --> tests\test_rag_retrieval.py:15:96
+   |
+13 | @pytest.mark.parametrize(
+14 |     "question",
+15 |     ["unknownterm", "NGC999999", "NGC 999999", '"unlisted-id"', "'unknownword'?", "１２３４５", "???"],
+   |                                                                                                     ^^^
+16 | )
+17 | def test_underspecified_literal_requires_anchor(question):
+   |
+
+Found 1 error.

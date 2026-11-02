@@ -1,0 +1,9 @@
+{
+  "purpose": "Supplement the frozen retrieval evaluation with actual answer-level refusal checks; do not replace or lower its no-results threshold.",
+  "source_plan": "automated-evaluation-plan.json",
+  "cases": ["none-one", "none-two"],
+  "expected": "no_results without a model call, or insufficient_evidence after a confirmed model call",
+  "maximum_model_calls": 2,
+  "data": "only the public paper page excerpts selected by the source plan",
+  "limitations": "Automatic state and citation checks do not establish factual support; no human judgement is performed."
+}

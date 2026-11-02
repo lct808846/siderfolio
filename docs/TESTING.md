@@ -1,5 +1,7 @@
 # 测试说明
 
+V1.0.0 验收正在进行，结果、Gaia 失败及未覆盖范围见 [本版测试记录](test-records/v1.0.0/README.md)；旧版报告不能代替本版结果。
+
 V0.9.0 是未发布的开发版，已开始验收但尚未全部通过；本轮结果与缺口见 [验收记录](test-records/v0.9.0/README.md)，要求见 [验收清单](development/v0.9.0/ACCEPTANCE.md)。下列旧版报告不能代替本版结果。
 
 V0.8.0 已执行的测试及适用范围见 [本版测试记录](test-records/v0.8.0/README.md) 和 [验收清单](development/v0.8.0/ACCEPTANCE.md)；远端发布状态以 GitHub Releases 为准。旧版本报告不能代替本版通过。

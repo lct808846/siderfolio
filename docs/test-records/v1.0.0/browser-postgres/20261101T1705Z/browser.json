@@ -1,0 +1,17 @@
+{
+  "results": [
+    {
+      "browser": "chromium",
+      "passed": true,
+      "version": "156.0.8078.4",
+      "no_answer_requests": true
+    },
+    {
+      "browser": "edge",
+      "passed": true,
+      "version": "156.0.4314.50",
+      "no_answer_requests": true
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "scope": "real offline embedding and isolated upload/index/semantic-preview only",
+  "answer_service_calls": 0,
+  "versions": {
+    "torch": "2.15.0+cpu",
+    "sentence-transformers": "5.7.0",
+    "transformers": "5.22.1",
+    "huggingface-hub": "1.33.0",
+    "safetensors": "0.8.0"
+  },
+  "stage": "complete",
+  "embedding": {
+    "shape": [
+      2,
+      384
+    ],
+    "normalized": true,
+    "seconds": 85.437
+  },
+  "index": {
+    "state": "ready",
+    "segments": 2,
+    "dimension": 384,
+    "seconds": 42.438
+  },
+  "queries": [
+    {
+      "question": "双星团受到银河系潮汐影响时如何相互作用",
+      "semantic_status": "ready",
+      "lexical_candidates": 0,
+      "semantic_candidates": 2,
+      "expected_semantic_hit": true,
+      "seconds": 39.047
+    },
+    {
+      "question": "How do two stellar clusters interact in the Milky Way tidal field?",
+      "semantic_status": "ready",
+      "lexical_candidates": 0,
+      "semantic_candidates": 2,
+      "expected_semantic_hit": true,
+      "seconds": 39.062
+    }
+  ],
+  "disposable_database_removed": true
+}

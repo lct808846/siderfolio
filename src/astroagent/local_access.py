@@ -122,9 +122,9 @@ class LocalAccess:
                     return {"type": "http.request", "body": b"", "more_body": False}
 
                 return await self.app(scope, replay_upload, with_headers)
-        if scope["path"].startswith(("/api/v1/conversations", "/api/v1/projects")) and scope[
-            "method"
-        ] in {
+        if scope["path"].startswith(
+            ("/api/v1/conversations", "/api/v1/projects", "/api/v1/setup")
+        ) and scope["method"] in {
             "POST",
             "PATCH",
             "PUT",
@@ -132,8 +132,18 @@ class LocalAccess:
         }:
             if scope["method"] == "DELETE" and scope["path"].startswith("/api/v1/conversations"):
                 return await self.app(scope, receive, with_headers)
+            bodyless_preview_delete = (
+                scope["method"] == "DELETE"
+                and re.fullmatch(
+                    r"/api/v1/projects/[0-9a-fA-F-]{36}/rag/previews/[0-9a-fA-F-]{36}",
+                    scope["path"],
+                )
+                is not None
+                and not headers.get(b"content-type", "").strip()
+            )
             if (
-                headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
+                not bodyless_preview_delete
+                and headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
                 != ("application/zip" if importing else "application/json")
                 or headers.get(b"content-encoding", "identity").strip().lower() != "identity"
             ):
@@ -157,6 +167,10 @@ class LocalAccess:
                 body.extend(chunk)
                 if not message.get("more_body", False):
                     break
+            if bodyless_preview_delete and body:
+                return await failure(
+                    415, "unsupported_conversation_media_type", "仅支持空请求或JSON。"
+                )
             # Guard decoder recursion and non-finite / duplicated JSON keys before FastAPI.
             import json
 
@@ -175,7 +189,7 @@ class LocalAccess:
 
                 parsed = (
                     {}
-                    if importing
+                    if importing or bodyless_preview_delete
                     else json.loads(
                         body.decode("utf-8"), object_pairs_hook=pairs, parse_constant=constant
                     )

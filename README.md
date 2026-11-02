@@ -2,21 +2,33 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：`0.9.0`。提供项目总览、结果与本地文献证据的显式关联、失效跟踪、格式4归档及维护工具。Gaia 真实查询验收因超时未通过，按用户决定留待后续版本；见 [版本说明](docs/releases/v0.9.0.md) 和 [测试记录](docs/test-records/v0.9.0/README.md)。
+当前开发版本：`1.0.0`。已写入PostgreSQL + pgvector、本地嵌入与索引、混合检索、确认后生成的文献问答、首次设置和格式5归档。**完整版本仍待验收、未发布。** 本机数据库及 D 盘嵌入模型已准备，并按用户要求完成最小语义检索链路核验，见 [模型准备记录](docs/development/v1.0.0/MODEL_SETUP.md)；这不替代 [待验收清单](docs/development/v1.0.0/ACCEPTANCE.md)。原开发阶段记录见 [开发说明](docs/releases/v1.0.0.md) 和 [开发记录](docs/development/v1.0.0/README.md)。
 
-源码基线为本地V0.8.0提交 `4d92db2`；[V0.8测试记录](docs/test-records/v0.8.0/README.md)保持原样，只代表旧版当次结果。
+源码基线为本地V0.9.0提交 `4abe8cd`。[V0.9测试记录](docs/test-records/v0.9.0/README.md)及更早报告保持原样，只代表旧版结果；Gaia旧超时未在本轮诊断或宣称修复，旧发布例外不自动沿用。
 
 更早的V0.7.0当次[测试记录](docs/test-records/v0.7.0/README.md)与[版本说明](docs/releases/v0.7.0.md)保持原样，不作为本版通过证据。
 
 更早版本 [`v0.6.0`](https://github.com/lct808846/astroagent/releases/tag/v0.6.0) 的[测试记录](docs/test-records/v0.6.0/README.md)只对应当时版本，不证明当前工作区已通过。历史版本见 [`v0.5.0`](https://github.com/lct808846/astroagent/releases/tag/v0.5.0)、[`v0.4.0`](https://github.com/lct808846/astroagent/releases/tag/v0.4.0)。
 
-前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，FastAPI 独立提供 API，SQLite 保存本机业务状态。旧聊天、项目、快照及 V0.4 科学导出契约继续保留；后续目标见 [版本路线图](docs/ROADMAP.md)。本版面向可信本机的单用户使用。
+前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，FastAPI 独立提供 API，PostgreSQL 保存本机业务状态，pgvector保存派生向量。旧聊天、项目、快照及 V0.4 科学导出契约继续保留；后续目标见 [版本路线图](docs/ROADMAP.md)。本版面向可信本机的单用户使用。
 
-本版依据 [V0.9开发契约](docs/PROJECT_PLAN_V0.9.md)实施；安装/备份/恢复/卸载见 [操作稿](docs/OPERATIONS_V0.9.md)，支持矩阵与数据边界见 [V1.0候选兼容契约](docs/V1_CANDIDATE_CONTRACT.md)。候选文档不表示V1.0已完成或发布。
+本版依据 [V1.0开发契约](docs/PROJECT_PLAN_V1.0.md)与 [RAG设计](docs/RAG_ARCHITECTURE_V1.0.md)实施；首次安装/数据库/模型/备份/恢复见 [操作稿](docs/OPERATIONS_V1.0.md)，接口与数据见 [实施契约](docs/API_DATA_V1.0.md)。
+
+运行时不使用SQLite回退或双写；旧库只作为一次性只读迁移输入。新代码与生成接口不等于平台、真实模型、RAG质量或Gaia成功验收，限制见 [问题台账](docs/development/v1.0.0/ISSUES.md)。
 
 按用户约定，开发阶段不主动运行测试；发布前由用户安排测试验收。代码生成和源码格式化不作为验证通过的证据。
 
-## 项目总览与用户引用（V0.9）
+针对最近验收的无答案误召回和约39秒预览耗时，已写入单词/编号字面匹配保护、同项目重复问题的有界向量缓存及等待提示，见 [改进说明（待复验）](docs/development/v1.0.0/ACCEPTANCE_IMPROVEMENTS.md)。原评估与失败记录保留；本轮没有运行测试或重启后端，不能据源码修改宣称拒绝率或性能已达标。
+
+## 文献知识问答（V1.0，待验收）
+
+先在 `/settings` 配置服务端本机PostgreSQL和固定本地模型；核对后明确初始化空库，再从项目点击“文献知识问答”。选择当前文档或保留版本、问题及最多3条历史，本机混合检索后展示最多8段实际发送内容、页行、模型服务和降级状态。用户确认后才生成，取消不发送文献。模型解释不是原文，引用ID有效不能证明事实被支持，请逐条回查。
+
+索引显式构建新代，记录模型文件哈希、维度、源摘要和状态，失败保留旧可用代；不自动下载或换模型。删除/替换原文会撤销相关预览、清理向量并停止旧代检索，问答仍显示固定引用失效。问答重放使用原请求编号，不自动重发不确定模型调用；删除问答后仍保留最小请求历史以防再次生成。
+
+配置、语义检索、索引或模型不可用时明确显示原因，原词法摘录可单独使用。本机已固定 Apache-2.0 多语言 MiniLM 并核对最小离线链路；代表性科研文献效果、跨平台资源及完整故障边界仍待验收，不承诺所有CPU或中英文材料表现。
+
+## 项目总览与用户引用（V0.9起）
 
 在项目页点击“项目总览与关联”，进入 `/projects/{id}/overview`。总览集中查看会话轮次、快照、流程、文档与关联；先选择项目结果，再到同项目知识库检索并选择固定原文证据，核对两端、页码/行号和用户备注后确认关联。可以从快照、流程或文献证据直接进入。
 
@@ -28,17 +40,17 @@
 
 ## 本地知识库（V0.8起）
 
-项目页点击“本地知识库”，进入 `/projects/{id}/knowledge`。选择本机PDF或UTF-8 Markdown，填写已知元数据（未知留空），点击保存。文件原始字节、版本、提取文本、位置、索引和引用均保存在后端本机SQLite，旧聊天不会自动读取文献，也不调用模型、ADS或远程嵌入。
+项目页点击“本地知识库”，进入 `/projects/{id}/knowledge`。选择本机PDF或UTF-8 Markdown，填写已知元数据（未知留空），点击保存。文件原始字节、版本、提取文本、位置、索引和引用均保存在后端本机PostgreSQL，旧聊天不会自动读取文献，也不调用模型、ADS或远程嵌入。
 
 PDF仅提取文本，不执行OCR。按物理页记录空页和失败页，文档可能部分可用；复杂排版、公式、表格和双栏不能保证正确提取。Markdown保留原始行号、章节和文本，代码/HTML只作数据展示。每段最多1200字符、重叠最多120字符；可查看实际提取文本、受限PDF预览或下载原文件，不能精确高亮时以页码/行号核对。
 
-检索使用本地FTS5词法索引，所有关键词同时匹配；英文按词、较长中日韩字符使用trigram，短中文采用有界扫描。每次最多20段，没有命中返回 `insufficient_evidence`，不根据模型记忆补答。命中只是相关原文，不代表文献支持问题中的科学命题。
+旧词法入口在V1使用PostgreSQL simple与CJK有界子串候选，再核对全部词与原文；此算法不是SQLite FTS5等价性声明。每次最多20段，没有命中返回 `insufficient_evidence`，不根据模型记忆补答。命中只是相关原文，不代表文献支持问题中的科学命题。
 
-替换文件会新建版本，旧版本及引用保留。确认重建/恢复旧版本后才改变当前索引；旧引用不会跳到新文件。删除文档撤销全部版本与索引，引用保留最小定位元数据并标为失效；不表示安全擦除SQLite空闲页、旧备份或已导出的副本。仅元数据恢复的文档不可检索原文，可重新上传同哈希文件恢复对应版本，提取或位置变化时要求新建版本。
+替换文件会新建版本，旧版本及引用保留。确认重建/恢复旧版本后才改变当前索引；旧引用不会跳到新文件。删除文档撤销全部版本与索引，引用保留最小定位元数据并标为失效；不表示安全擦除数据库空闲页、事务日志、旧备份或已导出的副本。仅元数据恢复的文档不可检索原文，可重新上传同哈希文件恢复对应版本，提取或位置变化时要求新建版本。
 
-限制：单文件20 MiB、每项目100文档/200版本、PDF500页、Markdown200000行、单版本文本20 MiB/25000段、候选扫描20 MiB；另有每项目500次文档操作/1000条引用。所有原始文件、文本、FTS实际持久载荷与运行预留计入同一256 MiB业务预算。解析使用独立进程：30秒超时、768 MiB内存和64 MiB输出边界；Windows Job Object和Linux资源保护已做专项检查，无法实施保护则明确失败，不降低保护运行。实际覆盖范围见 [测试记录](docs/test-records/v0.8.0/README.md)。
+限制：单文件20 MiB、每项目100文档/200版本、PDF500页、Markdown200000行、单版本文本20 MiB/25000段、候选扫描20 MiB；另有每项目500次文档操作/1000条引用。所有原始文件、文本、词法GIN索引载荷与运行预留计入同一256 MiB业务预算。解析使用独立进程：30秒超时、768 MiB内存和64 MiB输出边界；Windows Job Object和Linux解析保护有旧版专项记录，本版仍需回归，无法实施保护则明确失败，不降低保护运行。实际覆盖范围见 [测试记录](docs/test-records/v0.8.0/README.md)。
 
-下次准备运行时需按“环境与安装”更新后端依赖，包含锁定的 `pypdf==6.21.4`、`python-multipart==0.0.32` 及兼容Starlette；本轮未安装这些依赖、启动服务或迁移个人库。FTS5/trigram不可用时知识库检索明确报错，旧聊天和项目仍保留。
+其他机器需按“环境与安装”准备后端依赖，包含锁定的 `pypdf==6.21.4`、`python-multipart==0.0.32` 及兼容Starlette、PostgreSQL及扩展、psycopg 和可选rag依赖。本机已准备专用 D 盘环境，使用 `powershell -File scripts/start_backend.ps1` 启动，路径与固定模型见 [准备记录](docs/development/v1.0.0/MODEL_SETUP.md)。未配置模型时词法检索仍可独立使用。
 
 ## 固定科研流程（V0.7起）
 
@@ -61,9 +73,9 @@ PDF仅提取文本，不执行OCR。按物理页记录空页和失败页，文�
 
 两份快照可并列比较条件、状态、交付数量、截断、来源和版本，并可显式比较精确 `source_id` / bibcode 的交集。编号保持字符串，未知不当作零；交付样本差异不能解释为总体、显著性或成员变化。
 
-“导出项目ZIP”默认格式4，固定包含 `manifest.json`、`project.json`、`conversations.json`、`snapshots.json`、`workflows.json`、`knowledge.json` 和 `links.json`，新增关联、失效与操作历史。明确选择“仅元数据”或“完整备份（含原文）”；含原文导出另行显示文档数、版本数及字节数并确认。仅元数据包标记不完整，恢复后原文不可用；完整备份遇到原文缺失/坏哈希会拒绝，不能静默省略。仍支持格式1–3导入，旧包关联为空；有知识库但无关联/操作历史时可显式导出格式3，格式2另要求无知识库历史，格式1另要求无流程。V0.8不能读取格式4；任何不支持数据都不能静默丢弃。导入前验证固定成员、严格JSON、大小、所有活动引用与哈希；导入为全新ID的独立副本，标记 `imported_unverified`。哈希只验证包内一致性，不认证数据库来源。导入不调用模型或科研服务；旧预览缓存不随项目包保存，可从恢复后的快照重新生成；流程中已登记的持久文件随格式2恢复。
+“导出项目ZIP”默认格式5，固定八成员：manifest/project/conversations/snapshots/workflows/knowledge/links/rag八个JSON。保留问答及最小请求历史，原文完整/仅元数据继续明确区分并确认；不保存向量或模型文件，恢复后需明确重建。支持格式1–4旧包，新ID与imported_unverified保持；有RAG或请求历史时拒绝更早格式，不能静默丢弃。包体/哈希/所有引用与原子导入边界保持，详见 [数据契约](docs/API_DATA_V1.0.md)。
 
-V0.9首次启动将SQLite schema4升级至5，迁移前使用一致性备份保存 `migration-v5-<UTC时间>.sqlite3`；旧库顺序迁移、失败回滚、高版本拒绝。回到V0.8需先停服，在独立目录恢复schema4备份，不能直接降级写入。新增整库一致性备份/独立目录恢复工具 `scripts/manage_data.py`，本轮未执行、未迁移或操作个人库；操作方式及数据保留卸载见 [维护说明](docs/OPERATIONS_V0.9.md)。
+V1运行schema6，只读迁移V0.9 schema5一致性备份到独立空PostgreSQL；不会自动打开或升级旧库。整库备份恢复使用新的pg_dump/pg_restore工具，旧manage_data.py仅处理SQLite。切换后新数据不会回流旧库，详见 [操作稿](docs/OPERATIONS_V1.0.md)。
 
 最多20项目、全库20会话、每会话40轮、每项目100快照及100重跑记录；所有副本、导入来源信息和运行预留计入同一256 MiB业务预算。项目ZIP接收32 MiB、解压总量128 MiB、单成员64 MiB；项目归档与单轮2 MiB快照导出是独立边界。归档生成与导入各最多一项，外部查询共用最多两个执行槽。项目或会话变化发生修订冲突时，先刷新核对再明确执行。
 
@@ -89,17 +101,17 @@ npm run serve
 
 Windows也可在项目根目录运行 `powershell -File scripts/frontend.ps1 -Mode build`，再运行 `powershell -File scripts/frontend.ps1 -Mode serve`。脚本优先使用已安装的Node24.15+（24.x）；若当前Node不受支持，可使用已存在的Codex内置Node，或显式传入 `-NodePath`。它不替换系统Node，也不修改全局配置。
 
-打开 <http://127.0.0.1:5173>。新建会话，输入完整首问，再基于已保存结果追问；右侧按轮次核查三类结果、完整表格、条件与来源。选择图种后点击“生成预览与数据包”，预览和下载来自同一个 ZIP。改选轮次或图种后需要重新生成；不足绘图条件时保留具体跳过原因。
+首次先打开 [本机设置](http://127.0.0.1:5173/settings) 核对数据库并确认初始化，再打开 <http://127.0.0.1:5173>。新建会话，输入完整首问，再基于已保存结果追问；右侧按轮次核查三类结果、完整表格、条件与来源。选择图种后点击“生成预览与数据包”，预览和下载来自同一个 ZIP。改选轮次或图种后需要重新生成；不足绘图条件时保留具体跳过原因。
 
-会话默认保存在 `.astroagent/astroagent.sqlite3`，刷新与服务重启后可以恢复。断线只代表网页停止等待，不保证后端已取消；先点击“恢复会话 / 刷新状态”核对，不要重复执行。已有运行中轮次在服务重启后标为“中断”，不会自动重放收费请求。删除会话前需要确认，不影响已下载到其他目录的文件。
+会话保存在服务端配置的本机PostgreSQL，刷新与重启后恢复。断线不代表后端取消，先核对原请求状态，不重复发新编号；重启后的运行记录标为中断，不自动重放收费请求。
 
-预览包仅缓存于内存，15分钟后或重启后失效；回到原轮次显式重新生成。缺少模型密钥时仍可读取历史及生成历史结果的预览/导出。SQLite不可写时会话接口明确报错；健康、接口文档及旧无状态入口仍可启动。
+预览包仅缓存于内存，15分钟后或重启后失效；回到原轮次显式重新生成。缺少模型密钥时仍可读取历史及生成历史结果的预览/导出。PostgreSQL不可用时会话接口明确报错；健康、接口文档及旧无状态入口仍可启动。
 
 前端开发时用 `npm run dev` 代替构建/静态服务，同样只监听127.0.0.1:5173且端口占用即失败。默认两种前端服务都把 `/api`、`/health` 代理至127.0.0.1:8000；构建静态服务不把API错误回退成HTML。直接跨源联调可在前端独立环境文件设置公开的 `VITE_API_BASE_URL`，后端配置明确的 `ASTROAGENT_ALLOWED_ORIGINS` JSON数组；不使用通配来源，前端环境变量中不得包含凭证。
 
 本地限制：最多20个会话、每会话40个已接受轮次；全局最多两轮模型任务，不排队；请求32 KiB，单轮16 MiB，全库业务内容及预留256 MiB。历史模型窗口最近六轮且至多64 KiB，整轮裁剪并提示遗漏；不改写原始完整结果。该字节预算不是供应商token容量保证，模型调用前另保留当前输入、工具与输出预算。
 
-数据库目录通过 `ASTROAGENT_DATA_DIR` 配置，必须在后端本机磁盘。数据库schema迁移前使用SQLite备份接口，未知更高版本拒绝降级写入。数据库和前端构建缓存不进入源码归档。本版不支持多worker或多个进程共享会话库；不要通过绑定0.0.0.0将无登录工具暴露到公网或LAN。
+数据库连接通过服务端 `ASTROAGENT_DATABASE_URL` 配置，只允许本机PostgreSQL；ASTROAGENT_DATA_DIR不再是运行时数据库路径。未知schema拒绝写入，首次空库初始化和旧库迁移均需显式操作。仅支持单进程单worker，不对公网或LAN开放；个人数据和构建缓存不进入源码归档。
 
 Gaia 固定访问 `gaiadr3.gaia_source`：支持十进制字符串 DR3 `source_id` 精确查询，或 ICRS 中心与半径（最大 30 角分）的圆锥查询（最多 100 行，默认 20 行）。返回测量、误差、单位、参考历元、实际 ADQL 与截断状态；可按要求筛选 RUWE 和正视差信噪比。基础统计由程序计算，只描述实际交付行；总命中数未知，不自动翻页。
 
@@ -117,7 +129,7 @@ SIMBAD 支持按名称查询主标识符、ICRS 赤经赤纬（度）、天体�
 
 ```powershell
 conda activate agent
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,rag]"
 ```
 
 在新机器上，可以先创建环境：
@@ -125,7 +137,7 @@ python -m pip install -e ".[dev]"
 ```powershell
 conda create -n agent python=3.12
 conda activate agent
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,rag]"
 ```
 
 `-e` 以可编辑方式安装项目，修改 `src/` 后无需重新安装；`dev` 包含 pytest 和用于接口测试的 HTTPX。
@@ -161,7 +173,7 @@ $env:DEEPSEEK_API_KEY = "your-deepseek-api-key"
 
 ```powershell
 conda activate agent
-python -m uvicorn astroagent.main:app --reload
+python -m uvicorn astroagent.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
 - 健康检查：<http://127.0.0.1:8000/health>
@@ -170,6 +182,8 @@ python -m uvicorn astroagent.main:app --reload
 - 本地会话：`/api/v1/conversations`、`/{id}/turns`
 - 轮次产物：`/api/v1/conversations/{id}/turns/{turn_id}/artifacts`
 - 清单/图片/下载：`/api/v1/artifacts/{artifact_id}/...`
+- 首次设置：`/api/v1/setup/status`、`/initialize`
+- 文献知识问答：项目`/rag/status`、`/indexes`、`/previews`、`/answers`
 - 项目总览与关联：`/api/v1/projects/{id}/overview`、`/links`、`/links/{link_id}`
 - 科研流程：`/api/v1/workflow-templates`、`/api/v1/projects/{id}/workflows`、`/{run_id}/execute`、`/{run_id}/outputs/{output_id}`
 - 交互接口文档：<http://127.0.0.1:8000/docs>
@@ -308,6 +322,8 @@ ZIP 包含完整 `snapshot.json`、每次成功查询的固定列 CSV、所选 P
 
 ## 测试
 
+本轮未执行下列命令。V1新增运行时须按 [本版清单](docs/development/v1.0.0/ACCEPTANCE.md)独立验收；默认旧后端与浏览器测试使用SQLite契约替身，不能证明PostgreSQL或真实RAG效果。专用测试库显式启用 `python scripts/run_tests.py --postgres`，禁止连接日常库。
+
 ```powershell
 conda activate agent
 python -m pytest -q
@@ -354,7 +370,7 @@ Gaia 的 pytest 独立开关为 `ASTROAGENT_RUN_LIVE_GAIA=1`；ADS 使用 `ASTRO
 
 浏览器检查前在 `frontend/` 执行 `npx playwright install chromium`；Windows同时使用已安装的Edge，Linux仅运行Chromium。检查脚本可用 `NODE_BINARY` 指定已安装的受支持Node可执行文件；浏览器测试采用专用合成库，不访问个人会话库。
 
-记录入口见 [分版本测试记录](docs/test-records/README.md)；V0.8 当前结果见 [本版记录](docs/test-records/v0.8.0/README.md)，完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions 包含后端检查、独立前端构建与浏览器任务；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
+记录入口见 [分版本测试记录](docs/test-records/README.md)；V0.9历史结果见 [旧版记录](docs/test-records/v0.9.0/README.md)，完整范围见 [测试文档](docs/TESTING.md)。GitHub Actions定义新增隔离PG/pgvector任务，保留后端与独立前端/旧浏览器任务；本轮未触发CI；发布须等待目标提交及标签的 CI 全部通过，执行情况见 [Actions](https://github.com/lct808846/astroagent/actions)。
 
 ## 目录
 

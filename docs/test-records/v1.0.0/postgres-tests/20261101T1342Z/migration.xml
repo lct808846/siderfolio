@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.932" timestamp="2026-11-01T21:44:19.864092+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_v10_migration_postgres" name="test_sqlite5_migrates_without_changing_source_and_refuses_replay" time="3.847"><failure message="AssertionError: assert None == ('Synthetic migration',)&#10; +  where None = fetchone()&#10; +    where fetchone = &lt;psycopg.Cursor [TUPLES_OK] [INTRANS] (host=127.0.0.1 port=55439 user=postgres database=astroagent_test_a35fef26ac714a0e9a17d6705b2849b1) at 0x2d5f1a95490&gt;.fetchone&#10; +      where &lt;psycopg.Cursor [TUPLES_OK] [INTRANS] (host=127.0.0.1 port=55439 user=postgres database=astroagent_test_a35fef26ac714a0e9a17d6705b2849b1) at 0x2d5f1a95490&gt; = execute('SELECT title FROM conversations WHERE id=%s', ('synthetic-id',))&#10; +        where execute = &lt;psycopg.Connection [INTRANS] (host=127.0.0.1 port=55439 user=postgres database=astroagent_test_a35fef26ac714a0e9a17d6705b2849b1) at 0x2d5f1bba780&gt;.execute">tmp_path = WindowsPath('C:/Users/lct/AppData/Local/Temp/pytest-of-lct/pytest-142/test_sqlite5_migrates_without_0')
+
+    def test_sqlite5_migrates_without_changing_source_and_refuses_replay(tmp_path):
+        if os.getenv("ASTROAGENT_RUN_POSTGRES_TESTS") != "1":
+            pytest.skip("Requires the dedicated PostgreSQL test instance")
+        import psycopg
+        from psycopg import sql
+    
+        from astroagent.config import LocalSettings
+        from astroagent.conversations import ConversationRepository
+    
+        url = os.getenv("ASTROAGENT_TEST_DATABASE_URL", "")
+        parsed = urlsplit(url)
+        if (
+            parsed.scheme not in ("postgres", "postgresql")
+            or parsed.hostname not in ("127.0.0.1", "localhost", "::1")
+            or not parsed.path.lstrip("/").startswith("astroagent_test")
+            or parsed.query
+            or parsed.fragment
+        ):
+            pytest.fail("A dedicated local astroagent_test database is required")
+        source = tmp_path / "source"
+        source.mkdir()
+        repository = ConversationRepository(LocalSettings(_env_file=None, data_dir=source))
+        repository.initialize()
+        try:
+            with sqlite3.connect(repository.path) as db:
+                db.execute(
+                    "INSERT INTO conversations VALUES (?, ?, ?, ?, ?, ?)",
+                    ("synthetic-id", "Synthetic migration", "2026-01-01", "2026-01-01", 0, 0),
+                )
+        finally:
+            repository.close()
+        source_hash = hashlib.sha256(repository.path.read_bytes()).hexdigest()
+        name = "astroagent_test_" + uuid4().hex
+        target = urlunsplit(parsed._replace(path="/" + name))
+        with psycopg.connect(url, autocommit=True, connect_timeout=5) as admin:
+            admin.execute(sql.SQL("CREATE DATABASE {} TEMPLATE template0").format(sql.Identifier(name)))
+        try:
+            env = os.environ.copy()
+            env["ASTROAGENT_DATABASE_URL"] = target
+            command = [
+                sys.executable,
+                "scripts/migrate_sqlite_to_postgres.py",
+                "--source",
+                str(repository.path),
+                "--expected-sha256",
+                source_hash,
+                "--confirm",
+            ]
+            first_report = tmp_path / "first.json"
+            first = subprocess.run(
+                [*command, "--report", str(first_report)], env=env, capture_output=True, timeout=120
+            )
+            assert first.returncode == 0, first_report.read_text(encoding="utf-8")
+            assert json.loads(first_report.read_text(encoding="utf-8"))["completed"]
+            assert hashlib.sha256(repository.path.read_bytes()).hexdigest() == source_hash
+            with psycopg.connect(target) as db:
+&gt;               assert db.execute(
+                    "SELECT title FROM conversations WHERE id=%s", ("synthetic-id",)
+                ).fetchone() == ("Synthetic migration",)
+E               AssertionError: assert None == ('Synthetic migration',)
+E                +  where None = fetchone()
+E                +    where fetchone = &lt;psycopg.Cursor [TUPLES_OK] [INTRANS] (host=127.0.0.1 port=55439 user=postgres database=astroagent_test_a35fef26ac714a0e9a17d6705b2849b1) at 0x2d5f1a95490&gt;.fetchone
+E                +      where &lt;psycopg.Cursor [TUPLES_OK] [INTRANS] (host=127.0.0.1 port=55439 user=postgres database=astroagent_test_a35fef26ac714a0e9a17d6705b2849b1) at 0x2d5f1a95490&gt; = execute('SELECT title FROM conversations WHERE id=%s', ('synthetic-id',))
+E                +        where execute = &lt;psycopg.Connection [INTRANS] (host=127.0.0.1 port=55439 user=postgres database=astroagent_test_a35fef26ac714a0e9a17d6705b2849b1) at 0x2d5f1bba780&gt;.execute
+
+tests\test_v10_migration_postgres.py:73: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,4 +1,4 @@
-"""固定四至七成员项目 ZIP（schema1/2/3/4）；完整校验后单事务恢复，不解压到文件系统。"""
+"""固定四至八成员项目 ZIP（格式1至5）；完整校验后单事务恢复，不解压到文件系统。"""
 
 import hashlib
 import json
@@ -58,7 +58,7 @@ def export_archive(
     repository,
     identifier,
     revision,
-    format_version=4,
+    format_version=5,
     knowledge_mode="metadata",
     confirmed_include_originals=False,
 ):
@@ -112,6 +112,15 @@ def export_archive(
         from astroagent.link_archives import read_links
 
         links = read_links(db, identifier, knowledge["mode"], repository.repo)
+        from astroagent.rag_archives import read_rag
+
+        rag = read_rag(db, identifier)
+        if format_version < 5 and (rag["answers"] or rag["requests"]):
+            raise ServiceError(
+                409,
+                "project_rag_archive_requires_v5",
+                "项目含RAG问答或请求历史，不能丢弃后导出旧格式。",
+            )
         if format_version < 4 and (links["links"] or links["requests"]):
             raise ServiceError(
                 409,
@@ -143,8 +152,10 @@ def export_archive(
         payloads["workflows.json"] = encode(workflows).encode()
     if format_version >= 3:
         payloads["knowledge.json"] = encode(knowledge).encode()
-    if format_version == 4:
+    if format_version >= 4:
         payloads["links.json"] = encode(links).encode()
+    if format_version >= 5:
+        payloads["rag.json"] = encode(rag).encode()
     manifest = ArchiveManifest(
         format="astroagent-project",
         version=format_version,
@@ -185,6 +196,7 @@ def decode_archive(raw):
                 MEMBERS | {"workflows.json"},
                 MEMBERS | {"workflows.json", "knowledge.json"},
                 MEMBERS | {"workflows.json", "knowledge.json", "links.json"},
+                MEMBERS | {"workflows.json", "knowledge.json", "links.json", "rag.json"},
             ):
                 raise ValueError("Fixed unique members required")
             for info in infos:
@@ -214,8 +226,10 @@ def decode_archive(raw):
         expected_members = MEMBERS if manifest.version == 1 else MEMBERS | {"workflows.json"}
         if manifest.version >= 3:
             expected_members |= {"knowledge.json"}
-            if manifest.version == 4:
+            if manifest.version >= 4:
                 expected_members |= {"links.json"}
+            if manifest.version >= 5:
+                expected_members |= {"rag.json"}
         elif manifest.knowledge_mode is not None or manifest.sources_complete is not None:
             raise ValueError("Knowledge metadata requires archive format3")
         if set(data) != expected_members:
@@ -409,10 +423,18 @@ def decode_archive(raw):
                 workflows,
                 knowledge,
             )
-            if manifest.version == 4
+            if manifest.version >= 4
             else empty_links()
         )
+        from astroagent.rag_archives import empty_rag, validate_rag
+
+        rag = (
+            validate_rag(strict_json(data["rag.json"]), project.id, knowledge)
+            if manifest.version >= 5
+            else empty_rag()
+        )
         return {
+            "rag": rag,
             "links": links,
             "knowledge": knowledge,
             "project": project.model_dump(),
@@ -494,6 +516,9 @@ def import_archive(repository, raw):
         len(encode(value).encode())
         for kind in ("links", "requests")
         for value in bundle["links"][kind]
+    )
+    incoming += sum(
+        len(encode(value).encode()) for values in bundle["rag"].values() for value in values
     )
     # Preflight before any write; exact normalized bytes are checked in-transaction.
     with repository.repo.connection() as db:
@@ -636,6 +661,9 @@ def import_archive(repository, raw):
         from astroagent.link_archives import import_links
 
         import_links(db, bundle["links"], project_id, id_map, digest, bundle["knowledge"]["mode"])
+        from astroagent.rag_archives import import_rag
+
+        import_rag(db, bundle["rag"], project_id, id_map, digest)
         project["import_map"] = id_map
         repository._put(db, "projects", project)
         repository._budget(db)

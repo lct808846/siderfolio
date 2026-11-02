@@ -1,0 +1,12 @@
+{
+  "commit": "4abe8cd",
+  "status": "source baseline only; no remote release or CI audit",
+  "date": "2026-11-01",
+  "preserved_files": [
+    "README.md",
+    "ROADMAP.md",
+    "PROJECT_PLAN_V1.0.md",
+    "RAG_ARCHITECTURE_V1.0.md",
+    "openapi.json"
+  ]
+}

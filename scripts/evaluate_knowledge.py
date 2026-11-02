@@ -24,6 +24,11 @@ def main():
     from fastapi.testclient import TestClient
 
     from astroagent import __version__
+
+    if int(__version__.split(".")[0]) >= 1:
+        parser.error(
+            "此入口为旧SQLite基线；V1.0请使用隔离的PostgreSQL集成与独立RAG评估计划，禁止连接日常库。"
+        )
     from astroagent.main import app
 
     root = Path(__file__).resolve().parents[1]

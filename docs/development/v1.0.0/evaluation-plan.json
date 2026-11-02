@@ -1,0 +1,45 @@
+{
+  "version": "1",
+  "status": "authored_not_executed",
+  "datasets": {
+    "synthetic": {
+      "status": "planned_separately_from_real_materials"
+    },
+    "real_literature": {
+      "status": "pending_licensed_selection_and_independent_annotation",
+      "papers": [],
+      "model_revision": null,
+      "model_tree_sha256": null
+    }
+  },
+  "thresholds_must_be_frozen_before_execution": true,
+  "thresholds": {
+    "cross_project_evidence_leaks": 0,
+    "unconfirmed_remote_text_sends": 0,
+    "invalid_citation_links_exposed": 0,
+    "additional_remote_calls_on_same_key": 0,
+    "lexical_recall_at_5": null,
+    "semantic_recall_at_5": null,
+    "hybrid_recall_at_5": null,
+    "independent_answer_faithfulness": null,
+    "no_answer_refusal_rate": null,
+    "latency_and_resource_envelope": null
+  },
+  "required_slices": [
+    "English",
+    "Chinese_to_English",
+    "short_CJK",
+    "astronomy_terms",
+    "unanswerable",
+    "contradictory_evidence",
+    "multiple_documents",
+    "old_or_deleted_versions",
+    "metadata_restore",
+    "complex_PDF",
+    "prompt_injection",
+    "model_or_vector_unavailable"
+  ],
+  "independent_human_ground_truth_required": true,
+  "legacy_scores_are_not_v1_results": true,
+  "synthetic_model_integration_is_not_real_model_evaluation": true
+}
