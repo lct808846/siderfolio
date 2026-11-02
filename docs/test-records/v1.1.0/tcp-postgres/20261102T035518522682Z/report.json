@@ -1,0 +1,40 @@
+{
+  "kind": "postgres_tcp_synthetic_no_model",
+  "checks": [
+    {
+      "name": "empty_database_requires_initialization",
+      "passed": true
+    },
+    {
+      "name": "initialization_requires_confirmation",
+      "passed": true
+    },
+    {
+      "name": "initialization_succeeds",
+      "passed": true
+    },
+    {
+      "name": "project_created",
+      "passed": true
+    },
+    {
+      "name": "document_uploaded",
+      "passed": true
+    },
+    {
+      "name": "lexical_preview_without_model",
+      "passed": true
+    },
+    {
+      "name": "restart_restores_database",
+      "passed": true
+    },
+    {
+      "name": "project_survives_restart",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "server_stopped": true,
+  "test_database_dropped": true
+}

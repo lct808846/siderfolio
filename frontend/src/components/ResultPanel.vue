@@ -42,7 +42,7 @@ async function save() { if (!artifact.value) return; try { await download(artifa
 <template>
   <aside class="results-panel" aria-label="结果核查">
     <header class="pane-heading"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ heading || (turn ? `第 ${turn.revision} 轮结果` : '查询结果') }}</h2></div><span v-if="historical" class="tag">历史结果</span></header>
-    <div v-if="!turn" class="results-empty"><span class="crosshair" aria-hidden="true">⊙</span><h3>让每一个结论有据可查</h3><p>查询后在这里核查测量、检索条件和来源。</p><div class="empty-axis"><span>等待查询数据</span></div></div>
+    <div v-if="!turn" class="results-empty"><h3>暂无查询结果</h3><p>提交查询后，可在此查看数据、检索条件、来源与导出选项。</p></div>
     <template v-else>
       <p class="small muted">{{ artifactPath ? "快照保存时间（UTC）" : "接收时间（UTC）" }}<br><time>{{ turn.received_at }}</time></p>
       <p v-if="turn.error" class="notice danger">{{ turn.error.message }} <code>{{ turn.error.code }}</code></p>

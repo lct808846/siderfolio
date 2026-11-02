@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import WorkspaceHeader from '../components/WorkspaceHeader.vue'
+import PanelSwitcher from '../components/PanelSwitcher.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiError, apiUrl } from '../api'
@@ -144,9 +146,9 @@ watch(() => route.fullPath, () => {
 </script>
 
 <template>
-  <div class="project-workspace workflow-workspace" :data-panel="mobilePanel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">1.0</span></RouterLink><span class="topbar-caption">固定科研流程</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">返回项目 ↗</RouterLink></header>
-    <nav class="workflow-mobile" aria-label="流程面板"><button @click="mobilePanel='project'">流程与参数</button><button @click="mobilePanel='steps'">执行记录</button><button @click="mobilePanel='results'">结果与下载</button></nav>
+  <div class="workspace-panes project-workspace workflow-workspace" :data-panel="mobilePanel">
+    <WorkspaceHeader title="固定科研流程" />
+    <PanelSwitcher v-model="mobilePanel" label="流程面板" :options="[{ value: 'project', label: '流程与参数' }, { value: 'steps', label: '执行记录' }, { value: 'results', label: '结果与下载' }]" />
     <aside class="project-sidebar workflow-sidebar" aria-label="流程列表与新建">
       <RouterLink :to="`/projects/${route.params.projectId}/workflows`"><p class="eyebrow">WORKFLOWS · {{ runs.length }}/50</p><h2>{{ project?.name || '正在读取项目' }}</h2></RouterLink>
       <RouterLink v-for="item in runs" :key="item.id" class="project-item" :class="{selected:item.id===run?.id}" :to="`/projects/${item.project_id}/workflows/${item.id}`"><b>{{ item.name }}</b><small>{{ state(item.state) }} · r{{ item.revision }} · {{ item.provenance==='local' ? '本机' : '导入只读' }}</small></RouterLink>

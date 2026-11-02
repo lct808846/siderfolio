@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import WorkspaceHeader from '../components/WorkspaceHeader.vue'
+import PanelSwitcher from '../components/PanelSwitcher.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, ApiError } from '../api'
@@ -128,15 +130,16 @@ watch(() => route.params.projectId, () => {
   dialog.value?.close(); action.value = ''
   selection++; conversationSelection++; snapshot.value = null; comparison.value = null; current.value = null
   leftId.value = ''; rightId.value = ''; saveConversation.value = ''; conversationDetail.value = null
-  mobilePanel.value = 'project'; error.value = ''; void refresh().catch(report)
+  mobilePanel.value = route.params.projectId ? 'project' : 'projects'; error.value = ''; void refresh().catch(report)
 }, { immediate: true })
 </script>
 
 <template>
-  <div class="project-workspace" :data-panel="mobilePanel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">1.0</span></RouterLink><span class="topbar-caption">项目与查询归档</span><RouterLink class="project-link" to="/">返回对话 ↗</RouterLink></header>
-    <nav class="project-mobile" aria-label="项目面板"><button @click="mobilePanel='project'">项目记录</button><button @click="mobilePanel='results'">快照结果</button></nav>
+  <div class="workspace-panes project-workspace" :data-panel="mobilePanel">
+    <WorkspaceHeader title="项目与查询归档" />
+    <PanelSwitcher v-model="mobilePanel" label="项目面板" :options="[{ value: 'projects', label: '项目列表' }, { value: 'project', label: '项目记录' }, { value: 'results', label: '快照结果' }]" />
     <aside class="project-sidebar" aria-label="项目列表">
+      <div v-if="error && mobilePanel === 'projects'" class="notice danger" role="alert"><p>{{ error }}</p><code>{{ errorCode }}</code><button :disabled="busy" @click="act(refresh)">刷新核对状态</button></div>
       <p class="eyebrow">RESEARCH PROJECTS · {{ projects.length }}/20</p>
       <RouterLink v-for="p in projects" :key="p.id" :to="`/projects/${p.id}`" class="project-item" :class="{selected:p.id===current?.id}"><b>{{ p.name }}</b><small>{{ p.provenance === 'imported_unverified' ? '导入 · 未认证' : '本机项目' }} · r{{ p.revision }}</small></RouterLink>
       <form class="project-form" @submit.prevent="create"><h2>新建项目</h2><label for="new-project-name">项目名称</label><input id="new-project-name" v-model="newName" maxlength="100" required><label for="new-project-description">项目说明（可选）</label><textarea id="new-project-description" v-model="newDescription" maxlength="2000" rows="2"></textarea><button class="button-primary" :disabled="busy || !newName.trim()">创建项目</button></form>
@@ -144,7 +147,7 @@ watch(() => route.params.projectId, () => {
       <div class="unassigned"><h3>未归档会话 · {{ unassigned.length }}</h3><RouterLink v-for="c in unassigned" :key="c.id" :to="`/conversations/${c.id}`">{{ c.title }}</RouterLink></div>
     </aside>
     <main class="project-main">
-      <div v-if="error" class="notice danger" role="alert"><p>{{ error }}</p><code>{{ errorCode }}</code><button :disabled="busy" @click="act(refresh)">刷新核对状态</button></div>
+      <div v-if="error && mobilePanel !== 'projects'" class="notice danger" role="alert"><p>{{ error }}</p><code>{{ errorCode }}</code><button :disabled="busy" @click="act(refresh)">刷新核对状态</button></div>
       <p v-if="message" class="notice" role="status">{{ message }}</p>
       <p v-if="busy" class="processing" role="status">正在处理，请稍候。不会自动重复提交。</p>
       <div v-if="pending" class="notice"><p>重跑请求尚未确认。先刷新项目核对记录，断线不会取消后台查询。</p><button :disabled="busy" @click="executePending">用原请求编号核对重跑</button></div>

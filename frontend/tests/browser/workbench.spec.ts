@@ -7,7 +7,7 @@ test('production build: conversation, follow-up, complete table, preview, downlo
   testInfo.annotations.push({ type: 'browser_version', description: browser.version() })
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message))
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: '观测与文献，从这里开始' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '天文数据与文献检索' })).toBeVisible()
   if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-empty.png`) }) }
   await page.getByRole('button', { name: '新建会话' }).click()
   await expect(page).toHaveURL(/conversations\/[0-9a-f-]+/)

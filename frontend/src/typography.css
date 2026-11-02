@@ -1,0 +1,113 @@
+/* Local variable fonts only: the workbench never requests a remote font service. */
+@font-face {
+  font-family: "Astro Sans";
+  src: local("Noto Sans SC");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Astro Serif";
+  src: local("Noto Serif SC");
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Astro Display";
+  src: local("Bahnschrift");
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Astro Mono";
+  src: local("Cascadia Mono Regular");
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+}
+
+:root {
+  --font-ui: "Astro Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  --font-editorial: "Astro Serif", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --font-brand: "Astro Display", "Bahnschrift", "Segoe UI Variable Display", "Segoe UI", var(--font-ui);
+  --font-mono: "Astro Mono", "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", var(--font-ui), monospace;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+}
+body, button, input, textarea, select { font-family: var(--font-ui); }
+body { line-height: 1.65; letter-spacing: .01em; }
+button, input, textarea, select { letter-spacing: .015em; }
+button { font-weight: 450; }
+h1, h2, h3 { font-family: var(--font-ui); font-weight: 600; letter-spacing: .015em; }
+
+/* A compact wordmark and quiet labels contrast with the editorial page titles. */
+.workspace-header .brand b {
+  font-family: var(--font-brand);
+  font-size: 23px;
+  font-weight: 550;
+  letter-spacing: -.035em;
+  line-height: 1.2;
+}
+.workspace-header .version { font-family: var(--font-ui); font-size: 10px; font-weight: 500; letter-spacing: .025em; }
+.workspace-global-nav a, .workspace-project-nav a { font-size: 12px; font-weight: 450; letter-spacing: .025em; }
+.workspace-global-nav a[aria-current="page"], .workspace-project-nav a[aria-current="page"] { font-weight: 600; }
+.workspace-title { font-size: 12px; font-weight: 400; letter-spacing: .04em; }
+.eyebrow, .welcome-index {
+  font-family: var(--font-brand);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  line-height: 1.7;
+}
+.welcome h2, .project-heading h1, .project-empty h1, .workflow-intro h1, .settings-main > h1 {
+  font-family: var(--font-editorial);
+  font-size: clamp(27px, 2.3vw, 35px);
+  font-weight: 550;
+  letter-spacing: .015em;
+  line-height: 1.55;
+}
+.welcome-copy > p:last-child { font-size: 14px; line-height: 1.9; letter-spacing: .025em; }
+.chat-heading h1 { font-size: 19px; font-weight: 550; letter-spacing: .01em; line-height: 1.6; }
+.pane-heading h2, .knowledge-evidence > h2, .overview-evidence > h2 { font-size: 19px; font-weight: 550; }
+.rag-question h1, .rag-evidence h2, .rag-answer h2 { font-size: 21px; font-weight: 550; line-height: 1.65; }
+.settings-card h2, .project-section > h2 { font-weight: 550; letter-spacing: .025em; }
+.conversation-item b, .project-item b { font-size: 13px; font-weight: 500; line-height: 1.75; }
+.conversation-item small, .project-item small { font-size: 11px; line-height: 1.7; }
+.example-list button { font-size: 13px; font-weight: 450; line-height: 1.7; }
+.example-heading { font-weight: 550; letter-spacing: .025em; }
+.example-number { font-family: var(--font-mono); font-size: 11px; letter-spacing: .025em; }
+.panel-switcher button { font-weight: 450; letter-spacing: .025em; }
+.panel-switcher button[aria-pressed="true"] { font-weight: 600; }
+
+/* Keep long scientific prose spacious; reserve monospacing for code and identifiers. */
+.answer-text, .user-message { font-size: 14px; line-height: 1.95; letter-spacing: .015em; }
+.composer textarea { font-size: 14px; line-height: 1.85; }
+.composer > p { font-size: 11px; line-height: 1.75; letter-spacing: .015em; }
+code, pre, .mono, time { font-family: var(--font-mono); letter-spacing: 0; font-variant-ligatures: none; }
+pre { line-height: 1.85; }
+.rag-workspace pre, .knowledge-hit pre, .knowledge-evidence pre, .rag-answer-text {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.95;
+  letter-spacing: .015em;
+}
+.table-scroll table { font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums lining-nums; letter-spacing: 0; }
+.table-scroll th { font-family: var(--font-ui); font-size: 12px; font-weight: 550; }
+.settings-facts dd, .data-metrics, .pagination, .rag-index, .settings-status small {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+@media (max-width: 680px) {
+  .workspace-header .brand b { font-size: 21px; }
+  .workspace-header .version { font-size: 10px; }
+  .workspace-global-nav a, .workspace-project-nav a { font-size: 12px; letter-spacing: 0; }
+  .welcome h2, .project-heading h1, .project-empty h1, .workflow-intro h1, .settings-main > h1 { font-size: 26px; line-height: 1.6; }
+  .welcome-copy > p:last-child { font-size: 13px; }
+  .chat-heading h1 { font-size: 18px; }
+  .answer-text, .user-message { font-size: 14px; line-height: 1.9; }
+  .panel-switcher button { letter-spacing: 0; }
+}

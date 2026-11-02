@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import WorkspaceHeader from '../components/WorkspaceHeader.vue'
+import PanelSwitcher from '../components/PanelSwitcher.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiError, safeLink } from '../api'
@@ -152,9 +154,9 @@ watch(() => route.params.projectId, () => {
 </script>
 
 <template>
-  <div class="project-workspace overview-workspace" :data-panel="panel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">1.0</span></RouterLink><span class="topbar-caption">项目来源与显式引用</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">管理项目 ↗</RouterLink></header>
-    <nav class="overview-mobile" aria-label="总览面板"><button @click="panel='sources'">项目来源</button><button @click="panel='results'">建立与管理关联</button><button @click="panel='evidence'">核对两端</button></nav>
+  <div class="workspace-panes project-workspace overview-workspace" :data-panel="panel">
+    <WorkspaceHeader title="项目来源与显式引用" />
+    <PanelSwitcher v-model="panel" label="总览面板" :options="[{ value: 'sources', label: '项目来源' }, { value: 'results', label: '建立与管理关联' }, { value: 'evidence', label: '核对两端' }]" />
     <aside class="project-sidebar overview-sidebar">
 <p class="eyebrow">PROJECT / OVERVIEW</p><h2>{{ overview?.project.name || '正在读取项目' }}</h2><p class="small muted">r{{ overview?.project.revision }} · {{ overview?.project.provenance==='imported_unverified' ? '导入来源未经认证' : '本机项目' }}</p>
       <nav class="overview-nav"><RouterLink :to="`/projects/${route.params.projectId}/rag`">文献知识问答 →</RouterLink><RouterLink :to="`/projects/${route.params.projectId}`">会话、快照与归档</RouterLink><RouterLink :to="`/projects/${route.params.projectId}/workflows`">科研流程 · {{ overview?.workflows.length || 0 }}</RouterLink><RouterLink :to="knowledgePath()">本地知识库 · {{ overview?.documents.length || 0 }}</RouterLink></nav>

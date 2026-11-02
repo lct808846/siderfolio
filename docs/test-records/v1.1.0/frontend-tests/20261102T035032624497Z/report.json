@@ -1,0 +1,88 @@
+{
+  "started_at": "2026-11-02T03:50:32.641871+00:00",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.8.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "43aa49590bfb1ce4a546b2dd215153414146d5bd",
+  "git_dirty": true,
+  "git_status": "M README.md\n M docs/ROADMAP.md\n M frontend/index.html\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/components/ResultPanel.vue\n M frontend/src/main.ts\n M frontend/src/views/App.vue\n M frontend/src/views/KnowledgeWorkspace.vue\n M frontend/src/views/ProjectOverview.vue\n M frontend/src/views/ProjectWorkspace.vue\n M frontend/src/views/RagWorkspace.vue\n M frontend/src/views/SettingsWorkspace.vue\n M frontend/src/views/WorkflowWorkspace.vue\n M pyproject.toml\n M src/astroagent/__init__.py\n?? .v11-isolated/\n?? .v11-pg-runner.py\n?? docs/PROJECT_PLAN_V1.1.md\n?? docs/development/v1.1.0/\n?? docs/releases/v1.1.0.md\n?? docs/test-records/v1.1.0/\n?? frontend/src/components/PanelSwitcher.vue\n?? frontend/src/components/WorkspaceHeader.vue\n?? frontend/src/glass-surfaces.css\n?? frontend/src/observation-log.css\n?? frontend/src/typography.css",
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "ci",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "exit_code": 0,
+      "transcript": "check-1.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "transcript": "check-2.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0,
+      "transcript": "check-3.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "test"
+      ],
+      "exit_code": 0,
+      "transcript": "check-4.txt"
+    },
+    {
+      "command": [
+        "C:\\Users\\lct\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "transcript": "check-5.txt"
+    },
+    {
+      "command": [
+        "D:\\astroagent-runtime\\venv\\Scripts\\python.exe",
+        "D:\\project\\astroagent\\.v11-isolated\\scripts\\generate_frontend_types.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "transcript": "check-6.txt"
+    }
+  ],
+  "node": "v24.22.1",
+  "data_kind": "synthetic_not_observations",
+  "visual_review": null,
+  "outcome": "passed",
+  "finished_at": "2026-11-02T03:51:08.235415+00:00"
+}

@@ -1,0 +1,224 @@
+/* Frosted navigation and peripheral surfaces; evidence stays on a clear reading surface. */
+:root {
+  --paper: #fcfdfb;
+  --line: #d9e3e0;
+  --soft: #edf4f0;
+  --glass-edge: rgba(255, 255, 255, .88);
+  --glass-shadow: 0 8px 30px rgba(33, 61, 58, .055), 0 1px 3px rgba(33, 61, 58, .035);
+  --workspace-scene:
+    radial-gradient(ellipse at 4% 8%, rgba(135, 191, 180, .29), transparent 48%),
+    radial-gradient(ellipse at 96% 5%, rgba(169, 180, 212, .25), transparent 43%),
+    radial-gradient(ellipse at 64% 100%, rgba(218, 197, 171, .18), transparent 48%),
+    linear-gradient(135deg, #eaf0ed, #f0f3f5 58%, #edf1ed);
+}
+
+body { background: #edf2ef; }
+.workspace-panes.workbench, .workspace-panes.project-workspace, .workspace-panes.rag-workspace {
+  padding: 14px;
+  gap: 12px;
+  background: var(--workspace-scene);
+}
+.settings-workspace { padding: 14px; background: var(--workspace-scene); }
+
+.topbar.workspace-header {
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgba(209, 236, 225, .3);
+  border-radius: 16px;
+  background: linear-gradient(115deg, #234944, #263e45);
+  box-shadow: 0 10px 30px rgba(20, 49, 48, .13), inset 0 1px rgba(255, 255, 255, .14);
+}
+.workspace-header-main { min-height: 68px; }
+.workspace-header .brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(220, 240, 229, .27);
+  border-radius: 11px;
+  background: linear-gradient(145deg, rgba(225, 244, 231, .16), rgba(225, 244, 231, .03));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .18);
+  color: #d6e8d7;
+}
+.workspace-header .version {
+  background: rgba(219, 237, 226, .09);
+  border-color: rgba(219, 237, 226, .25);
+  border-radius: 6px;
+  padding: 3px 7px;
+}
+.workspace-global-nav a { border: 1px solid transparent; border-radius: 9px; }
+.workspace-global-nav a:hover { background: rgba(233, 245, 239, .09); }
+.workspace-global-nav a[aria-current="page"] {
+  background: rgba(224, 242, 229, .15);
+  border-color: rgba(224, 242, 229, .2);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .09);
+}
+.workspace-project-nav {
+  background: #edf3ef;
+  border-top-color: rgba(220, 236, 229, .2);
+  border-radius: 0 0 15px 15px;
+}
+.workspace-project-nav a { margin-block: 5px; padding-block: 8px 6px; border-radius: 7px; }
+.workspace-project-nav a[aria-current="page"] { background: rgba(255, 255, 255, .7); border-bottom-color: #6d9585; }
+
+.workspace-panes[data-panel] > :is(.history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer) {
+  background: #eef4f0;
+  border: 1px solid var(--glass-edge);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow), inset 0 1px rgba(255, 255, 255, .65);
+}
+.workspace-panes[data-panel] > :is(.chat-panel, .project-main, .rag-evidence) {
+  background: rgba(253, 254, 252, .96);
+  border: 1px solid var(--glass-edge);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow);
+}
+.chat-heading {
+  background: linear-gradient(110deg, #fcfefb, #f4f8f5);
+  border-radius: 15px 15px 0 0;
+  border-bottom-color: #e3ebe6;
+}
+.history-title { padding-top: 2px; }
+.new-conversation {
+  border-color: #cadbd1;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #fff, #f5faf5);
+  box-shadow: 0 3px 9px rgba(38, 80, 62, .04), inset 0 1px #fff;
+}
+.conversation-item, .project-item { border-radius: 9px; }
+.conversation-item.selected, .project-item.selected {
+  background: linear-gradient(115deg, #e0eee3, #edf5ec);
+  border-left-color: #669783;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .8), 0 2px 8px rgba(45, 82, 63, .035);
+}
+.welcome { max-width: 580px; }
+.welcome-index { color: #607c73; border-bottom-color: #d2e0d8; }
+.welcome-intro { padding-block: 34px; }
+.welcome h2 { font-size: clamp(25px, 2.2vw, 32px); letter-spacing: -.025em; }
+.welcome-copy .eyebrow { color: #7a7961; }
+.example-heading { border-top-color: #e3ebe5; }
+.example-list { gap: 9px; margin-top: 14px; }
+.example-list button {
+  padding: 14px;
+  border: 1px solid #e2ebe4;
+  border-radius: 11px;
+  background: linear-gradient(120deg, #f9fcf8, #f4f8f5);
+  box-shadow: inset 0 1px #fff;
+}
+.example-list button:hover:not(:disabled) { background: #eaf3eb; border-color: #bfd3c5; }
+.example-number { color: #697f73; }
+
+.composer {
+  border: 1px solid #cddcd3;
+  border-radius: 17px;
+  background: #f9fcf9;
+  padding-bottom: 11px;
+  box-shadow: 0 8px 28px rgba(39, 78, 61, .08), inset 0 1px #fff;
+}
+.composer:focus-within { border-color: #739c88; box-shadow: 0 0 0 3px rgba(96, 145, 120, .12), 0 8px 28px rgba(39, 78, 61, .08); }
+.composer textarea, .composer textarea:focus, .composer-bottom {
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+}
+.composer-bottom { border-radius: 0; padding-bottom: 2px; }
+.composer > p { margin: 8px 12px 0; color: #63756e; font-size: 11px; }
+.composer-bottom > span { color: #63756e; }
+.button-primary {
+  border-radius: 9px;
+  background: linear-gradient(135deg, #396d59, #285344);
+  border-color: #365e4d;
+  box-shadow: 0 3px 8px rgba(35, 75, 54, .13), inset 0 1px rgba(255, 255, 255, .15);
+}
+.button-primary:hover:not(:disabled) { background: linear-gradient(135deg, #315f4d, #204837); border-color: #2a503d; }
+.user-message { border-radius: 0 12px 12px 0; background: #eff5ee; }
+.tag { border-radius: 6px; }
+.results-empty { border: 1px solid #dbe7dc; border-radius: 12px; padding: 20px 16px; background: rgba(255, 255, 255, .66); }
+.pane-heading { border-bottom-color: #d6e3d9; }
+.project-form :is(input, textarea, select), .inline-form :is(input, select) { border-radius: 8px; background: #fcfefb; }
+.rag-excerpt, .rag-index { border-radius: 11px; background: #fcfdfb; box-shadow: 0 3px 12px rgba(37, 71, 52, .035); }
+.rag-excerpt pre, .rag-answer-text { background: #f5f8f3; }
+.rag-question fieldset, .rag-question .project-form > details { border-radius: 9px; }
+.settings-card { border-radius: 16px; border-color: #e0e8e1; background: #fcfdfb; box-shadow: var(--glass-shadow); }
+.settings-card > .button-primary { border-radius: 9px; }
+.workspace-panes > .panel-switcher { border: 1px solid #dce6de; border-radius: 12px; background: #f8fbf7; }
+.panel-switcher button[aria-pressed="true"] { border-bottom-color: #65917b; background: #e8f2e7; }
+.panel-switcher button:first-child { border-radius: 11px 0 0 11px; }
+.panel-switcher button:last-child { border-radius: 0 11px 11px 0; }
+
+.modal-backdrop { background: rgba(20, 39, 36, .32); }
+.project-dialog::backdrop { background: rgba(20, 39, 36, .32); }
+.modal, .project-dialog {
+  background: #fcfefb;
+  border: 1px solid #e2ebe3;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(17, 40, 32, .2), inset 0 1px #fff;
+}
+
+/* Opaque declarations above are the fallback when backdrop filtering is unavailable. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topbar.workspace-header {
+    background: linear-gradient(115deg, rgba(28, 65, 59, .92), rgba(31, 51, 61, .9));
+    -webkit-backdrop-filter: blur(22px) saturate(125%);
+    backdrop-filter: blur(22px) saturate(125%);
+  }
+  .workspace-project-nav { background: rgba(240, 247, 241, .93); }
+  .workspace-panes[data-panel] > :is(.history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer) {
+    background: linear-gradient(145deg, rgba(249, 253, 247, .74), rgba(239, 247, 242, .66));
+    -webkit-backdrop-filter: blur(18px) saturate(115%);
+    backdrop-filter: blur(18px) saturate(115%);
+  }
+  .composer {
+    background: rgba(248, 253, 247, .87);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .modal-backdrop, .project-dialog::backdrop {
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+  }
+  .modal, .project-dialog { background: rgba(252, 254, 251, .97); }
+}
+
+@media (max-width: 1200px) {
+  .workspace-panes.workbench, .workspace-panes.project-workspace, .workspace-panes.rag-workspace { padding: 10px; gap: 9px; }
+  /* Smaller surfaces stay opaque to avoid full-screen blur while scrolling. */
+  .workspace-panes[data-panel] > :is(.history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer) {
+    background: #f4f8f3;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (max-width: 680px) {
+  .workspace-panes.workbench, .workspace-panes.project-workspace, .workspace-panes.rag-workspace { padding: 7px; gap: 7px; }
+  .settings-workspace { padding: 7px; }
+  .workspace-header-main { padding-inline: 13px; }
+  .workspace-global-nav a { padding-inline: 9px; }
+  .workspace-header .brand-mark { width: 29px; height: 29px; border-radius: 9px; }
+  .workspace-panes[data-panel] > :is(.chat-panel, .project-main, .rag-evidence, .history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer) { border-radius: 13px; }
+  .welcome-intro { padding-block: 24px; }
+  .welcome h2 { font-size: 25px; }
+  .example-list button { padding: 12px; }
+  .composer { margin-inline: 10px; }
+  .composer > p { font-size: 10px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .topbar.workspace-header { background: #23463f; }
+  .workspace-project-nav { background: #edf3ef; }
+  .workspace-panes[data-panel] > :is(.history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer) { background: #f1f6ef; }
+  .composer, .modal, .project-dialog { background: #fcfefb; }
+  .modal-backdrop, .project-dialog::backdrop { background: rgba(20, 39, 36, .65); }
+  .topbar.workspace-header, .workspace-panes[data-panel] > :is(.history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer), .composer, .modal-backdrop, .project-dialog::backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (forced-colors: active) {
+  .workspace-panes.workbench, .workspace-panes.project-workspace, .workspace-panes.rag-workspace, .settings-workspace { background: Canvas; }
+  .topbar.workspace-header, .workspace-project-nav, .workspace-panes[data-panel] > :is(.history-panel, .project-sidebar, .rag-question, .results-panel, .knowledge-evidence, .overview-evidence, .workflow-results, .rag-answer), .composer {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .workspace-global-nav a[aria-current="page"], .panel-switcher button[aria-pressed="true"] { outline: 1px solid Highlight; outline-offset: -3px; }
+}

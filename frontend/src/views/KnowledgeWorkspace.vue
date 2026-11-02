@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import WorkspaceHeader from '../components/WorkspaceHeader.vue'
+import PanelSwitcher from '../components/PanelSwitcher.vue'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fileHash, knowledgeApi, originalContent, uploadDocument } from '../api/knowledge'
@@ -174,9 +176,9 @@ onBeforeUnmount(resetPreview)
 </script>
 
 <template>
-  <div class="project-workspace knowledge-workspace" :data-panel="panel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">1.0</span></RouterLink><span class="topbar-caption">本地文献与原文证据</span><RouterLink class="project-link" :to="`/projects/${route.params.projectId}`">返回项目 ↗</RouterLink></header>
-    <nav class="knowledge-mobile" aria-label="知识库面板"><button @click="panel='documents'">文档与上传</button><button @click="panel='search'">检索与状态</button><button @click="panel='evidence'">证据与原文</button></nav>
+  <div class="workspace-panes project-workspace knowledge-workspace" :data-panel="panel">
+    <WorkspaceHeader title="本地文献与原文证据" />
+    <PanelSwitcher v-model="panel" label="知识库面板" :options="[{ value: 'documents', label: '文档与上传' }, { value: 'search', label: '检索与状态' }, { value: 'evidence', label: '证据与原文' }]" />
     <aside class="project-sidebar knowledge-sidebar">
       <RouterLink :to="`/projects/${route.params.projectId}/knowledge`"><p class="eyebrow">LOCAL LIBRARY · {{ documents.length }}/100</p><h2>{{ project?.name || '正在读取项目' }}</h2></RouterLink>
       <RouterLink v-for="doc in documents" :key="doc.id" class="project-item" :class="{selected:doc.id===document?.id}" :to="`/projects/${doc.project_id}/knowledge/${doc.id}`"><b>{{ doc.metadata.title || doc.filename }}</b><small>{{ state(doc.state) }} · {{ doc.provenance==='local' ? '用户本机文档' : '导入 · 来源未经认证' }}</small></RouterLink>

@@ -1,0 +1,44 @@
+[WebServer] INFO:     Started server process [31908]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:24000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 28 tests using 1 worker
+
+(node:25144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded (2.1s)
+  -   2 [chromium] › tests\browser\knowledge.spec.ts:49:1 › public PDF citation opens its original and downloads identical bytes
+  ok  3 [chromium] › tests\browser\knowledge.spec.ts:74:1 › long Chinese filename remains usable on a narrow screen (893ms)
+  ok  4 [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (2.4s)
+  ok  5 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (4.2s)
+  ok  6 [chromium] › tests\browser\v11-layout.spec.ts:3:1 › responsive panels keep the draft and do not send queries when switched (2.1s)
+  ok  7 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (3.8s)
+  ok  8 [chromium] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (1.4s)
+  ok  9 [chromium] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (800ms)
+  ok 10 [chromium] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (476ms)
+  ok 11 [chromium] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (1.2s)
+  ok 12 [chromium] › tests\browser\workbench.spec.ts:98:1 › a late initial list does not clear a send error after navigation (912ms)
+  ok 13 [chromium] › tests\browser\workbench.spec.ts:121:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (41ms)
+  ok 14 [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (3.7s)
+(node:25532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 15 [edge] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded (2.6s)
+  -  16 [edge] › tests\browser\knowledge.spec.ts:49:1 › public PDF citation opens its original and downloads identical bytes
+  ok 17 [edge] › tests\browser\knowledge.spec.ts:74:1 › long Chinese filename remains usable on a narrow screen (1.1s)
+  ok 18 [edge] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (2.2s)
+  ok 19 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (4.7s)
+  ok 20 [edge] › tests\browser\v11-layout.spec.ts:3:1 › responsive panels keep the draft and do not send queries when switched (2.3s)
+  ok 21 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (4.1s)
+  ok 22 [edge] › tests\browser\workbench.spec.ts:45:1 › IME composition, explicit examples, plain text literature, rename and delete (1.8s)
+  ok 23 [edge] › tests\browser\workbench.spec.ts:64:1 › narrow viewport has usable panel navigation and no page overflow (1.1s)
+  ok 24 [edge] › tests\browser\workbench.spec.ts:75:1 › backend connection error is explicit (609ms)
+  ok 25 [edge] › tests\browser\workbench.spec.ts:80:1 › a rejected send preserves the question and only retries on explicit action (1.4s)
+  ok 26 [edge] › tests\browser\workbench.spec.ts:98:1 › a late initial list does not clear a send error after navigation (1.0s)
+  ok 27 [edge] › tests\browser\workbench.spec.ts:121:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (32ms)
+  ok 28 [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (3.4s)
+
+  2 skipped
+  26 passed (1.0m)

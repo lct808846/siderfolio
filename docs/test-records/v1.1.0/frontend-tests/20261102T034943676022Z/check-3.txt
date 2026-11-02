@@ -1,0 +1,15 @@
+
+> astroagent-workbench@1.1.0 lint
+> eslint . --max-warnings 0
+
+
+D:\project\astroagent\.v11-isolated\frontend\src\components\PanelSwitcher.vue
+  8:13  warning  Expected a linebreak before this attribute  vue/first-attribute-linebreak
+
+D:\project\astroagent\.v11-isolated\frontend\src\components\WorkspaceHeader.vue
+  38:19  warning  Expected a linebreak before this attribute  vue/first-attribute-linebreak
+
+✖ 2 problems (0 errors, 2 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+
+ESLint found too many warnings (maximum: 0).

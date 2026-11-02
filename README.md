@@ -2,9 +2,9 @@
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前开发版本：`1.0.0`。已写入PostgreSQL + pgvector、本地嵌入与索引、混合检索、确认后生成的文献问答、首次设置和格式5归档。**完整版本仍待验收、未发布。** 本机数据库及 D 盘嵌入模型已准备，并按用户要求完成最小语义检索链路核验，见 [模型准备记录](docs/development/v1.0.0/MODEL_SETUP.md)；这不替代 [待验收清单](docs/development/v1.0.0/ACCEPTANCE.md)。原开发阶段记录见 [开发说明](docs/releases/v1.0.0.md) 和 [开发记录](docs/development/v1.0.0/README.md)。
+当前版本：`1.1.0`。本版完善“观测日志”界面，统一全局与项目导航、面板切换、证据阅读样式及设置状态提示。验证结果和限制见 [V1.1验收记录](docs/test-records/v1.1.0/README.md)，版本内容见 [版本说明](docs/releases/v1.1.0.md)。
 
-源码基线为本地V0.9.0提交 `4abe8cd`。[V0.9测试记录](docs/test-records/v0.9.0/README.md)及更早报告保持原样，只代表旧版结果；Gaia旧超时未在本轮诊断或宣称修复，旧发布例外不自动沿用。
+本轮基于本地提交 `43aa495` 并保留已有界面改动。此前 V1.0 已实现 PostgreSQL + pgvector、本地嵌入与索引、混合检索、确认后生成的文献问答、首次设置和格式5归档；数据库及D盘嵌入模型的准备见 [模型记录](docs/development/v1.0.0/MODEL_SETUP.md)。V1.0的本地、检索复验及远程CI历史见 [独立验收记录](docs/test-records/v1.0.0/README.md)，只对应当时的代码和样本，不证明V1.1界面通过。Gaia超时与检索样本局限按原记录保留，发布状态以实际Release为准。
 
 更早的V0.7.0当次[测试记录](docs/test-records/v0.7.0/README.md)与[版本说明](docs/releases/v0.7.0.md)保持原样，不作为本版通过证据。
 
@@ -12,13 +12,15 @@
 
 前端采用 Vue 3 + TypeScript + Vite、Vue Router 和 Pinia，FastAPI 独立提供 API，PostgreSQL 保存本机业务状态，pgvector保存派生向量。旧聊天、项目、快照及 V0.4 科学导出契约继续保留；后续目标见 [版本路线图](docs/ROADMAP.md)。本版面向可信本机的单用户使用。
 
-本版依据 [V1.0开发契约](docs/PROJECT_PLAN_V1.0.md)与 [RAG设计](docs/RAG_ARCHITECTURE_V1.0.md)实施；首次安装/数据库/模型/备份/恢复见 [操作稿](docs/OPERATIONS_V1.0.md)，接口与数据见 [实施契约](docs/API_DATA_V1.0.md)。
+数据和RAG功能沿用 [V1.0开发契约](docs/PROJECT_PLAN_V1.0.md)与 [RAG设计](docs/RAG_ARCHITECTURE_V1.0.md)实施；首次安装/数据库/模型/备份/恢复见 [操作稿](docs/OPERATIONS_V1.0.md)，接口与数据见 [实施契约](docs/API_DATA_V1.0.md)。
 
 运行时不使用SQLite回退或双写；旧库只作为一次性只读迁移输入。新代码与生成接口不等于平台、真实模型、RAG质量或Gaia成功验收，限制见 [问题台账](docs/development/v1.0.0/ISSUES.md)。
 
 按用户约定，开发阶段不主动运行测试；发布前由用户安排测试验收。代码生成和源码格式化不作为验证通过的证据。
 
-针对最近验收的无答案误召回和约39秒预览耗时，已写入单词/编号字面匹配保护、同项目重复问题的有界向量缓存及等待提示，见 [改进说明（待复验）](docs/development/v1.0.0/ACCEPTANCE_IMPROVEMENTS.md)。原评估与失败记录保留；本轮没有运行测试或重启后端，不能据源码修改宣称拒绝率或性能已达标。
+本版采用 [V1.1 观测日志设计](docs/PROJECT_PLAN_V1.1.md)；1200 CSS像素及以下使用面板切换，项目页可独立查看项目列表、项目记录和快照结果。
+
+针对最近验收的无答案误召回和约39秒预览耗时，已写入单词/编号字面匹配保护、同项目重复问题的有界向量缓存及等待提示，见 [改进说明（待复验）](docs/development/v1.0.0/ACCEPTANCE_IMPROVEMENTS.md)。原评估与失败记录保留；后续固定小样本复验见V1.0验收记录，不构成代表性或所有查询性能保证。V1.1 沿用原检索评估及其样本限制。
 
 ## 文献知识问答（V1.0，待验收）
 

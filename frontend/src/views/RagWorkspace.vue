@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import WorkspaceHeader from '../components/WorkspaceHeader.vue'
+import PanelSwitcher from '../components/PanelSwitcher.vue'
 import { nextTick, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ApiError } from '../api'
@@ -98,9 +100,9 @@ watch(()=>route.params.projectId,()=>{navigation++;project.value=null;documents.
 </script>
 
 <template>
-  <div class="rag-workspace" :data-panel="panel">
-    <header class="topbar"><RouterLink class="brand" to="/"><span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b><span class="version">1.0</span></RouterLink><span class="topbar-caption">{{ project?.name }} / 文献知识问答</span><RouterLink class="project-link" to="/settings">本机设置 ↗</RouterLink><RouterLink class="project-link" :to="`/projects/${id()}`">返回项目</RouterLink></header>
-    <nav class="overview-mobile" aria-label="问答面板"><button @click="panel='question'">问题与历史</button><button @click="panel='evidence'">本次发送预览</button><button @click="panel='answer'">回答与原文</button></nav>
+  <div class="rag-workspace workspace-panes" :data-panel="panel">
+    <WorkspaceHeader title="文献知识问答" />
+    <PanelSwitcher v-model="panel" label="问答面板" :options="[{ value: 'question', label: '问题与历史' }, { value: 'evidence', label: '本次发送预览' }, { value: 'answer', label: '回答与原文' }]" />
     <div class="rag-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p><p v-if="busy" class="notice" role="status">{{ retrieving ? `正在本机检索，已等待 ${retrievalSeconds} 秒，请勿重复提交。` : '正在处理。断线后请使用原请求编号核对；不自动重发新请求。' }}</p></div>
     <aside class="rag-question">
 <p class="eyebrow">PROJECT / RAG</p><h1>先核对证据，再生成解释</h1><p class="small muted">默认只做本机检索。你确认具体片段与服务后才发送；模型解释与原文分开。</p><div v-if="pending" class="notice"><p>上次生成状态待确认，保留原编号：</p><code>{{ pending.client_request_id }}</code><button :disabled="busy" @click="runPending">按原编号核对（尚未接收时会执行一次）</button></div><div v-if="indexPending" class="notice"><p>索引请求待确认：{{ indexPending.client_request_id }}</p><button :disabled="busy" @click="buildPending">核对原索引请求</button></div>
