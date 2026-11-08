@@ -3,7 +3,8 @@ import { computed, ref, watch } from 'vue'
 import { api, apiUrl, download, safeLink } from '../api'
 import type { ArtifactInfo, Manifest, PlotSpec, Turn } from '../types'
 
-const props = defineProps<{ turn: Turn | null; historical: boolean; artifactPath?: string; heading?: string; disableExport?: boolean }>()
+const props = defineProps<{ turn: Turn | null; historical: boolean; artifactPath?: string; heading?: string; disableExport?: boolean; dismissible?: boolean; pending?: boolean }>()
+defineEmits<{ close: [] }>()
 const tab = ref<'gaia' | 'ads' | 'simbad'>('gaia')
 const page = ref(0)
 const index = ref(0)
@@ -41,8 +42,14 @@ async function save() { if (!artifact.value) return; try { await download(artifa
 
 <template>
   <aside class="results-panel" aria-label="结果核查">
-    <header class="pane-heading"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ heading || (turn ? `第 ${turn.revision} 轮结果` : '查询结果') }}</h2></div><span v-if="historical" class="tag">历史结果</span></header>
-    <div v-if="!turn" class="results-empty"><h3>暂无查询结果</h3><p>提交查询后，可在此查看数据、检索条件、来源与导出选项。</p></div>
+    <header class="pane-heading"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ heading || (turn ? `第 ${turn.revision} 轮结果` : '查询结果') }}</h2></div><span v-if="historical" class="tag">历史结果</span><button v-if="dismissible" class="result-close" aria-label="收起结果面板" @click="$emit('close')">×</button></header>
+    <p v-if="pending" class="notice" role="status">{{ turn ? '本轮正在查询；下方为此前保存的结果，返回后会自动切换到本轮。' : '本轮正在查询，返回后将在这里展示实际结果。' }}</p>
+    <div v-if="!turn" class="results-empty">
+      <slot name="empty">
+        <h3>暂无查询结果</h3>
+        <p>提交查询后，可在此查看数据、检索条件、来源与导出选项。</p>
+      </slot>
+    </div>
     <template v-else>
       <p class="small muted">{{ artifactPath ? "快照保存时间（UTC）" : "接收时间（UTC）" }}<br><time>{{ turn.received_at }}</time></p>
       <p v-if="turn.error" class="notice danger">{{ turn.error.message }} <code>{{ turn.error.code }}</code></p>

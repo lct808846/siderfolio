@@ -19,7 +19,7 @@ from astroagent.config import LocalSettings, Settings
 from astroagent.context import MAX_HISTORY_BYTES, PreparedContext
 from astroagent.conversation_schemas import ArtifactRequest, Turn, TurnRequest
 from astroagent.conversation_service import ConversationService
-from astroagent.conversations import ConversationRepository
+from astroagent.conversations import ConversationRepository, conversation_title
 from astroagent.errors import ServiceError
 from astroagent.main import app
 from astroagent.schemas import ChatResponse
@@ -60,6 +60,31 @@ def submit(client, conversation, message="合成查询", request_id=None, revisi
             "expected_revision": conversation["revision"] if revision is None else revision,
         },
     )
+
+
+def test_first_question_names_default_conversation_once_and_survives_follow_up(client):
+    conversation = create(client, "新会话")
+    question = "查询 Gaia DR3 source_id 5853498713190525696 的测量信息并说明限制。"
+    assert submit(client, conversation, question).status_code == 200
+    detail = client.get(f"/api/v1/conversations/{conversation['id']}").json()
+    assert detail["title"] == conversation_title(question)
+    assert len(detail["title"]) <= 36
+    assert detail["metadata_revision"] == 1
+    assert submit(client, conversation, "后续问题", revision=1).status_code == 200
+    refreshed = client.get(f"/api/v1/conversations/{conversation['id']}").json()
+    assert refreshed["title"] == detail["title"]
+
+
+def test_automatic_title_preserves_custom_title_and_explicit_default_rename(client):
+    custom = create(client, "我的研究项目")
+    assert submit(client, custom, "合成问题").status_code == 200
+    assert client.get(f"/api/v1/conversations/{custom['id']}").json()["title"] == "我的研究项目"
+    manual = create(client, "新会话")
+    path = f"/api/v1/conversations/{manual['id']}"
+    renamed = client.patch(path, json={"title": "新会话", "expected_metadata_revision": 0})
+    assert renamed.status_code == 200
+    assert submit(client, manual, "合成问题").status_code == 200
+    assert client.get(path).json()["title"] == "新会话"
 
 
 def test_crud_complete_data_and_idempotency(client):

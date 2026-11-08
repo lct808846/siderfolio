@@ -42,8 +42,8 @@ def stripped(items):
     ]
 
 
-def model_config():
-    value = Settings()
+def model_config(model_id=None):
+    value = Settings().for_model(model_id)
     from urllib.parse import urlsplit
 
     parsed = urlsplit(str(value.deepseek_base_url))
@@ -58,6 +58,7 @@ def model_config():
             "model": value.deepseek_model,
             "instruction": checksum(INSTRUCTION),
             "protocol": "rag-v1",
+            "thinking_parameter": value.llm_thinking_parameter,
         }
     )
     return value, provider, fingerprint
@@ -358,7 +359,7 @@ class RagService:
             SLOT.release()
 
     def preview(self, project_id, request):
-        config, provider, fingerprint = model_config()
+        config, provider, fingerprint = model_config(request.model)
         lexical, semantic, warnings, index_id = [], [], [], None
         embedding_cache_hit = None
         lexical_state, semantic_state = "ready", "not_indexed"
@@ -697,6 +698,7 @@ class RagService:
                         409, "rag_preview_expired", "预览不存在或已失效，请重新检索。"
                     )
                 preview = Preview.model_validate_json(row[0])
+                config, provider, fingerprint = model_config(preview.model)
                 if preview.index_id:
                     current_index = db.execute(
                         (
@@ -839,6 +841,7 @@ class RagService:
                     temperature=0,
                     max_tokens=2400,
                     response_format={"type": "json_object"},
+                    extra_body=config.non_thinking_body(),
                 )
             raw = result.choices[0].message.content or ""
             if len(raw) > 16000 or result.choices[0].finish_reason != "stop":

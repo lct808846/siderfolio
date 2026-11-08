@@ -5,6 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
 
+from astroagent.attachment_schemas import ChatAttachment
 from astroagent.export_schemas import PlotSpec
 from astroagent.schemas import ChatResponse, ErrorInfo
 
@@ -24,6 +25,8 @@ class TurnRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     client_request_id: str
     expected_revision: StrictInt = Field(ge=0)
+    model: str | None = Field(default=None, min_length=1, max_length=128)
+    attachments: list[ChatAttachment] = Field(default_factory=list, max_length=3)
 
     @field_validator("client_request_id")
     @classmethod
@@ -63,6 +66,8 @@ class Turn(BaseModel):
     revision: int
     client_request_id: str
     message: str
+    model: str | None = None
+    attachments: list[ChatAttachment] = Field(default_factory=list, max_length=3)
     execution_status: Literal["running", "completed", "failed", "interrupted"]
     received_at: str
     completed_at: str | None = None
@@ -75,6 +80,7 @@ class TurnSummary(BaseModel):
     turn_id: str
     revision: int
     message: str
+    model: str | None = None
     execution_status: str
     received_at: str
     completed_at: str | None

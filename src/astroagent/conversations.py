@@ -4,6 +4,7 @@ import hashlib
 import json
 import multiprocessing
 import os
+import re
 import sqlite3
 import threading
 from contextlib import contextmanager
@@ -19,6 +20,14 @@ def utc_now():
     return datetime.now(UTC).isoformat()
 
 
+def conversation_title(message):
+    """A bounded first-question label; no extra model call or scientific inference."""
+    text = re.sub(r"\s+", " ", message).strip()
+    text = re.sub(r"^[#>*\-\s]+", "", text)
+    text = re.split(r"[。！？!?]", text, maxsplit=1)[0].strip() or "天文查询"
+    return text if len(text) <= 36 else text[:35].rstrip() + "…"
+
+
 def encode(value):
     return json.dumps(
         value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
@@ -32,7 +41,11 @@ def storage_error():
 
 
 def request_digest(request):
-    return hashlib.sha256(encode(request.model_dump()).encode("utf-8")).hexdigest()
+    # Omitted model keeps the digest of pre-selector requests for idempotent recovery.
+    payload = request.model_dump(exclude_none=True)
+    if not payload.get("attachments"):
+        payload.pop("attachments", None)
+    return hashlib.sha256(encode(payload).encode("utf-8")).hexdigest()
 
 
 class ConversationRepository:
@@ -334,9 +347,17 @@ class ConversationRepository:
                     409, "conversation_storage_limit", "本地历史预算已满，请整理会话。"
                 )
             db.execute(
-                "INSERT INTO conversations VALUES "
-                "(:id,:title,:created_at,:updated_at,:revision,:metadata_revision)",
-                value,
+                "INSERT INTO conversations "
+                "(id,title,created_at,updated_at,revision,metadata_revision) "
+                "VALUES (?,?,?,?,?,?)",
+                (
+                    value["id"],
+                    value["title"],
+                    value["created_at"],
+                    value["updated_at"],
+                    value["revision"],
+                    value["metadata_revision"],
+                ),
             )
             return value
 
@@ -364,6 +385,7 @@ class ConversationRepository:
                             "turn_id",
                             "revision",
                             "message",
+                            "model",
                             "execution_status",
                             "received_at",
                             "completed_at",
@@ -475,12 +497,25 @@ class ConversationRepository:
                 raise ServiceError(
                     409, "conversation_storage_limit", "本地历史预算已满，请整理会话后再提交。"
                 )
+            needs_title = (
+                conversation["metadata_revision"] == 0 and conversation["title"] == "新会话"
+            )
+            title_message = request.message
+            if needs_title and conversation["revision"] > 0:
+                first = db.execute(
+                    "SELECT record FROM turns WHERE conversation_id=? ORDER BY ordinal LIMIT 1",
+                    (identifier,),
+                ).fetchone()
+                if first:
+                    title_message = Turn.model_validate_json(first[0]).message
             turn = Turn(
                 conversation_id=identifier,
                 turn_id=str(uuid4()),
                 revision=conversation["revision"] + 1,
                 client_request_id=request.client_request_id,
                 message=request.message,
+                model=request.model,
+                attachments=request.attachments,
                 execution_status="running",
                 received_at=utc_now(),
             )
@@ -499,10 +534,17 @@ class ConversationRepository:
                     max(0, self.settings.turn_bytes - len(text.encode())) + 32768,
                 ),
             )
-            db.execute(
-                "UPDATE conversations SET revision=?,updated_at=? WHERE id=?",
-                (turn.revision, utc_now(), identifier),
-            )
+            if needs_title:
+                db.execute(
+                    "UPDATE conversations SET revision=?,updated_at=?,title=?,"
+                    "metadata_revision=metadata_revision+1 WHERE id=?",
+                    (turn.revision, utc_now(), conversation_title(title_message), identifier),
+                )
+            else:
+                db.execute(
+                    "UPDATE conversations SET revision=?,updated_at=? WHERE id=?",
+                    (turn.revision, utc_now(), identifier),
+                )
             self._touch_project(db, identifier)
             if self._used(db) > self.settings.storage_bytes:
                 raise ServiceError(

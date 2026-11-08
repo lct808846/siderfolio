@@ -1,9 +1,12 @@
 """从环境和本地 .env 读取配置；密钥不会出现在 repr 中。"""
 
 from pathlib import Path
+from typing import Literal
 
-from pydantic import AnyHttpUrl, Field, SecretStr, field_validator
+from pydantic import AnyHttpUrl, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from astroagent.model_schemas import ChatModelOption
 
 
 class Settings(BaseSettings):
@@ -12,6 +15,8 @@ class Settings(BaseSettings):
     deepseek_api_key: SecretStr = SecretStr("")
     deepseek_model: str = Field(default="deepseek-flash", min_length=1)
     deepseek_base_url: AnyHttpUrl = AnyHttpUrl("https://api.deepseek.com")
+    chat_models: list[ChatModelOption] = Field(default_factory=list, max_length=16)
+    llm_thinking_parameter: Literal["thinking", "enable_thinking", "none"] = "thinking"
     llm_timeout_seconds: float = Field(default=60, gt=0, le=300)
     simbad_timeout_seconds: float = Field(default=20, gt=0, le=120)
     ads_api_token: SecretStr = SecretStr("")
@@ -19,6 +24,34 @@ class Settings(BaseSettings):
     gaia_timeout_seconds: float = Field(default=20, gt=0, le=120)
     agent_max_rounds: int = Field(default=4, ge=1, le=8)
     agent_max_tool_calls: int = Field(default=6, ge=1, le=12)
+
+    @model_validator(mode="after")
+    def model_catalog(self):
+        ids = [model.id for model in self.chat_models]
+        if len(ids) != len(set(ids)) or (ids and self.deepseek_model not in ids):
+            raise ValueError("Model IDs must be unique and include the default model")
+        return self
+
+    @property
+    def available_models(self):
+        return self.chat_models or [
+            ChatModelOption(id=self.deepseek_model, label=self.deepseek_model)
+        ]
+
+    def for_model(self, model_id=None):
+        from astroagent.errors import ServiceError
+
+        selected = model_id if model_id is not None else self.deepseek_model
+        if selected not in {model.id for model in self.available_models}:
+            raise ServiceError(422, "model_not_enabled", "所选模型未启用，请刷新模型列表。")
+        return self.model_copy(update={"deepseek_model": selected})
+
+    def non_thinking_body(self):
+        if self.llm_thinking_parameter == "enable_thinking":
+            return {"enable_thinking": False}
+        if self.llm_thinking_parameter == "thinking":
+            return {"thinking": {"type": "disabled"}}
+        return {}
 
 
 class LocalSettings(BaseSettings):

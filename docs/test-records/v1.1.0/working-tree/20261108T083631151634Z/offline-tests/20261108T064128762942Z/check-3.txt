@@ -1,0 +1,163 @@
+unformatted: File would be reformatted
+   --> src\astroagent\agent.py:224:25
+    |
+223 |             messages.append(historical_message)
+    -         messages.append(HumanMessage(content=context.current_input(message) if context is not None else message))
+224 +         messages.append(
+225 +             HumanMessage(content=context.current_input(message) if context is not None else message)
+226 +         )
+227 |         # Preserve cross-tool execution order for source aggregation and every executed result.
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\conversations.py:87:1
+   |
+86 |             return selected_agent
+87 +
+88 |     turn, response.status_code = service.submit(str(conversation_id), request, factory)
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\models.py:18:28
+   |
+17 |     except ValidationError as exc:
+   -         raise ServiceError(503, "invalid_configuration", "模型配置无效，请检查服务端设置。") from exc
+18 +         raise ServiceError(
+19 +             503, "invalid_configuration", "模型配置无效，请检查服务端设置。"
+20 +         ) from exc
+21 |     return ChatModelCatalog(
+   |
+
+unformatted: File would be reformatted
+   --> tests\test_v11_attachment_model_acceptance.py:28:68
+    |
+27  |             calls.append((self.model, message, context))
+    -             return ChatResponse.model_validate(synthetic_request()['snapshot'])
+28  +             return ChatResponse.model_validate(synthetic_request()["snapshot"])
+29  |
+    -     monkeypatch.setattr(routes, 'get_agent_for_model', lambda model: Agent(model))
+30  +     monkeypatch.setattr(routes, "get_agent_for_model", lambda model: Agent(model))
+31  |     with TestClient(app) as value:
+--------------------------------------------------------------------------------
+35  |
+    - @pytest.mark.parametrize('name,body', [
+    -     ('sample.txt', '中文\n第二行'), ('sample.md', '# 中文'),
+    -     ('sample.csv', 'name,value\nM45,3'), ('sample.json', '{"sample": 3}'),
+    - ])
+36  + @pytest.mark.parametrize(
+37  +     "name,body",
+38  +     [
+39  +         ("sample.txt", "中文\n第二行"),
+40  +         ("sample.md", "# 中文"),
+41  +         ("sample.csv", "name,value\nM45,3"),
+42  +         ("sample.json", '{"sample": 3}'),
+43  +     ],
+44  + )
+45  | def test_local_text_upload_preserves_content(client, name, body):
+    -     response = client.post('/api/v1/chat/attachments', files={'file': (name, body.encode(), 'application/octet-stream')})
+46  +     response = client.post(
+47  +         "/api/v1/chat/attachments",
+48  +         files={"file": (name, body.encode(), "application/octet-stream")},
+49  +     )
+50  |     assert response.status_code == 200, response.text
+    -     assert response.json()['text'] == body
+    -     assert response.json()['truncated'] is False
+51  +     assert response.json()["text"] == body
+52  +     assert response.json()["truncated"] is False
+53  |     assert not client.calls
+--------------------------------------------------------------------------------
+57  |     buffer = BytesIO()
+    -     with ZipFile(buffer, 'w') as doc:
+    -         doc.writestr('word/document.xml', '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>合成文献</w:t></w:r></w:p></w:body></w:document>')
+    -     result = client.post('/api/v1/chat/attachments', files={'file': ('sample.docx', buffer.getvalue())})
+58  +     with ZipFile(buffer, "w") as doc:
+59  +         doc.writestr(
+60  +             "word/document.xml",
+61  +             '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>合成文献</w:t></w:r></w:p></w:body></w:document>',
+62  +         )
+63  +     result = client.post(
+64  +         "/api/v1/chat/attachments", files={"file": ("sample.docx", buffer.getvalue())}
+65  +     )
+66  |     assert result.status_code == 200, result.text
+    -     assert '合成文献' in result.json()['text']
+    -     result = client.post('/api/v1/chat/attachments', files={'file': ('large.txt', ('字' * 7000).encode())})
+    -     assert result.status_code == 200 and result.json()['truncated'] is True
+    -     assert len(result.json()['text'].encode()) <= 16384
+    -     assert client.post('/api/v1/chat/attachments', files={'file': ('bad.exe', b'abc')}).status_code == 415
+    -     assert client.post('/api/v1/chat/attachments', files={'file': ('bad.pdf', b'not pdf')}).status_code == 422
+67  +     assert "合成文献" in result.json()["text"]
+68  +     result = client.post(
+69  +         "/api/v1/chat/attachments", files={"file": ("large.txt", ("字" * 7000).encode())}
+70  +     )
+71  +     assert result.status_code == 200 and result.json()["truncated"] is True
+72  +     assert len(result.json()["text"].encode()) <= 16384
+73  +     assert (
+74  +         client.post("/api/v1/chat/attachments", files={"file": ("bad.exe", b"abc")}).status_code
+75  +         == 415
+76  +     )
+77  +     assert (
+78  +         client.post("/api/v1/chat/attachments", files={"file": ("bad.pdf", b"not pdf")}).status_code
+79  +         == 422
+80  +     )
+81  |     assert not client.calls
+82  |
+83  |
+84  | def test_model_switch_attachment_persistence_and_idempotency(client):
+    -     item = client.post('/api/v1/chat/attachments', files={'file': ('sample.txt', b'fixture evidence')}).json()
+    -     conversation = client.post('/api/v1/conversations', json={'title': 'acceptance'}).json()
+85  +     item = client.post(
+86  +         "/api/v1/chat/attachments", files={"file": ("sample.txt", b"fixture evidence")}
+87  +     ).json()
+88  +     conversation = client.post("/api/v1/conversations", json={"title": "acceptance"}).json()
+89  |     url = f"/api/v1/conversations/{conversation['id']}/turns"
+    -     request = {'message': 'first', 'client_request_id': str(uuid4()), 'expected_revision': 0, 'model': 'model-one', 'attachments': [item]}
+90  +     request = {
+91  +         "message": "first",
+92  +         "client_request_id": str(uuid4()),
+93  +         "expected_revision": 0,
+94  +         "model": "model-one",
+95  +         "attachments": [item],
+96  +     }
+97  |     first = client.post(url, json=request)
+98  |     assert first.status_code == 200, first.text
+    -     assert first.json()['model'] == 'model-one'
+    -     assert first.json()['attachments'][0]['text'] == 'fixture evidence'
+99  +     assert first.json()["model"] == "model-one"
+100 +     assert first.json()["attachments"][0]["text"] == "fixture evidence"
+101 |     replay = client.post(url, json=request)
+102 |     assert replay.status_code == 200 and len(client.calls) == 1
+    -     changed = dict(request, model='model-two')
+103 +     changed = dict(request, model="model-two")
+104 |     assert client.post(url, json=changed).status_code == 409
+    -     second = client.post(url, json={'message': 'follow up', 'client_request_id': str(uuid4()), 'expected_revision': 1, 'model': 'model-two'})
+105 +     second = client.post(
+106 +         url,
+107 +         json={
+108 +             "message": "follow up",
+109 +             "client_request_id": str(uuid4()),
+110 +             "expected_revision": 1,
+111 +             "model": "model-two",
+112 +         },
+113 +     )
+114 |     assert second.status_code == 200, second.text
+    -     assert [call[0] for call in client.calls] == ['model-one', 'model-two']
+    -     assert first.json()['turn_id'] in client.calls[-1][2].record.included_turn_ids
+115 +     assert [call[0] for call in client.calls] == ["model-one", "model-two"]
+116 +     assert first.json()["turn_id"] in client.calls[-1][2].record.included_turn_ids
+117 |
+118 |
+119 | def test_model_allowlist_rejects_unknown():
+    -     settings = Settings(_env_file=None, deepseek_model='alpha', chat_models=[{'id': 'alpha', 'label': 'A'}, {'id': 'beta', 'label': 'B'}])
+    -     assert settings.for_model('beta').deepseek_model == 'beta'
+120 +     settings = Settings(
+121 +         _env_file=None,
+122 +         deepseek_model="alpha",
+123 +         chat_models=[{"id": "alpha", "label": "A"}, {"id": "beta", "label": "B"}],
+124 +     )
+125 +     assert settings.for_model("beta").deepseek_model == "beta"
+126 |     with pytest.raises(ServiceError):
+    -         settings.for_model('not-allowed')
+127 +         settings.for_model("not-allowed")
+    |
+
+4 files would be reformatted, 121 files already formatted

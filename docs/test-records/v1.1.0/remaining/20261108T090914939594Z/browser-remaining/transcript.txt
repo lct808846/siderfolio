@@ -1,0 +1,139 @@
+[WebServer] INFO:     Started server process [36820]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:40008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 1 worker
+
+(node:7728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\remaining-acceptance.spec.ts:10:1 › clipboard preserves the question and reports a denied copy (1.3s)
+  ok 2 [chromium] › tests\browser\remaining-acceptance.spec.ts:30:1 › pending response does not open results and manual close survives refresh (1.5s)
+  ok 3 [chromium] › tests\browser\remaining-acceptance.spec.ts:48:1 › rename, pin and export a noncurrent conversation; cancel deletion (1.8s)
+  x  4 [chromium] › tests\browser\remaining-acceptance.spec.ts:76:1 › settings refresh failure clears the previous ready status (609ms)
+(node:31964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [edge] › tests\browser\remaining-acceptance.spec.ts:10:1 › clipboard preserves the question and reports a denied copy (1.3s)
+  ok 6 [edge] › tests\browser\remaining-acceptance.spec.ts:30:1 › pending response does not open results and manual close survives refresh (1.5s)
+  x  7 [edge] › tests\browser\remaining-acceptance.spec.ts:48:1 › rename, pin and export a noncurrent conversation; cancel deletion (1.1s)
+(node:40180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  8 [edge] › tests\browser\remaining-acceptance.spec.ts:76:1 › settings refresh failure clears the previous ready status (1.2s)
+
+
+  1) [chromium] › tests\browser\remaining-acceptance.spec.ts:76:1 › settings refresh failure clears the previous ready status 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('本机状态未确认')
+    Expected: visible
+    Error: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:
+        1) <span class="tag error">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })
+        2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')
+
+    Call log:
+      - Expect "toBeVisible" getByText('本机状态未确认') with timeout 5000ms
+      - waiting for getByText('本机状态未确认')
+
+
+      85 |   await page.getByRole('button', { name: '刷新本机状态' }).click()
+      86 |   await expect(page.getByRole('alert')).toContainText('合成读取失败')
+    > 87 |   await expect(page.getByText('本机状态未确认')).toBeVisible()
+         |                                           ^
+      88 |   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)
+      89 | })
+      90 |
+        at D:\project\astroagent\.acceptance-v11-remaining\frontend\tests\browser\remaining-acceptance.spec.ts:87:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\remaining-acceptance.spec.ts:48:1 › rename, pin and export a noncurrent conversation; cancel deletion 
+
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: '会话操作：已改名验收会话' }) resolved to 2 elements:
+        1) <button disabled data-tooltip="" aria-haspopup="menu" aria-expanded="false" class="conversation-more" aria-label="会话操作：已改名验收会话">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).first()
+        2) <button disabled data-tooltip="" aria-haspopup="menu" aria-expanded="false" class="conversation-more" aria-label="会话操作：已改名验收会话">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).nth(1)
+
+    Call log:
+      - waiting for getByRole('button', { name: '会话操作：已改名验收会话' })
+
+
+      55 |   await page.getByRole('button', { name: '保存名称' }).click()
+      56 |   await expect(page.getByRole('heading', { name: '当前验收会话' })).toBeVisible()
+    > 57 |   await page.getByRole('button', { name: '会话操作：已改名验收会话' }).click()
+         |                                                            ^
+      58 |   await page.getByRole('menuitem', { name: '置顶', exact: true }).click()
+      59 |   await expect(page.locator('.conversation-row').first()).toContainText('已改名验收会话')
+      60 |   await page.getByRole('button', { name: '会话操作：已改名验收会话' }).click()
+        at D:\project\astroagent\.acceptance-v11-remaining\frontend\tests\browser\remaining-acceptance.spec.ts:57:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-remaining\artifacts\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-remaining\artifacts\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-remaining\artifacts\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-remaining\artifacts\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [edge] › tests\browser\remaining-acceptance.spec.ts:76:1 › settings refresh failure clears the previous ready status 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('本机状态未确认')
+    Expected: visible
+    Error: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:
+        1) <span class="tag error">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })
+        2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')
+
+    Call log:
+      - Expect "toBeVisible" getByText('本机状态未确认') with timeout 5000ms
+      - waiting for getByText('本机状态未确认')
+
+
+      85 |   await page.getByRole('button', { name: '刷新本机状态' }).click()
+      86 |   await expect(page.getByRole('alert')).toContainText('合成读取失败')
+    > 87 |   await expect(page.getByText('本机状态未确认')).toBeVisible()
+         |                                           ^
+      88 |   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)
+      89 | })
+      90 |
+        at D:\project\astroagent\.acceptance-v11-remaining\frontend\tests\browser\remaining-acceptance.spec.ts:87:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-remaining\artifacts\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › tests\browser\remaining-acceptance.spec.ts:76:1 › settings refresh failure clears the previous ready status 
+    [edge] › tests\browser\remaining-acceptance.spec.ts:48:1 › rename, pin and export a noncurrent conversation; cancel deletion 
+    [edge] › tests\browser\remaining-acceptance.spec.ts:76:1 › settings refresh failure clears the previous ready status 
+  5 passed (21.6s)

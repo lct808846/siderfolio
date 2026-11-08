@@ -1,0 +1,25 @@
+[WebServer] INFO:     Started server process [10028]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:2844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:27844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\remaining-acceptance.spec.ts:10:1 › clipboard preserves the question and reports a denied copy (977ms)
+  ok  2 [chromium] › tests\browser\remaining-acceptance.spec.ts:30:1 › pending response does not open results and manual close survives refresh (1.3s)
+  ok  3 [chromium] › tests\browser\remaining-acceptance.spec.ts:48:1 › rename, pin and export a noncurrent conversation; cancel deletion (1.7s)
+  ok  4 [chromium] › tests\browser\remaining-acceptance.spec.ts:78:1 › settings refresh failure clears the previous ready status (596ms)
+  ok  5 [chromium] › tests\browser\remaining-acceptance.spec.ts:93:1 › bulk deletion preserves the failed item and returns after deleting the current item (896ms)
+(node:18556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [edge] › tests\browser\remaining-acceptance.spec.ts:10:1 › clipboard preserves the question and reports a denied copy (1.3s)
+  ok  7 [edge] › tests\browser\remaining-acceptance.spec.ts:30:1 › pending response does not open results and manual close survives refresh (1.6s)
+  ok  8 [edge] › tests\browser\remaining-acceptance.spec.ts:48:1 › rename, pin and export a noncurrent conversation; cancel deletion (1.6s)
+  ok  9 [edge] › tests\browser\remaining-acceptance.spec.ts:78:1 › settings refresh failure clears the previous ready status (717ms)
+  ok 10 [edge] › tests\browser\remaining-acceptance.spec.ts:93:1 › bulk deletion preserves the failed item and returns after deleting the current item (907ms)
+
+  10 passed (20.1s)

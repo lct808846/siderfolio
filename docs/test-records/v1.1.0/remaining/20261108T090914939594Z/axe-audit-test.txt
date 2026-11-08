@@ -1,0 +1,19 @@
+import { test, expect } from '@playwright/test'
+import path from 'node:path'
+
+test.use({ bypassCSP: true })
+
+test('automated accessibility audit of workbench, project and settings', async ({ page, request }, info) => {
+  const project = await (await request.post('/api/v1/projects', { data: { name: `无障碍-${crypto.randomUUID().slice(0, 8)}` } })).json()
+  for (const route of ['/', `/projects/${project.id}`, '/settings']) {
+    await page.goto(route)
+    await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })
+    const result = await page.evaluate(async () => {
+      const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe
+      const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })
+      return output.violations.map(item => ({ id: item.id, impact: item.impact, count: item.nodes.length }))
+    })
+    info.annotations.push({ type: 'accessibility', description: `${route}: ${JSON.stringify(result)}` })
+    expect(result, `${route} accessibility violations`).toEqual([])
+  }
+})

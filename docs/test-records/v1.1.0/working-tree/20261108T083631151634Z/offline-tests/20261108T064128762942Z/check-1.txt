@@ -1,0 +1,85 @@
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+......................................................F................. [ 38%]
+........................................................................ [ 51%]
+....................................................Timeout (0:00:30)!
+Thread 0x00006e5c (most recent call first):
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 1590 in _wait
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 1264 in wait
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 1228 in communicate
+  File "D:\project\astroagent\.acceptance-v11-current\src\astroagent\knowledge_parser.py", line 103 in parse_document
+  File "D:\project\astroagent\.acceptance-v11-current\tests\test_knowledge.py", line 228 in test_parser_timeout_terminates_worker_and_cleans_temp
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "E:\miniconda3\envs\agent\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+.s............s..... [ 64%]
+...............ss.............................sssssssssssssss........... [ 77%]
+........................................................................ [ 90%]
+.................s......................................                 [100%]
+================================== FAILURES ===================================
+_______________ test_historical_v03_snapshots_remain_exportable _______________
+
+    def test_historical_v03_snapshots_remain_exportable():
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[1] / "docs/test-records/v0.3.0"
+        for name in ("model-source.json", "model-name.json", "model-three-tools.json"):
+            recorded = json.loads(
+>               (root / "live-gaia-tests/20261028T035108550097Z" / name).read_text(encoding="utf-8")
+            )
+
+tests\test_exports.py:418: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('D:/project/astroagent/.acceptance-v11-current/docs/test-records/v0.3.0/live-gaia-tests/20261028T035108550097Z/model-source.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'D:\\project\\astroagent\\.acceptance-v11-current\\docs\\test-records\\v0.3.0\\live-gaia-tests\\20261028T035108550097Z\\model-source.json'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/test_exports.py::test_historical_v03_snapshots_remain_exportable
+1 failed, 539 passed, 20 skipped in 195.49s (0:03:15)

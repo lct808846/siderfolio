@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "error_type": "FileNotFoundError",
+  "servers_stopped": true,
+  "test_database_dropped": true
+}

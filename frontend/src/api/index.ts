@@ -1,4 +1,4 @@
-import type { ArtifactInfo, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
+import type { ArtifactInfo, ChatAttachment, ChatModelCatalog, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
 
 const configured = import.meta.env.VITE_API_BASE_URL || ''
 export function validateApiOrigin(value: string): string {
@@ -34,12 +34,13 @@ export async function request<T>(path: string, method = 'GET', payload?: unknown
   return response.json() as Promise<T>
 }
 export const api = {
+  models: () => request<ChatModelCatalog>('/api/v1/models'),
   list: () => request<Conversation[]>('/api/v1/conversations'),
   create: (title = '新会话') => request<Conversation>('/api/v1/conversations', 'POST', { title }),
   detail: (id: string) => request<ConversationDetail>(`/api/v1/conversations/${id}`),
   rename: (id: string, title: string, expected_metadata_revision?: number) => request<Conversation>(`/api/v1/conversations/${id}`, 'PATCH', { title, expected_metadata_revision }),
   delete: (id: string) => request<void>(`/api/v1/conversations/${id}`, 'DELETE'),
-  submit: (id: string, message: string, client_request_id: string, expected_revision: number) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision }),
+  submit: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[]) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision, model, attachments }),
   turn: (id: string, turn: string) => request<Turn>(`/api/v1/conversations/${id}/turns/${turn}`),
   artifact: (id: string, turn: string, plots: PlotSpec[]) => request<ArtifactInfo>(`/api/v1/conversations/${id}/turns/${turn}/artifacts`, 'POST', { plots }),
   manifest: (path: string) => request<Manifest>(path),

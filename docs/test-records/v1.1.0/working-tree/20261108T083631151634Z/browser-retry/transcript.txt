@@ -1,0 +1,115 @@
+[WebServer] INFO:     Started server process [40744]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:10368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:6260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (4.2s)
+  ok  2 [chromium] › tests\browser\workbench.spec.ts:44:1 › IME composition, explicit examples, plain text literature, rename and delete (2.0s)
+  x   3 [chromium] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow (5.7s)
+(node:30728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  4 [chromium] › tests\browser\workbench.spec.ts:76:1 › backend connection error is explicit (597ms)
+  ok  5 [chromium] › tests\browser\workbench.spec.ts:81:1 › a rejected send preserves the question and only retries on explicit action (1.2s)
+  ok  6 [chromium] › tests\browser\workbench.spec.ts:98:1 › a late initial list does not clear a send error after navigation (724ms)
+  ok  7 [chromium] › tests\browser\workbench.spec.ts:121:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (30ms)
+(node:9612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  8 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (4.3s)
+  ok  9 [edge] › tests\browser\workbench.spec.ts:44:1 › IME composition, explicit examples, plain text literature, rename and delete (2.1s)
+  x  10 [edge] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow (6.7s)
+(node:38252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [edge] › tests\browser\workbench.spec.ts:76:1 › backend connection error is explicit (1.0s)
+  ok 12 [edge] › tests\browser\workbench.spec.ts:81:1 › a rejected send preserves the question and only retries on explicit action (1.2s)
+  ok 13 [edge] › tests\browser\workbench.spec.ts:98:1 › a late initial list does not clear a send error after navigation (849ms)
+  ok 14 [edge] › tests\browser\workbench.spec.ts:121:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (25ms)
+
+
+  1) [chromium] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('合成验收结果已返回。')
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('合成验收结果已返回。') with timeout 5000ms
+      - waiting for getByText('合成验收结果已返回。')
+        11 × locator resolved to <p>合成验收结果已返回。请在右侧核查完整测量、单位和查询条件；这些不是实际观测。</p>
+           - unexpected value "hidden"
+
+
+      68 |   const input = page.getByRole('textbox', { name: '天文问题' }); await input.fill('合成Gaia圆锥查询')
+      69 |   await page.getByRole('button', { name: '发送问题', exact: true }).click()
+    > 70 |   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()
+         |                                                                ^
+      71 |   await page.getByRole('button', { name: '核查本轮结果与导出' }).click(); await expect(page.getByRole('heading', { name: '第 1 轮结果' })).toBeVisible()
+      72 |   const width = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: innerWidth })); expect(width.body).toBeLessThanOrEqual(width.viewport)
+      73 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-mobile.png`) })
+        at D:\project\astroagent\.acceptance-v11-current\frontend\tests\browser\workbench.spec.ts:70:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('合成验收结果已返回。')
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('合成验收结果已返回。') with timeout 5000ms
+      - waiting for getByText('合成验收结果已返回。')
+        11 × locator resolved to <p>合成验收结果已返回。请在右侧核查完整测量、单位和查询条件；这些不是实际观测。</p>
+           - unexpected value "hidden"
+
+
+      68 |   const input = page.getByRole('textbox', { name: '天文问题' }); await input.fill('合成Gaia圆锥查询')
+      69 |   await page.getByRole('button', { name: '发送问题', exact: true }).click()
+    > 70 |   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()
+         |                                                                ^
+      71 |   await page.getByRole('button', { name: '核查本轮结果与导出' }).click(); await expect(page.getByRole('heading', { name: '第 1 轮结果' })).toBeVisible()
+      72 |   const width = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: innerWidth })); expect(width.body).toBeLessThanOrEqual(width.viewport)
+      73 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-mobile.png`) })
+        at D:\project\astroagent\.acceptance-v11-current\frontend\tests\browser\workbench.spec.ts:70:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-retry\artifacts\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow 
+    [edge] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow 
+  12 passed (43.1s)

@@ -1,0 +1,74 @@
+[WebServer] INFO:     Started server process [27280]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:5580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:33472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\axe-acceptance.spec.ts:4:1 › automated accessibility audit of workbench, project and settings (786ms)
+(node:36280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [edge] › tests\browser\axe-acceptance.spec.ts:4:1 › automated accessibility audit of workbench, project and settings (988ms)
+
+
+  1) [chromium] › tests\browser\axe-acceptance.spec.ts:4:1 › automated accessibility audit of workbench, project and settings 
+
+    Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.
+
+       6 |   for (const route of ['/', `/projects/${project.id}`, '/settings']) {
+       7 |     await page.goto(route)
+    >  8 |     await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })
+         |     ^
+       9 |     const result = await page.evaluate(async () => {
+      10 |       const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe
+      11 |       const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })
+        at D:\project\astroagent\.acceptance-v11-remaining\frontend\tests\browser\axe-acceptance.spec.ts:8:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\axe-acceptance.spec.ts:4:1 › automated accessibility audit of workbench, project and settings 
+
+    Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.
+
+       6 |   for (const route of ['/', `/projects/${project.id}`, '/settings']) {
+       7 |     await page.goto(route)
+    >  8 |     await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })
+         |     ^
+       9 |     const result = await page.evaluate(async () => {
+      10 |       const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe
+      11 |       const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })
+        at D:\project\astroagent\.acceptance-v11-remaining\frontend\tests\browser\axe-acceptance.spec.ts:8:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-accessibility\artifacts\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\axe-acceptance.spec.ts:4:1 › automated accessibility audit of workbench, project and settings 
+    [edge] › tests\browser\axe-acceptance.spec.ts:4:1 › automated accessibility audit of workbench, project and settings 

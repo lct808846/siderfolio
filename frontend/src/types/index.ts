@@ -1,4 +1,7 @@
 import type { components } from './generated'
+export type ChatAttachment = components['schemas']['ChatAttachment']
+export type ChatModelOption = components['schemas']['ChatModelOption']
+export type ChatModelCatalog = components['schemas']['ChatModelCatalog']
 export type Conversation = components['schemas']['Conversation']
 export type ConversationDetail = components['schemas']['ConversationDetail']
 export type Turn = components['schemas']['Turn']

@@ -11,7 +11,7 @@ from langchain_core.messages import AIMessage
 import astroagent.main as main
 import astroagent.services as services
 from astroagent.agent import AstroAgent
-from astroagent.api import conversations, projects, workflows
+from astroagent.api import conversations, models, projects, workflows
 from astroagent.config import Settings
 from astroagent.conversations import ConversationRepository
 from astroagent.main import app as app
@@ -107,6 +107,10 @@ def fixture_agent():
 
 
 conversations.get_agent = fixture_agent
+conversations.get_agent_for_model = lambda _model: fixture_agent()
+models.Settings = lambda: Settings(
+    _env_file=None, deepseek_api_key="fixture-only", deepseek_model="synthetic-model"
+)
 
 
 def fixture_executor():

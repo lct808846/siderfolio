@@ -1,0 +1,14 @@
+{
+  "checks": [
+    {
+      "name": "test_linux_worker_memory_and_output_limits",
+      "passed": true
+    },
+    {
+      "name": "test_linux_worker_cpu_limit_kills_child",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "runner": "direct invocation of existing test bodies; pytest unavailable"
+}

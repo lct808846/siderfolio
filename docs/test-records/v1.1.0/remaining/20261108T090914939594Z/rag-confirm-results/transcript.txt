@@ -1,0 +1,44 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_selected_model_and_previewed_evidence_are_frozen_for_confirmation ____
+
+pg_client = <starlette.testclient.TestClient object at 0x000001731D557740>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001731D5574D0>
+
+    def test_selected_model_and_previewed_evidence_are_frozen_for_confirmation(pg_client, monkeypatch):
+        monkeypatch.setenv("DEEPSEEK_MODEL", "model-a")
+        monkeypatch.setenv(
+            "CHAT_MODELS",
+            json.dumps([{"id": "model-a", "label": "A"}, {"id": "model-b", "label": "B"}]),
+        )
+        root, _ = project_with_document(pg_client)
+        build(pg_client, root)
+        response = pg_client.post(
+            root + "/rag/previews", json={"question": "binary cluster", "model": "model-b"}
+        )
+        assert response.status_code == 200, response.text
+        value = response.json()
+        assert value["model"] == "model-b" and value["evidence"]
+        assert not pg_client.model_payloads
+        body = {
+            "client_request_id": str(uuid4()),
+            "preview_id": value["id"],
+            "confirmation_token": value["confirmation_token"],
+            "confirmed": True,
+        }
+        response = pg_client.post(root + "/rag/answers", json=body)
+        assert response.status_code == 200, response.text
+        assert len(pg_client.model_payloads) == 1
+        sent = pg_client.model_payloads[0]
+        assert sent["model"] == "model-b"
+        payload = sent["messages"][1]["content"]
+        assert "binary cluster" in payload
+        for evidence in value["evidence"]:
+>           assert evidence["view"]["text"] in payload
+E           assert '# Reference\nBinary cluster environment synthetic fixture.\n' in '{"evidence":[{"filename":"fixture.md","label":"E1","lines":[1,2],"page":null,"text":"# Reference\\nBinary cluster environment synthetic fixture.\\n"}],"history":[],"question":"binary cluster"}'
+
+tests\test_rag_postgres.py:314: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_rag_postgres.py::test_selected_model_and_previewed_evidence_are_frozen_for_confirmation
+1 failed in 7.01s
+

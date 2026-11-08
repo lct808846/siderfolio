@@ -75,6 +75,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/chat/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload */
+        post: operations["upload_api_v1_chat_attachments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/conversations": {
         parameters: {
             query?: never;
@@ -174,6 +191,23 @@ export interface paths {
         put?: never;
         /** 导出完整客户端查询快照与可选 Gaia 图表 */
         post: operations["export_api_v1_exports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalog */
+        get: operations["catalog_api_v1_models_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -962,6 +996,45 @@ export interface components {
             /** Plots */
             plots?: components["schemas"]["PlotSpec"][];
         };
+        /** ChatAttachment */
+        ChatAttachment: {
+            /** Filename */
+            filename: string;
+            /**
+             * Media Type
+             * @enum {string}
+             */
+            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "application/json";
+            /** Sha256 */
+            sha256: string;
+            /** Size */
+            size: number;
+            /** Text */
+            text: string;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+            /** Warnings */
+            warnings?: string[];
+        };
+        /** ChatModelCatalog */
+        ChatModelCatalog: {
+            /** Configured */
+            configured: boolean;
+            /** Default Model */
+            default_model: string;
+            /** Models */
+            models: components["schemas"]["ChatModelOption"][];
+        };
+        /** ChatModelOption */
+        ChatModelOption: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+        };
         /** ChatRequest */
         ChatRequest: {
             /**
@@ -969,6 +1042,8 @@ export interface components {
              * @example 请查询 Betelgeuse 的坐标和类型
              */
             message: string;
+            /** Model */
+            model?: string | null;
         };
         /** ChatResponse */
         ChatResponse: {
@@ -2909,6 +2984,8 @@ export interface components {
             document_ids?: string[];
             /** History Ids */
             history_ids?: string[];
+            /** Model */
+            model?: string | null;
             /** Question */
             question: string;
             /** Version Ids */
@@ -3300,6 +3377,8 @@ export interface components {
         };
         /** Turn */
         Turn: {
+            /** Attachments */
+            attachments?: components["schemas"]["ChatAttachment"][];
             /** Client Request Id */
             client_request_id: string;
             /** Completed At */
@@ -3315,6 +3394,8 @@ export interface components {
             execution_status: "running" | "completed" | "failed" | "interrupted";
             /** Message */
             message: string;
+            /** Model */
+            model?: string | null;
             /** Received At */
             received_at: string;
             response?: components["schemas"]["ChatResponse"] | null;
@@ -3333,12 +3414,16 @@ export interface components {
         };
         /** TurnRequest */
         TurnRequest: {
+            /** Attachments */
+            attachments?: components["schemas"]["ChatAttachment"][];
             /** Client Request Id */
             client_request_id: string;
             /** Expected Revision */
             expected_revision: number;
             /** Message */
             message: string;
+            /** Model */
+            model?: string | null;
         };
         /** TurnSummary */
         TurnSummary: {
@@ -3348,6 +3433,8 @@ export interface components {
             execution_status: string;
             /** Message */
             message: string;
+            /** Model */
+            model?: string | null;
             /** Received At */
             received_at: string;
             /** Response Status */
@@ -3850,6 +3937,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    upload_api_v1_chat_attachments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatAttachment"];
                 };
             };
         };
@@ -4566,6 +4680,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    catalog_api_v1_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatModelCatalog"];
                 };
             };
         };

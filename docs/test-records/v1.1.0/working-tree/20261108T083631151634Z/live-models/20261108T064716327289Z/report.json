@@ -1,0 +1,41 @@
+{
+  "scope": "synthetic text only; real configured provider",
+  "checks": [
+    {
+      "name": "isolated_database_initialized",
+      "passed": true
+    },
+    {
+      "name": "configured_catalog",
+      "passed": true
+    },
+    {
+      "name": "two_models_available",
+      "passed": true,
+      "count": 2
+    },
+    {
+      "name": "synthetic_upload",
+      "passed": true
+    },
+    {
+      "name": "conversation_create",
+      "passed": true
+    },
+    {
+      "name": "first_model_reads_synthetic_attachment",
+      "passed": true,
+      "model": "deepseek-v4.1-flash",
+      "http_status": 200
+    },
+    {
+      "name": "second_model_reads_prior_context",
+      "passed": true,
+      "model": "qwen3.8-max",
+      "http_status": 200
+    }
+  ],
+  "passed": true,
+  "server_stopped": true,
+  "test_database_dropped": true
+}

@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "browser_exit_code": 0,
+  "provider_calls": 2,
+  "payload_matches_preview": true,
+  "servers_stopped": true,
+  "test_database_dropped": true
+}

@@ -1,0 +1,1765 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1105-1297-0_26.1105.1297.0_x64__3k8sg7r9htsxt\\dependencies\\node\\bin\\node.exe",
+      "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\node_modules\\playwright\\cli.js",
+      "test",
+      "--timeout=25000",
+      "--output",
+      "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts"
+    ],
+    "configFile": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/.acceptance-v11-current/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-current/browser-final/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/.acceptance-v11-current/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 25000
+      },
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-current/browser-final/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/.acceptance-v11-current/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 25000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 25000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 25000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "current-changes.spec.ts",
+      "file": "current-changes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "model selection and attachment preview do not send a message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1367,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:40.054Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "cac2e3242fe11f83a65d-60d33cb16388a71407a6",
+          "file": "current-changes.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "model selection and attachment preview do not send a message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1916,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:40.866Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "cac2e3242fe11f83a65d-761fc476c52bfd6119a4",
+          "file": "current-changes.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "knowledge.spec.ts",
+      "file": "knowledge.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "local documents can be uploaded, searched, cited and downloaded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1927,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:41.724Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-16c7bb46130b5e060c6d",
+          "file": "knowledge.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "public PDF citation opens its original and downloads identical bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Public PDF is an explicitly provided local fixture",
+                  "location": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\knowledge.spec.ts",
+                    "line": 51,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 138,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:43.662Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Public PDF is an explicitly provided local fixture",
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\knowledge.spec.ts",
+                        "line": 51,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-7457d714d4e0bde208f7",
+          "file": "knowledge.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "long Chinese filename remains usable on a narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1000,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:43.815Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-7d4da0b7d59f116f94ec",
+          "file": "knowledge.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "local documents can be uploaded, searched, cited and downloaded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2781,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:43.597Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-428d685cc579e29b3dcc",
+          "file": "knowledge.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "public PDF citation opens its original and downloads identical bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Public PDF is an explicitly provided local fixture",
+                  "location": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\knowledge.spec.ts",
+                    "line": 51,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 300,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:46.396Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Public PDF is an explicitly provided local fixture",
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\knowledge.spec.ts",
+                        "line": 51,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-d7229fd8be7caf1376b9",
+          "file": "knowledge.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "long Chinese filename remains usable on a narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1571,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:46.715Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-f2eeded12bd313af2274",
+          "file": "knowledge.spec.ts",
+          "line": 74,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "overview.spec.ts",
+      "file": "overview.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "project overview creates and removes an explicit evidence link",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2346,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:44.850Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6e2f4ad74dab265ac116-595a3fd380ef1ba31ecb",
+          "file": "overview.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "project overview creates and removes an explicit evidence link",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2467,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:48.326Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6e2f4ad74dab265ac116-fb40298188ff1a8718a9",
+          "file": "overview.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "projects.spec.ts",
+      "file": "projects.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.8078.4"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4455,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:47.223Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.8078.4"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3a2958b1096c5d9a8472-67397c9f887423ec96ae",
+          "file": "projects.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.4314.50"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5726,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:50.838Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.4314.50"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3a2958b1096c5d9a8472-d363d49310840143438d",
+          "file": "projects.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "v11-layout.spec.ts",
+      "file": "v11-layout.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "responsive panels preserve drafts without sending",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4486,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:51.699Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4022788feb6bfc4f2438-5803e8f07463d194a436",
+          "file": "v11-layout.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "keyboard controls work with reduced motion and forced colors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 399,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:56.194Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4022788feb6bfc4f2438-6bd0e3cdd21e2cbb09a7",
+          "file": "v11-layout.spec.ts",
+          "line": 23,
+          "column": 1
+        },
+        {
+          "title": "responsive panels preserve drafts without sending",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6899,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:56.586Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4022788feb6bfc4f2438-3cffcf3524afed5e3499",
+          "file": "v11-layout.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "keyboard controls work with reduced motion and forced colors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 823,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:03.507Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4022788feb6bfc4f2438-6bf4058886b48e5b5781",
+          "file": "v11-layout.spec.ts",
+          "line": 23,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workbench.spec.ts",
+      "file": "workbench.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production build: conversation, follow-up, complete table, preview, download and restore",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.8078.4"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 617,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:12:52",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 52,
+                      "line": 12
+                    },
+                    "snippet": "  10 |   await expect(page.getByRole('heading', { name: '天文数据与文献检索' })).toBeVisible()\n  11 |   if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-empty.png`) }) }\n> 12 |   await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                    ^\n  13 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  14 |   const question = page.getByRole('textbox', { name: '天文问题' })\n  15 |   await question.fill('合成验收：查询Gaia圆锥100个位置候选源。')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 52,
+                        "line": 12
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  10 |   await expect(page.getByRole('heading', { name: '天文数据与文献检索' })).toBeVisible()\n  11 |   if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-empty.png`) }) }\n> 12 |   await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                    ^\n  13 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  14 |   const question = page.getByRole('textbox', { name: '天文问题' })\n  15 |   await question.fill('合成验收：查询Gaia圆锥100个位置候选源。')\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:12:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:56.614Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.8078.4"
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-production-build-758bc-review-download-and-restore-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-production-build-758bc-review-download-and-restore-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-production-build-758bc-review-download-and-restore-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 52,
+                    "line": 12
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-7a84d1b4043fcc979e24",
+          "file": "workbench.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "IME composition, explicit examples, plain text literature, rename and delete",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 617,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:46:74",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 74,
+                      "line": 46
+                    },
+                    "snippet": "  44 |\n  45 | test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {\n> 46 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  47 |   await page.getByRole('button', { name: 'ADS 文献检索' }).click()\n  48 |   const input = page.getByRole('textbox', { name: '天文问题' })\n  49 |   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 74,
+                        "line": 46
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  44 |\n  45 | test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {\n> 46 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  47 |   await page.getByRole('button', { name: 'ADS 文献检索' }).click()\n  48 |   const input = page.getByRole('textbox', { name: '天文问题' })\n  49 |   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:46:74"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:58.009Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-IME-composition--732ba-iterature-rename-and-delete-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-IME-composition--732ba-iterature-rename-and-delete-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-IME-composition--732ba-iterature-rename-and-delete-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 74,
+                    "line": 46
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-705e08751c9a17b77433",
+          "file": "workbench.spec.ts",
+          "line": 45,
+          "column": 1
+        },
+        {
+          "title": "narrow viewport has usable panel navigation and no page overflow",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 25114,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 25000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 25000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 25000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 63,
+                        "line": 66
+                      },
+                      "message": "Error: locator.click: Test timeout of 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '会话', exact: true })\u001b[22m\n\n\n  64 | test('narrow viewport has usable panel navigation and no page overflow', async ({ page }, testInfo) => {\n  65 |   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/')\n> 66 |   await page.getByRole('button', { name: '会话', exact: true }).click(); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                               ^\n  67 |   const input = page.getByRole('textbox', { name: '天文问题' }); await input.fill('合成Gaia圆锥查询')\n  68 |   await page.getByRole('button', { name: '发送', exact: true }).click()\n  69 |   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:66:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:52:59.595Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-narrow-viewport--12133-gation-and-no-page-overflow-chromium\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-4bfbdfaa404ac4a2485b",
+          "file": "workbench.spec.ts",
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "backend connection error is explicit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 689,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:25.765Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-07d0c520548227ad0c54",
+          "file": "workbench.spec.ts",
+          "line": 75,
+          "column": 1
+        },
+        {
+          "title": "a rejected send preserves the question and only retries on explicit action",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 978,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:81:74",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 74,
+                      "line": 81
+                    },
+                    "snippet": "  79 |\n  80 | test('a rejected send preserves the question and only retries on explicit action', async ({ page }) => {\n> 81 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  82 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  83 |   let calls = 0\n  84 |   await page.route('**/api/v1/conversations/*/turns', async route => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 74,
+                        "line": 81
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  79 |\n  80 | test('a rejected send preserves the question and only retries on explicit action', async ({ page }) => {\n> 81 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  82 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  83 |   let calls = 0\n  84 |   await page.route('**/api/v1/conversations/*/turns', async route => {\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:81:74"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:26.935Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-rejected-send--87551--retries-on-explicit-action-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-rejected-send--87551--retries-on-explicit-action-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-rejected-send--87551--retries-on-explicit-action-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 74,
+                    "line": 81
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-c08a2ba5b12b461f3e8f",
+          "file": "workbench.spec.ts",
+          "line": 80,
+          "column": 1
+        },
+        {
+          "title": "a late initial list does not clear a send error after navigation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 933,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:108:54",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 54,
+                      "line": 108
+                    },
+                    "snippet": "  106 |   try {\n  107 |     await page.goto('/'); await waiting\n> 108 |     await page.getByRole('button', { name: '新建会话' }).click()\n      |                                                      ^\n  109 |     await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  110 |     await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) }))\n  111 |     await page.getByRole('textbox', { name: '天文问题' }).fill('测试异步加载')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 54,
+                        "line": 108
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  106 |   try {\n  107 |     await page.goto('/'); await waiting\n> 108 |     await page.getByRole('button', { name: '新建会话' }).click()\n      |                                                      ^\n  109 |     await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  110 |     await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) }))\n  111 |     await page.getByRole('textbox', { name: '天文问题' }).fill('测试异步加载')\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:108:54"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:28.965Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-late-initial-l-d2d90-send-error-after-navigation-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-late-initial-l-d2d90-send-error-after-navigation-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-late-initial-l-d2d90-send-error-after-navigation-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 54,
+                    "line": 108
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-b5cce396a9cd368e62b2",
+          "file": "workbench.spec.ts",
+          "line": 98,
+          "column": 1
+        },
+        {
+          "title": "local static proxy keeps its API target and never returns SPA HTML for API errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 48,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:31.459Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-ae8cf3653592a0ec7fc3",
+          "file": "workbench.spec.ts",
+          "line": 121,
+          "column": 1
+        },
+        {
+          "title": "production build: conversation, follow-up, complete table, preview, download and restore",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.4314.50"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1066,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:12:52",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 52,
+                      "line": 12
+                    },
+                    "snippet": "  10 |   await expect(page.getByRole('heading', { name: '天文数据与文献检索' })).toBeVisible()\n  11 |   if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-empty.png`) }) }\n> 12 |   await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                    ^\n  13 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  14 |   const question = page.getByRole('textbox', { name: '天文问题' })\n  15 |   await question.fill('合成验收：查询Gaia圆锥100个位置候选源。')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 52,
+                        "line": 12
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  10 |   await expect(page.getByRole('heading', { name: '天文数据与文献检索' })).toBeVisible()\n  11 |   if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-empty.png`) }) }\n> 12 |   await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                    ^\n  13 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  14 |   const question = page.getByRole('textbox', { name: '天文问题' })\n  15 |   await question.fill('合成验收：查询Gaia圆锥100个位置候选源。')\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:12:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:04.370Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.4314.50"
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-production-build-758bc-review-download-and-restore-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-production-build-758bc-review-download-and-restore-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-production-build-758bc-review-download-and-restore-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 52,
+                    "line": 12
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-57c9eb40976db4fc78f2",
+          "file": "workbench.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "IME composition, explicit examples, plain text literature, rename and delete",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1381,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:46:74",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 74,
+                      "line": 46
+                    },
+                    "snippet": "  44 |\n  45 | test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {\n> 46 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  47 |   await page.getByRole('button', { name: 'ADS 文献检索' }).click()\n  48 |   const input = page.getByRole('textbox', { name: '天文问题' })\n  49 |   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 74,
+                        "line": 46
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  44 |\n  45 | test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {\n> 46 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  47 |   await page.getByRole('button', { name: 'ADS 文献检索' }).click()\n  48 |   const input = page.getByRole('textbox', { name: '天文问题' })\n  49 |   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:46:74"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:06.970Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-IME-composition--732ba-iterature-rename-and-delete-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-IME-composition--732ba-iterature-rename-and-delete-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-IME-composition--732ba-iterature-rename-and-delete-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 74,
+                    "line": 46
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-68c9514870631eb2218a",
+          "file": "workbench.spec.ts",
+          "line": 45,
+          "column": 1
+        },
+        {
+          "title": "narrow viewport has usable panel navigation and no page overflow",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 8,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 25132,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 25000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 25000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 25000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 63,
+                        "line": 66
+                      },
+                      "message": "Error: locator.click: Test timeout of 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '会话', exact: true })\u001b[22m\n\n\n  64 | test('narrow viewport has usable panel navigation and no page overflow', async ({ page }, testInfo) => {\n  65 |   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/')\n> 66 |   await page.getByRole('button', { name: '会话', exact: true }).click(); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                               ^\n  67 |   const input = page.getByRole('textbox', { name: '天文问题' }); await input.fill('合成Gaia圆锥查询')\n  68 |   await page.getByRole('button', { name: '发送', exact: true }).click()\n  69 |   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:66:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:10.062Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-narrow-viewport--12133-gation-and-no-page-overflow-edge\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-63245390283688dabf92",
+          "file": "workbench.spec.ts",
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "backend connection error is explicit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 9,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 987,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:36.649Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-91dd152359441f912175",
+          "file": "workbench.spec.ts",
+          "line": 75,
+          "column": 1
+        },
+        {
+          "title": "a rejected send preserves the question and only retries on explicit action",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 9,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 741,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:81:74",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 74,
+                      "line": 81
+                    },
+                    "snippet": "  79 |\n  80 | test('a rejected send preserves the question and only retries on explicit action', async ({ page }) => {\n> 81 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  82 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  83 |   let calls = 0\n  84 |   await page.route('**/api/v1/conversations/*/turns', async route => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 74,
+                        "line": 81
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  79 |\n  80 | test('a rejected send preserves the question and only retries on explicit action', async ({ page }) => {\n> 81 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话' }).click()\n     |                                                                          ^\n  82 |   await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  83 |   let calls = 0\n  84 |   await page.route('**/api/v1/conversations/*/turns', async route => {\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:81:74"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:38.099Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-rejected-send--87551--retries-on-explicit-action-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-rejected-send--87551--retries-on-explicit-action-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-rejected-send--87551--retries-on-explicit-action-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 74,
+                    "line": 81
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-95cd61de6a8e6f8272c8",
+          "file": "workbench.spec.ts",
+          "line": 80,
+          "column": 1
+        },
+        {
+          "title": "a late initial list does not clear a send error after navigation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 10,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1853,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:108:54",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 54,
+                      "line": 108
+                    },
+                    "snippet": "  106 |   try {\n  107 |     await page.goto('/'); await waiting\n> 108 |     await page.getByRole('button', { name: '新建会话' }).click()\n      |                                                      ^\n  109 |     await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  110 |     await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) }))\n  111 |     await page.getByRole('textbox', { name: '天文问题' }).fill('测试异步加载')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 54,
+                        "line": 108
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '新建会话' }) resolved to 2 elements:\n    1) <button type=\"button\" data-tooltip=\"\" class=\"brand brand-action\" aria-label=\"AstroAgent：新建会话\">…</button> aka getByRole('button', { name: 'AstroAgent：新建会话' })\n    2) <button class=\"new-conversation\">…</button> aka getByRole('button', { name: '新建会话', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '新建会话' })\u001b[22m\n\n\n  106 |   try {\n  107 |     await page.goto('/'); await waiting\n> 108 |     await page.getByRole('button', { name: '新建会话' }).click()\n      |                                                      ^\n  109 |     await expect(page).toHaveURL(/conversations\\/[0-9a-f-]+/)\n  110 |     await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) }))\n  111 |     await page.getByRole('textbox', { name: '天文问题' }).fill('测试异步加载')\n    at D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts:108:54"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:39.975Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-late-initial-l-d2d90-send-error-after-navigation-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-late-initial-l-d2d90-send-error-after-navigation-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-current\\browser-final\\artifacts\\workbench-a-late-initial-l-d2d90-send-error-after-navigation-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-current\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 54,
+                    "line": 108
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-c1dc56150c7d86f1caf8",
+          "file": "workbench.spec.ts",
+          "line": 98,
+          "column": 1
+        },
+        {
+          "title": "local static proxy keeps its API target and never returns SPA HTML for API errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 68,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:43.671Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-f095c7fe45b6e8037ce0",
+          "file": "workbench.spec.ts",
+          "line": 121,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workflows.spec.ts",
+      "file": "workflows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7593,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:53:31.548Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-d825ce04b4ceccf16d00",
+          "file": "workflows.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 25000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4976,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:54:43.790Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-bd5e789dfd84d94ef68c",
+          "file": "workflows.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T06:52:33.099Z",
+    "duration": 138104.631,
+    "expected": 20,
+    "skipped": 2,
+    "unexpected": 10,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "browser": "chromium",
+      "passed": true,
+      "preview_question": "binary cluster",
+      "preview_texts": [
+        "# Evidence\nBinary cluster synthetic evidence.\n"
+      ],
+      "model": "model-b",
+      "sends": 1
+    },
+    {
+      "browser": "edge",
+      "passed": true,
+      "preview_question": "binary cluster",
+      "preview_texts": [
+        "# Evidence\nBinary cluster synthetic evidence.\n"
+      ],
+      "model": "model-b",
+      "sends": 1
+    }
+  ],
+  "passed": true
+}

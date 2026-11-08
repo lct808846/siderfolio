@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="6.972" timestamp="2026-11-08T16:58:15.577384+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_rag_postgres" name="test_selected_model_and_previewed_evidence_are_frozen_for_confirmation" time="6.679"><failure message="assert '# Reference\nBinary cluster environment synthetic fixture.\n' in '{&quot;evidence&quot;:[{&quot;filename&quot;:&quot;fixture.md&quot;,&quot;label&quot;:&quot;E1&quot;,&quot;lines&quot;:[1,2],&quot;page&quot;:null,&quot;text&quot;:&quot;# Reference\\nBinary cluster environment synthetic fixture.\\n&quot;}],&quot;history&quot;:[],&quot;question&quot;:&quot;binary cluster&quot;}'">pg_client = &lt;starlette.testclient.TestClient object at 0x000001731D557740&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001731D5574D0&gt;
+
+    def test_selected_model_and_previewed_evidence_are_frozen_for_confirmation(pg_client, monkeypatch):
+        monkeypatch.setenv("DEEPSEEK_MODEL", "model-a")
+        monkeypatch.setenv(
+            "CHAT_MODELS",
+            json.dumps([{"id": "model-a", "label": "A"}, {"id": "model-b", "label": "B"}]),
+        )
+        root, _ = project_with_document(pg_client)
+        build(pg_client, root)
+        response = pg_client.post(
+            root + "/rag/previews", json={"question": "binary cluster", "model": "model-b"}
+        )
+        assert response.status_code == 200, response.text
+        value = response.json()
+        assert value["model"] == "model-b" and value["evidence"]
+        assert not pg_client.model_payloads
+        body = {
+            "client_request_id": str(uuid4()),
+            "preview_id": value["id"],
+            "confirmation_token": value["confirmation_token"],
+            "confirmed": True,
+        }
+        response = pg_client.post(root + "/rag/answers", json=body)
+        assert response.status_code == 200, response.text
+        assert len(pg_client.model_payloads) == 1
+        sent = pg_client.model_payloads[0]
+        assert sent["model"] == "model-b"
+        payload = sent["messages"][1]["content"]
+        assert "binary cluster" in payload
+        for evidence in value["evidence"]:
+&gt;           assert evidence["view"]["text"] in payload
+E           assert '# Reference\nBinary cluster environment synthetic fixture.\n' in '{"evidence":[{"filename":"fixture.md","label":"E1","lines":[1,2],"page":null,"text":"# Reference\\nBinary cluster environment synthetic fixture.\\n"}],"history":[],"question":"binary cluster"}'
+
+tests\test_rag_postgres.py:314: AssertionError</failure></testcase></testsuite></testsuites>

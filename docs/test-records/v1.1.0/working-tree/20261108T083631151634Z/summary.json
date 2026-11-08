@@ -1,0 +1,8 @@
+{
+  "scope": "uncommitted worktree snapshot; not a release",
+  "backend": "547 passed, 20 skipped; missing historical fixtures restored; subsequent formatting rechecked",
+  "frontend": "32 unit tests passed; typecheck, lint, build and generated contract passed",
+  "attachment_model": "8 isolated API tests passed; synthetic and public PDF parsing passed; both configured real providers passed synthetic attachment follow-up",
+  "browser": "complete Chromium and Edge regression 32 passed with public PDF; added interaction checks 4 passed; original selector failures and retries retained",
+  "known_scope": "acceptance requires global top result control but current header does not expose it; screen readers, all model/provider combinations and all document types are not comprehensively assessed"
+}

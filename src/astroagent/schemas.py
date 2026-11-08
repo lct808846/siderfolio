@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     message: str = Field(min_length=1, max_length=4000, examples=["请查询 Betelgeuse 的坐标和类型"])
+    model: str | None = Field(default=None, min_length=1, max_length=128)
 
 
 class ObjectQuery(BaseModel):

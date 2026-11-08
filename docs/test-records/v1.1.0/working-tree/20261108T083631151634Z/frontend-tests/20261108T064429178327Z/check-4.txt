@@ -1,0 +1,46 @@
+
+> astroagent-workbench@1.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 D:/project/astroagent/.acceptance-v11-current/frontend
+
+ ✓ tests/unit/api.test.ts (7 tests) 25ms
+ ✓ tests/unit/conversation-tools.test.ts (4 tests) 13ms
+ ✓ tests/unit/projects-api.test.ts (3 tests) 16ms
+ ✓ tests/unit/markdown-answer.test.ts (3 tests) 66ms
+ ❯ tests/unit/workbench.test.ts (11 tests | 1 failed) 94ms
+   ✓ restores saved turns without invoking the model 8ms
+   ✓ retains original request on disconnect and blocks a new charged send 4ms
+   ✓ shows empty results and never interprets unsafe answer content as HTML 49ms
+   ✓ does not show a previous conversation after a failed navigation 5ms
+   ✓ ignores an older response arriving after a newer navigation 2ms
+   ✓ refreshes storage state without an existing conversation and does not submit a question 5ms
+   ✓ keeps a storage refresh failure visible without an existing conversation 2ms
+   × blocks repeated creation while the first request is pending and reuses its empty conversation 11ms
+     → expected "create" to be called 1 times, but got 0 times
+   ✓ keeps a confirmed empty conversation when the subsequent list refresh fails 3ms
+   ✓ does not overwrite a conversation selected during creation 2ms
+   ✓ does not send a question to a different conversation after navigation 2ms
+ ✓ tests/unit/user-message.test.ts (4 tests) 92ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/workbench.test.ts > blocks repeated creation while the first request is pending and reuses its empty conversation
+AssertionError: expected "create" to be called 1 times, but got 0 times
+ ❯ tests/unit/workbench.test.ts:82:18
+     80|   expect(store.creating).toBe(true)
+     81|   expect(await store.create()).toBeUndefined()
+     82|   expect(create).toHaveBeenCalledTimes(1)
+       |                  ^
+     83|   finish?.(conversation)
+     84|   expect(await first).toBe('new')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 31 passed (32)
+   Start at  14:44:49
+   Duration  4.21s (transform 1.07s, setup 0ms, collect 3.05s, tests 307ms, environment 10.19s, prepare 1.77s)
+

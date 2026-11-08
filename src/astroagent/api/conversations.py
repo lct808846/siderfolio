@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request, Response
 
-from astroagent.api.chat import get_agent
+from astroagent.api.chat import get_agent, get_agent_for_model
 from astroagent.conversation_schemas import (
     ArtifactInfo,
     ArtifactRequest,
@@ -78,7 +78,14 @@ def delete(conversation_id: UUID, service: Service):
     },
 )
 def submit(conversation_id: UUID, request: TurnRequest, response: Response, service: Service):
-    turn, response.status_code = service.submit(str(conversation_id), request, get_agent)
+    factory = get_agent
+    if request.model is not None:
+        selected_agent = get_agent_for_model(request.model)
+
+        def factory():
+            return selected_agent
+
+    turn, response.status_code = service.submit(str(conversation_id), request, factory)
     return turn
 
 

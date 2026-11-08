@@ -1,0 +1,102 @@
+[WebServer] INFO:     Started server process [9000]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:19596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:39252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.4s)
+  x  2 [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (1.9s)
+(node:22336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [edge] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.6s)
+  x  4 [edge] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (2.1s)
+
+
+  1) [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('第一条合成查询', { exact: true })
+    Expected: visible
+    Error: strict mode violation: getByText('第一条合成查询', { exact: true }) resolved to 3 elements:
+        1) <b>第一条合成查询</b> aka getByRole('button', { name: '第一条合成查询 2 轮 · 2026/11/' })
+        2) <h1 title="第一条合成查询">第一条合成查询</h1> aka getByRole('heading', { name: '第一条合成查询' })
+        3) <div class="user-message">第一条合成查询</div> aka locator('div').filter({ hasText: /^第一条合成查询$/ })
+
+    Call log:
+      - Expect "toBeVisible" getByText('第一条合成查询', { exact: true }) with timeout 5000ms
+      - waiting for getByText('第一条合成查询', { exact: true })
+
+
+      55 |   await page.getByRole('button', { name: '发送问题' }).click()
+      56 |   await expect(page.getByRole('button', { name: '编辑第2轮问题' })).toBeVisible()
+    > 57 |   await expect(page.getByText('第一条合成查询', { exact: true })).toBeVisible()
+         |                                                            ^
+      58 |   await expect(page.getByText('编辑后的第二条查询', { exact: true })).toBeVisible()
+      59 |   expect(sends).toBe(2)
+      60 | })
+        at D:\project\astroagent\.acceptance-v11-current\frontend\tests\browser\current-changes.spec.ts:57:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('第一条合成查询', { exact: true })
+    Expected: visible
+    Error: strict mode violation: getByText('第一条合成查询', { exact: true }) resolved to 4 elements:
+        1) <b>第一条合成查询</b> aka getByRole('button', { name: '第一条合成查询 2 轮 · 2026/11/' }).first()
+        2) <b>第一条合成查询</b> aka getByRole('button', { name: '第一条合成查询 2 轮 · 2026/11/' }).nth(1)
+        3) <h1 title="第一条合成查询">第一条合成查询</h1> aka getByRole('heading', { name: '第一条合成查询' })
+        4) <div class="user-message">第一条合成查询</div> aka locator('div').filter({ hasText: /^第一条合成查询$/ })
+
+    Call log:
+      - Expect "toBeVisible" getByText('第一条合成查询', { exact: true }) with timeout 5000ms
+      - waiting for getByText('第一条合成查询', { exact: true })
+
+
+      55 |   await page.getByRole('button', { name: '发送问题' }).click()
+      56 |   await expect(page.getByRole('button', { name: '编辑第2轮问题' })).toBeVisible()
+    > 57 |   await expect(page.getByText('第一条合成查询', { exact: true })).toBeVisible()
+         |                                                            ^
+      58 |   await expect(page.getByText('编辑后的第二条查询', { exact: true })).toBeVisible()
+      59 |   expect(sends).toBe(2)
+      60 | })
+        at D:\project\astroagent\.acceptance-v11-current\frontend\tests\browser\current-changes.spec.ts:57:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-actions\artifacts\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns 
+    [edge] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns 
+  2 passed (15.9s)

@@ -1,0 +1,19 @@
+[WebServer] INFO:     Started server process [22748]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:37020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:31144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.3s)
+  ok 2 [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (1.9s)
+(node:39476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [edge] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.5s)
+  ok 4 [edge] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (1.7s)
+
+  4 passed (14.7s)

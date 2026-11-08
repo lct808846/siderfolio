@@ -1,0 +1,19 @@
+
+> astroagent-workbench@1.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 D:/project/astroagent/.acceptance-v11-remaining/frontend
+
+ ✓ tests/unit/conversation-tools.test.ts (4 tests) 13ms
+ ✓ tests/unit/api.test.ts (7 tests) 24ms
+ ✓ tests/unit/projects-api.test.ts (3 tests) 17ms
+ ✓ tests/unit/markdown-answer.test.ts (3 tests) 74ms
+ ✓ tests/unit/user-message.test.ts (4 tests) 49ms
+ ✓ tests/unit/workbench.test.ts (11 tests) 107ms
+
+ Test Files  6 passed (6)
+      Tests  32 passed (32)
+   Start at  16:53:40
+   Duration  3.61s (transform 957ms, setup 0ms, collect 2.74s, tests 284ms, environment 8.35s, prepare 1.50s)
+

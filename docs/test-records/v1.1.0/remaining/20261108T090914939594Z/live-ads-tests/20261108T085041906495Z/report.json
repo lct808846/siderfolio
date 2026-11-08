@@ -1,0 +1,44 @@
+{
+  "application_version": "1.1.0",
+  "postgres_integration_requested": false,
+  "legacy_storage_is_test_double": true,
+  "real_embedding_or_rag_quality_validated": false,
+  "started_at": "2026-11-08T08:50:41.908494+00:00",
+  "kind": "live-ads-tests",
+  "python": "3.12.13",
+  "versions": {
+    "astroagent": "0.8.0",
+    "fastapi": "0.141.1",
+    "langchain-core": "1.6.0",
+    "langchain-openai": "1.6.0",
+    "astroquery": "0.4.11",
+    "astropy": "8.0.2",
+    "defusedxml": "0.7.1",
+    "numpy": "2.5.4",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pydantic": "2.13.4",
+    "pytest": "9.1.1"
+  },
+  "git_head": "e232aef6532cfa6aa80c518476555ed94a064d88",
+  "git_dirty": true,
+  "git_status": "M .env.example\n M README.md\n M docs/PROJECT_PLAN_V1.1.md\n M docs/development/v1.1.0/ACCEPTANCE.md\n M docs/development/v1.1.0/README.md\n M frontend/openapi.json\n M frontend/package-lock.json\n M frontend/package.json\n M frontend/src/api/index.ts\n M frontend/src/components/ResultPanel.vue\n M frontend/src/components/WorkspaceHeader.vue\n M frontend/src/main.ts\n M frontend/src/stores/workbench.ts\n M frontend/src/types/generated.ts\n M frontend/src/types/index.ts\n M frontend/src/views/App.vue\n M frontend/src/views/ProjectWorkspace.vue\n M frontend/src/views/RagWorkspace.vue\n M frontend/src/views/SettingsWorkspace.vue\n M frontend/tests/browser/v11-layout.spec.ts\n M frontend/tests/browser/workbench.spec.ts\n M frontend/tests/unit/workbench.test.ts\n M scripts/fixture_server.py\n M scripts/start_backend.ps1\n M src/astroagent/agent.py\n M src/astroagent/api/chat.py\n M src/astroagent/api/conversations.py\n M src/astroagent/config.py\n M src/astroagent/context.py\n M src/astroagent/conversation_schemas.py\n M src/astroagent/conversation_service.py\n M src/astroagent/conversations.py\n M src/astroagent/local_access.py\n M src/astroagent/main.py\n M src/astroagent/rag_schemas.py\n M src/astroagent/rag_service.py\n M src/astroagent/schemas.py\n M tests/test_conversations.py\n M tests/test_rag_postgres.py\n?? .acceptance-v11-remaining/\n?? docs/development/v1.1.0/CHAT_ATTACHMENTS.md\n?? docs/development/v1.1.0/CONVERSATION_LAYOUT.md\n?? docs/development/v1.1.0/CONVERSATION_MANAGEMENT.md\n?? docs/development/v1.1.0/CONVERSATION_PRESENTATION.md\n?? docs/development/v1.1.0/CONVERSATION_STORAGE_FIX.md\n?? docs/development/v1.1.0/MESSAGE_ACTIONS.md\n?? docs/development/v1.1.0/MODEL_SWITCHING.md\n?? docs/test-records/v1.1.0/working-tree/\n?? frontend/src/api/attachments.ts\n?? frontend/src/attachments.css\n?? frontend/src/components/AttachmentButton.vue\n?? frontend/src/components/AttachmentPreview.vue\n?? frontend/src/components/AttachmentTray.vue\n?? frontend/src/components/ConversationSidebar.vue\n?? frontend/src/components/InteractionHints.vue\n?? frontend/src/components/MarkdownAnswer.ts\n?? frontend/src/components/ModelSelector.vue\n?? frontend/src/components/UserMessage.vue\n?? frontend/src/conversation-layout.css\n?? frontend/src/conversation-panel-state.ts\n?? frontend/src/conversation-sidebar.css\n?? frontend/src/conversation-tools.ts\n?? frontend/src/interaction-surfaces.css\n?? frontend/src/markdown-answer.css\n?? frontend/src/model-selector.css\n?? frontend/src/stores/attachments.ts\n?? frontend/src/stores/models.ts\n?? frontend/src/user-message.css\n?? frontend/tests/browser/current-changes.spec.ts\n?? frontend/tests/unit/conversation-tools.test.ts\n?? frontend/tests/unit/markdown-answer.test.ts\n?? frontend/tests/unit/user-message.test.ts\n?? src/astroagent/api/attachments.py\n?? src/astroagent/api/models.py\n?? src/astroagent/attachment_schemas.py\n?? src/astroagent/attachments.py\n?? src/astroagent/model_schemas.py\n?? tests/test_v11_attachment_model_acceptance.py",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "tests/test_live_ads.py",
+        "-v",
+        "--junitxml=D:\\project\\astroagent\\.acceptance-v11-remaining\\docs\\test-records\\v1.1.0\\live-ads-tests\\20261108T085041906495Z\\pytest.xml",
+        "-o",
+        "faulthandler_timeout=30"
+      ],
+      "exit_code": 0,
+      "seconds": 78.2274,
+      "transcript": "check-1.txt"
+    }
+  ],
+  "outcome": "passed",
+  "finished_at": "2026-11-08T08:52:00.322727+00:00"
+}

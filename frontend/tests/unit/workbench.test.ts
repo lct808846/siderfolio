@@ -49,3 +49,72 @@ it('ignores an older response arriving after a newer navigation', async () => {
   finish?.({ id: 'slow', title: '迟到响应', created_at: '', updated_at: '', revision: 0, metadata_revision: 0, turns: [] }); await slow
   expect(store.current?.id).toBe('new')
 })
+
+it('refreshes storage state without an existing conversation and does not submit a question', async () => {
+  const store = useWorkbench()
+  store.error = '存储暂不可用'; store.errorCode = 'conversation_storage_unavailable'
+  const list = vi.spyOn(api, 'list').mockResolvedValue([])
+  const submit = vi.spyOn(api, 'submit')
+  const create = vi.spyOn(api, 'create')
+  await store.recover()
+  expect(list).toHaveBeenCalledOnce()
+  expect(store.error).toBe(''); expect(store.errorCode).toBe('')
+  expect(submit).not.toHaveBeenCalled(); expect(create).not.toHaveBeenCalled()
+})
+
+it('keeps a storage refresh failure visible without an existing conversation', async () => {
+  const store = useWorkbench()
+  vi.spyOn(api, 'list').mockRejectedValue(new ApiError('database_unavailable', '数据库仍不可用', 503))
+  await store.recover()
+  expect(store.errorCode).toBe('database_unavailable')
+  expect(store.error).toBe('数据库仍不可用')
+})
+
+it('blocks repeated creation while the first request is pending and reuses its empty conversation', async () => {
+  const store = useWorkbench()
+  const conversation = { id: 'new', title: '新会话', created_at: '', updated_at: '', revision: 0, metadata_revision: 0 }
+  let finish: ((value: typeof conversation) => void) | undefined
+  const create = vi.spyOn(api, 'create').mockImplementation(() => new Promise(resolve => { finish = resolve }))
+  vi.spyOn(api, 'list').mockResolvedValueOnce([]).mockResolvedValue([conversation])
+  const first = store.create()
+  expect(store.creating).toBe(true)
+  expect(await store.create()).toBeUndefined()
+  await vi.waitFor(() => expect(create).toHaveBeenCalledTimes(1))
+  finish?.(conversation)
+  expect(await first).toBe('new')
+  expect(store.creating).toBe(false)
+  expect(await store.create()).toBe('new')
+  expect(create).toHaveBeenCalledTimes(1)
+})
+
+it('keeps a confirmed empty conversation when the subsequent list refresh fails', async () => {
+  const store = useWorkbench()
+  const create = vi.spyOn(api, 'create').mockResolvedValue({ id: 'new', title: '新会话', created_at: '', updated_at: '', revision: 0, metadata_revision: 0 })
+  vi.spyOn(api, 'list').mockResolvedValueOnce([]).mockRejectedValue(new ApiError('connection_lost', '断线'))
+  expect(await store.create()).toBe('new')
+  expect(store.current?.id).toBe('new')
+  expect(await store.create()).toBe('new')
+  expect(create).toHaveBeenCalledTimes(1)
+})
+
+it('does not overwrite a conversation selected during creation', async () => {
+  const store = useWorkbench()
+  const conversation = { id: 'new', title: '新会话', created_at: '', updated_at: '', revision: 0, metadata_revision: 0 }
+  let finish: ((value: typeof conversation) => void) | undefined
+  vi.spyOn(api, 'create').mockImplementation(() => new Promise(resolve => { finish = resolve }))
+  vi.spyOn(api, 'list').mockResolvedValue([conversation])
+  vi.spyOn(api, 'detail').mockResolvedValue({ ...conversation, id: 'other', turns: [] })
+  const pending = store.create()
+  await store.load('other')
+  finish?.(conversation)
+  await pending
+  expect(store.current?.id).toBe('other')
+})
+
+it('does not send a question to a different conversation after navigation', async () => {
+  const store = useWorkbench()
+  store.current = { id: 'other', title: '其他会话', created_at: '', updated_at: '', revision: 0, metadata_revision: 0, turns: [] }
+  const submit = vi.spyOn(api, 'submit')
+  await store.send('问题', 'expected')
+  expect(submit).not.toHaveBeenCalled()
+})

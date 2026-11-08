@@ -18,8 +18,12 @@ router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 
 def get_agent() -> AstroAgent:
+    return get_agent_for_model()
+
+
+def get_agent_for_model(model_id=None) -> AstroAgent:
     try:
-        settings = Settings()
+        settings = Settings().for_model(model_id)
     except ValidationError as exc:
         raise ServiceError(503, "invalid_configuration", "服务配置无效，请检查环境变量。") from exc
     return AstroAgent(
@@ -43,6 +47,8 @@ def get_agent() -> AstroAgent:
     ),
 )
 def chat(request: ChatRequest, agent: Annotated[AstroAgent, Depends(get_agent)]) -> ChatResponse:
+    if request.model is not None:
+        agent = get_agent_for_model(request.model)
     if not MODEL_TASK_SLOTS.acquire(blocking=False):
         raise ServiceError(
             503, "conversation_service_busy", "已有两轮正在处理，请稍后重试。", retryable=True

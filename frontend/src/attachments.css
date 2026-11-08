@@ -1,0 +1,32 @@
+.attachment-add { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 30px; width: 30px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #68816f; }
+.attachment-add svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.attachment-add:hover:not(:disabled) { background: #edf3eb; }
+.attachment-tray { padding: 12px 14px 2px; }
+.attachment-drafts, .message-attachments { display: flex; flex-wrap: wrap; gap: 8px; }
+.attachment-draft { display: flex; align-items: center; flex-wrap: wrap; max-width: 300px; padding: 5px 6px; border: 1px solid #dce6dc; border-radius: 10px; background: #f2f7f0; }
+.attachment-file { display: flex; align-items: center; gap: 9px; min-width: 0; max-width: 250px; padding: 4px; border: 0; background: transparent; text-align: left; }
+.attachment-file > svg, .attachment-state-icon { flex: 0 0 24px; width: 24px; height: 26px; fill: none; stroke: #709179; stroke-width: 1.4; }
+.attachment-state-icon { display: grid; place-items: center; font-size: 22px; }
+.attachment-file > span:last-child { min-width: 0; }
+.attachment-file b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 550; color: #3b5e46; }
+.attachment-file small { display: block; margin-top: 3px; color: #839187; font-size: 10px; }
+.attachment-remove { flex: 0 0 22px; width: 22px; height: 22px; margin-left: 3px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #88968b; font-size: 18px; }
+.attachment-retry { padding: 3px 6px; border: 0; background: transparent; color: #778e7c; font-size: 10px; }
+.attachment-error { flex: 0 0 100%; padding: 5px 4px; color: #a56455; font-size: 11px; overflow-wrap: anywhere; }
+.attachment-draft[data-state="error"] { border-color: #ead2c9; background: #fff8f4; }
+.message-attachments { justify-content: flex-end; margin-bottom: 10px; }
+.message-attachments .attachment-file { padding: 8px 10px; border: 1px solid #dce6dc; border-radius: 10px; background: #f2f7f0; }
+.conversation-layout .composer.composer-dragging { border-color: #75a185; box-shadow: 0 0 0 3px #75a18526; }
+.conversation-layout .composer > .attachment-drop-hint { padding: 9px 14px; color: #537c5e; font-size: 12px; text-align: left; }
+.attachment-preview-dialog { width: min(760px, calc(100vw - 32px)); max-height: min(80dvh, 800px); padding: 0; border: 1px solid #dce7da; border-radius: 15px; color: #334b3c; background: #fbfdf9; box-shadow: 0 24px 80px #1a362b33; }
+.attachment-preview-dialog[open] { display: flex; flex-direction: column; }
+.attachment-preview-dialog::backdrop { background: #19332755; backdrop-filter: blur(4px); }
+.attachment-preview-dialog header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 22px; border-bottom: 1px solid #e3eae0; }
+.attachment-preview-dialog h2 { font-size: 16px; overflow-wrap: anywhere; }
+.attachment-preview-dialog header p { margin-top: 4px; font-size: 11px; color: #89968b; }
+.attachment-preview-dialog header button { border: 0; padding: 0 4px; background: transparent; font-size: 23px; }
+.attachment-preview-content { min-height: 0; padding: 16px 22px; overflow: auto; }
+.attachment-preview-content pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.9 var(--font-ui); }
+.attachment-preview-dialog footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 12px 22px; border-top: 1px solid #e3eae0; }
+.attachment-preview-dialog footer span { font-size: 10px; color: #89968b; }
+.attachment-preview-dialog footer button { padding: 6px 12px; font-size: 12px; }

@@ -1,0 +1,42 @@
+
+> astroagent-workbench@1.1.0 lint
+> eslint . --max-warnings 0
+
+
+D:\project\astroagent\.acceptance-v11-current\frontend\src\components\AttachmentButton.vue
+  18:359  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+D:\project\astroagent\.acceptance-v11-current\frontend\src\components\AttachmentPreview.vue
+  13:248  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+D:\project\astroagent\.acceptance-v11-current\frontend\src\components\ModelSelector.vue
+  159:105  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  165:154  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  174:145  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+D:\project\astroagent\.acceptance-v11-current\frontend\src\components\UserMessage.vue
+  30:203  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  30:270  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  31:255  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+D:\project\astroagent\.acceptance-v11-current\frontend\src\views\App.vue
+  250:354  warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  250:373  warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  250:430  warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  262:60   warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  263:44   warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  295:148  warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  296:104  warning  Expected a space before '/>', but not found                                   vue/html-closing-bracket-spacing
+  302:279  warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+
+D:\project\astroagent\.acceptance-v11-current\frontend\src\views\ProjectWorkspace.vue
+  200:60  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  201:30  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  202:68  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  208:60  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  209:44  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+✖ 21 problems (0 errors, 21 warnings)
+  0 errors and 21 warnings potentially fixable with the `--fix` option.
+
+ESLint found too many warnings (maximum: 0).

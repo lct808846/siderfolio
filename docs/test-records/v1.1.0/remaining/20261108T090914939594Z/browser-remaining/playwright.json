@@ -1,0 +1,558 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1105-1297-0_26.1105.1297.0_x64__3k8sg7r9htsxt\\dependencies\\node\\bin\\node.exe",
+      "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\node_modules\\playwright\\cli.js",
+      "test",
+      "tests/browser/remaining-acceptance.spec.ts",
+      "--timeout=45000",
+      "--output",
+      "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts"
+    ],
+    "configFile": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-remaining/browser-remaining/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-remaining/browser-remaining/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "remaining-acceptance.spec.ts",
+      "file": "remaining-acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "clipboard preserves the question and reports a denied copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1267,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:28.874Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-4a023cc55aac5d9eeaf5",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 10,
+          "column": 1
+        },
+        {
+          "title": "pending response does not open results and manual close survives refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1527,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:30.567Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-e348e61fc070762b1ecf",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "rename, pin and export a noncurrent conversation; cancel deletion",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1784,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:32.107Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-842098da3dfa17615e5d",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 48,
+          "column": 1
+        },
+        {
+          "title": "settings refresh failure clears the previous ready status",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 609,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('本机状态未确认')\nExpected: visible\nError: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:\n    1) <span class=\"tag error\">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })\n    2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('本机状态未确认') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('本机状态未确认')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('本机状态未确认')\nExpected: visible\nError: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:\n    1) <span class=\"tag error\">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })\n    2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('本机状态未确认') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('本机状态未确认')\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:87:43",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                      "column": 43,
+                      "line": 87
+                    },
+                    "snippet": "  85 |   await page.getByRole('button', { name: '刷新本机状态' }).click()\n  86 |   await expect(page.getByRole('alert')).toContainText('合成读取失败')\n> 87 |   await expect(page.getByText('本机状态未确认')).toBeVisible()\n     |                                           ^\n  88 |   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)\n  89 | })\n  90 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                        "column": 43,
+                        "line": 87
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('本机状态未确认')\nExpected: visible\nError: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:\n    1) <span class=\"tag error\">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })\n    2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('本机状态未确认') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('本机状态未确认')\u001b[22m\n\n\n  85 |   await page.getByRole('button', { name: '刷新本机状态' }).click()\n  86 |   await expect(page.getByRole('alert')).toContainText('合成读取失败')\n> 87 |   await expect(page.getByText('本机状态未确认')).toBeVisible()\n     |                                           ^\n  88 |   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)\n  89 | })\n  90 |\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:87:43"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:33.909Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                    "column": 43,
+                    "line": 87
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-c6c98fe4bc93a8282cb0",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 76,
+          "column": 1
+        },
+        {
+          "title": "clipboard preserves the question and reports a denied copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1281,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:35.185Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-1392142a9471d4d34f2e",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 10,
+          "column": 1
+        },
+        {
+          "title": "pending response does not open results and manual close survives refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1544,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:37.080Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-358fb0d8b49f5cf4d2eb",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "rename, pin and export a noncurrent conversation; cancel deletion",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1060,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '会话操作：已改名验收会话' }) resolved to 2 elements:\n    1) <button disabled data-tooltip=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\" class=\"conversation-more\" aria-label=\"会话操作：已改名验收会话\">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).first()\n    2) <button disabled data-tooltip=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\" class=\"conversation-more\" aria-label=\"会话操作：已改名验收会话\">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).nth(1)\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '会话操作：已改名验收会话' })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '会话操作：已改名验收会话' }) resolved to 2 elements:\n    1) <button disabled data-tooltip=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\" class=\"conversation-more\" aria-label=\"会话操作：已改名验收会话\">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).first()\n    2) <button disabled data-tooltip=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\" class=\"conversation-more\" aria-label=\"会话操作：已改名验收会话\">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).nth(1)\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '会话操作：已改名验收会话' })\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:57:60",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                      "column": 60,
+                      "line": 57
+                    },
+                    "snippet": "  55 |   await page.getByRole('button', { name: '保存名称' }).click()\n  56 |   await expect(page.getByRole('heading', { name: '当前验收会话' })).toBeVisible()\n> 57 |   await page.getByRole('button', { name: '会话操作：已改名验收会话' }).click()\n     |                                                            ^\n  58 |   await page.getByRole('menuitem', { name: '置顶', exact: true }).click()\n  59 |   await expect(page.locator('.conversation-row').first()).toContainText('已改名验收会话')\n  60 |   await page.getByRole('button', { name: '会话操作：已改名验收会话' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                        "column": 60,
+                        "line": 57
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: '会话操作：已改名验收会话' }) resolved to 2 elements:\n    1) <button disabled data-tooltip=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\" class=\"conversation-more\" aria-label=\"会话操作：已改名验收会话\">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).first()\n    2) <button disabled data-tooltip=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\" class=\"conversation-more\" aria-label=\"会话操作：已改名验收会话\">⋯</button> aka getByRole('button', { name: '会话操作：已改名验收会话' }).nth(1)\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '会话操作：已改名验收会话' })\u001b[22m\n\n\n  55 |   await page.getByRole('button', { name: '保存名称' }).click()\n  56 |   await expect(page.getByRole('heading', { name: '当前验收会话' })).toBeVisible()\n> 57 |   await page.getByRole('button', { name: '会话操作：已改名验收会话' }).click()\n     |                                                            ^\n  58 |   await page.getByRole('menuitem', { name: '置顶', exact: true }).click()\n  59 |   await expect(page.locator('.conversation-row').first()).toContainText('已改名验收会话')\n  60 |   await page.getByRole('button', { name: '会话操作：已改名验收会话' }).click()\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:57:60"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:38.643Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-renam-79822-onversation-cancel-deletion-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                    "column": 60,
+                    "line": 57
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-c26bbf443a1e411f8afe",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 48,
+          "column": 1
+        },
+        {
+          "title": "settings refresh failure clears the previous ready status",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1219,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('本机状态未确认')\nExpected: visible\nError: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:\n    1) <span class=\"tag error\">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })\n    2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('本机状态未确认') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('本机状态未确认')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('本机状态未确认')\nExpected: visible\nError: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:\n    1) <span class=\"tag error\">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })\n    2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('本机状态未确认') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('本机状态未确认')\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:87:43",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                      "column": 43,
+                      "line": 87
+                    },
+                    "snippet": "  85 |   await page.getByRole('button', { name: '刷新本机状态' }).click()\n  86 |   await expect(page.getByRole('alert')).toContainText('合成读取失败')\n> 87 |   await expect(page.getByText('本机状态未确认')).toBeVisible()\n     |                                           ^\n  88 |   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)\n  89 | })\n  90 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                        "column": 43,
+                        "line": 87
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('本机状态未确认')\nExpected: visible\nError: strict mode violation: getByText('本机状态未确认') resolved to 2 elements:\n    1) <span class=\"tag error\">本机状态未确认</span> aka getByText('本机状态未确认', { exact: true })\n    2) <p>本机状态未确认，请先读取配置。</p> aka getByText('本机状态未确认，请先读取配置。')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('本机状态未确认') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('本机状态未确认')\u001b[22m\n\n\n  85 |   await page.getByRole('button', { name: '刷新本机状态' }).click()\n  86 |   await expect(page.getByRole('alert')).toContainText('合成读取失败')\n> 87 |   await expect(page.getByText('本机状态未确认')).toBeVisible()\n     |                                           ^\n  88 |   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)\n  89 | })\n  90 |\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:87:43"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T08:55:40.762Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-remaining\\artifacts\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                    "column": 43,
+                    "line": 87
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-af7e6314ca78c1ba2c32",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 76,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T08:55:21.930Z",
+    "duration": 21646.475,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

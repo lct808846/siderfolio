@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useRoute } from 'vue-router'
 
 defineProps<{ title: string }>()
 const route = useRoute()
+const createConversation = inject<() => Promise<string | undefined>>('astroagent.create-conversation')
 const projectPath = computed(() => typeof route.params.projectId === 'string' && route.params.projectId
   ? `/projects/${encodeURIComponent(route.params.projectId)}` : '')
 const projectSections = computed(() => [
@@ -21,10 +22,10 @@ function current(path: string, descendants = false) {
 <template>
   <header class="topbar workspace-header">
     <div class="workspace-header-main">
-      <RouterLink class="brand" to="/" aria-label="AstroAgent 查询工作台">
+      <button class="brand brand-action" type="button" aria-label="AstroAgent：新建会话" data-tooltip="" :disabled="!createConversation" @click="createConversation?.()">
         <span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b>
         <span class="version">1.1.0</span>
-      </RouterLink>
+      </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">
         <RouterLink to="/" :aria-current="route.path === '/' || route.path.startsWith('/conversations/') ? 'page' : undefined">查询工作台</RouterLink>

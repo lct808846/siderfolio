@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "scope": "uncommitted worktree snapshot, isolated database and synthetic/public data",
+  "opt_in_tests": "public PDF, SQLite 256 MiB test double, PostgreSQL 256 MiB logical payload: 3 passed",
+  "linux": "2 existing resource-limit test bodies passed in WSL via direct runner; pytest unavailable",
+  "live": "SIMBAD 2 passed; ADS 6 passed; Gaia initial 5 passed and 2 timed out, two failed cases passed on retry",
+  "rag": "PostgreSQL with simulated answering provider; both browsers passed preview, cancellation, confirmation and source follow-up; transmitted model, question and excerpts matched preview",
+  "browser": "clipboard success and denial, pending result, noncurrent management, bulk partial failure, settings failure, navigation, low height and reduced transparency passed in both browsers",
+  "accessibility": "axe WCAG 2 A/AA audit on workbench, project, settings: 2 browsers passed; test context bypassed CSP to inject audit tool; not equivalent to real screen-reader validation",
+  "limitations": "Automated checks do not prove scientific faithfulness or all screen-reader and device behavior; original failures retained."
+}

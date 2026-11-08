@@ -1,0 +1,9 @@
+
+file:///D:/project/astroagent/.acceptance-v11-remaining/scripts/rag_remaining_browser.mjs:69
+await writeFile(path.join(output, 'rag-ui.json'), JSON.stringify({ results, passed: results.every(x => x.passed) }, null, 2))
+                ^
+
+ReferenceError: path is not defined
+    at file:///D:/project/astroagent/.acceptance-v11-remaining/scripts/rag_remaining_browser.mjs:69:17
+
+Node.js v24.22.1

@@ -37,6 +37,7 @@ class IndexStatus(Contract):
 
 class RagQuery(Contract):
     question: str = Field(min_length=1, max_length=1000)
+    model: str | None = Field(default=None, min_length=1, max_length=128)
     document_ids: list[Identifier] = Field(default_factory=list, max_length=20)
     version_ids: list[Identifier] = Field(default_factory=list, max_length=20)
     history_ids: list[Identifier] = Field(default_factory=list, max_length=3)

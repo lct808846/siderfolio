@@ -1,0 +1,276 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1105-1297-0_26.1105.1297.0_x64__3k8sg7r9htsxt\\dependencies\\node\\bin\\node.exe",
+      "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\node_modules\\playwright\\cli.js",
+      "test",
+      "tests/browser/remaining-acceptance.spec.ts",
+      "--grep",
+      "sidebar toggles",
+      "--timeout=45000",
+      "--output",
+      "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\artifacts"
+    ],
+    "configFile": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-remaining/browser-sidebar-final/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-remaining/browser-sidebar-final/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "remaining-acceptance.spec.ts",
+      "file": "remaining-acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "sidebar toggles across compact and desktop boundaries without losing draft",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2344,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T09:12:48.399Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-0f1008fe282271e5f0dd",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 172,
+          "column": 1
+        },
+        {
+          "title": "sidebar toggles across compact and desktop boundaries without losing draft",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5994,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.history-toggle')\nExpected: \u001b[32m\"\u001b[7mfals\u001b[27me\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtru\u001b[27me\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('.history-toggle') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.history-toggle')\u001b[22m\n\u001b[2m    14 × locator resolved to <button type=\"button\" title=\"收起会话列表\" aria-label=\"收起会话列表\" aria-expanded=\"true\" aria-controls=\"conversation-history\" class=\"chat-toolbar-button history-toggle\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.history-toggle')\nExpected: \u001b[32m\"\u001b[7mfals\u001b[27me\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtru\u001b[27me\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('.history-toggle') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.history-toggle')\u001b[22m\n\u001b[2m    14 × locator resolved to <button type=\"button\" title=\"收起会话列表\" aria-label=\"收起会话列表\" aria-expanded=\"true\" aria-controls=\"conversation-history\" class=\"chat-toolbar-button history-toggle\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:181:26",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                      "column": 26,
+                      "line": 181
+                    },
+                    "snippet": "  179 |     const initial = await toggle.getAttribute('aria-expanded')\n  180 |     await toggle.click()\n> 181 |     await expect(toggle).toHaveAttribute('aria-expanded', initial === 'true' ? 'false' : 'true')\n      |                          ^\n  182 |     expect(await page.evaluate(() => !!document.activeElement?.closest('[inert], [aria-hidden=\"true\"]'))).toBe(false)\n  183 |     await toggle.click()\n  184 |     await expect(input).toHaveValue('侧栏切换时保留的草稿')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                        "column": 26,
+                        "line": 181
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.history-toggle')\nExpected: \u001b[32m\"\u001b[7mfals\u001b[27me\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtru\u001b[27me\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('.history-toggle') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.history-toggle')\u001b[22m\n\u001b[2m    14 × locator resolved to <button type=\"button\" title=\"收起会话列表\" aria-label=\"收起会话列表\" aria-expanded=\"true\" aria-controls=\"conversation-history\" class=\"chat-toolbar-button history-toggle\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n\n\n  179 |     const initial = await toggle.getAttribute('aria-expanded')\n  180 |     await toggle.click()\n> 181 |     await expect(toggle).toHaveAttribute('aria-expanded', initial === 'true' ? 'false' : 'true')\n      |                          ^\n  182 |     expect(await page.evaluate(() => !!document.activeElement?.closest('[inert], [aria-hidden=\"true\"]'))).toBe(false)\n  183 |     await toggle.click()\n  184 |     await expect(input).toHaveValue('侧栏切换时保留的草稿')\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:181:26"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T09:12:51.709Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\artifacts\\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\artifacts\\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-sidebar-final\\artifacts\\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                    "column": 26,
+                    "line": 181
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-5ab999603ee0336a1ecf",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 172,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T09:12:41.379Z",
+    "duration": 17812.007999999998,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

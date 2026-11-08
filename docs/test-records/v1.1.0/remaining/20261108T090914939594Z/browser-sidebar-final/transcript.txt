@@ -1,0 +1,59 @@
+[WebServer] INFO:     Started server process [34676]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+[WebServer] (node:16852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:6328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\remaining-acceptance.spec.ts:172:1 › sidebar toggles across compact and desktop boundaries without losing draft (2.3s)
+(node:39556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [edge] › tests\browser\remaining-acceptance.spec.ts:172:1 › sidebar toggles across compact and desktop boundaries without losing draft (6.0s)
+
+
+  1) [edge] › tests\browser\remaining-acceptance.spec.ts:172:1 › sidebar toggles across compact and desktop boundaries without losing draft 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.history-toggle')
+    Expected: "false"
+    Received: "true"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveAttribute" locator('.history-toggle') with timeout 5000ms
+      - waiting for locator('.history-toggle')
+        14 × locator resolved to <button type="button" title="收起会话列表" aria-label="收起会话列表" aria-expanded="true" aria-controls="conversation-history" class="chat-toolbar-button history-toggle">…</button>
+           - unexpected value "true"
+
+
+      179 |     const initial = await toggle.getAttribute('aria-expanded')
+      180 |     await toggle.click()
+    > 181 |     await expect(toggle).toHaveAttribute('aria-expanded', initial === 'true' ? 'false' : 'true')
+          |                          ^
+      182 |     expect(await page.evaluate(() => !!document.activeElement?.closest('[inert], [aria-hidden="true"]'))).toBe(false)
+      183 |     await toggle.click()
+      184 |     await expect(input).toHaveValue('侧栏切换时保留的草稿')
+        at D:\project\astroagent\.acceptance-v11-remaining\frontend\tests\browser\remaining-acceptance.spec.ts:181:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\browser-sidebar-final\artifacts\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\browser-sidebar-final\artifacts\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\browser-sidebar-final\artifacts\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\browser-sidebar-final\artifacts\remaining-acceptance-sideb-ef0c3-daries-without-losing-draft-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [edge] › tests\browser\remaining-acceptance.spec.ts:172:1 › sidebar toggles across compact and desktop boundaries without losing draft 
+  1 passed (17.8s)

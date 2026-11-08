@@ -1,0 +1,314 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1105-1297-0_26.1105.1297.0_x64__3k8sg7r9htsxt\\dependencies\\node\\bin\\node.exe",
+      "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\node_modules\\playwright\\cli.js",
+      "test",
+      "tests/browser/axe-acceptance.spec.ts",
+      "--timeout=60000",
+      "--output",
+      "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts"
+    ],
+    "configFile": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-remaining/browser-accessibility/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/project/astroagent/.acceptance-v11-remaining/browser-accessibility/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/.acceptance-v11-remaining/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "axe-acceptance.spec.ts",
+      "file": "axe-acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "automated accessibility audit of workbench, project and settings",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 786,
+                  "error": {
+                    "message": "Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.",
+                    "stack": "Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts:8:5",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts",
+                      "column": 5,
+                      "line": 8
+                    },
+                    "snippet": "   6 |   for (const route of ['/', `/projects/${project.id}`, '/settings']) {\n   7 |     await page.goto(route)\n>  8 |     await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })\n     |     ^\n   9 |     const result = await page.evaluate(async () => {\n  10 |       const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe\n  11 |       const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts",
+                        "column": 5,
+                        "line": 8
+                      },
+                      "message": "Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.\n\n   6 |   for (const route of ['/', `/projects/${project.id}`, '/settings']) {\n   7 |     await page.goto(route)\n>  8 |     await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })\n     |     ^\n   9 |     const result = await page.evaluate(async () => {\n  10 |       const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe\n  11 |       const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts:8:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T09:07:03.181Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts\\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts\\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts\\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts",
+                    "column": 5,
+                    "line": 8
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "59d73aa24ab758bf2645-f178c478261d25453d20",
+          "file": "axe-acceptance.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "automated accessibility audit of workbench, project and settings",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 988,
+                  "error": {
+                    "message": "Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.",
+                    "stack": "Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts:8:5",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts",
+                      "column": 5,
+                      "line": 8
+                    },
+                    "snippet": "   6 |   for (const route of ['/', `/projects/${project.id}`, '/settings']) {\n   7 |     await page.goto(route)\n>  8 |     await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })\n     |     ^\n   9 |     const result = await page.evaluate(async () => {\n  10 |       const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe\n  11 |       const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts",
+                        "column": 5,
+                        "line": 8
+                      },
+                      "message": "Error: page.addScriptTag: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-ci58rsVFdB5X+St8VZlEZXT1ryZVc7TaRl/fed6foGw='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.\n\n   6 |   for (const route of ['/', `/projects/${project.id}`, '/settings']) {\n   7 |     await page.goto(route)\n>  8 |     await page.addScriptTag({ path: path.resolve('node_modules/axe-core/axe.min.js') })\n     |     ^\n   9 |     const result = await page.evaluate(async () => {\n  10 |       const axe = (window as unknown as { axe: { run: (root: Document, options: object) => Promise<{ violations: { id: string; impact: string; nodes: unknown[] }[] }> } }).axe\n  11 |       const output = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })\n    at D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts:8:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T09:07:04.867Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts\\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts\\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.acceptance-v11-remaining\\browser-accessibility\\artifacts\\axe-acceptance-automated-a-56bd0-kbench-project-and-settings-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\.acceptance-v11-remaining\\frontend\\tests\\browser\\axe-acceptance.spec.ts",
+                    "column": 5,
+                    "line": 8
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "59d73aa24ab758bf2645-5a100a0c3a6648007468",
+          "file": "axe-acceptance.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T09:06:57.268Z",
+    "duration": 10165.529999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

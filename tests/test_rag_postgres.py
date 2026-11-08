@@ -117,6 +117,49 @@ def pg_client(monkeypatch, tmp_path):
                 admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
 
 
+def test_conversation_crud_uses_postgres_parameter_binding(pg_client):
+    title = "新会话 · Gaia DR3 :id 100% ? '编号'"
+    response = pg_client.post("/api/v1/conversations", json={"title": title})
+    assert response.status_code == 201
+    conversation = response.json()
+    assert conversation["title"] == title
+    assert conversation["revision"] == 0
+    assert conversation["metadata_revision"] == 0
+    root = f"/api/v1/conversations/{conversation['id']}"
+    assert pg_client.get(root).json()["turns"] == []
+    assert pg_client.get("/api/v1/conversations").json() == [conversation]
+    renamed = pg_client.patch(
+        root,
+        json={"title": "更名后的会话", "expected_metadata_revision": 0},
+    )
+    assert renamed.status_code == 200
+    assert renamed.json()["title"] == "更名后的会话"
+    assert pg_client.delete(root).status_code == 204
+    assert pg_client.get("/api/v1/conversations").json() == []
+    assert pg_client.model_payloads == []
+
+
+def test_first_question_title_is_saved_with_postgres_turn_reservation(pg_client):
+    from astroagent.conversation_schemas import TurnRequest
+    from astroagent.conversations import conversation_title, utc_now
+    from astroagent.main import app
+
+    conversation = pg_client.post("/api/v1/conversations", json={}).json()
+    question = "查询双星团的银河环境影响及相关文献"
+    repository = app.state.repository
+    turn = repository.reserve(
+        conversation["id"],
+        TurnRequest(message=question, client_request_id=str(uuid4()), expected_revision=0),
+    )
+    detail = pg_client.get(f"/api/v1/conversations/{conversation['id']}").json()
+    assert detail["title"] == conversation_title(question)
+    assert detail["metadata_revision"] == 1
+    turn.execution_status = "interrupted"
+    turn.completed_at = utc_now()
+    repository.finish(turn)
+    assert pg_client.model_payloads == []
+
+
 def project_with_document(client):
     response = client.post("/api/v1/projects", json={"name": "RAG synthetic project"})
     assert response.status_code == 201
@@ -237,6 +280,39 @@ def test_confirmation_idempotency_and_deleted_request_never_resends(pg_client):
         == "rag_answer_deleted"
     )
     assert len(client.model_payloads) == 1
+
+
+def test_selected_model_and_previewed_evidence_are_frozen_for_confirmation(pg_client, monkeypatch):
+    monkeypatch.setenv("DEEPSEEK_MODEL", "model-a")
+    monkeypatch.setenv(
+        "CHAT_MODELS",
+        json.dumps([{"id": "model-a", "label": "A"}, {"id": "model-b", "label": "B"}]),
+    )
+    root, _ = project_with_document(pg_client)
+    build(pg_client, root)
+    response = pg_client.post(
+        root + "/rag/previews", json={"question": "binary cluster", "model": "model-b"}
+    )
+    assert response.status_code == 200, response.text
+    value = response.json()
+    assert value["model"] == "model-b" and value["evidence"]
+    assert not pg_client.model_payloads
+    body = {
+        "client_request_id": str(uuid4()),
+        "preview_id": value["id"],
+        "confirmation_token": value["confirmation_token"],
+        "confirmed": True,
+    }
+    response = pg_client.post(root + "/rag/answers", json=body)
+    assert response.status_code == 200, response.text
+    assert len(pg_client.model_payloads) == 1
+    sent = pg_client.model_payloads[0]
+    assert sent["model"] == "model-b"
+    payload = json.loads(sent["messages"][1]["content"])
+    assert payload["question"] == "binary cluster"
+    assert [item["text"] for item in payload["evidence"]] == [
+        item["view"]["text"] for item in value["evidence"]
+    ]
 
 
 def test_scope_changed_original_never_sends(pg_client):

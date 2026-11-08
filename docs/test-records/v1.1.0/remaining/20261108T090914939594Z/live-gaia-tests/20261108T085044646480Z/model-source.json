@@ -1,0 +1,170 @@
+{
+  "message": "查询 Gaia DR3 source_id 5853498713190525696 的测量信息并估算距离，说明单位、历元、距离近似条件与未做的校正，给出来源。",
+  "http_status": 200,
+  "body": {
+    "status": "success",
+    "answer": "**Gaia DR3 查询结果**（表 gaiadr3.gaia_source，按 source_id 精确查询，返回 1 行，无截断）\n\n| 字段 | 值 | 单位 |\n|---|---|---|\n| source_id | 5853498713190525696 | — |\n| RA (ICRS) | 217.39232147200883 | 度 |\n| Dec (ICRS) | −62.67607511676666 | 度 |\n| 参考历元 ref_epoch | 2016.0 | 年 |\n| RA 误差 / Dec 误差 | 0.0240 / 0.0344 | mas |\n| 视差 | 768.0665 ± 0.0499 | mas |\n| pmra（含 cos δ） | −3781.741 ± 0.031 | mas/yr |\n| pmdec | 769.465 ± 0.051 | mas/yr |\n| G / BP / RP | 8.985 / 11.373 / 7.569 | mag |\n| BP−RP | 3.805 | mag |\n| 径向速度 | −21.943 ± 0.216 | km/s |\n| RUWE | 0.9715 | 无量纲 |\n| astrometric_params_solved | 95 | — |\n| duplicated_source | false | — |\n\n**距离估算（程序派生量，非 Gaia 直接测量）**\n- 距离 ≈ **1.302 pc**，一阶误差 ≈ 8.45×10⁻⁵ pc（约 0.017 AU）\n- 方法：视差倒数 1000/parallax，仅在视差 >0、误差 >0 且视差信噪比 ≥10 时计算（本例 SNR ≈ 1.54×10⁴，已计算 1 条，跳过 0 条）\n- 误差仅为一阶随机误差传播（1000·σ_ϖ/ϖ²）\n\n**未做的校正与限制**\n- 未校正视差零点偏移与系统误差\n- 未做贝叶斯/后验距离估计，未做消光或选择偏差校正\n- 因此该距离是近似值，尤其对极近天体，倒数视差法对零点误差敏感\n\n**来源**：Gaia Archive（DR3），https://gea.esac.esa.int/archive/ ，检索时间 2026-11-08T08:52:01Z。\n\n注：本次仅查询 Gaia，未调用 SIMBAD，故未提供该源的 SIMBAD 标识符或天体类型。",
+    "results": [],
+    "literature_results": [],
+    "gaia_results": [
+      {
+        "query": {
+          "mode": "source_id",
+          "source_id": "5853498713190525696",
+          "estimate_distance": true
+        },
+        "release": "Gaia DR3",
+        "table": "gaiadr3.gaia_source",
+        "endpoint": "https://gea.esac.esa.int/tap-server/tap/sync",
+        "adql": "SELECT TOP 2 source_id, ra, dec, ref_epoch, ra_error, dec_error, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, radial_velocity_error, ruwe, astrometric_params_solved, duplicated_source FROM gaiadr3.gaia_source WHERE source_id = 5853498713190525696",
+        "maxrec": 2,
+        "status": "success",
+        "returned_count": 1,
+        "total_found": null,
+        "has_more": false,
+        "truncated": false,
+        "archive_overflow": false,
+        "data": [
+          {
+            "source_id": "5853498713190525696",
+            "ra": 217.39232147200883,
+            "dec": -62.67607511676666,
+            "ref_epoch": 2016.0,
+            "ra_error": 0.023999202996492386,
+            "dec_error": 0.0344361811876297,
+            "parallax": 768.0665391873573,
+            "parallax_error": 0.049872905015945435,
+            "pmra": -3781.741008265163,
+            "pmra_error": 0.03138607740402222,
+            "pmdec": 769.4650146478623,
+            "pmdec_error": 0.05052453279495239,
+            "phot_g_mean_mag": 8.984748840332031,
+            "phot_bp_mean_mag": 11.373115539550781,
+            "phot_rp_mean_mag": 7.568535327911377,
+            "bp_rp": 3.8045802116394043,
+            "radial_velocity": -21.942726135253906,
+            "radial_velocity_error": 0.21612651646137238,
+            "ruwe": 0.9714532494544983,
+            "astrometric_params_solved": 95,
+            "duplicated_source": false,
+            "separation_arcsec": null
+          }
+        ],
+        "analysis": {
+          "sample_size": 1,
+          "scope": "returned_rows",
+          "truncated": false,
+          "quality_filters": {},
+          "statistics": {
+            "parallax": {
+              "valid_count": 1,
+              "missing_count": 0,
+              "median": 768.0665391873573,
+              "minimum": 768.0665391873573,
+              "maximum": 768.0665391873573,
+              "unit": "mas"
+            },
+            "pmra": {
+              "valid_count": 1,
+              "missing_count": 0,
+              "median": -3781.741008265163,
+              "minimum": -3781.741008265163,
+              "maximum": -3781.741008265163,
+              "unit": "mas/yr"
+            },
+            "pmdec": {
+              "valid_count": 1,
+              "missing_count": 0,
+              "median": 769.4650146478623,
+              "minimum": 769.4650146478623,
+              "maximum": 769.4650146478623,
+              "unit": "mas/yr"
+            },
+            "phot_g_mean_mag": {
+              "valid_count": 1,
+              "missing_count": 0,
+              "median": 8.984748840332031,
+              "minimum": 8.984748840332031,
+              "maximum": 8.984748840332031,
+              "unit": "mag"
+            },
+            "bp_rp": {
+              "valid_count": 1,
+              "missing_count": 0,
+              "median": 3.8045802116394043,
+              "minimum": 3.8045802116394043,
+              "maximum": 3.8045802116394043,
+              "unit": "mag"
+            },
+            "radial_velocity": {
+              "valid_count": 1,
+              "missing_count": 0,
+              "median": -21.942726135253906,
+              "minimum": -21.942726135253906,
+              "maximum": -21.942726135253906,
+              "unit": "km/s"
+            }
+          },
+          "negative_parallax_count": 0,
+          "zero_parallax_count": 0,
+          "missing_parallax_count": 0,
+          "estimate_distance": true,
+          "distance_estimates": [
+            {
+              "source_id": "5853498713190525696",
+              "distance_pc": 1.3019705311704333,
+              "distance_error_pc": 8.454092102921786e-05,
+              "method": "inverse_parallax_high_snr",
+              "zero_point_corrected": false,
+              "skipped_reason": null
+            }
+          ],
+          "distance_computed_count": 1,
+          "distance_skipped_count": 0
+        },
+        "units": {
+          "source_id": "1",
+          "ra": "deg",
+          "dec": "deg",
+          "ref_epoch": "yr",
+          "ra_error": "mas",
+          "dec_error": "mas",
+          "parallax": "mas",
+          "parallax_error": "mas",
+          "pmra": "mas/yr",
+          "pmra_error": "mas/yr",
+          "pmdec": "mas/yr",
+          "pmdec_error": "mas/yr",
+          "phot_g_mean_mag": "mag",
+          "phot_bp_mean_mag": "mag",
+          "phot_rp_mean_mag": "mag",
+          "bp_rp": "mag",
+          "radial_velocity": "km/s",
+          "radial_velocity_error": "km/s",
+          "ruwe": "1",
+          "astrometric_params_solved": "1",
+          "duplicated_source": "1",
+          "separation_arcsec": "arcsec"
+        },
+        "source": {
+          "name": "Gaia",
+          "url": "https://gea.esac.esa.int/archive/",
+          "retrieved_at": "2026-11-08T08:52:01.776324Z"
+        },
+        "warnings": [
+          "统计仅描述本次实际交付行，不代表视场总体或星团成员；pmra 已含 cos(dec)。质量筛选会改变选择函数，阈值不能保证无污染；未额外计数，不能给出被排除数量。",
+          "距离为程序计算的高信噪比视差倒数近似（SNR≥10），不是 Gaia 直接测量的距离。误差仅为一阶随机误差；未校正视差零点、系统误差、消光或选择偏差，未做贝叶斯估计。"
+        ],
+        "error": null
+      }
+    ],
+    "sources": [
+      {
+        "name": "Gaia",
+        "url": "https://gea.esac.esa.int/archive/",
+        "retrieved_at": "2026-11-08T08:52:01.776324Z"
+      }
+    ],
+    "warnings": []
+  }
+}

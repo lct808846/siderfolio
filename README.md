@@ -1,5 +1,7 @@
 # AstroAgent
 
+最新未验收改动：会话连续新建防重及侧栏“⋯”管理菜单，包含重命名、浏览器置顶、会话JSON导出、项目归档入口和多选删除，见 [实施说明](docs/development/v1.1.0/CONVERSATION_MANAGEMENT.md)。本轮未运行测试或构建，不属于既有V1.1.0验收证据。
+
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
 当前版本：`1.1.0`。本版完善“观测日志”界面，统一全局与项目导航、面板切换、证据阅读样式及设置状态提示。验证结果和限制见 [V1.1验收记录](docs/test-records/v1.1.0/README.md)，版本内容见 [版本说明](docs/releases/v1.1.0.md)。

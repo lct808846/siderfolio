@@ -41,9 +41,12 @@ class ConversationService:
                 raise
         failure = None
         try:
-            context = PreparedContext(history, request.message)
+            context = PreparedContext(history, request.message, attachments=request.attachments)
             turn.context = context.record
-            turn.response = agent_factory().converse(request.message, context)
+            agent = agent_factory()
+            if turn.model is None:
+                turn.model = getattr(getattr(agent, "settings", None), "deepseek_model", None)
+            turn.response = agent.converse(request.message, context)
             turn.execution_status = "completed"
         except ServiceError as exc:
             failure = exc

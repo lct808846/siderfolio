@@ -84,6 +84,8 @@ class LocalAccess:
         uploading = scope["method"] == "POST" and re.fullmatch(
             r"/api/v1/projects/[0-9a-f-]{36}/documents(?:/[0-9a-f-]{36}/versions)?", scope["path"]
         )
+        chat_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/chat/attachments"
+        uploading = uploading or chat_uploading
         if uploading:
             if (
                 headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
@@ -103,7 +105,7 @@ class LocalAccess:
                         return
                     chunk = message.get("body", b"")
                     received += len(chunk)
-                    if received > 20 * 1024**2 + 64 * 1024:
+                    if received > (10 if chat_uploading else 20) * 1024**2 + 64 * 1024:
                         return await failure(
                             413, "knowledge_upload_too_large", "文件及multipart开销超过接收上限。"
                         )
@@ -151,18 +153,30 @@ class LocalAccess:
                     415, "unsupported_conversation_media_type", "仅支持未压缩JSON请求。"
                 )
             body = bytearray()
+            turn_upload = scope["method"] == "POST" and re.fullmatch(
+                r"/api/v1/conversations/[0-9a-fA-F-]{36}/turns", scope["path"]
+            )
+            body_limit = (
+                32 * 1024**2
+                if importing
+                else 128 * 1024
+                if turn_upload
+                else CONVERSATION_BODY_LIMIT
+            )
             while True:
                 message = await receive()
                 if message["type"] == "http.disconnect":
                     return
                 chunk = message.get("body", b"")
-                if len(body) + len(chunk) > (
-                    32 * 1024**2 if importing else CONVERSATION_BODY_LIMIT
-                ):
+                if len(body) + len(chunk) > body_limit:
                     return await failure(
                         413,
                         "conversation_request_too_large",
-                        "项目包超过32 MiB。" if importing else "请求超过32 KiB。",
+                        "项目包超过32 MiB。"
+                        if importing
+                        else "请求超过接收上限，请减少附件内容。"
+                        if turn_upload
+                        else "请求超过32 KiB。",
                     )
                 body.extend(chunk)
                 if not message.get("more_body", False):
