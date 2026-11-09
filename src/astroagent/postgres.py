@@ -287,9 +287,10 @@ class PostgresRepository(ConversationRepository):
 
     @staticmethod
     def _used(db):
+        from astroagent.plot_store import used
         from astroagent.rag_store import used_bytes
 
-        return ConversationRepository._used(db) + used_bytes(db)
+        return ConversationRepository._used(db) + used_bytes(db) + used(db)
 
     def close(self):
         if self.session is not None:

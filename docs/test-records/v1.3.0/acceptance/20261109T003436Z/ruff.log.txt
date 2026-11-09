@@ -1,0 +1,200 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\api\plotting.py:3:1
+   |
+ 1 |   """Explicit plotting preparation, isolated runs and bounded artifact downloads."""
+ 2 |
+ 3 | / from typing import Annotated
+ 4 | | from uuid import UUID
+ 5 | |
+ 6 | | from fastapi import APIRouter, Depends, Request, Response
+ 7 | | from starlette.concurrency import run_in_threadpool
+ 8 | | from starlette.datastructures import UploadFile
+ 9 | | from starlette.exceptions import HTTPException
+10 | |
+11 | | from astroagent.api.attachments import UPLOAD_SCHEMA
+12 | | from astroagent.api.conversations import Service
+13 | | from astroagent.errors import ServiceError
+14 | | from astroagent.plot_data import MAX_DATA
+15 | | from astroagent.plot_schemas import (
+16 | |     PlotDataset,
+17 | |     PlotDataPreview,
+18 | |     PlotInitialize,
+19 | |     PlotOperation,
+20 | |     PlotPage,
+21 | |     PlotPlanRequest,
+22 | |     PlotRunRequest,
+23 | |     PlotSelection,
+24 | |     PlotStatus,
+25 | |     SnapshotDatasetRequest,
+26 | | )
+27 | | from astroagent.plot_service import FILES
+28 | | from astroagent.schemas import ErrorResponse
+   | |____________________________________________^
+29 |
+30 |   router = APIRouter(
+   |
+help: Organize imports
+   |
+15 | from astroagent.plot_schemas import (
+16 +     PlotDataPreview,
+17 |     PlotDataset,
+   -     PlotDataPreview,
+18 |     PlotInitialize,
+   |
+
+E501 Line too long (105 > 100)
+  --> src\astroagent\local_access.py:89:101
+   |
+87 |         chat_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/chat/attachments"
+88 |         plot_uploading = scope["method"] == "PUT" and re.fullmatch(
+89 |             r"/api/v1/projects/[0-9a-fA-F-]{36}/plotting/datasets/[0-9a-fA-F-]{36}/upload", scope["path"]
+   |                                                                                                     ^^^^^
+90 |         )
+91 |         uploading = uploading or chat_uploading or plot_uploading
+   |
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\local_access.py:111:101
+    |
+109 |                     chunk = message.get("body", b"")
+110 |                     received += len(chunk)
+111 |                     if received > (5 if plot_uploading else 10 if chat_uploading else 20) * 1024**2 + 64 * 1024:
+    |                                                                                                     ^^^^^^^^^^^^
+112 |                         return await failure(
+113 |                             413, "knowledge_upload_too_large", "文件及multipart开销超过接收上限。"
+    |
+
+E501 Line too long (153 > 100)
+  --> src\astroagent\plot_archives.py:43:101
+   |
+41 | …encode(r[2]).decode()}
+42 | …
+43 | …uts o JOIN plot_operations p ON p.id=o.run_id WHERE p.project_id=? ORDER BY o.run_id,o.name",
+   |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 | …
+45 | …
+   |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\plot_planner.py:24:76
+   |
+22 | 数据是UTF-8 CSV（有标题），固定只读路径/input/data.csv。以字符串读取ID，仅绘图列转数值。
+23 | Python工具必须提供完整独立.py脚本，只能用标准库、numpy、matplotlib（Agg）；
+24 | Gnuplot工具必须提供完整独立.plt脚本，由gnuplot直接执行，使用CSV列序号与set datafile separator comma。
+   |                                                                                                      ^
+25 | 两者都必须生成/output/figure.png和/output/figure.pdf；PNG最长边不超过2400像素，不能联网、安装依赖、
+26 | 访问宿主机或读取凭据。工作目录/output，可用/tmp；根目录只读，1 CPU/256MiB/30秒；仅当前数据可用。
+   |
+
+E501 Line too long (151 > 100)
+   --> src\astroagent\plot_service.py:146:80
+    |
+144 | …
+145 | …posal"]["warnings"])
+146 | …input/data.csv，脚本写入/output。实际执行脚本与下载字节一致。\nAstroAgent {__version__}\n"
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+147 | …
+148 | …
+    |
+
+E501 Line too long (191 > 100)
+  --> src\astroagent\plot_store.py:13:101
+   |
+11 | …
+12 | …
+13 | …REFERENCES projects(id) ON DELETE CASCADE, record TEXT NOT NULL, data BYTEA NOT NULL, original BYTEA NOT NULL)",
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14 | …L REFERENCES projects(id) ON DELETE CASCADE, kind TEXT NOT NULL, state TEXT NOT NULL, record TEXT NOT NULL)",
+15 | …(id) ON DELETE CASCADE, name TEXT NOT NULL, content BYTEA NOT NULL, PRIMARY KEY(run_id,name))",
+   |
+
+E501 Line too long (188 > 100)
+  --> src\astroagent\plot_store.py:14:101
+   |
+12 | …
+13 | … REFERENCES projects(id) ON DELETE CASCADE, record TEXT NOT NULL, data BYTEA NOT NULL, original BYTEA NOT NULL)",
+14 | …LL REFERENCES projects(id) ON DELETE CASCADE, kind TEXT NOT NULL, state TEXT NOT NULL, record TEXT NOT NULL)",
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 | …s(id) ON DELETE CASCADE, name TEXT NOT NULL, content BYTEA NOT NULL, PRIMARY KEY(run_id,name))",
+16 | …
+   |
+
+E501 Line too long (174 > 100)
+  --> src\astroagent\plot_store.py:15:101
+   |
+13 | …OT NULL REFERENCES projects(id) ON DELETE CASCADE, record TEXT NOT NULL, data BYTEA NOT NULL, original BYTEA NOT NULL)",
+14 | … NOT NULL REFERENCES projects(id) ON DELETE CASCADE, kind TEXT NOT NULL, state TEXT NOT NULL, record TEXT NOT NULL)",
+15 | …erations(id) ON DELETE CASCADE, name TEXT NOT NULL, content BYTEA NOT NULL, PRIMARY KEY(run_id,name))",
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 | …
+17 | …
+   |
+
+E501 Line too long (309 > 100)
+  --> src\astroagent\plot_store.py:39:101
+   |
+37 | …
+38 | …
+39 | …nal)) FROM plot_datasets),0)+COALESCE((SELECT SUM(octet_length(record)+CASE WHEN state='running' THEN 20000000 ELSE 0 END) FROM plot_operations),0)+COALESCE((SELECT SUM(octet_length(content)) FROM plot_outputs),0)"
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+40 | …
+   |
+
+E501 Line too long (123 > 100)
+   --> src\astroagent\plot_store.py:143:101
+    |
+141 |                     json.loads(r[0])
+142 |                     for r in db.execute(
+143 |                         "SELECT record FROM plot_operations WHERE project_id=? ORDER BY record::jsonb->>'created_at' DESC",
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+144 |                         (project_id,),
+145 |                     )
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> src\astroagent\postgres.py:290:9
+    |
+288 |       @staticmethod
+289 |       def _used(db):
+290 | /         from astroagent.rag_store import used_bytes
+291 | |         from astroagent.plot_store import used
+    | |______________________________________________^
+292 |
+293 |           return ConversationRepository._used(db) + used_bytes(db) + used(db)
+    |
+help: Organize imports
+    |
+289 |     def _used(db):
+290 +         from astroagent.plot_store import used
+291 |         from astroagent.rag_store import used_bytes
+    -         from astroagent.plot_store import used
+292 |
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\services.py:3:1
+   |
+ 1 |   """Compose services only after the PostgreSQL repository is ready."""
+ 2 |
+ 3 | / from astroagent.artifacts import ArtifactCache
+ 4 | | from astroagent.conversation_service import ConversationService
+ 5 | | from astroagent.postgres_knowledge import PostgresKnowledgeService
+ 6 | | from astroagent.project_links import ProjectLinks
+ 7 | | from astroagent.project_service import ProjectService
+ 8 | | from astroagent.plot_service import PlotService
+ 9 | | from astroagent.rag_service import RagService
+10 | | from astroagent.workflow_service import WorkflowService
+   | |_______________________________________________________^
+help: Organize imports
+  |
+4 | from astroagent.conversation_service import ConversationService
+5 + from astroagent.plot_service import PlotService
+6 | from astroagent.postgres_knowledge import PostgresKnowledgeService
+7 | from astroagent.project_links import ProjectLinks
+8 | from astroagent.project_service import ProjectService
+  - from astroagent.plot_service import PlotService
+9 | from astroagent.rag_service import RagService
+  |
+
+Found 13 errors.
+[*] 3 fixable with `--fix`.

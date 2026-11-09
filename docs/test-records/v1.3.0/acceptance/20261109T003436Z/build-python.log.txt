@@ -1,0 +1,19 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from python.Dockerfile
+#1 transferring dockerfile: 342B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#2 ERROR: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%, out: ``
+------
+ > [internal] load metadata for docker.io/library/python:3.12-slim-bookworm:
+------
+python.Dockerfile:2
+--------------------
+   1 |     # Pin the resulting local image SHA256 in server configuration before enabling execution.
+   2 | >>> FROM python:3.12-slim-bookworm
+   3 |     LABEL org.astroagent.plot-protocol="2"
+   4 |     RUN pip install --no-cache-dir numpy==2.2.6 matplotlib==3.10.3
+--------------------
+ERROR: failed to build: failed to solve: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%, out: ``

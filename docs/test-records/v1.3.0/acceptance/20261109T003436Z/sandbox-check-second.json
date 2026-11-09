@@ -1,0 +1,16 @@
+{
+  "python": {
+    "passed": false,
+    "exception": "ServiceError",
+    "code": null,
+    "message": "隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。",
+    "diagnostic": null
+  },
+  "gnuplot": {
+    "passed": false,
+    "exception": "ServiceError",
+    "code": null,
+    "message": "隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。",
+    "diagnostic": null
+  }
+}

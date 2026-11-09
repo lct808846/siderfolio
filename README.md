@@ -1,10 +1,14 @@
 # AstroAgent
 
-最新未验收改动：会话连续新建防重及侧栏“⋯”管理菜单，包含重命名、浏览器置顶、会话JSON导出、项目归档入口和多选删除，见 [实施说明](docs/development/v1.1.0/CONVERSATION_MANAGEMENT.md)。本轮未运行测试或构建，不属于既有V1.1.0验收证据。
+当前版本：`1.3.0`。新增项目内 Python / Gnuplot 绘图、方案审阅、隔离执行、图像预览、选择下载与格式6项目归档，见 [版本说明](docs/releases/v1.3.0.md) 和 [验收记录](docs/test-records/v1.3.0/acceptance/20261109T003436Z/README.md)。
+
+后续 [V1.5 本地小模型开发文档](docs/PROJECT_PLAN_V1.5.md)规划使用千问 4B 候选模型生成会话标题并处理轻量文本任务；目前仅为规划。
 
 面向天文科研的 AI Agent 平台。自然语言问题 → DeepSeek 工具调用 → SIMBAD 天体查询 / ADS 文献检索 / Gaia DR3 查询与基础统计 → 带来源的回答，使用 FastAPI 提供接口。
 
-当前版本：`1.1.0`。本版完善“观测日志”界面，统一全局与项目导航、面板切换、证据阅读样式及设置状态提示。验证结果和限制见 [V1.1验收记录](docs/test-records/v1.1.0/README.md)，版本内容见 [版本说明](docs/releases/v1.1.0.md)。
+[V1.3 绘图文档](docs/PROJECT_PLAN_V1.3.md)与[实施记录](docs/development/v1.3.0/IMPLEMENTATION.md)记录实际范围。执行默认关闭，需准备本机 Linux Docker 与协议2固定摘要镜像；没有宿主机执行回退。首次绘图存储须在页面明确确认创建扩展表。
+
+本机 Docker Desktop 数据与镜像位于 D 盘；旧协议1镜像不能用于本版，升级步骤见[实施记录](docs/development/v1.3.0/IMPLEMENTATION.md)。V1.1 的验收历史仍见 [V1.1 验收记录](docs/test-records/v1.1.0/README.md)。
 
 本轮基于本地提交 `43aa495` 并保留已有界面改动。此前 V1.0 已实现 PostgreSQL + pgvector、本地嵌入与索引、混合检索、确认后生成的文献问答、首次设置和格式5归档；数据库及D盘嵌入模型的准备见 [模型记录](docs/development/v1.0.0/MODEL_SETUP.md)。V1.0的本地、检索复验及远程CI历史见 [独立验收记录](docs/test-records/v1.0.0/README.md)，只对应当时的代码和样本，不证明V1.1界面通过。Gaia超时与检索样本局限按原记录保留，发布状态以实际Release为准。
 

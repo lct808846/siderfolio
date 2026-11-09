@@ -1,0 +1,6 @@
+
+> astroagent-workbench@1.3.0-dev.0 typecheck
+> vue-tsc --noEmit
+
+src/views/PlotWorkspace.vue(71,105): error TS2488: Type 'string[] | undefined' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/views/PlotWorkspace.vue(174,207): error TS18048: 'result.data' is possibly 'undefined'.

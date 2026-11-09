@@ -216,7 +216,7 @@ class Comparison(Contract):
 
 class ArchiveManifest(Contract):
     format: Literal["astroagent-project"]
-    version: Literal[1, 2, 3, 4, 5]
+    version: Literal[1, 2, 3, 4, 5, 6]
     exported_at: str
     application_version: str
     files: dict[str, dict]
@@ -225,7 +225,7 @@ class ArchiveManifest(Contract):
 
 
 class ProjectArchiveRequest(Revision):
-    format_version: StrictInt = Field(default=5, ge=1, le=5)
+    format_version: StrictInt = Field(default=6, ge=1, le=6)
     knowledge_mode: Literal["full", "metadata"] = "metadata"
     confirmed_include_originals: StrictBool = False
 

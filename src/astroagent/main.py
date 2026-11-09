@@ -18,6 +18,7 @@ from astroagent.api.health import router as health_router
 from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
 from astroagent.api.models import router as models_router
+from astroagent.api.plotting import router as plotting_router
 from astroagent.api.projects import router as projects_router
 from astroagent.api.rag import router as rag_router
 from astroagent.api.setup import router as setup_router
@@ -72,6 +73,7 @@ app.include_router(links_router)
 app.include_router(rag_router)
 app.include_router(setup_router)
 app.include_router(models_router)
+app.include_router(plotting_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 

@@ -1,4 +1,4 @@
-"""固定四至八成员项目 ZIP（格式1至5）；完整校验后单事务恢复，不解压到文件系统。"""
+"""固定四至九成员项目 ZIP（格式1至6）；完整校验后单事务恢复，不解压到文件系统。"""
 
 import hashlib
 import json
@@ -58,7 +58,7 @@ def export_archive(
     repository,
     identifier,
     revision,
-    format_version=5,
+    format_version=6,
     knowledge_mode="metadata",
     confirmed_include_originals=False,
 ):
@@ -115,6 +115,15 @@ def export_archive(
         from astroagent.rag_archives import read_rag
 
         rag = read_rag(db, identifier)
+        from astroagent.plot_archives import read as read_plotting
+
+        plotting = read_plotting(db, identifier)
+        if format_version < 6 and any(plotting.values()):
+            raise ServiceError(
+                409,
+                "plot_archive_requires_v6",
+                "项目含绘图数据或历史，请使用格式6归档，避免丢失记录。",
+            )
         if format_version < 5 and (rag["answers"] or rag["requests"]):
             raise ServiceError(
                 409,
@@ -156,6 +165,8 @@ def export_archive(
         payloads["links.json"] = encode(links).encode()
     if format_version >= 5:
         payloads["rag.json"] = encode(rag).encode()
+    if format_version >= 6:
+        payloads["plotting.json"] = encode(plotting).encode()
     manifest = ArchiveManifest(
         format="astroagent-project",
         version=format_version,
@@ -197,6 +208,8 @@ def decode_archive(raw):
                 MEMBERS | {"workflows.json", "knowledge.json"},
                 MEMBERS | {"workflows.json", "knowledge.json", "links.json"},
                 MEMBERS | {"workflows.json", "knowledge.json", "links.json", "rag.json"},
+                MEMBERS
+                | {"workflows.json", "knowledge.json", "links.json", "rag.json", "plotting.json"},
             ):
                 raise ValueError("Fixed unique members required")
             for info in infos:
@@ -230,6 +243,8 @@ def decode_archive(raw):
                 expected_members |= {"links.json"}
             if manifest.version >= 5:
                 expected_members |= {"rag.json"}
+            if manifest.version >= 6:
+                expected_members |= {"plotting.json"}
         elif manifest.knowledge_mode is not None or manifest.sources_complete is not None:
             raise ValueError("Knowledge metadata requires archive format3")
         if set(data) != expected_members:
@@ -433,7 +448,15 @@ def decode_archive(raw):
             if manifest.version >= 5
             else empty_rag()
         )
+        from astroagent.plot_archives import empty, validate
+
+        plotting = (
+            validate(strict_json(data["plotting.json"]), project.id)
+            if manifest.version >= 6
+            else empty()
+        )
         return {
+            "plotting": plotting,
             "rag": rag,
             "links": links,
             "knowledge": knowledge,
@@ -520,6 +543,7 @@ def import_archive(repository, raw):
     incoming += sum(
         len(encode(value).encode()) for values in bundle["rag"].values() for value in values
     )
+    incoming += len(encode(bundle["plotting"]).encode())
     # Preflight before any write; exact normalized bytes are checked in-transaction.
     with repository.repo.connection() as db:
         if repository.repo._used(db) + incoming > repository.settings.storage_bytes:
@@ -664,6 +688,9 @@ def import_archive(repository, raw):
         from astroagent.rag_archives import import_rag
 
         import_rag(db, bundle["rag"], project_id, id_map, digest)
+        from astroagent.plot_archives import restore
+
+        restore(db, bundle["plotting"], project_id, id_map)
         project["import_map"] = id_map
         repository._put(db, "projects", project)
         repository._budget(db)

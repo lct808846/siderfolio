@@ -1,5 +1,6 @@
 """从环境和本地 .env 读取配置；密钥不会出现在 repr 中。"""
 
+import os
 from pathlib import Path
 from typing import Literal
 
@@ -72,6 +73,20 @@ class LocalSettings(BaseSettings):
     rag_max_cosine_distance: float = Field(default=0.65, ge=0, le=2)
     rag_query_cache_size: int = Field(default=32, ge=0, le=128)
     rag_query_cache_seconds: float = Field(default=300, gt=0, le=900)
+    plot_execution_enabled: bool = False
+    plot_python_image: str = ""
+    plot_gnuplot_image: str = ""
+    plot_docker_host: str = (
+        "npipe:////./pipe/docker_engine" if os.name == "nt" else "unix:///var/run/docker.sock"
+    )
+    plot_timeout_seconds: int = Field(default=30, ge=5, le=30)
+
+    @field_validator("plot_docker_host")
+    @classmethod
+    def local_plot_daemon(cls, value):
+        if value not in {"npipe:////./pipe/docker_engine", "unix:///var/run/docker.sock"}:
+            raise ValueError("Only the local Docker daemon is permitted")
+        return value
 
     @field_validator("database_url")
     @classmethod

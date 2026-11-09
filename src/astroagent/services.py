@@ -2,6 +2,7 @@
 
 from astroagent.artifacts import ArtifactCache
 from astroagent.conversation_service import ConversationService
+from astroagent.plot_service import PlotService
 from astroagent.postgres_knowledge import PostgresKnowledgeService
 from astroagent.project_links import ProjectLinks
 from astroagent.project_service import ProjectService
@@ -17,4 +18,5 @@ def compose(repository, settings):
     service.knowledge = PostgresKnowledgeService(service)
     service.links = ProjectLinks(service)
     service.rag = RagService(service)
+    service.plotting = PlotService(service, settings)
     return service

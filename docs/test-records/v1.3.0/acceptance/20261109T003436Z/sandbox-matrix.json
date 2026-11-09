@@ -1,0 +1,42 @@
+{
+  "python-scatter": {
+    "passed": true,
+    "png_bytes": 9008,
+    "pdf_bytes": 5804
+  },
+  "python-line": {
+    "passed": true,
+    "png_bytes": 19974,
+    "pdf_bytes": 5487
+  },
+  "python-histogram": {
+    "passed": true,
+    "png_bytes": 10693,
+    "pdf_bytes": 5783
+  },
+  "python-errorbar": {
+    "passed": true,
+    "png_bytes": 20021,
+    "pdf_bytes": 5568
+  },
+  "gnuplot-scatter": {
+    "passed": true,
+    "png_bytes": 6519,
+    "pdf_bytes": 5360
+  },
+  "gnuplot-line": {
+    "passed": true,
+    "png_bytes": 10955,
+    "pdf_bytes": 5298
+  },
+  "gnuplot-histogram": {
+    "passed": true,
+    "png_bytes": 6588,
+    "pdf_bytes": 5802
+  },
+  "gnuplot-errorbar": {
+    "passed": true,
+    "png_bytes": 7533,
+    "pdf_bytes": 5638
+  }
+}

@@ -85,7 +85,11 @@ class LocalAccess:
             r"/api/v1/projects/[0-9a-f-]{36}/documents(?:/[0-9a-f-]{36}/versions)?", scope["path"]
         )
         chat_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/chat/attachments"
-        uploading = uploading or chat_uploading
+        plot_uploading = scope["method"] == "PUT" and re.fullmatch(
+            r"/api/v1/projects/[0-9a-fA-F-]{36}/plotting/datasets/[0-9a-fA-F-]{36}/upload",
+            scope["path"],
+        )
+        uploading = uploading or chat_uploading or plot_uploading
         if uploading:
             if (
                 headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
@@ -105,7 +109,11 @@ class LocalAccess:
                         return
                     chunk = message.get("body", b"")
                     received += len(chunk)
-                    if received > (10 if chat_uploading else 20) * 1024**2 + 64 * 1024:
+                    if (
+                        received
+                        > (5 if plot_uploading else 10 if chat_uploading else 20) * 1024**2
+                        + 64 * 1024
+                    ):
                         return await failure(
                             413, "knowledge_upload_too_large", "文件及multipart开销超过接收上限。"
                         )

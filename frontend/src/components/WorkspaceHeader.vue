@@ -11,6 +11,7 @@ const projectSections = computed(() => [
   { label: '项目记录', path: projectPath.value },
   { label: '来源关联', path: `${projectPath.value}/overview` },
   { label: '科研流程', path: `${projectPath.value}/workflows` },
+  { label: '数据绘图', path: `${projectPath.value}/plotting` },
   { label: '本地知识库', path: `${projectPath.value}/knowledge` },
   { label: '文献问答', path: `${projectPath.value}/rag` },
 ])
@@ -24,7 +25,7 @@ function current(path: string, descendants = false) {
     <div class="workspace-header-main">
       <button class="brand brand-action" type="button" aria-label="AstroAgent：新建会话" data-tooltip="" :disabled="!createConversation" @click="createConversation?.()">
         <span class="brand-mark" aria-hidden="true">✳</span><b>AstroAgent</b>
-        <span class="version">1.1.0</span>
+        <span class="version">1.3 开发版</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">

@@ -1,0 +1,10 @@
+{
+  "python": {
+    "passed": true,
+    "png_bytes": 56631
+  },
+  "gnuplot": {
+    "passed": true,
+    "png_bytes": 34379
+  }
+}

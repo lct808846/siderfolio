@@ -1,0 +1,39 @@
+{
+  "python": {
+    "passed": true,
+    "png_bytes": 13239,
+    "pdf_bytes": 6144,
+    "runtime": {
+      "image_id": "sha256:1b76d7cdfd64eb6e3665a8ee922414d2b858cea1bdf8dd77fe5fe74609073515",
+      "engine_versions": {
+        "engine": "python",
+        "python": "3.12.16",
+        "numpy": "2.2.6",
+        "matplotlib": "3.10.3"
+      },
+      "isolation": "linux-docker-v1",
+      "network": "none",
+      "memory_mib": 256,
+      "cpu": 1,
+      "timeout_seconds": 30
+    }
+  },
+  "gnuplot": {
+    "passed": true,
+    "png_bytes": 5353,
+    "pdf_bytes": 5233,
+    "runtime": {
+      "image_id": "sha256:7344691b2b4b7ac92681347ac6f5824d2120a7390f963da14995bda3fbf8d5cd",
+      "engine_versions": {
+        "engine": "gnuplot",
+        "python": "3.12.16",
+        "gnuplot": "gnuplot 5.4 patchlevel 4"
+      },
+      "isolation": "linux-docker-v1",
+      "network": "none",
+      "memory_mib": 256,
+      "cpu": 1,
+      "timeout_seconds": 30
+    }
+  }
+}

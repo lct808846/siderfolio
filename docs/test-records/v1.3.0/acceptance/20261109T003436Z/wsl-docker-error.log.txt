@@ -1,0 +1,2 @@
+Error response from daemon: invalid mount config for type "bind": bind source path does not exist: /mnt/d/project/astroagent/docs/test-records/v1.3.0/acceptance/20261109T000000Z/wsl-jobs/plot-jobs/job-lyfjm51_
+Error response from daemon: invalid mount config for type "bind": bind source path does not exist: /mnt/d/project/astroagent/docs/test-records/v1.3.0/acceptance/20261109T000000Z/wsl-jobs/plot-jobs/job-qgxkfu7g

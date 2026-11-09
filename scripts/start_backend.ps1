@@ -25,6 +25,11 @@ $env:TMP = $env:TEMP
 $env:HF_HOME = Join-Path $runtimeRoot 'cache\huggingface'
 $env:TORCH_HOME = Join-Path $runtimeRoot 'cache\torch'
 $env:XDG_CACHE_HOME = Join-Path $runtimeRoot 'cache'
+$plotDockerBin = 'D:\Program Files\Docker\resources\bin'
+if (Test-Path -LiteralPath (Join-Path $plotDockerBin 'docker.exe')) {
+    # Existing terminal sessions may predate the D-drive Docker installation.
+    $env:PATH = "$plotDockerBin;$env:PATH"
+}
 $env:HF_HUB_OFFLINE = '1'
 $env:TRANSFORMERS_OFFLINE = '1'
 New-Item -ItemType Directory -Path $env:TEMP, $env:HF_HOME, $env:TORCH_HOME -Force | Out-Null

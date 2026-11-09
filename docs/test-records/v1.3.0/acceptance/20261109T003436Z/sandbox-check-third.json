@@ -1,0 +1,18 @@
+{
+  "python": {
+    "passed": false,
+    "exception": "ServiceError",
+    "code": null,
+    "message": "隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。",
+    "diagnostic": null,
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\project\\astroagent\\docs\\test-records\\v1.3.0\\acceptance\\20261109T000000Z\\sandbox_check.py\", line 38, in <module>\n    files, metadata = runner.run({'engine': engine, 'script': script}, data, str(uuid4()), runner.admit(engine))\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\project\\astroagent\\src\\astroagent\\plot_sandbox.py\", line 210, in run\n    png = self.artifact(\"figure.png\", container)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\project\\astroagent\\src\\astroagent\\plot_sandbox.py\", line 90, in artifact\n    raw = self.call(\"cp\", f\"{container}:/output/{name}\", \"-\")\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\project\\astroagent\\src\\astroagent\\plot_sandbox.py\", line 56, in call\n    raise unavailable()\nastroagent.errors.ServiceError: 隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。\n"
+  },
+  "gnuplot": {
+    "passed": false,
+    "exception": "ServiceError",
+    "code": null,
+    "message": "隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。",
+    "diagnostic": null,
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\project\\astroagent\\docs\\test-records\\v1.3.0\\acceptance\\20261109T000000Z\\sandbox_check.py\", line 38, in <module>\n    files, metadata = runner.run({'engine': engine, 'script': script}, data, str(uuid4()), runner.admit(engine))\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\project\\astroagent\\src\\astroagent\\plot_sandbox.py\", line 210, in run\n    png = self.artifact(\"figure.png\", container)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\project\\astroagent\\src\\astroagent\\plot_sandbox.py\", line 90, in artifact\n    raw = self.call(\"cp\", f\"{container}:/output/{name}\", \"-\")\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\project\\astroagent\\src\\astroagent\\plot_sandbox.py\", line 56, in call\n    raise unavailable()\nastroagent.errors.ServiceError: 隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。\n"
+  }
+}

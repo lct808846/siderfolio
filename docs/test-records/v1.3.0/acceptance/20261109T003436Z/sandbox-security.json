@@ -1,0 +1,17 @@
+{
+  "network_and_readonly": {
+    "passed": true,
+    "outcome": "completed",
+    "container_removed": true
+  },
+  "symlink_output": {
+    "passed": true,
+    "outcome": "plot_output_invalid",
+    "container_removed": true
+  },
+  "timeout": {
+    "passed": true,
+    "outcome": "plot_script_failed",
+    "container_removed": true
+  }
+}

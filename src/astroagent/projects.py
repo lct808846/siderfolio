@@ -65,6 +65,9 @@ class ProjectRepository:
 
     @staticmethod
     def _idle(db, project_id):
+        from astroagent.plot_store import assert_idle
+
+        assert_idle(db, project_id)
         if getattr(db, "dialect", None) == "postgresql":
             if db.execute(
                 (

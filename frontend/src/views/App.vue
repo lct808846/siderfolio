@@ -19,6 +19,7 @@ import KnowledgeWorkspace from './KnowledgeWorkspace.vue'
 import ProjectOverview from './ProjectOverview.vue'
 import SettingsWorkspace from './SettingsWorkspace.vue'
 import RagWorkspace from './RagWorkspace.vue'
+import PlotWorkspace from './PlotWorkspace.vue'
 import { safeLink } from '../api'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
 
@@ -238,6 +239,7 @@ onBeforeUnmount(() => {
   <InteractionHints />
   <SettingsWorkspace v-if="route.path==='/settings'" />
   <RagWorkspace v-else-if="route.path.endsWith('/rag')" />
+  <PlotWorkspace v-else-if="route.path.endsWith('/plotting')" />
   <ProjectOverview v-else-if="route.path.endsWith('/overview')" />
   <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />

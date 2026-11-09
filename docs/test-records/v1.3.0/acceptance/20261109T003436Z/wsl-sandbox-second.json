@@ -1,0 +1,12 @@
+{
+  "python": {
+    "passed": false,
+    "message": "隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。",
+    "traceback": "Traceback (most recent call last):\n  File \"/mnt/d/project/astroagent/docs/test-records/v1.3.0/acceptance/20261109T000000Z/wsl_sandbox.py\", line 51, in <module>\n    files, _ = runner.run({'engine': engine, 'script': script}, b'x,y\\n1,2\\n2,4\\n3,3\\n4,5\\n', str(uuid4()), runner.admit(engine))\n               ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/project/astroagent/src/astroagent/plot_sandbox.py\", line 121, in run\n    self.call(\n    ~~~~~~~~~^\n        \"create\",\n        ^^^^^^^^^\n    ...<43 lines>...\n        proposal[\"engine\"],\n        ^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/mnt/d/project/astroagent/src/astroagent/plot_sandbox.py\", line 56, in call\n    raise unavailable()\nServiceError: 隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。\n"
+  },
+  "gnuplot": {
+    "passed": false,
+    "message": "隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。",
+    "traceback": "Traceback (most recent call last):\n  File \"/mnt/d/project/astroagent/docs/test-records/v1.3.0/acceptance/20261109T000000Z/wsl_sandbox.py\", line 51, in <module>\n    files, _ = runner.run({'engine': engine, 'script': script}, b'x,y\\n1,2\\n2,4\\n3,3\\n4,5\\n', str(uuid4()), runner.admit(engine))\n               ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/project/astroagent/src/astroagent/plot_sandbox.py\", line 121, in run\n    self.call(\n    ~~~~~~~~~^\n        \"create\",\n        ^^^^^^^^^\n    ...<43 lines>...\n        proposal[\"engine\"],\n        ^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/mnt/d/project/astroagent/src/astroagent/plot_sandbox.py\", line 56, in call\n    raise unavailable()\nServiceError: 隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。\n"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "python": {
+    "passed": false,
+    "exception": "AttributeError",
+    "code": null,
+    "message": "'Settings' object has no attribute 'plot_execution_enabled'",
+    "diagnostic": null
+  },
+  "gnuplot": {
+    "passed": false,
+    "exception": "AttributeError",
+    "code": null,
+    "message": "'Settings' object has no attribute 'plot_execution_enabled'",
+    "diagnostic": null
+  }
+}
