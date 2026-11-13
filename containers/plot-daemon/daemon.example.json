@@ -1,0 +1,10 @@
+{
+  "hosts": ["unix:///run/user/1000/docker.sock", "tcp://0.0.0.0:2376"],
+  "tlsverify": true,
+  "tlscacert": "/home/plot-daemon/tls/ca.pem",
+  "tlscert": "/home/plot-daemon/tls/server-cert.pem",
+  "tlskey": "/home/plot-daemon/tls/server-key.pem",
+  "labels": ["org.astroagent.executor=isolated-v1"],
+  "live-restore": false,
+  "log-driver": "none"
+}

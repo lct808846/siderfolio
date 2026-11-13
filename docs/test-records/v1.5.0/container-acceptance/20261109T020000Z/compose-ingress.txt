@@ -1,0 +1,206 @@
+ Container astroagent-v15-prepare-model-storage-run-7996896bf95f Creating 
+ Container astroagent-v15-prepare-model-storage-run-7996896bf95f Created 
+ Image astroagent-backend:1.5.0-dev.0 Building 
+ Image astroagent-ingress:1.5.0-dev.0 Building 
+ Image astroagent-frontend:1.5.0-dev.0 Building 
+ Image astroagent-plot-executor:1.5.0-dev.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 3.01kB 0.0s done
+#1 DONE 0.0s
+
+#2 [plot-executor internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.49kB done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#2 DONE 0.0s
+
+#3 [frontend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 563B 0.0s done
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#3 DONE 0.0s
+
+#4 [plot-executor internal] load metadata for docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#4 DONE 0.1s
+
+#5 [frontend internal] load metadata for docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#5 DONE 0.1s
+
+#6 [plot-executor internal] load metadata for docker.io/library/docker@sha256:2357639ad1ea7d0194134bf3292622fd4e562483966ed674e5d7c945b5f3b28d
+#6 DONE 0.1s
+
+#7 [frontend internal] load .dockerignore
+#7 transferring context: 682B done
+#7 DONE 0.0s
+
+#8 [backend internal] load build context
+#8 DONE 0.0s
+
+#9 [ingress internal] load build context
+#9 transferring context: 1.06kB 0.0s done
+#9 DONE 0.0s
+
+#10 [frontend ingress 1/3] FROM docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#10 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.1s done
+#10 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.1s done
+#10 DONE 0.1s
+
+#11 [ingress ingress 2/3] WORKDIR /app
+#11 CACHED
+
+#12 [plot-executor runtime 1/7] FROM docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#12 resolve docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2 0.1s done
+#12 DONE 0.1s
+
+#13 [plot-executor docker-cli 1/1] FROM docker.io/library/docker@sha256:2357639ad1ea7d0194134bf3292622fd4e562483966ed674e5d7c945b5f3b28d
+#13 resolve docker.io/library/docker@sha256:2357639ad1ea7d0194134bf3292622fd4e562483966ed674e5d7c945b5f3b28d 0.1s done
+#13 DONE 0.1s
+
+#14 [frontend internal] load build context
+#14 transferring context: 1.44MB 0.1s done
+#14 DONE 0.2s
+
+#15 [ingress ingress 3/3] COPY --chown=node:node containers/frontend/ingress.mjs ./ingress.mjs
+#15 DONE 0.1s
+
+#16 [ingress] exporting to image
+#16 ...
+
+#17 [frontend build 6/6] RUN npm run build
+#17 CACHED
+
+#18 [frontend build 5/6] COPY frontend ./
+#18 CACHED
+
+#19 [frontend runtime 3/4] COPY --from=build --chown=node:node /app/dist ./dist
+#19 CACHED
+
+#20 [frontend build 4/6] RUN npm ci
+#20 CACHED
+
+#21 [frontend build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#21 CACHED
+
+#22 [frontend runtime 4/4] COPY --chown=node:node frontend/server.mjs ./server.mjs
+#22 CACHED
+
+#8 [backend internal] load build context
+#8 transferring context: 796.07kB 0.1s done
+#8 DONE 0.2s
+
+#23 [plot-executor runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#23 CACHED
+
+#24 [plot-executor runtime 6/7] COPY src ./src
+#24 CACHED
+
+#25 [plot-executor runtime 5/7] COPY pyproject.toml README.md ./
+#25 CACHED
+
+#26 [plot-executor runtime 2/7] WORKDIR /app
+#26 CACHED
+
+#27 [plot-executor runtime 3/7] COPY containers/application/requirements-runtime.lock /tmp/requirements-runtime.lock
+#27 CACHED
+
+#28 [backend runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor     && chown 10001:10001 /var/lib/astroagent-executor
+#28 CACHED
+
+#29 [plot-executor executor 1/1] COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
+#29 CACHED
+
+#16 [ingress] exporting to image
+#16 exporting layers
+#16 exporting layers 0.3s done
+#16 exporting manifest sha256:ff181c954c063b84f2b05305976e9a22bfa8ca8a3b0bafcdb9ab744a47fc917c 0.1s done
+#16 exporting config sha256:28e0096079cb0fbc7afdf55f68410bb964c3d7eb885b67475f7d498c36f311c0
+#16 ...
+
+#30 [frontend] exporting to image
+#30 exporting layers done
+#30 exporting manifest sha256:892c89444b3ed29c6d13f979d4cda7da424e451aa541c744957389d1daa76b7c done
+#30 exporting config sha256:c573f405b37415537d5872b8049073f2534a10fada520d5a87ed0df437ad161b 0.0s done
+#30 exporting attestation manifest sha256:87ceb444b534d7874f043f3f2af1e3a3743f9ebd0de24eb81199b53697718649 0.1s done
+#30 exporting manifest list sha256:692447874656c288654e9c5039cef951dfed8a946e6b4aa4cc400ffdb7ab3d46 0.1s done
+#30 naming to docker.io/library/astroagent-frontend:1.5.0-dev.0 0.0s done
+#30 unpacking to docker.io/library/astroagent-frontend:1.5.0-dev.0 0.1s done
+#30 DONE 0.3s
+
+#16 [ingress] exporting to image
+#16 exporting config sha256:28e0096079cb0fbc7afdf55f68410bb964c3d7eb885b67475f7d498c36f311c0 0.1s done
+#16 ...
+
+#31 [backend] exporting to image
+#31 exporting layers done
+#31 exporting manifest sha256:149d6e12ab29b8426502d85eb3ff6a23d48f1b03e88f767b7a5da41ee21de6d6 0.0s done
+#31 exporting config sha256:4e6d1e8515dbc4b92198d0cff50ba458923deef1489d2cc9fe9df2b5ac30c99f 0.0s done
+#31 exporting attestation manifest sha256:a3c84cf881a1e612cde2572233cbd88cdaae60bbd26065ec4460b61bfc58285b 0.1s done
+#31 exporting manifest list sha256:0c41c9aa311d55c5efcf49846d8835b19e2d39e2f58fc16f6b5464a9e3a38308 0.0s done
+#31 naming to docker.io/library/astroagent-backend:1.5.0-dev.0 0.0s done
+#31 unpacking to docker.io/library/astroagent-backend:1.5.0-dev.0 0.1s done
+#31 DONE 0.4s
+
+#32 [plot-executor] exporting to image
+#32 exporting layers done
+#32 exporting manifest sha256:7ffdc52bc7ca277c40b6a5ea79d4fe2213386564f67901665a68a77f4cdf0264 0.0s done
+#32 exporting config sha256:c21334a115e0b172b8df47ac197d10732e60eb48fa0fe9d15a286bc34626e12f 0.0s done
+#32 exporting attestation manifest sha256:188a80ba869d6416d816653b8793eb9e07065e322137c79e494305c3b88f14f0 0.1s done
+#32 exporting manifest list sha256:a5b5b84f2b910d66f0a181cfc339b44b42b2e344cdfcf79ce9e3824acd2864a9 0.1s done
+#32 naming to docker.io/library/astroagent-plot-executor:1.5.0-dev.0 0.0s done
+#32 unpacking to docker.io/library/astroagent-plot-executor:1.5.0-dev.0 0.1s done
+#32 DONE 0.4s
+
+#16 [ingress] exporting to image
+#16 exporting attestation manifest sha256:840ebf96a985c7dac377e3abf1ea2a528d06d938f3a90bd41193102e930c6898 0.0s done
+#16 exporting manifest list sha256:8e7af99e0423675d5cbec9115a7151b2d729e8080b0ddcd02c10661533c6eef6 0.1s done
+#16 naming to docker.io/library/astroagent-ingress:1.5.0-dev.0
+#16 naming to docker.io/library/astroagent-ingress:1.5.0-dev.0 0.0s done
+#16 unpacking to docker.io/library/astroagent-ingress:1.5.0-dev.0 0.1s done
+#16 DONE 0.8s
+
+#33 [backend] resolving provenance for metadata file
+#33 DONE 0.2s
+
+#34 [frontend] resolving provenance for metadata file
+#34 DONE 0.1s
+
+#35 [plot-executor] resolving provenance for metadata file
+#35 DONE 0.1s
+
+#36 [ingress] resolving provenance for metadata file
+#36 DONE 0.0s
+ Image astroagent-plot-executor:1.5.0-dev.0 Built 
+ Image astroagent-backend:1.5.0-dev.0 Built 
+ Image astroagent-frontend:1.5.0-dev.0 Built 
+ Image astroagent-ingress:1.5.0-dev.0 Built 
+ Container astroagent-v15-ollama-1 Running 
+ Container astroagent-v15-plot-executor-1 Running 
+ Container astroagent-v15-postgres-1 Running 
+ Network astroagent-v15_ingress Creating 
+ Container astroagent-v15-backend-1 Recreate 
+ Network astroagent-v15_ingress Creating 
+ Network astroagent-v15_ingress Created 
+ Network astroagent-v15_ingress Created 
+ Container astroagent-v15-backend-1 Recreated 
+ Container astroagent-v15-frontend-1 Recreate 
+ Container astroagent-v15-frontend-1 Recreated 
+ Container astroagent-v15-ingress-1 Creating 
+ Container astroagent-v15-ingress-1 Created 
+ Container astroagent-v15-postgres-1 Waiting 
+ Container astroagent-v15-postgres-1 Healthy 
+ Container astroagent-v15-backend-1 Starting 
+ Container astroagent-v15-backend-1 Started 
+ Container astroagent-v15-backend-1 Waiting 
+ Container astroagent-v15-backend-1 Healthy 
+ Container astroagent-v15-frontend-1 Starting 
+ Container astroagent-v15-frontend-1 Started 
+ Container astroagent-v15-frontend-1 Waiting 
+ Container astroagent-v15-frontend-1 Healthy 
+ Container astroagent-v15-ingress-1 Starting 
+ Container astroagent-v15-ingress-1 Started 

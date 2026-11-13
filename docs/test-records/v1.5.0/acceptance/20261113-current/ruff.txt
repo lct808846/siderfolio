@@ -1,0 +1,33 @@
+E501 Line too long (107 > 100)
+   --> src\astroagent\gaia.py:362:78
+    |
+361 |             if exc.args and isinstance(exc.args[0], ReadTimeoutError):
+362 |                 return failure("gaia_timeout", "Gaia 读取超时，本次未取得完整数据；请稍后手动重试。", True)
+    |                                                                                                     ^^^^^^^
+363 |             return failure("gaia_unavailable", "无法连接 Gaia 服务，请稍后重试。", True)
+364 |         except requests.RequestException:
+    |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\plot_service.py:104:97
+    |
+102 |         if turn.execution_status != "completed" or turn.response is None:
+103 |             raise ServiceError(422, "plot_turn_unavailable", "请等待本轮完整结果返回后再绘图。")
+104 |         frozen = self.store.projects.make_snapshot(project_id, f"第{turn.revision}轮 Gaia 数据", turn)
+    |                                                                                                     ^^
+105 |         frozen["id"] = identifier
+106 |         frozen["created_at"] = turn.completed_at or turn.received_at
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\project_archives.py:564:86
+    |
+562 |             for source_turn in entry["turns"]:
+563 |                 if len(entry["turns"]) > repository.settings.max_turns:
+564 |                     raise ServiceError(409, "project_import_limit", "归档轮次超过单个会话的轮次上限。")
+    |                                                                                                      ^^
+565 |                 t = deepcopy(source_turn)
+566 |                 t.update(turn_id=id_map["turns"][t["turn_id"]], conversation_id=c["id"])
+    |
+
+Found 3 errors.

@@ -387,13 +387,30 @@ def test_second_process_lock_is_rejected_without_disturbing_first(pg_client):
     assert client.get(root).status_code == 200
 
 
-def test_lost_lock_session_disables_business_access(pg_client):
+def test_lost_lock_session_reacquires_lock_before_business_access(pg_client):
     client = pg_client
     root, _ = project_with_document(client)
     client.rag_service.repo.session.close()
     response = client.get(root)
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "database_unavailable"
+    assert response.status_code == 200
+    assert not client.rag_service.repo.session.closed
+
+
+def test_lost_lock_session_refuses_access_while_another_process_holds_lock(pg_client):
+    from astroagent.postgres import PostgresRepository
+
+    client = pg_client
+    root, _ = project_with_document(client)
+    client.rag_service.repo.session.close()
+    second = PostgresRepository(client.rag_service.repo.settings)
+    second.initialize()
+    try:
+        response = client.get(root)
+        assert response.status_code == 503
+        assert response.json()["error"]["code"] == "database_unavailable"
+    finally:
+        second.close()
+    assert client.get(root).status_code == 200
 
 
 def test_unknown_database_schema_is_refused_without_change(pg_client):

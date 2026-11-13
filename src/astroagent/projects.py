@@ -243,14 +243,6 @@ class ProjectRepository:
                 "DELETE FROM project_conversations WHERE conversation_id=?", (conversation_id,)
             )
             if not remove:
-                if (
-                    db.execute(
-                        "SELECT count(*) FROM project_conversations WHERE project_id=?",
-                        (identifier,),
-                    ).fetchone()[0]
-                    >= 20
-                ):
-                    raise ServiceError(409, "project_conversation_limit", "每个项目最多20个会话。")
                 db.execute(
                     "INSERT INTO project_conversations VALUES (?,?)", (conversation_id, identifier)
                 )
@@ -439,13 +431,6 @@ class ProjectRepository:
                 >= 100
             ):
                 raise ServiceError(409, "rerun_limit", "每项目最多100条重跑记录，请新建项目。")
-            if (
-                db.execute("SELECT count(*) FROM conversations").fetchone()[0]
-                >= self.settings.max_conversations
-            ):
-                raise ServiceError(
-                    409, "conversation_limit_reached", "会话已满，无法保存独立重跑轮次。"
-                )
             if (
                 db.execute(
                     "SELECT count(*) FROM snapshots WHERE project_id=?", (project_id,)

@@ -1,0 +1,4 @@
+{"id": "07", "error": "local_model_invalid_output", "cause": "Invented object or number", "raw": "{\"title\": \"Compare NGC 869 88\"}"}
+{"id": "13", "error": "local_model_invalid_output", "cause": "Invented object or number", "raw": "{\"title\": \"Gaia源查询65225812899\"}"}
+{"id": "16", "error": "local_model_invalid_output", "cause": "Invalid title", "raw": "{\"title\": \"Gaia RUWE<1.4\"}"}
+{"id": "22", "error": "local_model_invalid_output", "cause": "Invented object or number", "raw": "{\"title\": \"Binary Clusters 20\" }"}

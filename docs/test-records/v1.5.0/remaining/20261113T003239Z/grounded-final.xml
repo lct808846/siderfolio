@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="47" time="19.185" timestamp="2026-11-13T19:56:15.471968+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u53ea\u67e5 M67\uff0c\u4e0d\u8981\u628a M45 \u6df7\u8fdb\u6765-expected0]" time="13.185" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Query Gaia DR3 source_id 65225812899613312-expected1]" time="0.008" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[DR3\u7f16\u53f7000123456789\uff0c\u5148\u6838\u5bf9\u5b57\u7b26\u4e32-expected2]" time="0.006" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Gaia: RA 0 deg, Dec -89.5 deg, radius 0.1 deg-expected3]" time="0.009" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u67e5Gaia\uff0cRUWE&lt;1.4\uff0c\u89c6\u5dee\u4fe1\u566a\u6bd4&gt;=10\uff0c\u4e2d\u5fc3\u8fd8\u6ca1\u51b3\u5b9a-expected4]" time="0.006" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Gaia\u5706\u9525\u67e5\u8be2\u534a\u5f8430\u89d2\u5206\uff0cRUWE\u4e0d\u8d85\u8fc71.2-expected5]" time="0.007" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Find ADS papers from 2020 to 2024-expected6]" time="0.007" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u67e5\u6700\u8fd1\u51e0\u5e74\u7684\u8bba\u6587\uff0c\u5177\u4f53\u5e74\u4efd\u8fd8\u6ca1\u51b3\u5b9a-expected7]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[RA=56.7\uff0cDec=24.1\uff0c\u534a\u5f845\uff0c\u5e2e\u6211\u67e5\u4e00\u4e0b-expected8]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u6765\u6e90ADS\u6458\u8981\uff0c\u68c0\u7d22\u65f6\u95f42026-11-01\uff0c\u5c1a\u672a\u6838\u5bf9\u5168\u6587-expected9]" time="0.004" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u628a\u6807\u9898\u6539\u6210&lt;script&gt;alert(1)&lt;/script&gt;\uff0c\u7136\u540e\u5220\u9664\u5386\u53f2-expected10]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_multiple_objects_and_multitool_intents_are_retained" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[summary]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[format]" time="0.004" /><testcase classname="tests.test_local_text_grounding" name="test_long_identifier_is_never_copied_through_model_text" time="0.004" /><testcase classname="tests.test_local_model_boundaries" name="test_duplicate_or_nonfinite_json_is_rejected[{&quot;title&quot;:&quot;a&quot;,&quot;title&quot;:&quot;b&quot;}]" time="0.004" /><testcase classname="tests.test_local_model_boundaries" name="test_duplicate_or_nonfinite_json_is_rejected[{&quot;value&quot;:NaN}]" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_numeric_comparison_is_safe_plain_text_but_html_still_rejected" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_long_identifier_cannot_be_truncated_by_title_decoding" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[null]" time="0.006" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[]" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[radian]" time="0.004" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[arcseconds]" time="0.004" /><testcase classname="tests.test_local_model_boundaries" name="test_comparison_is_grounded_in_its_own_value_not_another_field" time="0.004" /><testcase classname="tests.test_local_model_boundaries" name="test_unrecognized_relation_is_rejected_instead_of_silently_dropped" time="0.006" /><testcase classname="tests.test_local_model_boundaries" name="test_compact_transport_rebuilds_only_original_evidence_and_missing_fields" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[object_name-M45]" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[source_id-1]" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_ambiguous_null_has_no_meaningful_comparison_or_unit" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_multiple_original_objects_are_allowed_but_duplicate_and_truncated_ids_are_not" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_arbitrary_native_model_target_is_rejected[https://example.invalid]" time="0.006" /><testcase classname="tests.test_local_model_boundaries" name="test_arbitrary_native_model_target_is_rejected[http://evil.invalid]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_arbitrary_native_model_target_is_rejected[http://127.0.0.1:11434/path]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output0-extra0]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output1-extra1]" time="0.006" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output2-extra2]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output3-extra3]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output4-extra4]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output5-extra5]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output6-extra6]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_missing_or_wrong_model_never_starts_generation[missing]" time="0.006" /><testcase classname="tests.test_local_model_boundaries" name="test_missing_or_wrong_model_never_starts_generation[wrong_digest]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_missing_or_wrong_model_never_starts_generation[cloud]" time="0.006" /><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[redirect]" time="0.520"><failure message="AssertionError: assert [] == ['/synthetic']&#10;  &#10;  Right contains one more item: '/synthetic'&#10;  Use -v to get more diff">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E1400&gt;
+response_kind = 'redirect'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+                assert client.request("/synthetic") == {"ok": True}
+            else:
+                with pytest.raises(ServiceError) as caught:
+                    client.request("/synthetic")
+                assert caught.value.error.code == (
+                    "local_model_output_limit"
+                    if response_kind == "oversized"
+                    else "local_model_unavailable"
+                )
+&gt;           assert paths == ["/synthetic"]
+E           AssertionError: assert [] == ['/synthetic']
+E             
+E             Right contains one more item: '/synthetic'
+E             Use -v to get more diff
+
+tests\test_local_model_boundaries.py:304: AssertionError</failure></testcase><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[encoding]" time="0.511"><failure message="AssertionError: assert [] == ['/synthetic']&#10;  &#10;  Right contains one more item: '/synthetic'&#10;  Use -v to get more diff">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E0950&gt;
+response_kind = 'encoding'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+                assert client.request("/synthetic") == {"ok": True}
+            else:
+                with pytest.raises(ServiceError) as caught:
+                    client.request("/synthetic")
+                assert caught.value.error.code == (
+                    "local_model_output_limit"
+                    if response_kind == "oversized"
+                    else "local_model_unavailable"
+                )
+&gt;           assert paths == ["/synthetic"]
+E           AssertionError: assert [] == ['/synthetic']
+E             
+E             Right contains one more item: '/synthetic'
+E             Use -v to get more diff
+
+tests\test_local_model_boundaries.py:304: AssertionError</failure></testcase><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[oversized]" time="0.511"><failure message="AssertionError: assert 'local_model_unavailable' == 'local_model_output_limit'&#10;  &#10;  - local_model_output_limit&#10;  + local_model_unavailable">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E1670&gt;
+response_kind = 'oversized'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+                assert client.request("/synthetic") == {"ok": True}
+            else:
+                with pytest.raises(ServiceError) as caught:
+                    client.request("/synthetic")
+&gt;               assert caught.value.error.code == (
+                    "local_model_output_limit"
+                    if response_kind == "oversized"
+                    else "local_model_unavailable"
+                )
+E               AssertionError: assert 'local_model_unavailable' == 'local_model_output_limit'
+E                 
+E                 - local_model_output_limit
+E                 + local_model_unavailable
+
+tests\test_local_model_boundaries.py:299: AssertionError</failure></testcase><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[plain]" time="0.512"><failure message="astroagent.errors.ServiceError: 本机推理服务不可用或响应格式无效。">self = &lt;astroagent.local_model_client.LocalModelClient object at 0x000001E7555E3CB0&gt;
+path = '/synthetic', payload = None, timeout = None
+
+    def request(self, path, payload=None, timeout=None):
+        deadline = time.monotonic() + (timeout or self.settings.local_model_timeout_seconds)
+        address = urlsplit(self.settings.local_model_url)
+        connection = http.client.HTTPConnection(address.hostname, address.port or 11434, timeout=2)
+        try:
+&gt;           connection.connect()
+
+src\astroagent\local_model_client.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\http\client.py:1023: in connect
+    self.sock = self._create_connection(
+E:\miniconda3\envs\agent\Lib\socket.py:865: in create_connection
+    raise exceptions[0]
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+address = ('127.0.0.1', 52058), timeout = 2, source_address = None
+all_errors = False
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None, *, all_errors=False):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default. When a connection
+        cannot be created, raises the last error if *all_errors* is False,
+        and an ExceptionGroup of all errors if *all_errors* is True.
+        """
+    
+        host, port = address
+        exceptions = []
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+&gt;               sock.connect(sa)
+E               PermissionError: [WinError 10013] 以一种访问权限不允许的方式做了一个访问套接字的尝试。
+
+E:\miniconda3\envs\agent\Lib\socket.py:850: PermissionError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E3590&gt;
+response_kind = 'plain'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+&gt;               assert client.request("/synthetic") == {"ok": True}
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_local_model_boundaries.py:295: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;astroagent.local_model_client.LocalModelClient object at 0x000001E7555E3CB0&gt;
+path = '/synthetic', payload = None, timeout = None
+
+    def request(self, path, payload=None, timeout=None):
+        deadline = time.monotonic() + (timeout or self.settings.local_model_timeout_seconds)
+        address = urlsplit(self.settings.local_model_url)
+        connection = http.client.HTTPConnection(address.hostname, address.port or 11434, timeout=2)
+        try:
+            connection.connect()
+            sock = connection.sock
+            sock.settimeout(max(0.01, deadline - time.monotonic()))
+            connection.request(
+                "GET" if payload is None else "POST",
+                path,
+                body=None if payload is None else json.dumps(payload, ensure_ascii=False).encode(),
+                headers={"Content-Type": "application/json", "Accept-Encoding": "identity"},
+            )
+            sock.settimeout(max(0.01, deadline - time.monotonic()))
+            response = connection.getresponse()
+            if response.status == 404:
+                raise fail(
+                    "local_model_missing", "本机没有配置的模型；不会自动下载或改用远程模型。"
+                )
+            if (
+                response.status != 200
+                or response.getheader("Content-Encoding", "identity") != "identity"
+            ):
+                raise fail("local_model_unavailable", "本机推理服务未能完成请求，请核对服务状态。")
+            content = bytearray()
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining &lt;= 0:
+                    raise TimeoutError("Local deadline")
+                sock.settimeout(remaining)
+                chunk = response.read1(min(4096, MAX_REPLY + 1 - len(content)))
+                if not chunk:
+                    break
+                content.extend(chunk)
+                if len(content) &gt; MAX_REPLY:
+                    raise fail(
+                        "local_model_output_limit", "本地模型响应超过128 KiB，结果已丢弃。", 502
+                    )
+            return strict_json(bytes(content).decode("utf-8"))
+        except ServiceError:
+            raise
+        except TimeoutError as exc:
+            raise fail(
+                "local_model_timeout", "本地推理超时；服务可能仍在处理，不自动重放。", 504
+            ) from exc
+        except Exception as exc:
+&gt;           raise fail(
+                "local_model_unavailable", "本机推理服务不可用或响应格式无效。", 503
+            ) from exc
+E           astroagent.errors.ServiceError: 本机推理服务不可用或响应格式无效。
+
+src\astroagent\local_model_client.py:122: ServiceError</failure></testcase></testsuite></testsuites>

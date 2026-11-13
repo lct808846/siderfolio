@@ -9,6 +9,7 @@ import struct
 import subprocess
 import tarfile
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 
 from astroagent.errors import ServiceError
@@ -39,7 +40,7 @@ class Sandbox:
         self.settings = settings
         self.docker = shutil.which("docker")
 
-    def call(self, *args, timeout=10):
+    def call(self, *args, timeout=10, input=None):
         env = {
             key: os.environ[key]
             for key in ("PATH", "SystemRoot", "WINDIR", "TEMP", "TMP")
@@ -48,6 +49,7 @@ class Sandbox:
         result = subprocess.run(
             [self.docker, "--host", self.settings.plot_docker_host, *args],
             capture_output=True,
+            input=input,
             timeout=timeout,
             env=env,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
@@ -99,9 +101,8 @@ class Sandbox:
                 raise ServiceError(422, "plot_output_invalid", "绘图输出格式或大小无效。")
             return archive.extractfile(members[0]).read(MAX_OUTPUT + 1)
 
-    def run(self, proposal, data, run_id, admitted):
-        image, image_id = admitted
-        container = "astroagent-plot-" + run_id
+    @contextmanager
+    def inputs(self, proposal, data, run_id, image):
         suffix = "py" if proposal["engine"] == "python" else "plt"
         root = Path(self.settings.data_dir).resolve() / "plot-jobs"
         root.mkdir(parents=True, exist_ok=True)
@@ -116,6 +117,15 @@ class Sandbox:
             path.chmod(0o755)
             for member in path.iterdir():
                 member.chmod(0o644)
+            yield f"type=bind,src={path},dst=/input,readonly"
+
+    def valid_input_mount(self, mount, run_id):
+        return True
+
+    def run(self, proposal, data, run_id, admitted):
+        image, image_id = admitted
+        container = "astroagent-plot-" + run_id
+        with self.inputs(proposal, data, run_id, image) as input_mount:
             created = False
             try:
                 self.call(
@@ -124,6 +134,9 @@ class Sandbox:
                     container,
                     "--label",
                     "org.astroagent.plot-job=1",
+                    "--label",
+                    "org.astroagent.executor-owner="
+                    + getattr(self.settings, "plot_executor_owner", "native"),
                     "--pull",
                     "never",
                     "--network",
@@ -151,7 +164,7 @@ class Sandbox:
                     "none",
                     "--no-healthcheck",
                     "--mount",
-                    f"type=bind,src={path},dst=/input,readonly",
+                    input_mount,
                     "--tmpfs",
                     "/output:rw,noexec,nosuid,nodev,size=20m,mode=1777",
                     "--tmpfs",
@@ -186,6 +199,7 @@ class Sandbox:
                     or len(mounts) != 1
                     or mounts[0].get("RW")
                     or mounts[0].get("Destination") != "/input"
+                    or not self.valid_input_mount(mounts[0], run_id)
                 ):
                     raise unavailable()
                 raw = self.call(

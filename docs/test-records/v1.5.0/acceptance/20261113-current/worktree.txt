@@ -1,0 +1,90 @@
+ M .env.example
+ M .gitattributes
+ M README.md
+ M docs/PROJECT_PLAN_V1.5.md
+ M docs/ROADMAP.md
+ M frontend/openapi.json
+ M frontend/package-lock.json
+ M frontend/package.json
+ M frontend/server.mjs
+ M frontend/src/api/plotting.ts
+ M frontend/src/components/ConversationSidebar.vue
+ M frontend/src/components/ResultPanel.vue
+ M frontend/src/components/WorkspaceHeader.vue
+ M frontend/src/main.ts
+ M frontend/src/stores/workbench.ts
+ M frontend/src/types/generated.ts
+ M frontend/src/views/App.vue
+ M frontend/src/views/KnowledgeWorkspace.vue
+ M frontend/src/views/PlotWorkspace.vue
+ M frontend/src/views/ProjectOverview.vue
+ M frontend/src/views/ProjectWorkspace.vue
+ M frontend/src/views/RagWorkspace.vue
+ M frontend/src/views/SettingsWorkspace.vue
+ M frontend/src/views/WorkflowWorkspace.vue
+ M frontend/vite.config.ts
+ M pyproject.toml
+ M src/astroagent/__init__.py
+ M src/astroagent/api/plotting.py
+ M src/astroagent/api/setup.py
+ M src/astroagent/config.py
+ M src/astroagent/conversation_schemas.py
+ M src/astroagent/conversation_service.py
+ M src/astroagent/conversations.py
+ M src/astroagent/gaia.py
+ M src/astroagent/local_access.py
+ M src/astroagent/main.py
+ M src/astroagent/plot_planner.py
+ M src/astroagent/plot_sandbox.py
+ M src/astroagent/plot_schemas.py
+ M src/astroagent/plot_service.py
+ M src/astroagent/postgres.py
+ M src/astroagent/project_archives.py
+ M src/astroagent/projects.py
+ M src/astroagent/rag_schemas.py
+ M src/astroagent/services.py
+ M src/astroagent/workflows.py
+ M tests/test_conversations.py
+?? .dockerignore
+?? compose.gpu.yaml
+?? compose.plotting.yaml
+?? compose.yaml
+?? containers/application/
+?? containers/backend-settings.example.json
+?? containers/frontend/
+?? containers/images.example.json
+?? containers/model-source.json
+?? containers/plot-daemon/
+?? containers/postgres/
+?? docs/CONTAINER_DEPLOYMENT_V1.5.md
+?? docs/development/v1.5.0/
+?? docs/test-records/v1.5.0/
+?? frontend/playwright.container-live.ts
+?? frontend/src/api/local-assistant.ts
+?? frontend/src/components/LocalAssistantSettings.vue
+?? frontend/src/components/LocalTitleStatus.vue
+?? frontend/src/components/ModelChangeNotice.vue
+?? frontend/src/components/WorkbenchPlot.vue
+?? frontend/src/components/WorkspacePaneHeader.vue
+?? frontend/src/local-assistant.css
+?? frontend/src/research-flow.css
+?? frontend/src/views/LocalAssistantWorkspace.vue
+?? frontend/src/workbench-plot.css
+?? frontend/src/workspace-theme.css
+?? frontend/tests/browser/container-live.spec.ts
+?? scripts/container_database.py
+?? scripts/containers.ps1
+?? scripts/lock_container_images.py
+?? scripts/prepare_container_deployment.py
+?? scripts/start_local_model.ps1
+?? src/astroagent/api/local_assistant.py
+?? src/astroagent/container_entrypoint.py
+?? src/astroagent/conversation_titles.py
+?? src/astroagent/local_model_client.py
+?? src/astroagent/local_model_schemas.py
+?? src/astroagent/local_model_service.py
+?? src/astroagent/local_model_store.py
+?? src/astroagent/plot_executor_client.py
+?? src/astroagent/plot_executor_daemon.py
+?? src/astroagent/plot_executor_server.py
+?? tests/test_plot_desktop_boundary.py

@@ -1,0 +1,6 @@
+astroagent-v15-frontend-1 astroagent-frontend:1.5.0 Up 5 minutes (healthy)
+astroagent-v15-ingress-1 315aa05bfde3 Up 17 minutes (healthy)
+astroagent-v15-backend-1 088c30a37769 Up 17 minutes (healthy)
+astroagent-v15-plot-executor-1 f0c655146594 Up 17 minutes (healthy)
+astroagent-v15-postgres-1 0dd3149a06e4 Up 32 minutes (healthy)
+astroagent-v15-ollama-1 0e59999e0e8f Up 32 minutes (healthy)

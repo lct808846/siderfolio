@@ -1,10 +1,11 @@
 """从环境和本地 .env 读取配置；密钥不会出现在 repr 中。"""
 
 import os
+import re
 from pathlib import Path
 from typing import Literal
 
-from pydantic import AnyHttpUrl, Field, SecretStr, field_validator, model_validator
+from pydantic import AnyHttpUrl, Field, SecretStr, ValidationInfo, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from astroagent.model_schemas import ChatModelOption
@@ -22,7 +23,7 @@ class Settings(BaseSettings):
     simbad_timeout_seconds: float = Field(default=20, gt=0, le=120)
     ads_api_token: SecretStr = SecretStr("")
     ads_timeout_seconds: float = Field(default=20, gt=0, le=120)
-    gaia_timeout_seconds: float = Field(default=20, gt=0, le=120)
+    gaia_timeout_seconds: float = Field(default=45, gt=0, le=120)
     agent_max_rounds: int = Field(default=4, ge=1, le=8)
     agent_max_tool_calls: int = Field(default=6, ge=1, le=12)
 
@@ -61,6 +62,8 @@ class LocalSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="ASTROAGENT_"
     )
+    deployment_mode: Literal["native", "container"] = "native"
+    proxy_token: SecretStr = SecretStr("")
     data_dir: Path = Path(".astroagent")
     database_url: SecretStr = SecretStr("")
     rag_model_path: Path | None = None
@@ -73,7 +76,56 @@ class LocalSettings(BaseSettings):
     rag_max_cosine_distance: float = Field(default=0.65, ge=0, le=2)
     rag_query_cache_size: int = Field(default=32, ge=0, le=128)
     rag_query_cache_seconds: float = Field(default=300, gt=0, le=900)
+    local_model_enabled: bool = False
+    local_model_url: str = "http://127.0.0.1:11434"
+    local_model_name: str = Field(
+        default="astroagent-qwen3-4b-instruct-2507:q4km",
+        min_length=1,
+        max_length=120,
+        pattern=r"^[a-zA-Z0-9_.:/-]+$",
+    )
+    local_model_digest: str = Field(default="", pattern=r"^(?:sha256:)?[0-9a-f]{64}$|^$")
+    local_model_timeout_seconds: int = Field(default=120, ge=5, le=120)
+    local_model_threads: int = Field(default=4, ge=1, le=8)
+    local_model_queue_size: int = Field(default=2, ge=0, le=4)
+
+    @field_validator("local_model_url")
+    @classmethod
+    def loopback_model(cls, value, info: ValidationInfo):
+        from urllib.parse import urlsplit
+
+        parsed = urlsplit(value)
+        if (
+            parsed.scheme != "http"
+            or parsed.hostname
+            not in (
+                ("ollama",)
+                if info.data.get("deployment_mode") == "container"
+                else ("127.0.0.1", "::1")
+            )
+            or parsed.username
+            or parsed.password
+            or parsed.path not in ("", "/")
+            or parsed.query
+            or parsed.fragment
+            or not 1 <= (parsed.port or 11434) <= 65535
+            or info.data.get("deployment_mode") == "container"
+            and parsed.port != 11434
+        ):
+            raise ValueError("Use the fixed model origin for the selected deployment mode")
+        return value.rstrip("/")
+
     plot_execution_enabled: bool = False
+    plot_executor_url: str = "http://plot-executor:8090"
+    plot_executor_token: SecretStr = SecretStr("")
+
+    @field_validator("plot_executor_url")
+    @classmethod
+    def fixed_executor(cls, value):
+        if value != "http://plot-executor:8090":
+            raise ValueError("Only the fixed internal plot executor is allowed")
+        return value
+
     plot_python_image: str = ""
     plot_gnuplot_image: str = ""
     plot_docker_host: str = (
@@ -90,7 +142,7 @@ class LocalSettings(BaseSettings):
 
     @field_validator("database_url")
     @classmethod
-    def local_database(cls, value):
+    def local_database(cls, value, info: ValidationInfo):
         from urllib.parse import urlsplit
 
         raw = value.get_secret_value()
@@ -99,13 +151,32 @@ class LocalSettings(BaseSettings):
         parsed = urlsplit(raw)
         if (
             parsed.scheme not in ("postgresql", "postgres")
-            or parsed.hostname not in ("localhost", "127.0.0.1", "::1")
+            or parsed.hostname
+            not in (
+                ("postgres",)
+                if info.data.get("deployment_mode") == "container"
+                else ("localhost", "127.0.0.1", "::1")
+            )
+            or info.data.get("deployment_mode") == "container"
+            and parsed.port != 5432
             or not parsed.path.strip("/")
             or parsed.query
             or parsed.fragment
         ):
             raise ValueError("A local PostgreSQL URL without extra connection options is required")
         return value
+
+    @model_validator(mode="after")
+    def container_proxy(self):
+        if self.deployment_mode == "container":
+            if not re.fullmatch("[0-9a-f]{64}", self.proxy_token.get_secret_value()):
+                raise ValueError("Container mode requires an independent proxy credential")
+            if not set(self.allowed_origins) <= {
+                "http://127.0.0.1:5173",
+                "http://localhost:5173",
+            } or not set(self.allowed_hosts) <= {"127.0.0.1", "localhost", "[::1]"}:
+                raise ValueError("Container mode only permits the fixed local browser entry")
+        return self
 
     allowed_origins: list[str] = [
         "http://127.0.0.1:5173",
@@ -114,7 +185,6 @@ class LocalSettings(BaseSettings):
         "http://localhost:8000",
     ]
     allowed_hosts: list[str] = ["127.0.0.1", "localhost", "[::1]"]
-    max_conversations: int = Field(default=20, ge=1, le=20)
     max_turns: int = Field(default=40, ge=1, le=40)
     storage_bytes: int = Field(default=256 * 1024**2, ge=1024, le=256 * 1024**2)
     turn_bytes: int = Field(default=16 * 1024**2, ge=512, le=16 * 1024**2)

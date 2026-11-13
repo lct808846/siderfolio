@@ -1,0 +1,51 @@
+..........F..............                                                [100%]
+================================== FAILURES ===================================
+____________ test_concurrency_idempotent_running_and_global_slots _____________
+
+tmp_path = WindowsPath('C:/Users/lct/AppData/Local/Temp/pytest-of-lct/pytest-1/test_concurrency_idempotent_ru0')
+
+    def test_concurrency_idempotent_running_and_global_slots(tmp_path):
+        repository = ConversationRepository(LocalSettings(data_dir=tmp_path / "parallel"))
+        repository.initialize()
+        service = ConversationService(repository)
+        conversations = [repository.create(str(i)) for i in range(3)]
+        entered = threading.Barrier(3)
+        release = threading.Event()
+    
+        class Blocking:
+            def converse(self, message, context):
+                entered.wait(timeout=10)
+                assert release.wait(10)
+                return ChatResponse(status="success", answer="done")
+    
+        requests = [
+            TurnRequest(message="����", client_request_id=str(uuid4()), expected_revision=0)
+            for _ in conversations
+        ]
+        try:
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                futures = [
+                    pool.submit(service.submit, conversations[i]["id"], requests[i], Blocking)
+                    for i in (0, 1)
+                ]
+                entered.wait(timeout=10)
+                repeated, status = service.submit(conversations[0]["id"], requests[0], Blocking)
+                assert status == 202 and repeated.execution_status == "running"
+                with pytest.raises(ServiceError) as error:
+                    service.submit(conversations[2]["id"], requests[2], Blocking)
+                assert error.value.error.code == "conversation_service_busy"
+                with pytest.raises(ServiceError) as error:
+                    repository.delete(conversations[0]["id"])
+                assert error.value.error.code == "conversation_busy"
+                renamed = repository.rename(conversations[0]["id"], "manual title")
+                assert renamed["title"] == "manual title"
+                release.set()
+                assert all(f.result(timeout=10)[0].execution_status == "completed" for f in futures)
+>               assert repository.get(conversations[0]["id"])["title"] == "manual title"
+                       ^^^^^^^^^^^^^^
+E               AttributeError: 'ConversationRepository' object has no attribute 'get'
+
+tests\test_conversations.py:297: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_conversations.py::test_concurrency_idempotent_running_and_global_slots
+1 failed, 24 passed in 16.47s

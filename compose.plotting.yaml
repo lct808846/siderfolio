@@ -1,0 +1,59 @@
+# Trusted internal broker only. Socket access grants control of Docker Desktop.
+services:
+  backend:
+    environment:
+      ASTROAGENT_PLOT_EXECUTION_ENABLED: "true"
+      ASTROAGENT_PLOT_PYTHON_IMAGE: "${PLOT_PYTHON_IMAGE:?Pin the dedicated-daemon protocol 2 image}"
+      ASTROAGENT_PLOT_GNUPLOT_IMAGE: "${PLOT_GNUPLOT_IMAGE:?Pin the dedicated-daemon protocol 2 image}"
+    secrets: [executor_token]
+    networks: [execution]
+  plot-executor:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: containers/application/Dockerfile
+      target: executor
+      args:
+        PYTHON_IMAGE: "${PYTHON_IMAGE:?Prepare a fixed Python image digest}"
+        DOCKER_CLI_IMAGE: "${DOCKER_CLI_IMAGE:?Prepare a fixed CLI image digest}"
+    image: astroagent-plot-executor:1.5.0
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    user: "10001:10001"
+    environment:
+      ASTROAGENT_EXECUTOR_DAEMON_BOUNDARY: "docker-desktop-wsl2-v1"
+      ASTROAGENT_PLOT_PYTHON_IMAGE: "${PLOT_PYTHON_IMAGE:?Pin the protocol 2 Python image}"
+      ASTROAGENT_PLOT_GNUPLOT_IMAGE: "${PLOT_GNUPLOT_IMAGE:?Pin the protocol 2 Gnuplot image}"
+    # Docker Desktop reports socket gid 0 on this host. This grants daemon control,
+    # not merely read access; never share it with the backend or plot jobs.
+    group_add: ["${DOCKER_SOCKET_GID:?Set the actual Docker socket group ID}"]
+    secrets: [executor_token]
+    volumes:
+      - executor_ledger:/var/lib/astroagent-executor
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [execution]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=32m,mode=1777"]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 64
+    stop_grace_period: 75s
+    logging:
+      driver: json-file
+      options: { max-size: "5m", max-file: "3" }
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health',timeout=3)"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+networks:
+  execution: { internal: true }
+volumes:
+  executor_ledger:
+secrets:
+  executor_token: { file: ./.astroagent/container/secrets/executor_token }

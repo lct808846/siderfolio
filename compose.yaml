@@ -1,0 +1,210 @@
+name: astroagent-v15
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "5m", max-file: "3" }
+x-hardened: &hardened
+  platform: linux/amd64
+  restart: unless-stopped
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging: *logging
+services:
+  frontend:
+    <<: *hardened
+    build:
+      context: .
+      dockerfile: containers/frontend/Dockerfile
+      target: runtime
+      args: { NODE_IMAGE: "${NODE_IMAGE:?Prepare a fixed NODE_IMAGE digest}" }
+    image: astroagent-frontend:1.5.0
+    environment:
+      ASTROAGENT_DEPLOYMENT_MODE: container
+      ASTROAGENT_API_TARGET: http://backend:8000
+    secrets: [proxy_token]
+    networks: [web, edge]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=16m"]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    depends_on:
+      backend: { condition: service_healthy }
+    healthcheck:
+      # This checks the static server itself; backend has its own health check.
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  ingress:
+    <<: *hardened
+    build:
+      context: .
+      dockerfile: containers/frontend/Dockerfile
+      target: ingress
+      args: { NODE_IMAGE: "${NODE_IMAGE:?Prepare a fixed NODE_IMAGE digest}" }
+    image: astroagent-ingress:1.5.0
+    ports: ["127.0.0.1:5173:5173"]
+    networks: [edge, ingress]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=8m"]
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+    depends_on:
+      frontend: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  backend:
+    <<: *hardened
+    build:
+      context: .
+      dockerfile: containers/application/Dockerfile
+      target: backend
+      args:
+        PYTHON_IMAGE: "${PYTHON_IMAGE:?Prepare a fixed PYTHON_IMAGE digest}"
+        DOCKER_CLI_IMAGE: "${DOCKER_CLI_IMAGE:?Prepare a fixed CLI image digest}"
+    image: astroagent-backend:1.5.0
+    environment:
+      ASTROAGENT_DEPLOYMENT_MODE: container
+      ASTROAGENT_DATA_DIR: /tmp/astroagent
+      ASTROAGENT_CONTAINER_DATABASE: "${CONTAINER_DATABASE:-astroagent}"
+      ASTROAGENT_ALLOWED_ORIGINS: '["http://127.0.0.1:5173","http://localhost:5173"]'
+      ASTROAGENT_LOCAL_MODEL_ENABLED: "${LOCAL_MODEL_ENABLED:-false}"
+      ASTROAGENT_LOCAL_MODEL_URL: http://ollama:11434
+      ASTROAGENT_LOCAL_MODEL_NAME: astroagent-qwen3-4b-instruct-2507:q4km
+      ASTROAGENT_LOCAL_MODEL_DIGEST: "${LOCAL_MODEL_DIGEST:-}"
+      ASTROAGENT_RAG_MODEL_PATH: /models/embedding
+      ASTROAGENT_RAG_MODEL_SHA256: "${EMBEDDING_MODEL_SHA256:-}"
+      ASTROAGENT_RAG_SEMANTIC_ENABLED: "${RAG_SEMANTIC_ENABLED:-false}"
+      ASTROAGENT_PLOT_EXECUTION_ENABLED: "false"
+    secrets: [database_password, proxy_token, backend_settings]
+    volumes:
+      - type: bind
+        source: "${EMBEDDING_MODEL_DIR:?Choose the existing embedding directory}"
+        target: /models/embedding
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [web, database, models, outbound]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=512m,mode=1777"]
+    mem_limit: 4g
+    cpus: 3
+    pids_limit: 128
+    shm_size: 128m
+    stop_grace_period: 90s
+    depends_on:
+      postgres: { condition: service_healthy, restart: true }
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=3)"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  postgres:
+    platform: linux/amd64
+    image: "${POSTGRES_IMAGE:?Prepare a fixed pgvector PostgreSQL 16 image digest}"
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_admin_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets: [postgres_admin_password, database_password]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./containers/postgres/10-application.sh:/docker-entrypoint-initdb.d/10-application.sh:ro
+    networks: [database]
+    mem_limit: 1g
+    cpus: 1
+    pids_limit: 128
+    shm_size: 256m
+    logging: *logging
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d astroagent && psql -U postgres -d astroagent -tAc \"SELECT count(*) FROM pg_extension WHERE extname IN ('vector','pg_trgm')\" | grep -qx 2"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+  ollama:
+    <<: *hardened
+    image: "${OLLAMA_IMAGE:?Prepare a fixed Ollama image digest}"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: /models
+      OLLAMA_NO_CLOUD: "1"
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_MAX_QUEUE: "2"
+      OLLAMA_CONTEXT_LENGTH: "8192"
+      OLLAMA_KEEP_ALIVE: 30s
+      HOME: /tmp
+    user: "10001:10001"
+    volumes: [ollama_data:/models]
+    tmpfs: ["/tmp:rw,nosuid,nodev,size=64m,mode=1777"]
+    networks: [models]
+    mem_limit: 5g
+    cpus: 4
+    pids_limit: 128
+    stop_grace_period: 90s
+    healthcheck:
+      test: [CMD, ollama, list]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  prepare-model-storage:
+    profiles: [tools]
+    image: "${PYTHON_IMAGE:?Prepare a fixed Python image digest}"
+    platform: linux/amd64
+    user: "0:0"
+    command: [python, -c, "import os; os.chown('/models',10001,10001)"]
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN]
+    security_opt: [no-new-privileges:true]
+    network_mode: none
+    volumes: [ollama_data:/models]
+  import-model:
+    profiles: [tools]
+    image: "${OLLAMA_IMAGE:?Prepare a fixed Ollama image digest}"
+    platform: linux/amd64
+    user: "10001:10001"
+    command: [create, astroagent-qwen3-4b-instruct-2507:q4km, -f, /import/Modelfile]
+    environment:
+      OLLAMA_HOST: ollama:11434
+      OLLAMA_NO_CLOUD: "1"
+      HOME: /tmp
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,nosuid,nodev,size=16m,mode=1777"]
+    networks: [models]
+    volumes:
+      - type: bind
+        source: "${OLLAMA_IMPORT_GGUF:-./.astroagent/container/unused.gguf}"
+        target: /import/model.gguf
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: ./.astroagent/container/Modelfile
+        target: /import/Modelfile
+        read_only: true
+        bind: { create_host_path: false }
+volumes:
+  postgres_data:
+  ollama_data:
+networks:
+  web: { internal: true }
+  edge: { internal: true }
+  ingress: {}
+  database: { internal: true }
+  models: { internal: true }
+  outbound: {}
+secrets:
+  postgres_admin_password: { file: ./.astroagent/container/secrets/postgres_admin_password }
+  database_password: { file: ./.astroagent/container/secrets/database_password }
+  proxy_token: { file: ./.astroagent/container/secrets/proxy_token }
+  backend_settings: { file: ./.astroagent/container/secrets/backend-settings.json }

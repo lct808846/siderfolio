@@ -1,0 +1,94 @@
+[WebServer] INFO:     Started server process [30228]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:2680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:38740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (6.0s)
+(node:41120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [edge] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (6.2s)
+
+
+  1) [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: '实际绘图脚本' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: '实际绘图脚本' })
+
+
+      44 |   await page.getByRole('button', { name: '生成绘图方案' }).click()
+      45 |   await page.locator('summary').filter({ hasText: '实际绘图脚本' }).click()
+    > 46 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()
+         |                                                               ^
+      47 |   expect(plans).toBe(1)
+      48 |   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()
+      49 |   expect(runs).toBe(0)
+        at D:\project\astroagent\frontend\tests\browser\plot-acceptance.spec.ts:46:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: '实际绘图脚本' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: '实际绘图脚本' })
+
+
+      44 |   await page.getByRole('button', { name: '生成绘图方案' }).click()
+      45 |   await page.locator('summary').filter({ hasText: '实际绘图脚本' }).click()
+    > 46 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()
+         |                                                               ^
+      47 |   expect(plans).toBe(1)
+      48 |   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()
+      49 |   expect(runs).toBe(0)
+        at D:\project\astroagent\frontend\tests\browser\plot-acceptance.spec.ts:46:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+    [edge] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 

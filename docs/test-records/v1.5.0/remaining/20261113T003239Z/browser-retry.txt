@@ -1,0 +1,19 @@
+[WebServer] INFO:     Started server process [12552]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:12808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:39592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (9.8s)
+  ok 2 [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (5.9s)
+(node:36516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (9.5s)
+  ok 4 [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (6.3s)
+
+  4 passed (49.6s)

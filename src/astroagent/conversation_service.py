@@ -14,6 +14,7 @@ class ConversationService:
         self.gate = threading.RLock()
         self.slots = MODEL_TASK_SLOTS
         self.artifacts = None
+        self.local_assistant = None
 
     def delete(self, identifier):
         with self.gate:
@@ -39,6 +40,12 @@ class ConversationService:
             except Exception:
                 self.slots.release()
                 raise
+        title_completion = None
+        if self.local_assistant is not None:
+            try:
+                title_completion = self.local_assistant.schedule_title(turn)
+            except Exception:
+                pass
         failure = None
         try:
             context = PreparedContext(history, request.message, attachments=request.attachments)
@@ -59,6 +66,13 @@ class ConversationService:
             turn.execution_status = "failed"
             turn.error = failure.error
         finally:
+            if title_completion is not None:
+                try:
+                    self.local_assistant.settle_title(
+                        title_completion, wait=turn.execution_status == "completed"
+                    )
+                except Exception:
+                    title_completion.cancelled.set()
             turn.completed_at = utc_now()
             try:
                 turn = self.repository.finish(turn)

@@ -3,14 +3,30 @@ import { api, ApiError } from '../api'
 import type { ChatAttachment, Conversation, ConversationDetail, Turn } from '../types'
 
 export const useWorkbench = defineStore('workbench', {
-  state: () => ({ conversations: [] as Conversation[], current: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[] } }),
+  state: () => ({ conversations: [] as Conversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[] } }),
   getters: {
     selectedTurn: state => state.turns.find(t => t.turn_id === state.selectedTurnId) || null,
     running: state => state.pending || state.turns.some(t => t.execution_status === 'running'),
   },
   actions: {
     report(error: unknown) { this.error = error instanceof Error ? error.message : '操作未完成，请重试。'; this.errorCode = error instanceof ApiError ? error.code : 'unexpected_error' },
-    async refreshList() { this.conversations = await api.list() },
+    async refreshList() {
+      const values = await api.list()
+      const previous = new Map(this.conversations.map(value => [value.id, value]))
+      if (this.current && this.current.metadata_revision > (previous.get(this.current.id)?.metadata_revision ?? -1)) previous.set(this.current.id, this.current)
+      this.conversations = values.map(value => {
+        const current = previous.get(value.id)
+        return current && current.metadata_revision > value.metadata_revision
+          ? { ...value, title: current.title, metadata_revision: current.metadata_revision }
+          : value
+      })
+      if (this.current) {
+        const saved = this.conversations.find(value => value.id === this.current?.id)
+        if (saved && saved.metadata_revision >= this.current.metadata_revision) {
+          this.current.title = saved.title; this.current.metadata_revision = saved.metadata_revision
+        }
+      }
+    },
     async load(id: string) {
       const token = ++this.loadToken
       if (id !== this.current?.id) { this.current = null; this.turns = []; this.selectedTurnId = '' }
@@ -19,6 +35,13 @@ export const useWorkbench = defineStore('workbench', {
         const detail = await api.detail(id)
         const turns = await Promise.all(detail.turns.map(t => api.turn(id, t.turn_id)))
         if (token !== this.loadToken) return
+        // A slower detail response must not replace a title already refreshed or edited.
+        const known = [this.current, this.conversations.find(value => value.id === id)]
+          .filter((value): value is Conversation => !!value && value.id === id)
+          .sort((left, right) => right.metadata_revision - left.metadata_revision)[0]
+        if (known && known.metadata_revision > detail.metadata_revision) {
+          detail.title = known.title; detail.metadata_revision = known.metadata_revision
+        }
         this.current = detail; this.turns = turns
         if (!turns.some(t => t.turn_id === this.selectedTurnId)) this.selectedTurnId = turns.at(-1)?.turn_id || ''
         if (this.disconnectedRequest?.id === id && turns.some(t => t.client_request_id === this.disconnectedRequest?.requestId)) this.disconnectedRequest = null
@@ -26,11 +49,20 @@ export const useWorkbench = defineStore('workbench', {
     },
     async create(persist = true) {
       if (this.creating || this.loading || this.running || this.disconnectedRequest) return
+      // Reopening the unsaved draft is a local no-op. Do not toggle creating,
+      // disable the composer, or refetch history on every click.
+      if (!persist && !this.current && !this.turns.length) {
+        this.panel = 'chat'
+        return null
+      }
       if (this.current?.title === '新会话' && this.current.revision === 0 && !this.current.turns.length && !this.turns.length) {
         this.panel = 'chat'
         return this.current.id
       }
-      this.creating = true
+      // Preparing an unsaved destination must leave the displayed conversation
+      // intact. The router commits it together with the new URL.
+      if (persist) this.creating = true
+      this.preparedConversation = null
       const token = ++this.loadToken
       let createdId: string | undefined
       try {
@@ -46,14 +78,16 @@ export const useWorkbench = defineStore('workbench', {
           }
           if (token !== this.loadToken) return
           if (detail.id !== candidate.id || detail.title !== '新会话' || detail.revision !== 0 || detail.turns.length) continue
+          if (!persist) {
+            this.preparedConversation = detail
+            return detail.id
+          }
           this.current = detail; this.turns = []; this.selectedTurnId = ''; this.panel = 'chat'
           this.error = ''; this.errorCode = ''
           return detail.id
         }
         if (!persist) {
           // An unused local draft is not a saved conversation and consumes no list slot.
-          this.current = null; this.turns = []; this.selectedTurnId = ''; this.panel = 'chat'
-          this.error = ''; this.errorCode = ''
           return null
         }
         const conversation = await api.create()
@@ -69,7 +103,7 @@ export const useWorkbench = defineStore('workbench', {
       } catch (error) {
         if (token === this.loadToken) this.report(error)
         return createdId
-      } finally { this.creating = false }
+      } finally { if (persist) this.creating = false }
     },
     async send(message: string, expectedConversationId?: string, model?: string, attachments: ChatAttachment[] = []) {
       if (!this.current || this.running || this.creating || this.loading || !message.trim()) return

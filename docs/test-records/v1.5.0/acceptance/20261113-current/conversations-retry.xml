@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="25" time="16.459" timestamp="2026-11-13T08:08:12.872580+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_conversations" name="test_first_question_names_default_conversation_once_and_survives_follow_up" time="0.376" /><testcase classname="tests.test_conversations" name="test_automatic_title_preserves_custom_title_and_explicit_default_rename" time="0.297" /><testcase classname="tests.test_conversations" name="test_crud_complete_data_and_idempotency" time="0.344" /><testcase classname="tests.test_conversations" name="test_history_context_does_not_copy_new_results" time="0.212" /><testcase classname="tests.test_conversations" name="test_context_whole_turn_window_and_bytes" time="0.020" /><testcase classname="tests.test_conversations" name="test_same_agent_loop_and_historical_data_not_tool_messages" time="0.020" /><testcase classname="tests.test_conversations" name="test_restart_persistence_and_running_interrupted" time="0.167" /><testcase classname="tests.test_conversations" name="test_unknown_schema_rejected_without_overwrite" time="0.042" /><testcase classname="tests.test_conversations" name="test_migration_failure_rolls_back" time="0.031" /><testcase classname="tests.test_conversations" name="test_duplicate_process_and_multiworker_not_enabled" time="0.112" /><testcase classname="tests.test_conversations" name="test_concurrency_idempotent_running_and_global_slots" time="0.269"><failure message="AttributeError: 'ConversationRepository' object has no attribute 'get'">tmp_path = WindowsPath('C:/Users/lct/AppData/Local/Temp/pytest-of-lct/pytest-1/test_concurrency_idempotent_ru0')
+
+    def test_concurrency_idempotent_running_and_global_slots(tmp_path):
+        repository = ConversationRepository(LocalSettings(data_dir=tmp_path / "parallel"))
+        repository.initialize()
+        service = ConversationService(repository)
+        conversations = [repository.create(str(i)) for i in range(3)]
+        entered = threading.Barrier(3)
+        release = threading.Event()
+    
+        class Blocking:
+            def converse(self, message, context):
+                entered.wait(timeout=10)
+                assert release.wait(10)
+                return ChatResponse(status="success", answer="done")
+    
+        requests = [
+            TurnRequest(message="问题", client_request_id=str(uuid4()), expected_revision=0)
+            for _ in conversations
+        ]
+        try:
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                futures = [
+                    pool.submit(service.submit, conversations[i]["id"], requests[i], Blocking)
+                    for i in (0, 1)
+                ]
+                entered.wait(timeout=10)
+                repeated, status = service.submit(conversations[0]["id"], requests[0], Blocking)
+                assert status == 202 and repeated.execution_status == "running"
+                with pytest.raises(ServiceError) as error:
+                    service.submit(conversations[2]["id"], requests[2], Blocking)
+                assert error.value.error.code == "conversation_service_busy"
+                with pytest.raises(ServiceError) as error:
+                    repository.delete(conversations[0]["id"])
+                assert error.value.error.code == "conversation_busy"
+                renamed = repository.rename(conversations[0]["id"], "manual title")
+                assert renamed["title"] == "manual title"
+                release.set()
+                assert all(f.result(timeout=10)[0].execution_status == "completed" for f in futures)
+&gt;               assert repository.get(conversations[0]["id"])["title"] == "manual title"
+                       ^^^^^^^^^^^^^^
+E               AttributeError: 'ConversationRepository' object has no attribute 'get'
+
+tests\test_conversations.py:297: AttributeError</failure></testcase><testcase classname="tests.test_conversations" name="test_model_failure_saved_and_retries_not_charged" time="0.235" /><testcase classname="tests.test_conversations" name="test_limits_and_large_results_are_not_silently_truncated" time="0.208" /><testcase classname="tests.test_conversations" name="test_storage_budget_and_commit_fault" time="0.203" /><testcase classname="tests.test_conversations" name="test_artifact_preview_same_zip_cache_and_delete" time="1.269" /><testcase classname="tests.test_conversations" name="test_artifact_expiry_capacity_and_snapshot_limit" time="1.044" /><testcase classname="tests.test_conversations" name="test_new_input_contracts[body0]" time="0.226" /><testcase classname="tests.test_conversations" name="test_new_input_contracts[body1]" time="0.171" /><testcase classname="tests.test_conversations" name="test_new_input_contracts[body2]" time="0.203" /><testcase classname="tests.test_conversations" name="test_host_origin_cors_json_stream_and_ownership" time="0.525" /><testcase classname="tests.test_conversations" name="test_storage_unavailable_does_not_break_old_routes" time="1.620" /><testcase classname="tests.test_conversations" name="test_legacy_chat_shares_global_model_slots" time="0.121" /><testcase classname="tests.test_conversations" name="test_corrupted_preview_is_not_served_as_png" time="0.575" /><testcase classname="tests.test_conversations" name="test_invalid_local_settings_keep_health_and_refuse_network_directory" time="0.050" /><testcase classname="tests.test_conversations" name="test_rename_cannot_bypass_business_content_budget" time="0.208" /></testsuite></testsuites>

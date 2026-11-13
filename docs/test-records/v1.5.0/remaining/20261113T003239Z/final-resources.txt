@@ -1,0 +1,14 @@
+astroagent-v15-frontend-1 0.00% 19.64MiB / 256MiB
+astroagent-v15-ingress-1 0.00% 21.57MiB / 128MiB
+astroagent-v15-backend-1 0.20% 159.6MiB / 4GiB
+astroagent-v15-plot-executor-1 0.02% 56.07MiB / 512MiB
+astroagent-v15-postgres-1 0.00% 49.18MiB / 1GiB
+astroagent-v15-ollama-1 0.00% 246.3MiB / 5GiB
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          21        7         13.99GB   1.471GB (10%)
+Containers      6         6         86.02kB   0B (0%)
+Local Volumes   3         3         2.565GB   0B (0%)
+Build Cache     232       0         6.572GB   1.719GB
+{
+  "Free": 58528964608
+}

@@ -1,0 +1,10 @@
+# Optional NVIDIA GPU access for Ollama only; CPU is the base deployment.
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

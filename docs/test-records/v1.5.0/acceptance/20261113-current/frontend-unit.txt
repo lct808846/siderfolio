@@ -1,0 +1,34 @@
+
+> astroagent-workbench@1.5.0-dev.0 test
+> vitest run
+
+
+ RUN  v3.2.4 D:/project/astroagent/frontend
+
+ ✓ tests/unit/projects-api.test.ts (3 tests) 23ms
+ ✓ tests/unit/api.test.ts (7 tests) 48ms
+ ✓ tests/unit/conversation-tools.test.ts (5 tests) 21ms
+ ✓ tests/unit/markdown-answer.test.ts (3 tests) 109ms
+stderr | tests/unit/workbench.test.ts > shows empty results and never interprets unsafe answer content as HTML
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <ResultPanel turn= {
+  conversation_id: 'c',
+  turn_id: 't',
+  revision: 1,
+  client_request_id: 'key',
+  message: '',
+  received_at: '',
+  execution_status: 'completed',
+  response: { status: 'success', answer: '', results: [ [Object] ] }
+} historical=true ref="VTU_COMPONENT" > 
+  at <VTUROOT>
+
+ ✓ tests/unit/workbench.test.ts (11 tests) 156ms
+ ✓ tests/unit/user-message.test.ts (4 tests) 105ms
+
+ Test Files  6 passed (6)
+      Tests  33 passed (33)
+   Start at  08:06:25
+   Duration  10.14s (transform 2.18s, setup 0ms, collect 5.73s, tests 461ms, environment 32.01s, prepare 4.86s)
+

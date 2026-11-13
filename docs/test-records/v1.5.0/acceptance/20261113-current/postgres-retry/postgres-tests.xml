@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="31" failures="0" skipped="1" tests="32" time="1.493" timestamp="2026-11-13T08:24:23.270738+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_plot_postgres" name="test_plot_lifecycle_confirmations_and_export" time="0.003"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_conversation_crud_uses_postgres_parameter_binding" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_first_question_title_is_saved_with_postgres_turn_reservation" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_unmatched_literal_preview_cannot_send_nearest_neighbours" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_confirmation_idempotency_and_deleted_request_never_resends" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_selected_model_and_previewed_evidence_are_frozen_for_confirmation" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_scope_changed_original_never_sends" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_rag_postgres" name="test_format5_restores_fixed_citations_with_new_ids" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_migration_postgres" name="test_sqlite5_migrates_without_changing_source_and_refuses_replay" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_unverified_model_output_is_not_exposed[{&quot;answer&quot;:&quot;unsupported [E99]&quot;,&quot;citations&quot;:[&quot;E99&quot;],&quot;insufficient_evidence&quot;:false}]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_unverified_model_output_is_not_exposed[{&quot;answer&quot;:&quot;unsupported [E1]&quot;,&quot;citations&quot;:[],&quot;insufficient_evidence&quot;:false}]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_unverified_model_output_is_not_exposed[{&quot;answer&quot;:&quot;&lt;script&gt;alert(1)&lt;/script&gt; [E1]&quot;,&quot;citations&quot;:[&quot;E1&quot;],&quot;insufficient_evidence&quot;:false}]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_unverified_model_output_is_not_exposed[{&quot;answer&quot;:&quot;untrusted https://example.invalid [E1]&quot;,&quot;citations&quot;:[&quot;E1&quot;],&quot;insufficient_evidence&quot;:false}]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_unverified_model_output_is_not_exposed[{&quot;answer&quot;:&quot;false claim [E1]&quot;,&quot;citations&quot;:[&quot;E1&quot;],&quot;insufficient_evidence&quot;:true}]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_no_results_and_cross_project_scope_do_not_send" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_model_failures_do_not_expose_unverified_text[invalid_json]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_model_failures_do_not_expose_unverified_text[truncated]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_model_failures_do_not_expose_unverified_text[timeout]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_corrupt_format5_archive_is_rejected_atomically[unknown_member]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_corrupt_format5_archive_is_rejected_atomically[duplicate_answer]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_corrupt_format5_archive_is_rejected_atomically[invalid_label]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_corrupt_format5_archive_is_rejected_atomically[bad_hash]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_index_request_is_idempotent_and_changed_body_conflicts" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_expired_preview_never_calls_model" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_cancel_preview_deletes_it_and_prevents_send[json]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_cancel_preview_deletes_it_and_prevents_send[bodyless]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_postgres_logical_storage_limit_preserves_original" time="0.000"><skipped type="pytest.skip" message="explicit opt-in for a 256 MiB logical PostgreSQL payload">D:\project\astroagent\tests\test_v10_rag_boundaries.py:277: explicit opt-in for a 256 MiB logical PostgreSQL payload</skipped></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_metadata_archive_preserves_history_without_original_or_model_calls" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_deleted_answer_history_still_blocks_old_format_export" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_second_process_lock_is_rejected_without_disturbing_first" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_lost_lock_session_disables_business_access" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase><testcase classname="tests.test_v10_rag_boundaries" name="test_unknown_database_schema_is_refused_without_change" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'&quot;">self = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/astroagent-qa-cba27ad332')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\astroagent-qa-cba27ad332'
+
+E:\miniconda3\envs\agent\Lib\pathlib.py:1311: FileNotFoundError</error></testcase></testsuite></testsuites>

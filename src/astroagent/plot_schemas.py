@@ -46,6 +46,12 @@ class SnapshotDatasetRequest(Contract):
     query_index: int = Field(default=0, ge=0, le=11)
 
 
+class TurnDatasetRequest(Contract):
+    conversation_id: Identifier
+    turn_id: Identifier
+    query_index: int = Field(default=0, ge=0, le=11)
+
+
 class PlotProposal(Contract):
     engine: Engine
     chart: Literal["scatter", "line", "histogram", "errorbar"]
@@ -68,12 +74,21 @@ class PlotProposal(Contract):
         return self
 
 
+class PlotAppearance(Contract):
+    width: int = Field(default=1600, ge=1200, le=2400)
+    font_size: int = Field(default=12, ge=10, le=18)
+    labels: Literal["none", "row_number"] = "none"
+    x_label: str = Field(default="", max_length=80)
+    y_label: str = Field(default="", max_length=80)
+
+
 class PlotPlanRequest(Contract):
     dataset_id: Identifier
     model_id: str = Field(min_length=1, max_length=128)
     engine: Literal["auto", "python", "gnuplot"] = "auto"
     question: str = Field(min_length=1, max_length=4000)
     confirm_external_data: Literal[True]
+    appearance: PlotAppearance = Field(default_factory=PlotAppearance)
 
 
 class PlotRunRequest(Contract):

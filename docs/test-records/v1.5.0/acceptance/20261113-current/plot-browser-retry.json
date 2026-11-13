@@ -1,0 +1,313 @@
+{
+  "config": {
+    "argv": [
+      "E:\\nodejs\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.acceptance-current.ts",
+      "plot-acceptance.spec.ts"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.acceptance-current.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/project/astroagent/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\frontend\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\frontend\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:15173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../docs/test-records/v1.5.0/acceptance/20261113-current/plot-browser-retry.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "plot-acceptance.spec.ts",
+      "file": "plot-acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "plot workflow requires confirmations before model and execution",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6046,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: '实际绘图脚本' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: '实际绘图脚本' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: '实际绘图脚本' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: '实际绘图脚本' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts:46:63",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                      "column": 63,
+                      "line": 46
+                    },
+                    "snippet": "  44 |   await page.getByRole('button', { name: '生成绘图方案' }).click()\n  45 |   await page.locator('summary').filter({ hasText: '实际绘图脚本' }).click()\n> 46 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()\n     |                                                               ^\n  47 |   expect(plans).toBe(1)\n  48 |   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()\n  49 |   expect(runs).toBe(0)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                        "column": 63,
+                        "line": 46
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: '实际绘图脚本' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: '实际绘图脚本' })\u001b[22m\n\n\n  44 |   await page.getByRole('button', { name: '生成绘图方案' }).click()\n  45 |   await page.locator('summary').filter({ hasText: '实际绘图脚本' }).click()\n> 46 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()\n     |                                                               ^\n  47 |   expect(plans).toBe(1)\n  48 |   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()\n  49 |   expect(runs).toBe(0)\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts:46:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T00:21:07.661Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                    "column": 63,
+                    "line": 46
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "8a191b024618097f7a79-dbc25dda554259f48e40",
+          "file": "plot-acceptance.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "plot workflow requires confirmations before model and execution",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6159,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: '实际绘图脚本' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: '实际绘图脚本' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: '实际绘图脚本' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: '实际绘图脚本' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts:46:63",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                      "column": 63,
+                      "line": 46
+                    },
+                    "snippet": "  44 |   await page.getByRole('button', { name: '生成绘图方案' }).click()\n  45 |   await page.locator('summary').filter({ hasText: '实际绘图脚本' }).click()\n> 46 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()\n     |                                                               ^\n  47 |   expect(plans).toBe(1)\n  48 |   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()\n  49 |   expect(runs).toBe(0)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                        "column": 63,
+                        "line": 46
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: '实际绘图脚本' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: '实际绘图脚本' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: '实际绘图脚本' })\u001b[22m\n\n\n  44 |   await page.getByRole('button', { name: '生成绘图方案' }).click()\n  45 |   await page.locator('summary').filter({ hasText: '实际绘图脚本' }).click()\n> 46 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()\n     |                                                               ^\n  47 |   expect(plans).toBe(1)\n  48 |   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()\n  49 |   expect(runs).toBe(0)\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts:46:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T00:21:14.980Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-edge\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                    "column": 63,
+                    "line": 46
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "8a191b024618097f7a79-0572dda88a34be26341c",
+          "file": "plot-acceptance.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-13T00:21:00.391Z",
+    "duration": 22327.924,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

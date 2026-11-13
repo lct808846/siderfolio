@@ -17,6 +17,7 @@ from astroagent.api.exports import router as exports_router
 from astroagent.api.health import router as health_router
 from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
+from astroagent.api.local_assistant import router as local_assistant_router
 from astroagent.api.models import router as models_router
 from astroagent.api.plotting import router as plotting_router
 from astroagent.api.projects import router as projects_router
@@ -53,6 +54,9 @@ async def lifespan(app):
     try:
         yield
     finally:
+        active_service = getattr(app.state, "conversation_service", None)
+        if active_service is not None and active_service.local_assistant is not None:
+            active_service.local_assistant.close()
         app.state.conversation_service = None
         active = getattr(app.state, "repository", repository)
         if active is not None:
@@ -74,6 +78,7 @@ app.include_router(rag_router)
 app.include_router(setup_router)
 app.include_router(models_router)
 app.include_router(plotting_router)
+app.include_router(local_assistant_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 
@@ -119,7 +124,13 @@ async def service_error_handler(request: Request, exc: ServiceError):
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(request: Request, exc: RequestValidationError):
     if request.url.path.startswith(
-        ("/api/v1/conversations", "/api/v1/artifacts", "/api/v1/projects", "/api/v1/setup")
+        (
+            "/api/v1/conversations",
+            "/api/v1/artifacts",
+            "/api/v1/projects",
+            "/api/v1/setup",
+            "/api/v1/local-assistant",
+        )
     ):
         return JSONResponse(
             status_code=422,

@@ -1,0 +1,85 @@
+[WebServer] INFO:     Started server process [24500]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:13264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+(node:23704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (10.9s)
+  ok 2 [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (5.8s)
+  x  3 [chromium] › tests\browser\workflows.spec.ts:54:1 › failed workflow resumes only after confirmation and retains attempts (3.6s)
+(node:40908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (11.4s)
+  ok 5 [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (6.3s)
+  x  6 [edge] › tests\browser\workflows.spec.ts:54:1 › failed workflow resumes only after confirmation and retains attempts (3.1s)
+
+
+  1) [chromium] › tests\browser\workflows.spec.ts:54:1 › failed workflow resumes only after confirmation and retains attempts 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "failed"
+    Received: undefined
+
+      71 |     await page.getByRole('button', { name: '取消', exact: true }).click()
+      72 |     const before = await (await request.get(`/api/v1/projects/${project.id}/workflows/${runId}`)).json()
+    > 73 |     expect(before.state).toBe('failed')
+         |                          ^
+      74 |     await page.getByRole('button', { name: '核对并继续' }).click()
+      75 |     await page.getByRole('button', { name: '确认执行' }).click()
+      76 |     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\workflows.spec.ts:73:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\workflows.spec.ts:54:1 › failed workflow resumes only after confirmation and retains attempts 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "failed"
+    Received: undefined
+
+      71 |     await page.getByRole('button', { name: '取消', exact: true }).click()
+      72 |     const before = await (await request.get(`/api/v1/projects/${project.id}/workflows/${runId}`)).json()
+    > 73 |     expect(before.state).toBe('failed')
+         |                          ^
+      74 |     await page.getByRole('button', { name: '核对并继续' }).click()
+      75 |     await page.getByRole('button', { name: '确认执行' }).click()
+      76 |     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\workflows.spec.ts:73:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\workflows.spec.ts:54:1 › failed workflow resumes only after confirmation and retains attempts 
+    [edge] › tests\browser\workflows.spec.ts:54:1 › failed workflow resumes only after confirmation and retains attempts 
+  4 passed (1.1m)

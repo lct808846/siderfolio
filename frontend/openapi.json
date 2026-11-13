@@ -4334,6 +4334,437 @@
         "title": "LiteratureSearchResult",
         "type": "object"
       },
+      "LocalClear": {
+        "additionalProperties": false,
+        "properties": {
+          "confirm_clear_records": {
+            "const": true,
+            "title": "Confirm Clear Records",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "confirm_clear_records"
+        ],
+        "title": "LocalClear",
+        "type": "object"
+      },
+      "LocalInitialize": {
+        "additionalProperties": false,
+        "properties": {
+          "confirm_create_tables": {
+            "const": true,
+            "title": "Confirm Create Tables",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "confirm_create_tables"
+        ],
+        "title": "LocalInitialize",
+        "type": "object"
+      },
+      "LocalPreferenceUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "auto_titles": {
+            "title": "Auto Titles",
+            "type": "boolean"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "expected_revision": {
+            "minimum": 0.0,
+            "title": "Expected Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "expected_revision",
+          "enabled",
+          "auto_titles"
+        ],
+        "title": "LocalPreferenceUpdate",
+        "type": "object"
+      },
+      "LocalPreferences": {
+        "additionalProperties": false,
+        "properties": {
+          "auto_titles": {
+            "default": false,
+            "title": "Auto Titles",
+            "type": "boolean"
+          },
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "revision": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "title": "LocalPreferences",
+        "type": "object"
+      },
+      "LocalProbe": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "LocalProbe",
+        "type": "object"
+      },
+      "LocalStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "model_digest": {
+            "title": "Model Digest",
+            "type": "string"
+          },
+          "parameter_size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter Size"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/LocalPreferences"
+          },
+          "quantization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantization"
+          },
+          "queue_length": {
+            "default": 0,
+            "title": "Queue Length",
+            "type": "integer"
+          },
+          "resource_hint": {
+            "default": "约4B参数的本地模型；实际内存、显存、速度和生成质量需在本机验收。",
+            "title": "Resource Hint",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "disabled",
+              "unavailable",
+              "model_missing",
+              "identity_mismatch",
+              "ready",
+              "busy"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "storage_ready": {
+            "title": "Storage Ready",
+            "type": "boolean"
+          },
+          "title_max_characters": {
+            "default": 18,
+            "title": "Title Max Characters",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "state",
+          "storage_ready",
+          "configured",
+          "preferences",
+          "model",
+          "model_digest",
+          "message"
+        ],
+        "title": "LocalStatus",
+        "type": "object"
+      },
+      "LocalTask": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "title",
+              "summary",
+              "format",
+              "extract"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "automatic": {
+            "title": "Automatic",
+            "type": "boolean"
+          },
+          "baseline_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Title"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "input_characters": {
+            "title": "Input Characters",
+            "type": "integer"
+          },
+          "input_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Sha256",
+            "type": "string"
+          },
+          "input_truncated": {
+            "title": "Input Truncated",
+            "type": "boolean"
+          },
+          "membership": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membership"
+          },
+          "metadata_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata Revision"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "model_digest": {
+            "title": "Model Digest",
+            "type": "string"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output"
+          },
+          "output_available": {
+            "default": false,
+            "title": "Output Available",
+            "type": "boolean"
+          },
+          "preferences_revision": {
+            "title": "Preferences Revision",
+            "type": "integer"
+          },
+          "request_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Request Sha256",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "interrupted",
+              "superseded",
+              "skipped"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "title_applied": {
+            "default": false,
+            "title": "Title Applied",
+            "type": "boolean"
+          },
+          "turn_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Id"
+          },
+          "usage": {
+            "additionalProperties": true,
+            "title": "Usage",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "automatic",
+          "state",
+          "created_at",
+          "input_sha256",
+          "input_characters",
+          "input_truncated",
+          "model",
+          "model_digest",
+          "preferences_revision",
+          "request_sha256"
+        ],
+        "title": "LocalTask",
+        "type": "object"
+      },
+      "LocalTaskRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "title",
+              "summary",
+              "format",
+              "extract"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "output_format": {
+            "default": "bullets",
+            "enum": [
+              "paragraph",
+              "bullets",
+              "markdown"
+            ],
+            "title": "Output Format",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "text"
+        ],
+        "title": "LocalTaskRequest",
+        "type": "object"
+      },
+      "LocalTaskView": {
+        "additionalProperties": false,
+        "properties": {
+          "task": {
+            "$ref": "#/components/schemas/LocalTask"
+          },
+          "warning": {
+            "default": "本地助手结果可能遗漏信息，请自行核对；文本按原文重建，建议不会自动执行工具。",
+            "title": "Warning",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "LocalTaskView",
+        "type": "object"
+      },
       "Membership": {
         "additionalProperties": false,
         "properties": {
@@ -4584,6 +5015,48 @@
           "source"
         ],
         "title": "PaperData",
+        "type": "object"
+      },
+      "PlotAppearance": {
+        "additionalProperties": false,
+        "properties": {
+          "font_size": {
+            "default": 12,
+            "maximum": 18.0,
+            "minimum": 10.0,
+            "title": "Font Size",
+            "type": "integer"
+          },
+          "labels": {
+            "default": "none",
+            "enum": [
+              "none",
+              "row_number"
+            ],
+            "title": "Labels",
+            "type": "string"
+          },
+          "width": {
+            "default": 1600,
+            "maximum": 2400.0,
+            "minimum": 1200.0,
+            "title": "Width",
+            "type": "integer"
+          },
+          "x_label": {
+            "default": "",
+            "maxLength": 80,
+            "title": "X Label",
+            "type": "string"
+          },
+          "y_label": {
+            "default": "",
+            "maxLength": 80,
+            "title": "Y Label",
+            "type": "string"
+          }
+        },
+        "title": "PlotAppearance",
         "type": "object"
       },
       "PlotDataPreview": {
@@ -4907,6 +5380,9 @@
       "PlotPlanRequest": {
         "additionalProperties": false,
         "properties": {
+          "appearance": {
+            "$ref": "#/components/schemas/PlotAppearance"
+          },
           "confirm_external_data": {
             "const": true,
             "title": "Confirm External Data",
@@ -6834,6 +7310,15 @@
             ],
             "title": "Database Version"
           },
+          "deployment_mode": {
+            "default": "native",
+            "enum": [
+              "native",
+              "container"
+            ],
+            "title": "Deployment Mode",
+            "type": "string"
+          },
           "embedding_configured": {
             "title": "Embedding Configured",
             "type": "boolean"
@@ -7654,6 +8139,34 @@
         "title": "Turn",
         "type": "object"
       },
+      "TurnDatasetRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "conversation_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "query_index": {
+            "default": 0,
+            "maximum": 11.0,
+            "minimum": 0.0,
+            "title": "Query Index",
+            "type": "integer"
+          },
+          "turn_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Turn Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id",
+          "turn_id"
+        ],
+        "title": "TurnDatasetRequest",
+        "type": "object"
+      },
       "TurnFailureResponse": {
         "properties": {
           "conversation_id": {
@@ -8466,7 +8979,7 @@
   },
   "info": {
     "title": "AstroAgent",
-    "version": "1.3.0"
+    "version": "1.5.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -9296,6 +9809,93 @@
         ]
       }
     },
+    "/api/v1/conversations/{conversation_id}/local-title": {
+      "get": {
+        "operationId": "title_state_api_v1_conversations__conversation_id__local_title_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Conversation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LocalTaskView"
+                  },
+                  "title": "Response Title State Api V1 Conversations  Conversation Id  Local Title Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Title State",
+        "tags": [
+          "local-assistant"
+        ]
+      }
+    },
     "/api/v1/conversations/{conversation_id}/turns": {
       "post": {
         "operationId": "submit_api_v1_conversations__conversation_id__turns_post",
@@ -9724,6 +10324,575 @@
         "summary": "导出完整客户端查询快照与可选 Gaia 图表",
         "tags": [
           "exports"
+        ]
+      }
+    },
+    "/api/v1/local-assistant": {
+      "get": {
+        "operationId": "status_api_v1_local_assistant_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Status",
+        "tags": [
+          "local-assistant"
+        ]
+      }
+    },
+    "/api/v1/local-assistant/clear": {
+      "post": {
+        "operationId": "clear_api_v1_local_assistant_clear_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalClear"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Clear",
+        "tags": [
+          "local-assistant"
+        ]
+      }
+    },
+    "/api/v1/local-assistant/initialize": {
+      "post": {
+        "operationId": "initialize_api_v1_local_assistant_initialize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalInitialize"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Initialize",
+        "tags": [
+          "local-assistant"
+        ]
+      }
+    },
+    "/api/v1/local-assistant/jobs/{task_id}": {
+      "get": {
+        "operationId": "task_api_v1_local_assistant_jobs__task_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalTaskView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Task",
+        "tags": [
+          "local-assistant"
+        ]
+      },
+      "put": {
+        "operationId": "submit_api_v1_local_assistant_jobs__task_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalTaskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalTaskView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Submit",
+        "tags": [
+          "local-assistant"
+        ]
+      }
+    },
+    "/api/v1/local-assistant/preferences": {
+      "put": {
+        "operationId": "preferences_api_v1_local_assistant_preferences_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalPreferenceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Preferences",
+        "tags": [
+          "local-assistant"
+        ]
+      }
+    },
+    "/api/v1/local-assistant/probe": {
+      "post": {
+        "operationId": "probe_api_v1_local_assistant_probe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalProbe"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Probe",
+        "tags": [
+          "local-assistant"
         ]
       }
     },
@@ -13372,6 +14541,109 @@
           }
         },
         "summary": "Snapshot",
+        "tags": [
+          "plotting"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/plotting/datasets/{dataset_id}/turn": {
+      "put": {
+        "operationId": "turn_api_v1_projects__project_id__plotting_datasets__dataset_id__turn_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TurnDatasetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlotDataset"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Turn",
         "tags": [
           "plotting"
         ]

@@ -59,7 +59,7 @@ test('IME composition, explicit examples, plain text literature, rename and dele
   await expect(page.getByRole('heading', { name: '我的文献核查' })).toBeVisible()
   await page.locator('.conversation-row.selected').getByRole('button', { name: /会话操作：/ }).click()
   await page.getByRole('menuitem', { name: '删除会话' }).click(); await expect(page.getByRole('dialog')).toBeVisible()
-  await page.getByRole('button', { name: '确认删除' }).click(); await expect(page).toHaveURL('http://127.0.0.1:5173/')
+  await page.getByRole('button', { name: '确认删除' }).click(); await expect(page).toHaveURL(new URL('/', page.url()).href)
 })
 
 test('narrow viewport has usable panel navigation and no page overflow', async ({ page }, testInfo) => {
@@ -120,11 +120,11 @@ test('a late initial list does not clear a send error after navigation', async (
   } finally { release() }
 })
 
-test('local static proxy keeps its API target and never returns SPA HTML for API errors', async ({ request }) => {
+test('local static proxy keeps its API target and never returns SPA HTML for API errors', async ({ request, baseURL }) => {
   const missing = await request.get('/api/v1/nonexistent')
   expect(missing.status()).toBe(404); expect(missing.headers()['content-type']).toContain('application/json')
   const response = await new Promise<{status:number;body:string}>(resolve => {
-    http.get({ host: '127.0.0.1', port: 5173, path: '//example.invalid/api/v1/conversations' }, reply => {
+    http.get({ host: '127.0.0.1', port: Number(new URL(baseURL!).port), path: '//example.invalid/api/v1/conversations' }, reply => {
       let body = ''; reply.on('data', chunk => body += chunk); reply.on('end', () => resolve({ status: reply.statusCode || 0, body }))
     })
   })

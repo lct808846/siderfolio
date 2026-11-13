@@ -262,7 +262,7 @@ def parse_result(body: bytes, query: GaiaQuery, maxrec: int):
 
 
 class GaiaService:
-    def __init__(self, timeout: float = 20, *, session=None):
+    def __init__(self, timeout: float = 45, *, session=None):
         self.timeout = timeout
         self._session = session  # Injected only by offline tests; construction never accesses TAP.
 
@@ -306,7 +306,7 @@ class GaiaService:
                     "QUERY": adql,
                     "MAXREC": maxrec,
                 },
-                timeout=(self.timeout, self.timeout),
+                timeout=(min(10, self.timeout), self.timeout),
                 allow_redirects=False,
                 stream=True,
             )
@@ -353,13 +353,15 @@ class GaiaService:
         except TapQueryError:
             return failure("gaia_query_failed", "Gaia TAP 报告查询失败，请检查固定模板。")
         except requests.Timeout:
-            return failure("gaia_timeout", "Gaia 查询超时，请稍后重试。", True)
+            return failure("gaia_timeout", "Gaia 查询超时，本次未取得数据；请稍后手动重试。", True)
         except requests.ConnectionError as exc:
             # requests wraps urllib3 ReadTimeoutError in ConnectionError during iter_content.
             from urllib3.exceptions import ReadTimeoutError
 
             if exc.args and isinstance(exc.args[0], ReadTimeoutError):
-                return failure("gaia_timeout", "Gaia 读取超时，请稍后重试。", True)
+                return failure(
+                    "gaia_timeout", "Gaia 读取超时，本次未取得完整数据；请稍后手动重试。", True
+                )
             return failure("gaia_unavailable", "无法连接 Gaia 服务，请稍后重试。", True)
         except requests.RequestException:
             return failure("gaia_unavailable", "无法连接 Gaia 服务，请稍后重试。", True)

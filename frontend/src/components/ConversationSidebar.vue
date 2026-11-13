@@ -9,7 +9,61 @@ import type { Conversation } from '../types'
 const emit = defineEmits<{ create: []; removed: [ids: string[]] }>()
 const store = useWorkbench(), router = useRouter(), route = useRoute()
 const pins = ref<string[]>(readPinnedConversations()), selecting = ref(false), selected = ref<string[]>([])
+const selectionToggle = ref<HTMLButtonElement | null>(null), selectionExit = ref<HTMLButtonElement | null>(null)
 const busy = ref(false), message = ref(''), error = ref('')
+const scrolling = ref(false)
+const listScroller = ref<HTMLElement | null>(null), listContent = ref<HTMLElement | null>(null)
+const scrollMetrics = ref({ height: 0, content: 0, offset: 0 }), draggingScrollbar = ref(false)
+const listScrollable = computed(() => scrollMetrics.value.content > scrollMetrics.value.height + 1)
+const thumbHeight = computed(() => {
+  const { height, content } = scrollMetrics.value
+  return Math.min(height, Math.max(32, Math.min(96, height * height / Math.max(1, content))))
+})
+const thumbTop = computed(() => {
+  const { height, content, offset } = scrollMetrics.value
+  return Math.max(0, Math.min(height - thumbHeight.value, offset / Math.max(1, content - height) * (height - thumbHeight.value)))
+})
+let listObserver: ResizeObserver | undefined
+let scrollDrag: { pointer: number; y: number; offset: number } | null = null
+let scrollTimer: ReturnType<typeof setTimeout> | undefined
+function measureList() {
+  const element = listScroller.value
+  if (element) scrollMetrics.value = { height: element.clientHeight, content: element.scrollHeight, offset: element.scrollTop }
+}
+function revealScrollbar() {
+  measureList()
+  scrolling.value = true
+  clearTimeout(scrollTimer)
+  scrollTimer = setTimeout(() => { scrolling.value = false }, 900)
+}
+function beginScrollDrag(event: PointerEvent) {
+  const element = listScroller.value
+  if (event.button !== 0 || !element) return
+  event.preventDefault()
+  const rail = event.currentTarget as HTMLElement
+  measureList()
+  if (!(event.target instanceof Element && event.target.closest('.history-scroll-thumb'))) {
+    const travel = scrollMetrics.value.height - thumbHeight.value
+    element.scrollTop = Math.max(0, event.clientY - rail.getBoundingClientRect().top - thumbHeight.value / 2) / Math.max(1, travel) * (element.scrollHeight - element.clientHeight)
+  }
+  scrollDrag = { pointer: event.pointerId, y: event.clientY, offset: element.scrollTop }
+  draggingScrollbar.value = true
+  rail.setPointerCapture(event.pointerId)
+  revealScrollbar()
+}
+function moveScrollDrag(event: PointerEvent) {
+  if (!scrollDrag || scrollDrag.pointer !== event.pointerId || !listScroller.value) return
+  const { height, content } = scrollMetrics.value
+  listScroller.value.scrollTop = scrollDrag.offset + (event.clientY - scrollDrag.y) / Math.max(1, height - thumbHeight.value) * (content - height)
+  revealScrollbar()
+}
+function endScrollDrag(event: PointerEvent) {
+  if (!scrollDrag || scrollDrag.pointer !== event.pointerId) return
+  scrollDrag = null; draggingScrollbar.value = false
+  const rail = event.currentTarget as HTMLElement
+  if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId)
+  revealScrollbar()
+}
 const menuId = ref(''), menu = ref<HTMLElement | null>(null), menuPosition = ref({ left: '0px', top: '0px' })
 const dialog = ref<HTMLDialogElement | null>(null), action = ref<'' | 'rename' | 'delete' | 'export'>('')
 const targets = ref<Conversation[]>([]), title = ref('')
@@ -73,11 +127,25 @@ async function openDialog(kind: 'rename' | 'delete' | 'export', values?: Convers
   await nextTick()
   dialog.value?.showModal()
 }
-function startSelection() {
-  selected.value = [menuId.value]; selecting.value = true; closeMenu()
+async function enterSelection(ids: string[] = []) {
+  selected.value = ids; selecting.value = true; closeMenu(false)
+  await nextTick()
+  selectionExit.value?.focus({ preventScroll: true })
 }
-function stopSelection() { selecting.value = false; selected.value = [] }
-function selectAll() { selected.value = conversations.value.map(value => value.id) }
+function startSelection() { void enterSelection(menuId.value ? [menuId.value] : []) }
+function stopSelection() {
+  selecting.value = false; selected.value = []
+  void nextTick(() => selectionToggle.value?.focus({ preventScroll: true }))
+}
+function chooseConversation(id: string) {
+  if (selecting.value) selected.value = selected.value.includes(id) ? selected.value.filter(value => value !== id) : [...selected.value, id]
+  else void router.push(`/conversations/${id}`)
+}
+const selectionPinned = computed(() => selected.value.length > 0 && selected.value.every(id => pins.value.includes(id)))
+function pinSelected() {
+  if (!selected.value.length || locked.value) return
+  persistPins(selectionPinned.value ? pins.value.filter(id => !selected.value.includes(id)) : [...selected.value, ...pins.value.filter(id => !selected.value.includes(id))])
+}
 function deleteSelected() { void openDialog('delete', conversations.value.filter(value => selected.value.includes(value.id))) }
 function closeDialog() { if (!busy.value) dialog.value?.close() }
 
@@ -128,11 +196,18 @@ watch(() => store.conversations, items => {
   if (menuId.value && !items.some(item => item.id === menuId.value)) closeMenu(false)
 })
 onMounted(() => {
+  listObserver = new ResizeObserver(measureList)
+  if (listScroller.value) listObserver.observe(listScroller.value)
+  if (listContent.value) listObserver.observe(listContent.value)
+  measureList()
   document.addEventListener('pointerdown', outside)
   window.addEventListener('resize', dismissMenu)
   window.addEventListener('scroll', dismissMenu, true)
 })
 onBeforeUnmount(() => {
+  listObserver?.disconnect()
+  scrollDrag = null
+  clearTimeout(scrollTimer)
   document.removeEventListener('pointerdown', outside)
   window.removeEventListener('resize', dismissMenu)
   window.removeEventListener('scroll', dismissMenu, true)
@@ -141,26 +216,45 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <aside class="history-panel" aria-label="会话列表">
-    <div class="history-title"><span class="eyebrow">会话</span><span class="small muted">{{ store.conversations.length }}/20</span></div>
-    <button class="new-conversation" :disabled="locked || store.loading || store.running || !!store.disconnectedRequest" @click="emit('create')"><span aria-hidden="true">＋</span>{{ store.creating ? '正在准备…' : '新建会话' }}</button>
-    <div class="history-list-heading"><p class="history-label">本地会话</p><button v-if="store.conversations.length && !selecting" class="history-manage" :disabled="locked" @click="selecting=true">多选</button></div>
-    <div v-if="selecting" class="conversation-selection" aria-label="批量管理会话">
-      <p>已选 {{ selected.length }} 个会话</p><div><button :disabled="locked" @click="selectAll">全选</button><button :disabled="locked" @click="stopSelection">取消</button><button class="selection-delete" :disabled="locked || !selected.length || store.running" @click="deleteSelected">删除所选</button></div>
+  <aside class="history-panel" :class="{ 'is-selecting': selecting, 'is-scrolling': scrolling, 'is-dragging-scrollbar': draggingScrollbar }" aria-label="会话列表" @keydown.esc="selecting && stopSelection()">
+    <div class="history-top">
+      <Transition name="history-mode">
+        <button v-if="!selecting" key="create" class="new-conversation" :inert="selecting" :disabled="locked || store.loading || store.running || !!store.disconnectedRequest" @click="emit('create')"><span aria-hidden="true">＋</span>{{ store.creating ? '正在准备…' : '新建会话' }}</button>
+        <div v-else key="selection" class="history-selection-heading" :inert="!selecting"><span>选择会话 <small>{{ selected.length ? `已选 ${selected.length} 个` : '' }}</small></span><button ref="selectionExit" class="history-icon-button" :disabled="locked" aria-label="退出多选" data-tooltip="退出多选" @click="stopSelection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button></div>
+      </Transition>
     </div>
-    <p v-if="message" class="sidebar-feedback" role="status">{{ message }}</p>
-    <p v-if="error && !dialog?.open" class="sidebar-feedback danger" role="alert">{{ error }}</p>
-    <nav class="conversation-list" aria-label="本地会话">
-      <div v-for="conversation in conversations" :key="conversation.id" class="conversation-row" :class="{selected:store.current?.id===conversation.id}">
-        <input v-if="selecting" v-model="selected" type="checkbox" :value="conversation.id" :aria-label="`选择会话 ${conversation.title}`" :disabled="locked">
-        <button class="conversation-item" :class="{selected:store.current?.id===conversation.id}" :aria-current="store.current?.id===conversation.id ? 'page' : undefined" :disabled="locked" @click="router.push(`/conversations/${conversation.id}`)">
-          <span class="conversation-symbol" aria-hidden="true">◌</span><span><b>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
-        </button>
-        <button v-if="!selecting" class="conversation-more" data-tooltip="" :aria-label="`会话操作：${conversation.title}`" aria-haspopup="menu" :aria-expanded="menuId===conversation.id" :disabled="locked" @click="openMenu($event, conversation.id)">⋯</button>
+    <div class="history-scroll-shell">
+      <div ref="listScroller" class="history-scroll" tabindex="0" aria-label="滚动浏览会话" @scroll.passive="revealScrollbar">
+        <div ref="listContent" class="history-scroll-content">
+          <div class="history-list-heading">
+<p class="history-label">本地会话</p>
+            <Transition name="history-control"><button v-if="store.conversations.length && !selecting" ref="selectionToggle" class="history-icon-button history-manage" :inert="selecting" :disabled="locked" aria-label="多选管理会话" data-tooltip="多选管理会话" @click="enterSelection()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="1.5" /><circle cx="5" cy="12" r="1.5" /><circle cx="5" cy="18" r="1.5" /><path d="M11 6h9M11 12h9M11 18h9" /></svg></button></Transition>
+          </div>
+          <p v-if="message" class="sidebar-feedback" role="status">{{ message }}</p>
+          <p v-if="error && !dialog?.open" class="sidebar-feedback danger" role="alert">{{ error }}</p>
+          <nav class="conversation-list" aria-label="本地会话">
+            <div v-for="conversation in conversations" :key="conversation.id" class="conversation-row" :class="{selected:selecting ? selected.includes(conversation.id) : store.current?.id===conversation.id}">
+              <div class="conversation-choice-slot" :inert="!selecting" :aria-hidden="!selecting"><input v-model="selected" type="checkbox" :value="conversation.id" :aria-label="`选择会话 ${conversation.title}`" :disabled="locked || !selecting"></div>
+              <button class="conversation-item" :class="{selected:!selecting && store.current?.id===conversation.id}" :aria-current="!selecting && store.current?.id===conversation.id ? 'page' : undefined" :aria-pressed="selecting ? selected.includes(conversation.id) : undefined" :disabled="locked" @click="chooseConversation(conversation.id)">
+                <span><b>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
+              </button>
+              <div class="conversation-more-slot" :inert="selecting" :aria-hidden="selecting"><button class="conversation-more" data-tooltip="" :aria-label="`会话操作：${conversation.title}`" aria-haspopup="menu" :aria-expanded="menuId===conversation.id" :disabled="locked || selecting" @click="openMenu($event, conversation.id)">⋯</button></div>
+            </div>
+          </nav>
+          <p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p>
+        </div>
       </div>
-    </nav>
-    <p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p>
-    <footer class="history-footer"><span>SIMBAD / ADS / Gaia</span><small>测量 · 文献 · 可追溯结果</small></footer>
+      <div v-if="listScrollable" class="history-scrollbar" aria-hidden="true" @pointerdown="beginScrollDrag" @pointermove="moveScrollDrag" @pointerup="endScrollDrag" @pointercancel="endScrollDrag" @lostpointercapture="endScrollDrag"><span class="history-scroll-thumb" :style="{ height: `${thumbHeight}px`, transform: `translateY(${thumbTop}px)` }"></span></div>
+    </div>
+    <div class="history-bottom">
+<Transition name="history-mode">
+    <div v-if="selecting" key="actions" class="history-batch-actions" :inert="!selecting" aria-label="批量管理会话">
+      <button :disabled="locked || !selected.length" :data-tooltip="selectionPinned ? '取消所选会话的置顶' : '置顶所选会话'" @click="pinSelected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 3 7 7-4 1-4 5-2-2-6 6m6-6-3-3 5-4z" /></svg>{{ selectionPinned ? '取消置顶' : '置顶' }}</button>
+      <button class="selection-delete" :disabled="locked || !selected.length || store.running" aria-label="删除所选会话" data-tooltip="删除所选会话" @click="deleteSelected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" /></svg>删除</button>
+    </div>
+    <footer v-else key="footer" class="history-footer" :inert="selecting"><span>SIMBAD / ADS / Gaia</span><small>测量 · 文献 · 可追溯结果</small></footer>
+    </Transition>
+</div>
 
     <Teleport to="body">
       <div v-if="menuTarget" ref="menu" class="conversation-menu" role="menu" aria-label="会话操作" :style="menuPosition" @keydown="menuKey" @focusout="menuBlur">
@@ -184,3 +278,63 @@ onBeforeUnmount(() => {
     </dialog>
   </aside>
 </template>
+
+<style scoped>
+/* Only this middle region scrolls; fixed controls never share its scrollbar. */
+aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200ms; --selection-easing: cubic-bezier(.2, .7, .3, 1); }
+.history-top { display: grid; flex: none; height: 38px; }
+.history-top > * { grid-area: 1 / 1; min-width: 0; }
+.history-top .new-conversation { width: 100%; height: 38px; min-height: 38px; margin: 0; }
+.history-selection-heading { display: flex; min-height: 38px; align-items: center; justify-content: space-between; gap: 8px; color: var(--ink); font-size: 14px; }
+.history-selection-heading small { margin-left: 6px; font-size: 11px; color: var(--muted); }
+.history-scroll-shell { position: relative; flex: 1 1 0; min-height: 0; margin-top: 16px; }
+.history-scroll { width: 100%; height: 100%; min-height: 0; overflow: auto; overscroll-behavior-y: contain; scrollbar-width: none; padding-right: 8px; }
+.history-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.history-list-heading { min-height: 34px; margin-bottom: 8px; padding-inline: 6px 4px; }
+.history-list-heading .history-label { margin: 0; }
+.history-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; min-height: 28px; padding: 5px; margin: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); }
+.history-icon-button:hover:not(:disabled) { color: var(--accent); background: var(--accent-soft); }
+.history-icon-button svg, .history-batch-actions svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.conversation-item { padding-left: 9px; }
+.conversation-row { display: grid; grid-template-columns: 0px minmax(0, 1fr) 33px; transition: grid-template-columns var(--selection-duration) var(--selection-easing), background-color 160ms ease; }
+.is-selecting .conversation-row { grid-template-columns: 33px minmax(0, 1fr) 0px; }
+.conversation-choice-slot, .conversation-more-slot { min-width: 0; overflow: hidden; transition: opacity var(--selection-duration) ease, transform var(--selection-duration) var(--selection-easing); }
+.conversation-choice-slot { opacity: 0; transform: translateX(-6px); pointer-events: none; }
+.is-selecting .conversation-choice-slot { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.conversation-more-slot { opacity: 1; transform: translateX(0); }
+.is-selecting .conversation-more-slot { opacity: 0; transform: translateX(6px); pointer-events: none; }
+.conversation-choice-slot > input { display: block; appearance: none; width: 18px; height: 18px; margin: 0 0 0 6px; border: 1px solid var(--line-strong); border-radius: 50%; padding: 0; background: var(--paper); cursor: pointer; transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease; }
+.conversation-choice-slot > input:checked { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 4px var(--paper); }
+.history-bottom { display: grid; flex: none; height: 64px; margin-top: 10px; }
+.history-bottom > * { grid-area: 1 / 1; min-width: 0; margin-top: 0; }
+.history-footer { flex: none; margin-top: 0; padding: 12px 8px 0; }
+.history-batch-actions { display: flex; flex: none; margin-top: 0; padding-top: 12px; border-top: 1px solid var(--line); }
+.history-batch-actions button { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 6px; min-width: 0; padding: 7px 4px; border: 0; background: transparent; font-size: 12px; color: var(--muted); }
+.history-batch-actions button + button { border-left: 1px solid var(--line); border-radius: 0; }
+.history-batch-actions .selection-delete:not(:disabled) { color: #983e38; }
+.history-mode-enter-active, .history-mode-leave-active, .history-control-enter-active, .history-control-leave-active { transition: opacity var(--selection-duration) ease, transform var(--selection-duration) var(--selection-easing); }
+.history-mode-enter-from { opacity: 0; transform: translateY(6px); }
+.history-mode-leave-to { opacity: 0; transform: translateY(-6px); }
+.history-control-enter-from, .history-control-leave-to { opacity: 0; transform: scale(.9); }
+.history-mode-leave-active, .history-control-leave-active { pointer-events: none; }
+/* Overlay rail keeps the content width constant; a short thumb maps the full range. */
+.history-scrollbar { position: absolute; top: 0; bottom: 0; right: 0; width: 8px; opacity: 0; pointer-events: none; transition: opacity 160ms ease; touch-action: none; user-select: none; }
+.history-scroll-thumb { position: absolute; top: 0; right: 1px; width: 4px; border-radius: 999px; background: var(--scrollbar-thumb); }
+.history-scroll-shell:hover .history-scrollbar,
+.history-scroll-shell:focus-within .history-scrollbar,
+.is-scrolling .history-scrollbar,
+.is-dragging-scrollbar .history-scrollbar { opacity: 1; pointer-events: auto; }
+.history-scrollbar:hover .history-scroll-thumb { background: var(--scrollbar-hover); }
+.is-dragging-scrollbar .history-scroll-thumb { background: var(--scrollbar-active); }
+@media (prefers-reduced-motion: reduce) {
+  .history-scrollbar, .conversation-row, .conversation-choice-slot, .conversation-more-slot,
+  .conversation-choice-slot > input, .history-mode-enter-active, .history-mode-leave-active,
+  .history-control-enter-active, .history-control-leave-active { transition: none; }
+}
+@media (forced-colors: active) {
+  .history-scroll { scrollbar-width: auto; }
+  .history-scroll::-webkit-scrollbar { display: block; width: 8px; }
+  .history-scrollbar { display: none; }
+  .conversation-choice-slot > input { appearance: auto; }
+}
+</style>

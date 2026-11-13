@@ -9,6 +9,9 @@ export default defineConfig({
     proxy: {
       '/api': { target: 'http://127.0.0.1:8000', changeOrigin: false },
       '/health': { target: 'http://127.0.0.1:8000', changeOrigin: false },
+      '/docs': { target: 'http://127.0.0.1:8000', changeOrigin: false },
+      '/redoc': { target: 'http://127.0.0.1:8000', changeOrigin: false },
+      '/openapi.json': { target: 'http://127.0.0.1:8000', changeOrigin: false },
     },
   },
   test: { environment: 'jsdom', include: ['tests/unit/**/*.test.ts'] },

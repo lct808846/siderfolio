@@ -1,0 +1,7 @@
+{
+  "PYTHON_IMAGE": "python:3.12.13-slim-bookworm",
+  "NODE_IMAGE": "node:24.15.0-bookworm-slim",
+  "POSTGRES_IMAGE": "pgvector/pgvector:0.8.7-pg16-bookworm",
+  "OLLAMA_IMAGE": "ollama/ollama:0.40.15",
+  "DOCKER_CLI_IMAGE": "docker:29-cli"
+}

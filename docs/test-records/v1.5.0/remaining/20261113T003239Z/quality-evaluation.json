@@ -1,0 +1,19 @@
+{
+  "format_valid": 0.977273,
+  "topic_retained": 0.909091,
+  "automated_accept": 0.909091,
+  "required_explicit_conditions_correct": 28,
+  "required_explicit_conditions_total": 28,
+  "condition_accuracy": 1.0,
+  "extra_invented_accepted_numeric_facts": 0,
+  "original_evidence_match_rate": 1.0,
+  "text_tasks_completed": 16,
+  "text_tasks_total": 16,
+  "issues": [],
+  "review_method": "Independent acceptance agent against frozen standards; no human review or tested-model self-grading.",
+  "scope": "Source-grounded assistant pipeline. Does not qualify unconstrained Qwen scientific paraphrasing.",
+  "title_rejected_ids": [
+    "22"
+  ],
+  "passed": true
+}

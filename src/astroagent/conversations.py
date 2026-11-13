@@ -4,7 +4,6 @@ import hashlib
 import json
 import multiprocessing
 import os
-import re
 import sqlite3
 import threading
 from contextlib import contextmanager
@@ -12,20 +11,13 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from astroagent.conversation_schemas import ContextRecord, Turn
+from astroagent.conversation_titles import conversation_title
 from astroagent.errors import ServiceError
 from astroagent.schemas import ErrorInfo
 
 
 def utc_now():
     return datetime.now(UTC).isoformat()
-
-
-def conversation_title(message):
-    """A bounded first-question label; no extra model call or scientific inference."""
-    text = re.sub(r"\s+", " ", message).strip()
-    text = re.sub(r"^[#>*\-\s]+", "", text)
-    text = re.split(r"[。！？!?]", text, maxsplit=1)[0].strip() or "天文查询"
-    return text if len(text) <= 36 else text[:35].rstrip() + "…"
 
 
 def encode(value):
@@ -327,13 +319,6 @@ class ConversationRepository:
 
     def create(self, title):
         with self.connection() as db, self.transaction(db):
-            if (
-                db.execute("SELECT count(*) FROM conversations").fetchone()[0]
-                >= self.settings.max_conversations
-            ):
-                raise ServiceError(
-                    409, "conversation_limit_reached", "会话已满，请整理历史后再新建。"
-                )
             value = dict(
                 id=str(uuid4()),
                 title=title,
@@ -405,7 +390,6 @@ class ConversationRepository:
                 and previous["metadata_revision"] != expected_metadata_revision
             ):
                 raise ServiceError(409, "conversation_revision_conflict", "会话已更新，请刷新。")
-            self._idle(db, identifier)
             updated_at = utc_now()
             candidate = {
                 **previous,
@@ -425,6 +409,9 @@ class ConversationRepository:
                 "metadata_revision=metadata_revision+1 WHERE id=?",
                 (title, updated_at, identifier),
             )
+            from astroagent.local_model_store import invalidate_title
+
+            invalidate_title(db, identifier)
             self._touch_project(db, identifier)
             if self._used(db) > self.settings.storage_bytes:
                 raise ServiceError(
@@ -520,6 +507,11 @@ class ConversationRepository:
                 received_at=utc_now(),
             )
             text = turn.model_dump_json()
+            turn._auto_title_eligible = (
+                needs_title
+                and conversation["revision"] == 0
+                and conversation["metadata_revision"] == 0
+            )
             db.execute(
                 "INSERT INTO turns VALUES (?,?,?,?,?,?,?,?,?)",
                 (

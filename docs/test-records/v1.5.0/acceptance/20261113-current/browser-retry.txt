@@ -1,0 +1,21 @@
+[WebServer] INFO:     Started server process [38540]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:37304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+(node:8900) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.6s)
+  ok 2 [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (3.0s)
+  ok 3 [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (3.6s)
+(node:37292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [edge] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.7s)
+  ok 5 [edge] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (2.1s)
+  ok 6 [edge] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (2.2s)
+
+  6 passed (25.2s)

@@ -80,6 +80,7 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
     await expect(page.getByText('查看完整交付表格（100 行）')).toBeVisible()
     await page.reload(); await expect(page.getByText('查看完整交付表格（100 行）')).toBeVisible()
     await page.setViewportSize({ width: 390, height: 844 }); await page.getByRole('button', { name: '项目记录', exact: true }).click()
+    expect(await page.locator('.project-main').evaluate(el => el.clientHeight)).toBeGreaterThan(200)
     await page.locator('.project-main').evaluate(el => { el.scrollTop = 0 }); await screenshot('mobile')
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     await page.getByRole('button', { name: '删除项目', exact: true }).click()

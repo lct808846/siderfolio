@@ -1,0 +1,43 @@
+{
+  "host_origin": {
+    "passed": true,
+    "seconds": 0.02,
+    "detail": {
+      "invalid_host": 400,
+      "invalid_origin": 403
+    }
+  },
+  "chat": {
+    "passed": true,
+    "seconds": 2.8,
+    "detail": {
+      "conversation_id": "32dfdfaf-f003-4724-bbbb-d27d25311a19",
+      "state": "completed"
+    }
+  },
+  "rag": {
+    "passed": true,
+    "seconds": 62.33,
+    "detail": {
+      "index_state": "ready",
+      "semantic_status": "ready",
+      "evidence_count": 1,
+      "answer_state": "completed"
+    }
+  },
+  "plot_python": {
+    "passed": true,
+    "seconds": 13.64,
+    "detail": {
+      "run_id": "76f885a6-caeb-4bbc-b8a3-230343fb6e94",
+      "png_sha256": "a1573a3b519b10ccd10145a927b48f7fdc4871d007d38f1d84ab01835f28bb13",
+      "bundle_matches": true,
+      "isolation": "docker-desktop-wsl2-v1"
+    }
+  },
+  "plot_gnuplot": {
+    "passed": false,
+    "seconds": 9.89,
+    "error": "独立绘图任务未完成，请核对原运行记录；不会自动重试。"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "host_origin": {
+    "passed": true,
+    "seconds": 0.0,
+    "detail": {
+      "invalid_host": 400,
+      "invalid_origin": 403
+    }
+  },
+  "chat": {
+    "passed": true,
+    "seconds": 2.84,
+    "detail": {
+      "conversation_id": "2f69ee3f-7ced-48fe-882d-cd1964820290",
+      "state": "completed"
+    }
+  },
+  "rag": {
+    "passed": true,
+    "seconds": 53.3,
+    "detail": {
+      "index_state": "ready",
+      "semantic_status": "ready",
+      "evidence_count": 1,
+      "answer_state": "completed"
+    }
+  },
+  "plot_python": {
+    "passed": true,
+    "seconds": 11.72,
+    "detail": {
+      "run_id": "79749688-194a-41c8-b0bf-795de4f9daaa",
+      "png_sha256": "65374f3a50d7c4cf28ba1f6862472d2249ac98ae1594bfc0cb87f4cfa1e53315",
+      "bundle_matches": true,
+      "isolation": "docker-desktop-wsl2-v1"
+    }
+  },
+  "plot_gnuplot": {
+    "passed": true,
+    "seconds": 9.08,
+    "detail": {
+      "run_id": "ffbb9c1c-0bc3-416f-a3e1-6509c5ff9fe1",
+      "png_sha256": "ab05cfdb76d5711320aa2d78fa60d4a6f3e60f7e295d7dd44853740a14b5f78c",
+      "bundle_matches": true,
+      "isolation": "docker-desktop-wsl2-v1"
+    }
+  }
+}

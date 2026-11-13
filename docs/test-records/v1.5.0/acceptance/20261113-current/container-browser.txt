@@ -1,0 +1,92 @@
+
+Running 2 tests using 1 worker
+
+(node:12152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens (5.8s)
+(node:9612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [edge] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens (5.9s)
+
+
+  1) [chromium] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms
+      - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()
+        8 × locator resolved to <button type="button" class="plot-record" aria-pressed="false">…</button>
+          - unexpected value "hidden"
+
+
+      12 |     await page.goto(`/projects/${project!.id}/plotting`)
+      13 |     const run = page.locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()
+    > 14 |     await expect(run).toBeVisible()
+         |                       ^
+      15 |     await run.click()
+      16 |     await expect(page.getByRole('button', { name: '放大绘图' })).toBeVisible()
+      17 |     await expect(page.getByRole('button', { name: '保存所选文件 ZIP' })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\container-live.spec.ts:14:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [edge] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms
+      - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()
+        9 × locator resolved to <button type="button" class="plot-record" aria-pressed="false">…</button>
+          - unexpected value "hidden"
+
+
+      12 |     await page.goto(`/projects/${project!.id}/plotting`)
+      13 |     const run = page.locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()
+    > 14 |     await expect(run).toBeVisible()
+         |                       ^
+      15 |     await run.click()
+      16 |     await expect(page.getByRole('button', { name: '放大绘图' })).toBeVisible()
+      17 |     await expect(page.getByRole('button', { name: '保存所选文件 ZIP' })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\container-live.spec.ts:14:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\container-live-isolated-co-9d002--desktop-and-narrow-screens-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens 
+    [edge] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens 

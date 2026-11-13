@@ -1,0 +1,9 @@
+astroagent-v15-frontend-1 0.00% 24.4MiB / 256MiB
+astroagent-v15-backend-1 0.27% 182.3MiB / 4GiB
+astroagent-v15-plot-executor-1 0.03% 56.07MiB / 512MiB
+astroagent-v15-postgres-1 0.00% 51.34MiB / 1GiB
+astroagent-v15-ingress-1 0.00% 47.11MiB / 128MiB
+astroagent-v15-ollama-1 0.00% 244.3MiB / 5GiB
+{
+  "Free": 60312801280
+}

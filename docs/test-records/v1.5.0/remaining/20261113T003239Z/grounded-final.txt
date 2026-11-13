@@ -1,0 +1,316 @@
+...........................................FFFF                          [100%]
+================================== FAILURES ===================================
+__ test_local_transport_never_follows_redirects_or_inherits_proxy[redirect] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E1400>
+response_kind = 'redirect'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+                assert client.request("/synthetic") == {"ok": True}
+            else:
+                with pytest.raises(ServiceError) as caught:
+                    client.request("/synthetic")
+                assert caught.value.error.code == (
+                    "local_model_output_limit"
+                    if response_kind == "oversized"
+                    else "local_model_unavailable"
+                )
+>           assert paths == ["/synthetic"]
+E           AssertionError: assert [] == ['/synthetic']
+E             
+E             Right contains one more item: '/synthetic'
+E             Use -v to get more diff
+
+tests\test_local_model_boundaries.py:304: AssertionError
+__ test_local_transport_never_follows_redirects_or_inherits_proxy[encoding] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E0950>
+response_kind = 'encoding'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+                assert client.request("/synthetic") == {"ok": True}
+            else:
+                with pytest.raises(ServiceError) as caught:
+                    client.request("/synthetic")
+                assert caught.value.error.code == (
+                    "local_model_output_limit"
+                    if response_kind == "oversized"
+                    else "local_model_unavailable"
+                )
+>           assert paths == ["/synthetic"]
+E           AssertionError: assert [] == ['/synthetic']
+E             
+E             Right contains one more item: '/synthetic'
+E             Use -v to get more diff
+
+tests\test_local_model_boundaries.py:304: AssertionError
+__ test_local_transport_never_follows_redirects_or_inherits_proxy[oversized] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E1670>
+response_kind = 'oversized'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+                assert client.request("/synthetic") == {"ok": True}
+            else:
+                with pytest.raises(ServiceError) as caught:
+                    client.request("/synthetic")
+>               assert caught.value.error.code == (
+                    "local_model_output_limit"
+                    if response_kind == "oversized"
+                    else "local_model_unavailable"
+                )
+E               AssertionError: assert 'local_model_unavailable' == 'local_model_output_limit'
+E                 
+E                 - local_model_output_limit
+E                 + local_model_unavailable
+
+tests\test_local_model_boundaries.py:299: AssertionError
+____ test_local_transport_never_follows_redirects_or_inherits_proxy[plain] ____
+
+self = <astroagent.local_model_client.LocalModelClient object at 0x000001E7555E3CB0>
+path = '/synthetic', payload = None, timeout = None
+
+    def request(self, path, payload=None, timeout=None):
+        deadline = time.monotonic() + (timeout or self.settings.local_model_timeout_seconds)
+        address = urlsplit(self.settings.local_model_url)
+        connection = http.client.HTTPConnection(address.hostname, address.port or 11434, timeout=2)
+        try:
+>           connection.connect()
+
+src\astroagent\local_model_client.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\http\client.py:1023: in connect
+    self.sock = self._create_connection(
+E:\miniconda3\envs\agent\Lib\socket.py:865: in create_connection
+    raise exceptions[0]
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+address = ('127.0.0.1', 52058), timeout = 2, source_address = None
+all_errors = False
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None, *, all_errors=False):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default. When a connection
+        cannot be created, raises the last error if *all_errors* is False,
+        and an ExceptionGroup of all errors if *all_errors* is True.
+        """
+    
+        host, port = address
+        exceptions = []
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+E:\miniconda3\envs\agent\Lib\socket.py:850: PermissionError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E7555E3590>
+response_kind = 'plain'
+
+    @pytest.mark.parametrize("response_kind", ["redirect", "encoding", "oversized", "plain"])
+    def test_local_transport_never_follows_redirects_or_inherits_proxy(monkeypatch, response_kind):
+        paths = []
+    
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                self.send_response(302 if response_kind == "redirect" else 200)
+                if response_kind == "redirect":
+                    self.send_header("Location", "https://example.invalid/private")
+                if response_kind == "encoding":
+                    self.send_header("Content-Encoding", "gzip")
+                self.end_headers()
+                body = b'{"ok":true}' if response_kind != "oversized" else b"x" * (129 * 1024)
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+    
+            def log_message(self, *args):
+                pass
+    
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        monkeypatch.setenv("HTTP_PROXY", "http://example.invalid:4321")
+        client = LocalModelClient(
+            LocalSettings(_env_file=None, local_model_url=f"http://127.0.0.1:{server.server_port}")
+        )
+        try:
+            if response_kind == "plain":
+>               assert client.request("/synthetic") == {"ok": True}
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_local_model_boundaries.py:295: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <astroagent.local_model_client.LocalModelClient object at 0x000001E7555E3CB0>
+path = '/synthetic', payload = None, timeout = None
+
+    def request(self, path, payload=None, timeout=None):
+        deadline = time.monotonic() + (timeout or self.settings.local_model_timeout_seconds)
+        address = urlsplit(self.settings.local_model_url)
+        connection = http.client.HTTPConnection(address.hostname, address.port or 11434, timeout=2)
+        try:
+            connection.connect()
+            sock = connection.sock
+            sock.settimeout(max(0.01, deadline - time.monotonic()))
+            connection.request(
+                "GET" if payload is None else "POST",
+                path,
+                body=None if payload is None else json.dumps(payload, ensure_ascii=False).encode(),
+                headers={"Content-Type": "application/json", "Accept-Encoding": "identity"},
+            )
+            sock.settimeout(max(0.01, deadline - time.monotonic()))
+            response = connection.getresponse()
+            if response.status == 404:
+                raise fail(
+                    "local_model_missing", "����û�����õ�ģ�ͣ������Զ����ػ����Զ��ģ�͡�"
+                )
+            if (
+                response.status != 200
+                or response.getheader("Content-Encoding", "identity") != "identity"
+            ):
+                raise fail("local_model_unavailable", "������������δ�����������˶Է���״̬��")
+            content = bytearray()
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("Local deadline")
+                sock.settimeout(remaining)
+                chunk = response.read1(min(4096, MAX_REPLY + 1 - len(content)))
+                if not chunk:
+                    break
+                content.extend(chunk)
+                if len(content) > MAX_REPLY:
+                    raise fail(
+                        "local_model_output_limit", "����ģ����Ӧ����128 KiB������Ѷ�����", 502
+                    )
+            return strict_json(bytes(content).decode("utf-8"))
+        except ServiceError:
+            raise
+        except TimeoutError as exc:
+            raise fail(
+                "local_model_timeout", "����������ʱ������������ڴ��������Զ��طš�", 504
+            ) from exc
+        except Exception as exc:
+>           raise fail(
+                "local_model_unavailable", "�����������񲻿��û���Ӧ��ʽ��Ч��", 503
+            ) from exc
+E           astroagent.errors.ServiceError: �����������񲻿��û���Ӧ��ʽ��Ч��
+
+src\astroagent\local_model_client.py:122: ServiceError
+=========================== short test summary info ===========================
+FAILED tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[redirect]
+FAILED tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[encoding]
+FAILED tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[oversized]
+FAILED tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[plain]
+4 failed, 43 passed in 19.19s

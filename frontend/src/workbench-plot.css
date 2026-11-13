@@ -1,0 +1,67 @@
+/* Plotting is a task inside the conversation, sharing its composer and frame. */
+.composer-bottom { flex-wrap: wrap; }
+.composer-task-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.composer-task-tools > .composer-task-button {
+  display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto;
+  min-height: 34px; padding: 6px 10px; border: 1px solid var(--line-strong);
+  border-radius: 8px; background: var(--paper); color: var(--ink); font-size: 12px;
+}
+.composer-task-button svg, .workbench-plot-upload svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.composer-task-tools > .composer-task-button:hover:not(:disabled) { color: var(--accent); background: var(--soft); }
+.composer-task-tools > .composer-plot-toggle.active { color: #2e6547; background: var(--accent-soft); border-color: #ccded0; }
+.composer-nbody-toggle small { padding-left: 6px; border-left: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+.nbody-placeholder { max-width: min(440px, calc(100vw - 32px)); }
+.nbody-placeholder p { margin-block: 18px; color: var(--muted); line-height: 1.8; }
+.composer-plot-return { color: var(--muted); border-left: 1px solid #c8d8cb; padding-left: 9px; margin-left: 2px; font-size: 11px; }
+.composer-plot-mode { border-color: #b5cdbb; }
+.workbench-plot-upload { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; min-height: 34px; padding: 0; margin-left: auto; border: 0; background: transparent; color: var(--muted); }
+.workbench-plot { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; min-width: 0; overflow: hidden; }
+.workbench-plot-context { display: flex; flex: none; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fafcfb; max-height: 35%; overflow: auto; }
+.workbench-plot-context > label { display: flex; flex-direction: column; gap: 5px; min-width: 130px; max-width: min(100%, 320px); color: var(--muted); font-size: 11px; }
+.workbench-plot-context select { min-height: 34px; max-width: 100%; padding: 6px 10px; font-size: 12px; }
+.workbench-plot-context > button { min-height: 34px; padding: 6px 11px; font-size: 12px; }
+.workbench-plot-context > .notice { flex-basis: 100%; margin: 0; }
+.workbench-plot-create { display: flex; flex-basis: 100%; gap: 10px; align-items: center; flex-wrap: wrap; padding-top: 10px; }
+.workbench-plot-create input { flex: 1; min-width: 120px; }
+.workbench-plot-create label { color: var(--muted); font-size: 12px; }
+.workbench-plot-empty { margin: auto; padding: 30px; width: min(100%, 680px); color: var(--muted); text-align: center; }
+.workbench-plot-empty h2 { font-size: 20px; color: var(--ink); margin-bottom: 14px; }
+.workbench-plot-empty p { font-size: 14px; line-height: 1.9; }
+.workbench-plot > .plot-workspace.plot-workspace-embedded {
+  position: relative; flex: 1 1 0; width: 100%; min-height: 0; height: auto;
+  padding: 0; gap: 0; background: var(--paper); grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: 0 minmax(0, 1fr); overflow: hidden;
+}
+.workbench-plot > .plot-workspace.plot-workspace-embedded[data-results-open],
+.workbench-plot > .plot-workspace.plot-workspace-embedded[data-sidebar-open] { grid-template-columns: 0 minmax(0, 1fr); }
+.plot-workspace-embedded > .plot-main { grid-column: 2; grid-row: 1; border: 0; border-radius: 0; box-shadow: none; }
+.plot-workspace-embedded .plot-main > .chat-heading { min-height: 46px; padding: 7px 18px; border-radius: 0; }
+.plot-workspace-embedded .plot-main > .chat-heading h1 { font-size: 13px; color: var(--muted); }
+.plot-workspace-embedded .plot-reading { padding: 20px 24px 28px; }
+.plot-workspace-embedded .plot-table { max-height: 210px; margin: 18px 0; }
+.plot-workspace-embedded .plot-compose { margin-top: 20px; padding: 18px; }
+.plot-workspace-embedded .plot-appearance { margin: 16px 0; }
+.plot-workspace-embedded .plot-empty { padding: 28px 16px; }
+.plot-workspace-embedded .plot-empty h2 { font: 550 22px/1.6 var(--font-ui); }
+.plot-workspace-embedded .plot-empty-actions { gap: 12px; }
+.plot-workspace.plot-workspace-embedded > .plot-sidebar {
+  position: absolute; grid-column: 1; grid-row: 1; top: 0; bottom: 0; left: 0;
+  width: min(260px, 90%); border-radius: 0; z-index: 25; box-shadow: 10px 0 28px rgb(31 62 44 / 9%);
+}
+.plot-workspace-embedded .plot-sidebar-inner { min-width: 0; }
+.plot-workspace.plot-workspace-embedded > .plot-results {
+  position: absolute; grid-column: 2; grid-row: 1; top: 0; bottom: 0; right: 0;
+  width: min(500px, 100%); border-radius: 0; z-index: 30; box-shadow: -12px 0 32px rgb(31 62 44 / 12%);
+}
+.plot-workspace-embedded > .plot-results > .workspace-pane-header { min-height: 48px; border-radius: 0; }
+.workbench-plot ~ .composer { margin-top: 10px; }
+@media (max-width: 680px) {
+  .workbench-plot-context { gap: 8px; padding: 10px 12px; }
+  .workbench-plot-context > label { min-width: 110px; flex: 1 1 130px; }
+  .plot-workspace-embedded .plot-reading { padding: 16px 12px; }
+  .plot-workspace-embedded .plot-main > .chat-heading { padding-inline: 12px; }
+  .composer-task-tools { flex-basis: 100%; }
+  .composer-task-tools > .composer-task-button { padding-inline: 7px; gap: 5px; }
+  .composer-plot-return { display: none; }
+  .workbench-plot .plot-appearance { grid-template-columns: minmax(0, 1fr); }
+}

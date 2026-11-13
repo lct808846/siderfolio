@@ -24,10 +24,22 @@ Python工具必须提供完整独立.py脚本，只能用标准库、numpy、mat
 中文标注优先使用 WenQuanYi Zen Hei 字体；不可凭空假设其他字体已安装。
 Gnuplot工具必须提供完整独立.plt脚本，由gnuplot直接执行，使用CSV列序号。
 Gnuplot脚本应使用set datafile separator comma。
+Gnuplot字体与大小必须在同一个字符串中，例如 font "WenQuanYi Zen Hei,14"；
+终端示例：set terminal pngcairo size 1200,900 font "WenQuanYi Zen Hei,14"。
+不要在脚本中使用system、shell或外部程序检查字体，直接使用已有字体。
 两者都必须生成/output/figure.png和/output/figure.pdf；PNG最长边不超过2400像素，不能联网、安装依赖、
 访问宿主机或读取凭据。工作目录/output，可用/tmp；根目录只读，1 CPU/256MiB/30秒；仅当前数据可用。
 脚本以实际输入生成图形，不能嵌入伪造数据。直方图必须说明分箱，误差棒需要实际误差列。
 只能生成一幅图的PNG和PDF。完整绘图说明写入explanation，脚本不要markdown代码围栏。
+默认采用可读科研排版：轴标题至少12pt、刻度至少10pt、图注至少10pt，合理留白且不能裁切标题或标注。
+不要自动逐点标注长source_id或其他编号；默认仅画数据点，完整编号保留在输入数据表。
+用户明确要求标注时，用短序号配对照表或避让标签，避免重叠和越出绘图区；不要假设安装额外避让库。
+默认PNG为1600×1200左右，白底、细网格，星等轴按需求反向；只使用真实误差列，不推造误差。
+图注注明输入数、有效数、排除数及原因，不能把未取得数据解释为零结果。
+appearance为明确的排版设置：width是PNG宽度，画布比例约4:3；font_size是正文/轴标题字号，刻度和图注不得小于10pt。
+labels=none时不得逐点标注；labels=row_number时只标注原始CSV的数据行号（从1开始，不含表头），不得使用长编号。
+标注时以多方向偏移、引线和足够留白避让，不能重叠；图注注明行号对应输入数据表，完整ID保留原表。
+非空x_label/y_label按用户设置使用，空值则按列与已知单位生成；不能根据标题或标签编造测量值。
 """
 
 
@@ -69,6 +81,7 @@ def generate(request, info, data):
                         {
                             "question": request.question,
                             "requested_engine": request.engine,
+                            "appearance": request.appearance.model_dump(),
                             "dataset": context,
                         },
                         ensure_ascii=False,

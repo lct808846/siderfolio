@@ -23,6 +23,7 @@ def status(request: Request):
         ) from exc
     service = getattr(request.app.state, "conversation_service", None)
     value = {
+        "deployment_mode": local.deployment_mode,
         "configured": bool(local.database_url.get_secret_value()),
         "ready": service is not None,
         "code": "ready"

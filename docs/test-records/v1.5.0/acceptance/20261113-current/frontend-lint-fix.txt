@@ -1,0 +1,17 @@
+
+D:\project\astroagent\frontend\src\components\WorkspacePaneHeader.vue
+  2:43  warning  Prop 'subtitle' requires default value to be set  vue/require-default-prop
+
+D:\project\astroagent\frontend\src\views\PlotWorkspace.vue
+  14:62   warning  Prop 'projectIdentifier' requires default value to be set   vue/require-default-prop
+  14:90   warning  Prop 'datasetIdentifier' requires default value to be set   vue/require-default-prop
+  14:118  warning  Prop 'snapshotIdentifier' requires default value to be set  vue/require-default-prop
+  14:147  warning  Prop 'queryNumber' requires default value to be set         vue/require-default-prop
+  14:169  warning  Prop 'sourceTurn' requires default value to be set          vue/require-default-prop
+
+D:\project\astroagent\frontend\src\views\WorkflowWorkspace.vue
+  199:75   warning  Variable 'key' is already declared in the upper scope  vue/no-template-shadow
+  214:394  warning  Variable 'key' is already declared in the upper scope  vue/no-template-shadow
+
+✖ 8 problems (0 errors, 8 warnings)
+

@@ -23,6 +23,7 @@ from astroagent.plot_schemas import (
     PlotSelection,
     PlotStatus,
     SnapshotDatasetRequest,
+    TurnDatasetRequest,
 )
 from astroagent.plot_service import FILES
 from astroagent.schemas import ErrorResponse
@@ -88,6 +89,12 @@ def snapshot(
     project_id: UUID, dataset_id: UUID, request: SnapshotDatasetRequest, service: Plotting
 ):
     return service.snapshot(str(project_id), str(dataset_id), request)
+
+
+@router.put(ROOT + "/datasets/{dataset_id}/turn", response_model=PlotDataset)
+def turn(project_id: UUID, dataset_id: UUID, request: TurnDatasetRequest, service: Plotting):
+    with service.conversations.gate:
+        return service.turn(str(project_id), str(dataset_id), request)
 
 
 @router.get(ROOT + "/datasets/{dataset_id}/preview", response_model=PlotDataPreview)

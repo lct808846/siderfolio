@@ -341,13 +341,6 @@ class WorkflowRepository:
             return run, attempt
 
     def _snapshot(self, db, run, response):
-        if (
-            db.execute("SELECT count(*) FROM conversations").fetchone()[0]
-            >= self.repo.settings.max_conversations
-        ):
-            raise ServiceError(
-                409, "conversation_limit_reached", "会话已满，无法保存完整流程输出。"
-            )
         now, cid, tid = utc_now(), str(uuid4()), str(uuid4())
         turn = Turn(
             conversation_id=cid,

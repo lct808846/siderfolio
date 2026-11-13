@@ -1,0 +1,7 @@
+running isolation 0d4a932a-1834-4125-9023-2720b4ba957a
+result isolation passed completed
+running symlink 1b3b7cd4-8490-4a2c-bce8-7239b0eca941
+result symlink passed plot_output_invalid
+running timeout aaf83909-a4c5-46b3-8b9e-d199c4d662b3
+result timeout passed plot_script_failed
+results_json {"isolation": {"passed": true, "outcome": "completed", "seconds": 13.39, "run_id": "0d4a932a-1834-4125-9023-2720b4ba957a"}, "symlink": {"passed": true, "outcome": "plot_output_invalid", "seconds": 1.1, "run_id": "1b3b7cd4-8490-4a2c-bce8-7239b0eca941"}, "timeout": {"passed": true, "outcome": "plot_script_failed", "seconds": 29.21, "run_id": "aaf83909-a4c5-46b3-8b9e-d199c4d662b3"}}

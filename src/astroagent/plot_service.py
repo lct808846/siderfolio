@@ -9,6 +9,7 @@ from astroagent import __version__
 from astroagent.conversations import encode
 from astroagent.errors import ServiceError
 from astroagent.plot_data import dataset, digest, from_snapshot, table
+from astroagent.plot_executor_client import ExecutorClient
 from astroagent.plot_planner import generate, model_context
 from astroagent.plot_sandbox import Sandbox, configured
 from astroagent.plot_store import PlotStore, ready
@@ -34,14 +35,33 @@ class PlotService:
         self.conversations = conversations
         self.store = PlotStore(conversations.repository)
         self.settings = settings
-        self.sandbox = Sandbox(settings)
+        self.sandbox = (
+            ExecutorClient(settings)
+            if settings.deployment_mode == "container"
+            else Sandbox(settings)
+        )
         interrupted = self.store.recover()
         self.sandbox.cleanup_interrupted(interrupted)
 
     def status(self):
         with self.store.repo.connection() as db:
             storage = ready(db)
-        enabled = configured(self.settings) and bool(self.sandbox.docker)
+        enabled = configured(self.settings) and bool(
+            self.sandbox.available
+            if isinstance(self.sandbox, ExecutorClient)
+            else self.sandbox.docker
+        )
+        if enabled and isinstance(self.sandbox, ExecutorClient):
+            try:
+                self.sandbox.probe()
+            except Exception:
+                return {
+                    "storage_ready": storage,
+                    "execution_configured": False,
+                    "message": (
+                        "独立绘图执行器未就绪：可查看或生成方案，暂不能执行；不会在宿主机运行。"
+                    ),
+                }
         return {
             "storage_ready": storage,
             "execution_configured": enabled,
@@ -64,6 +84,42 @@ class PlotService:
         with self.store.repo.connection() as db:
             info, data, _ = self.store.dataset(db, project_id, identifier)
         return model_context(info, data)
+
+    def turn(self, project_id, identifier, request):
+        # Freeze server-owned complete responses; never trust browser-supplied rows.
+        with self.store.repo.connection() as db:
+            try:
+                existing, _, _ = self.store.dataset(db, project_id, identifier)
+            except ServiceError as exc:
+                if exc.error.code != "plot_dataset_not_found":
+                    raise
+            else:
+                source = existing["provenance"]
+                if all(source.get(key) == value for key, value in request.model_dump().items()):
+                    return existing
+                raise ServiceError(409, "plot_request_conflict", "此数据集编号已用于其他来源。")
+        turn = self.conversations.repository.turn(request.conversation_id, request.turn_id)
+        if turn.execution_status != "completed" or turn.response is None:
+            raise ServiceError(422, "plot_turn_unavailable", "请等待本轮完整结果返回后再绘图。")
+        frozen = self.store.projects.make_snapshot(
+            project_id, f"第{turn.revision}轮 Gaia 数据", turn
+        )
+        frozen["id"] = identifier
+        frozen["created_at"] = turn.completed_at or turn.received_at
+        with self.store.repo.connection() as db:
+            imported = db.execute(
+                "SELECT record FROM imported_turn_origins WHERE turn_id=?", (turn.turn_id,)
+            ).fetchone()
+        if imported:
+            frozen["provenance"] = "imported_unverified"
+            frozen["origin"] = json.loads(imported[0])
+        info, data, original = from_snapshot(identifier, project_id, frozen, request.query_index)
+        info["provenance"].update(
+            origin_type="conversation_turn",
+            conversation_id=request.conversation_id,
+            turn_id=request.turn_id,
+        )
+        return self.store.save_dataset(info, data, original)
 
     def plan(self, project_id, identifier, request):
         with self.store.repo.connection() as db:

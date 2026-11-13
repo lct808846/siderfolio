@@ -287,15 +287,14 @@ def test_concurrency_idempotent_running_and_global_slots(tmp_path):
             with pytest.raises(ServiceError) as error:
                 service.submit(conversations[2]["id"], requests[2], Blocking)
             assert error.value.error.code == "conversation_service_busy"
-            for operation in (
-                lambda: repository.delete(conversations[0]["id"]),
-                lambda: repository.rename(conversations[0]["id"], "busy"),
-            ):
-                with pytest.raises(ServiceError) as error:
-                    operation()
-                assert error.value.error.code == "conversation_busy"
+            with pytest.raises(ServiceError) as error:
+                repository.delete(conversations[0]["id"])
+            assert error.value.error.code == "conversation_busy"
+            renamed = repository.rename(conversations[0]["id"], "manual title")
+            assert renamed["title"] == "manual title"
             release.set()
             assert all(f.result(timeout=10)[0].execution_status == "completed" for f in futures)
+            assert repository.detail(conversations[0]["id"])["title"] == "manual title"
     finally:
         release.set()
         repository.close()
@@ -324,12 +323,7 @@ def test_model_failure_saved_and_retries_not_charged(client, monkeypatch):
 
 def test_limits_and_large_results_are_not_silently_truncated(client):
     service = app.state.conversation_service
-    service.repository.settings.max_conversations = 1
     conversation = create(client)
-    assert (
-        client.post("/api/v1/conversations", json={}).json()["error"]["code"]
-        == "conversation_limit_reached"
-    )
     service.repository.settings.turn_bytes = 1500
     result = submit(client, conversation)
     assert result.status_code == 503 and result.json()["error"]["code"] == "turn_result_too_large"

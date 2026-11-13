@@ -1,0 +1,152 @@
+[WebServer] INFO:     Started server process [36672]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:35040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (1.0m)
+(node:25592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (1.0m)
+(node:38548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (1.0m)
+(node:38764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (1.0m)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: apiRequestContext.get: Target page, context or browser has been closed
+
+      94 |   } finally {
+      95 |     for (const id of ownedProjects) {
+    > 96 |       const response = await request.get(`/api/v1/projects/${id}`)
+         |                                      ^
+      97 |       if (response.ok()) { const p = await response.json(); await request.delete(`/api/v1/projects/${id}`, { data: { expected_revision: p.revision, confirm: true } }) }
+      98 |     }
+      99 |     for (const id of ownedConversations) await request.delete(`/api/v1/conversations/${id}`)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:96:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: apiRequestContext.get: Target page, context or browser has been closed
+
+      46 |     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-workflow-ads.png`) })
+      47 |   } finally {
+    > 48 |     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()
+         |                                         ^
+      49 |     await request.delete(`/api/v1/projects/${project.id}`, { data: { expected_revision: detail.revision, confirm: true } })
+      50 |   }
+      51 | })
+        at D:\project\astroagent\frontend\tests\browser\workflows.spec.ts:48:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: apiRequestContext.get: Target page, context or browser has been closed
+
+      94 |   } finally {
+      95 |     for (const id of ownedProjects) {
+    > 96 |       const response = await request.get(`/api/v1/projects/${id}`)
+         |                                      ^
+      97 |       if (response.ok()) { const p = await response.json(); await request.delete(`/api/v1/projects/${id}`, { data: { expected_revision: p.revision, confirm: true } }) }
+      98 |     }
+      99 |     for (const id of ownedConversations) await request.delete(`/api/v1/conversations/${id}`)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:96:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\projects-projects-full-sna-759f0-and-preserved-conversations-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\projects-projects-full-sna-759f0-and-preserved-conversations-edge\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\projects-projects-full-sna-759f0-and-preserved-conversations-edge\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\projects-projects-full-sna-759f0-and-preserved-conversations-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\projects-projects-full-sna-759f0-and-preserved-conversations-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: apiRequestContext.get: Target page, context or browser has been closed
+
+      46 |     expect((await csv).suggestedFilename()).toBe('ads-evidence.csv')
+      47 |     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-workflow-ads.png`) })
+    > 48 |   } finally {
+         |              ^
+      49 |     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()
+      50 |     await request.delete(`/api/v1/projects/${project.id}`, { data: { expected_revision: detail.revision, confirm: true } })
+      51 |   }
+        at D:\project\astroagent\frontend\tests\browser\workflows.spec.ts:48:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-edge\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-edge\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+    [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh 
+    [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+    [edge] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh 

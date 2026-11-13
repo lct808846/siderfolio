@@ -1,2 +1,5 @@
 # Preserve the exact bytes of immutable test evidence, including raw XML and transcripts.
 docs/test-records/** -text
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf

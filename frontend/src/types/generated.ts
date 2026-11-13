@@ -129,6 +129,23 @@ export interface paths {
         patch: operations["rename_api_v1_conversations__conversation_id__patch"];
         trace?: never;
     };
+    "/api/v1/conversations/{conversation_id}/local-title": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Title State */
+        get: operations["title_state_api_v1_conversations__conversation_id__local_title_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/conversations/{conversation_id}/turns": {
         parameters: {
             query?: never;
@@ -191,6 +208,109 @@ export interface paths {
         put?: never;
         /** 导出完整客户端查询快照与可选 Gaia 图表 */
         post: operations["export_api_v1_exports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/local-assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Status */
+        get: operations["status_api_v1_local_assistant_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/local-assistant/clear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clear */
+        post: operations["clear_api_v1_local_assistant_clear_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/local-assistant/initialize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initialize */
+        post: operations["initialize_api_v1_local_assistant_initialize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/local-assistant/jobs/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Task */
+        get: operations["task_api_v1_local_assistant_jobs__task_id__get"];
+        /** Submit */
+        put: operations["submit_api_v1_local_assistant_jobs__task_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/local-assistant/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Preferences */
+        put: operations["preferences_api_v1_local_assistant_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/local-assistant/probe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Probe */
+        post: operations["probe_api_v1_local_assistant_probe_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -641,6 +761,23 @@ export interface paths {
         get?: never;
         /** Snapshot */
         put: operations["snapshot_api_v1_projects__project_id__plotting_datasets__dataset_id__snapshot_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/plotting/datasets/{dataset_id}/turn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Turn */
+        put: operations["turn_api_v1_projects__project_id__plotting_datasets__dataset_id__turn_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2679,6 +2816,181 @@ export interface components {
             /** Total Found */
             total_found?: number | null;
         };
+        /** LocalClear */
+        LocalClear: {
+            /**
+             * Confirm Clear Records
+             * @constant
+             */
+            confirm_clear_records: true;
+        };
+        /** LocalInitialize */
+        LocalInitialize: {
+            /**
+             * Confirm Create Tables
+             * @constant
+             */
+            confirm_create_tables: true;
+        };
+        /** LocalPreferenceUpdate */
+        LocalPreferenceUpdate: {
+            /** Auto Titles */
+            auto_titles: boolean;
+            /** Enabled */
+            enabled: boolean;
+            /** Expected Revision */
+            expected_revision: number;
+        };
+        /** LocalPreferences */
+        LocalPreferences: {
+            /**
+             * Auto Titles
+             * @default false
+             */
+            auto_titles: boolean;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /**
+             * Revision
+             * @default 0
+             */
+            revision: number;
+        };
+        /** LocalProbe */
+        LocalProbe: Record<string, never>;
+        /** LocalStatus */
+        LocalStatus: {
+            /** Configured */
+            configured: boolean;
+            /** Family */
+            family?: string | null;
+            /** Message */
+            message: string;
+            /** Model */
+            model: string;
+            /** Model Digest */
+            model_digest: string;
+            /** Parameter Size */
+            parameter_size?: string | null;
+            preferences: components["schemas"]["LocalPreferences"];
+            /** Quantization */
+            quantization?: string | null;
+            /**
+             * Queue Length
+             * @default 0
+             */
+            queue_length: number;
+            /**
+             * Resource Hint
+             * @default 约4B参数的本地模型；实际内存、显存、速度和生成质量需在本机验收。
+             */
+            resource_hint: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "disabled" | "unavailable" | "model_missing" | "identity_mismatch" | "ready" | "busy";
+            /** Storage Ready */
+            storage_ready: boolean;
+            /**
+             * Title Max Characters
+             * @default 18
+             */
+            title_max_characters: number;
+        };
+        /** LocalTask */
+        LocalTask: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "title" | "summary" | "format" | "extract";
+            /** Automatic */
+            automatic: boolean;
+            /** Baseline Title */
+            baseline_title?: string | null;
+            /** Completed At */
+            completed_at?: string | null;
+            /** Conversation Id */
+            conversation_id?: string | null;
+            /** Created At */
+            created_at: string;
+            /** Error */
+            error?: string | null;
+            /** Id */
+            id: string;
+            /** Input Characters */
+            input_characters: number;
+            /** Input Sha256 */
+            input_sha256: string;
+            /** Input Truncated */
+            input_truncated: boolean;
+            /** Membership */
+            membership?: string | null;
+            /** Metadata Revision */
+            metadata_revision?: number | null;
+            /** Model */
+            model: string;
+            /** Model Digest */
+            model_digest: string;
+            /** Output */
+            output?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Output Available
+             * @default false
+             */
+            output_available: boolean;
+            /** Preferences Revision */
+            preferences_revision: number;
+            /** Request Sha256 */
+            request_sha256: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "queued" | "running" | "completed" | "failed" | "interrupted" | "superseded" | "skipped";
+            /**
+             * Title Applied
+             * @default false
+             */
+            title_applied: boolean;
+            /** Turn Id */
+            turn_id?: string | null;
+            /** Usage */
+            usage?: {
+                [key: string]: unknown;
+            };
+        };
+        /** LocalTaskRequest */
+        LocalTaskRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "title" | "summary" | "format" | "extract";
+            /**
+             * Output Format
+             * @default bullets
+             * @enum {string}
+             */
+            output_format: "paragraph" | "bullets" | "markdown";
+            /** Text */
+            text: string;
+        };
+        /** LocalTaskView */
+        LocalTaskView: {
+            task: components["schemas"]["LocalTask"];
+            /**
+             * Warning
+             * @default 本地助手结果可能遗漏信息，请自行核对；文本按原文重建，建议不会自动执行工具。
+             */
+            warning: string;
+        };
         /** Membership */
         Membership: {
             /** Expected Conversation Revision */
@@ -2743,6 +3055,35 @@ export interface components {
             title?: string | null;
             /** Year */
             year?: number | null;
+        };
+        /** PlotAppearance */
+        PlotAppearance: {
+            /**
+             * Font Size
+             * @default 12
+             */
+            font_size: number;
+            /**
+             * Labels
+             * @default none
+             * @enum {string}
+             */
+            labels: "none" | "row_number";
+            /**
+             * Width
+             * @default 1600
+             */
+            width: number;
+            /**
+             * X Label
+             * @default
+             */
+            x_label: string;
+            /**
+             * Y Label
+             * @default
+             */
+            y_label: string;
         };
         /** PlotDataPreview */
         PlotDataPreview: {
@@ -2859,6 +3200,7 @@ export interface components {
         };
         /** PlotPlanRequest */
         PlotPlanRequest: {
+            appearance?: components["schemas"]["PlotAppearance"];
             /**
              * Confirm External Data
              * @constant
@@ -3551,6 +3893,12 @@ export interface components {
             database_used_bytes?: number | null;
             /** Database Version */
             database_version?: string | null;
+            /**
+             * Deployment Mode
+             * @default native
+             * @enum {string}
+             */
+            deployment_mode: "native" | "container";
             /** Embedding Configured */
             embedding_configured: boolean;
             /** Embedding Dimension */
@@ -3799,6 +4147,18 @@ export interface components {
             response?: components["schemas"]["ChatResponse"] | null;
             /** Revision */
             revision: number;
+            /** Turn Id */
+            turn_id: string;
+        };
+        /** TurnDatasetRequest */
+        TurnDatasetRequest: {
+            /** Conversation Id */
+            conversation_id: string;
+            /**
+             * Query Index
+             * @default 0
+             */
+            query_index: number;
             /** Turn Id */
             turn_id: string;
         };
@@ -4748,6 +5108,73 @@ export interface operations {
             };
         };
     };
+    title_state_api_v1_conversations__conversation_id__local_title_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalTaskView"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     submit_api_v1_conversations__conversation_id__turns_post: {
         parameters: {
             query?: never;
@@ -5064,6 +5491,485 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    status_api_v1_local_assistant_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    clear_api_v1_local_assistant_clear_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalClear"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    initialize_api_v1_local_assistant_initialize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalInitialize"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    task_api_v1_local_assistant_jobs__task_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalTaskView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    submit_api_v1_local_assistant_jobs__task_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalTaskRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalTaskView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    preferences_api_v1_local_assistant_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalPreferenceUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    probe_api_v1_local_assistant_probe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalProbe"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7692,6 +8598,78 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["SnapshotDatasetRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlotDataset"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    turn_api_v1_projects__project_id__plotting_datasets__dataset_id__turn_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TurnDatasetRequest"];
             };
         };
         responses: {

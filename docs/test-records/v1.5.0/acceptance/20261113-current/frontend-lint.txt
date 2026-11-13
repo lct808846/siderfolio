@@ -1,0 +1,74 @@
+
+> astroagent-workbench@1.5.0-dev.0 lint
+> eslint . --max-warnings 0
+
+
+D:\project\astroagent\frontend\src\components\ConversationSidebar.vue
+  223:388  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  229:45   warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found    vue/multiline-html-element-content-newline
+  230:348  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  230:380  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  230:412  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  230:447  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  248:33   warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found    vue/multiline-html-element-content-newline
+  250:224  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  251:244  warning  Expected a space before '/>', but not found                                    vue/html-closing-bracket-spacing
+  254:18   warning  Expected 1 line break before closing tag (`</div>`), but no line breaks found  vue/multiline-html-element-content-newline
+
+D:\project\astroagent\frontend\src\components\ModelChangeNotice.vue
+  8:121  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+D:\project\astroagent\frontend\src\components\WorkspacePaneHeader.vue
+  2:43  warning  Prop 'subtitle' requires default value to be set  vue/require-default-prop
+
+D:\project\astroagent\frontend\src\views\App.vue
+  357:415  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  357:446  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  358:247  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  358:278  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  358:311  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  358:393  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+  361:298  warning  Expected a space before '/>', but not found  vue/html-closing-bracket-spacing
+
+D:\project\astroagent\frontend\src\views\KnowledgeWorkspace.vue
+  202:725   warning  Attribute "class" should go before "@click"                                   vue/attributes-order
+  202:2189  warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+  211:478   warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+
+D:\project\astroagent\frontend\src\views\PlotWorkspace.vue
+   14:62   warning  Prop 'projectIdentifier' requires default value to be set                          vue/require-default-prop
+   14:90   warning  Prop 'datasetIdentifier' requires default value to be set                          vue/require-default-prop
+   14:118  warning  Prop 'snapshotIdentifier' requires default value to be set                         vue/require-default-prop
+   14:147  warning  Prop 'queryNumber' requires default value to be set                                vue/require-default-prop
+   14:169  warning  Prop 'sourceTurn' requires default value to be set                                 vue/require-default-prop
+  264:82   warning  Expected 1 line break after opening tag (`<details>`), but no line breaks found    vue/multiline-html-element-content-newline
+  265:163  warning  Expected 1 line break before closing tag (`</details>`), but no line breaks found  vue/multiline-html-element-content-newline
+  277:62   warning  Expected 1 line break after opening tag (`<fieldset>`), but no line breaks found   vue/multiline-html-element-content-newline
+
+D:\project\astroagent\frontend\src\views\ProjectOverview.vue
+  175:1223  warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+  182:1926  warning  Attribute "class" should go before "@click"                                   vue/attributes-order
+  184:711   warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+
+D:\project\astroagent\frontend\src\views\ProjectWorkspace.vue
+  219:2009  warning  Attribute "class" should go before "@click"  vue/attributes-order
+  221:325   warning  Attribute "class" should go before "@click"  vue/attributes-order
+  224:690   warning  Attribute "class" should go before "@click"  vue/attributes-order
+
+D:\project\astroagent\frontend\src\views\RagWorkspace.vue
+  126:419   warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+  132:40    warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found   vue/multiline-html-element-content-newline
+  137:40    warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found   vue/multiline-html-element-content-newline
+  137:1303  warning  Attribute "class" should go before "@click"                                   vue/attributes-order
+
+D:\project\astroagent\frontend\src\views\WorkflowWorkspace.vue
+  197:486  warning  Attribute "class" should go before "@click"                                   vue/attributes-order
+  199:75   warning  Variable 'key' is already declared in the upper scope                         vue/no-template-shadow
+  204:259  warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+  212:103  warning  Expected 1 line break before closing tag (`</div>`), but 2 line breaks found  vue/multiline-html-element-content-newline
+  216:394  warning  Variable 'key' is already declared in the upper scope                         vue/no-template-shadow
+
+✖ 45 problems (0 errors, 45 warnings)
+  0 errors and 37 warnings potentially fixable with the `--fix` option.
+
+ESLint found too many warnings (maximum: 0).

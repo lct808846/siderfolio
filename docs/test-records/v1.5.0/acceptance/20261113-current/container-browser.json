@@ -1,0 +1,281 @@
+{
+  "config": {
+    "argv": [
+      "E:\\nodejs\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.container-current.ts",
+      "container-live.spec.ts"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.container-current.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/project/astroagent/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\frontend\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\frontend\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../docs/test-records/v1.5.0/acceptance/20261113-current/container-browser.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "container-live.spec.ts",
+      "file": "container-live.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "isolated container plot history works on desktop and narrow screens",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5843,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\u001b[22m\n\u001b[2m    8 × locator resolved to <button type=\"button\" class=\"plot-record\" aria-pressed=\"false\">…</button>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\u001b[22m\n\u001b[2m    8 × locator resolved to <button type=\"button\" class=\"plot-record\" aria-pressed=\"false\">…</button>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts:14:23",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                      "column": 23,
+                      "line": 14
+                    },
+                    "snippet": "  12 |     await page.goto(`/projects/${project!.id}/plotting`)\n  13 |     const run = page.locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\n> 14 |     await expect(run).toBeVisible()\n     |                       ^\n  15 |     await run.click()\n  16 |     await expect(page.getByRole('button', { name: '放大绘图' })).toBeVisible()\n  17 |     await expect(page.getByRole('button', { name: '保存所选文件 ZIP' })).toBeVisible()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                        "column": 23,
+                        "line": 14
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\u001b[22m\n\u001b[2m    8 × locator resolved to <button type=\"button\" class=\"plot-record\" aria-pressed=\"false\">…</button>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n\n  12 |     await page.goto(`/projects/${project!.id}/plotting`)\n  13 |     const run = page.locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\n> 14 |     await expect(run).toBeVisible()\n     |                       ^\n  15 |     await run.click()\n  16 |     await expect(page.getByRole('button', { name: '放大绘图' })).toBeVisible()\n  17 |     await expect(page.getByRole('button', { name: '保存所选文件 ZIP' })).toBeVisible()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts:14:23"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T00:17:06.623Z",
+                  "annotations": [],
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                    "column": 23,
+                    "line": 14
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4ecd8166ba589eef34aa-fb4f951e282f708f00fc",
+          "file": "container-live.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "isolated container plot history works on desktop and narrow screens",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5908,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\u001b[22m\n\u001b[2m    9 × locator resolved to <button type=\"button\" class=\"plot-record\" aria-pressed=\"false\">…</button>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\u001b[22m\n\u001b[2m    9 × locator resolved to <button type=\"button\" class=\"plot-record\" aria-pressed=\"false\">…</button>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts:14:23",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                      "column": 23,
+                      "line": 14
+                    },
+                    "snippet": "  12 |     await page.goto(`/projects/${project!.id}/plotting`)\n  13 |     const run = page.locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\n> 14 |     await expect(run).toBeVisible()\n     |                       ^\n  15 |     await run.click()\n  16 |     await expect(page.getByRole('button', { name: '放大绘图' })).toBeVisible()\n  17 |     await expect(page.getByRole('button', { name: '保存所选文件 ZIP' })).toBeVisible()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                        "column": 23,
+                        "line": 14
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\nExpected: visible\nReceived: hidden\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\u001b[22m\n\u001b[2m    9 × locator resolved to <button type=\"button\" class=\"plot-record\" aria-pressed=\"false\">…</button>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n\n  12 |     await page.goto(`/projects/${project!.id}/plotting`)\n  13 |     const run = page.locator('.plot-record').filter({ hasText: '运行 · 已完成' }).first()\n> 14 |     await expect(run).toBeVisible()\n     |                       ^\n  15 |     await run.click()\n  16 |     await expect(page.getByRole('button', { name: '放大绘图' })).toBeVisible()\n  17 |     await expect(page.getByRole('button', { name: '保存所选文件 ZIP' })).toBeVisible()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts:14:23"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T00:17:13.796Z",
+                  "annotations": [],
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                    "column": 23,
+                    "line": 14
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "4ecd8166ba589eef34aa-d98e9aa16c7d22ab8f6c",
+          "file": "container-live.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-13T00:17:05.599Z",
+    "duration": 14977.552,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

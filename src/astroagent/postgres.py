@@ -136,15 +136,51 @@ class PostgresRepository(ConversationRepository):
         super().__init__(settings)
         self.path = None  # No runtime SQLite pathname, including error fallback.
         self.session = None
+        self._session_required = False
 
     def connect(self):
         try:
             import psycopg
 
-            if self.session is not None:
-                if self.session.closed:
-                    raise RuntimeError("Single-worker lock session was lost")
-                self.session.execute("SELECT 1")
+            with self.mutex:
+                if self._session_required:
+                    try:
+                        if self.session is None or self.session.closed:
+                            raise RuntimeError("Lock session was lost")
+                        self.session.execute("SELECT 1")
+                    except Exception:
+                        if self.session is not None:
+                            self.session.close()
+                        self.session = None
+                        # Reconnect the lock only; never create tables, migrate or replay tasks.
+                        replacement = psycopg.connect(
+                            self.settings.database_url.get_secret_value(),
+                            autocommit=True,
+                            connect_timeout=5,
+                            options="-c statement_timeout=5000 -c search_path=public",
+                        )
+                        try:
+                            if not replacement.execute(
+                                "SELECT pg_try_advisory_lock(%s)", (LOCK_ID,)
+                            ).fetchone()[0]:
+                                raise RuntimeError("Database acquired by another process")
+                            row = replacement.execute(
+                                "SELECT value FROM astroagent_meta WHERE key='schema_version'"
+                            ).fetchone()
+                            extensions = {
+                                r[0]
+                                for r in replacement.execute("SELECT extname FROM pg_extension")
+                            }
+                            if (
+                                not row
+                                or row[0] != str(SCHEMA_VERSION)
+                                or not {"vector", "pg_trgm"} <= extensions
+                            ):
+                                raise RuntimeError("Database identity contract changed")
+                            self.session = replacement
+                        except BaseException:
+                            replacement.close()
+                            raise
 
             return psycopg.connect(
                 self.settings.database_url.get_secret_value(),
@@ -182,6 +218,7 @@ class PostgresRepository(ConversationRepository):
                 raise ServiceError(
                     503, "database_in_use", "此数据库已有AstroAgent进程，请只启动一个worker。"
                 )
+            self._session_required = True
             with self.connection() as db:
                 meta = db.execute("SELECT to_regclass('public.astroagent_meta')").fetchone()[0]
                 if not meta:
@@ -287,12 +324,14 @@ class PostgresRepository(ConversationRepository):
 
     @staticmethod
     def _used(db):
+        from astroagent.local_model_store import used as local_used
         from astroagent.plot_store import used
         from astroagent.rag_store import used_bytes
 
-        return ConversationRepository._used(db) + used_bytes(db) + used(db)
+        return ConversationRepository._used(db) + used_bytes(db) + used(db) + local_used(db)
 
     def close(self):
+        self._session_required = False
         if self.session is not None:
             self.session.close()
             self.session = None

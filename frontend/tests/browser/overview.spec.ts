@@ -20,7 +20,7 @@ test('project overview creates and removes an explicit evidence link', async ({ 
     await page.getByRole('button', { name: '检索原文证据' }).click()
     await page.getByRole('button', { name: '核对引用与原始版本' }).first().click()
     await page.getByRole('link', { name: '关联此原文与项目结果' }).click()
-    await expect(page.getByRole('heading', { name: '把结果与原文放在一起核对' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '来源关联' })).toBeVisible()
     const target = page.getByLabel('同项目结果')
     await expect(target.locator('option')).toHaveCount(2)
     await target.selectOption({ index: 1 })

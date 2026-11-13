@@ -3,7 +3,7 @@
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, StrictInt, field_validator
 
 from astroagent.attachment_schemas import ChatAttachment
 from astroagent.export_schemas import PlotSpec
@@ -61,6 +61,7 @@ class Conversation(BaseModel):
 
 
 class Turn(BaseModel):
+    _auto_title_eligible: bool = PrivateAttr(default=False)
     conversation_id: str
     turn_id: str
     revision: int

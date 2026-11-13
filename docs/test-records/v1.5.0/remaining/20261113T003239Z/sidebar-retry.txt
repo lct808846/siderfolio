@@ -1,0 +1,19 @@
+[WebServer] INFO:     Started server process [41840]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:4792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:16692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\remaining-acceptance.spec.ts:52:1 › rename, pin and export a noncurrent conversation; cancel deletion (4.2s)
+  ok 2 [chromium] › tests\browser\remaining-acceptance.spec.ts:101:1 › bulk deletion preserves the failed item and returns after deleting the current item (2.2s)
+(node:2956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [edge] › tests\browser\remaining-acceptance.spec.ts:52:1 › rename, pin and export a noncurrent conversation; cancel deletion (4.9s)
+  ok 4 [edge] › tests\browser\remaining-acceptance.spec.ts:101:1 › bulk deletion preserves the failed item and returns after deleting the current item (2.1s)
+
+  4 passed (35.7s)

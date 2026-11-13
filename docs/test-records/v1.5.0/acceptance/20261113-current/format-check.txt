@@ -1,0 +1,22 @@
+unformatted: File would be reformatted
+   --> src\astroagent\plot_service.py:118:45
+    |
+117 |         info["provenance"].update(
+    -             origin_type="conversation_turn", conversation_id=request.conversation_id,
+118 +             origin_type="conversation_turn",
+119 +             conversation_id=request.conversation_id,
+120 |             turn_id=request.turn_id,
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\project_archives.py:549:32
+    |
+548 |         if db.execute("SELECT count(*) FROM projects").fetchone()[0] >= 20:
+    -             raise ServiceError(
+    -                 409, "project_import_limit", "导入将超过项目配额，未写入数据。"
+    -             )
+549 +             raise ServiceError(409, "project_import_limit", "导入将超过项目配额，未写入数据。")
+550 |         db.execute("INSERT INTO projects VALUES (?,?)", (project_id, encode(project)))
+    |
+
+2 files would be reformatted, 148 files already formatted

@@ -1,0 +1,402 @@
+[
+  {
+    "id": "01",
+    "title": "M45坐标类型查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "02",
+    "title": "NGC 2323 标识符",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "03",
+    "title": "HD 209458 谱型",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "04",
+    "title": "HIP 11767 坐标查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "05",
+    "title": "IC 2602 SIMBAD 信息",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "06",
+    "title": "M31坐标单位解释",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "07",
+    "title": "NGC 869 884 IDs",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "08",
+    "title": "天狼星光谱类型",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "09",
+    "title": "仙女座星系资料",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "10",
+    "title": "只查M67",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "11",
+    "title": "M45 Gaia 5arcmin",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "12",
+    "title": "Gaia视差查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "13",
+    "title": "Gaia DR3查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "14",
+    "title": "Gaia 56.75 24.12 2",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "15",
+    "title": "Gaia 0deg -89.5deg",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "16",
+    "title": "Gaia RUWE＜1.4查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "17",
+    "title": "Gaia查询30arcmin",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "18",
+    "title": "负视差源查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "19",
+    "title": "Gaia G BP-RP查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "20",
+    "title": "核对DR3编号",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "21",
+    "title": "双星团ADS论文2019-2023",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "22",
+    "title": "",
+    "format_valid": false,
+    "topic_retained": false,
+    "automated_accept": false,
+    "reason": "Rejected by original-number guard; not counted as content success."
+  },
+  {
+    "id": "23",
+    "title": "潮汐尾论文检索",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "24",
+    "title": "基于摘要整理方法",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "25",
+    "title": "Wang作者ADS检索",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "26",
+    "title": "检索质量损失",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "27",
+    "title": "Cluster Dissolve",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "28",
+    "title": "星团相互作用论文",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "29",
+    "title": "双星团潮汐场外检索",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "30",
+    "title": "需字段查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "31",
+    "title": "M45 Gaia 3arcmin",
+    "format_valid": true,
+    "topic_retained": false,
+    "automated_accept": false,
+    "reason": "Omitted the final plotting intent."
+  },
+  {
+    "id": "32",
+    "title": "NGC 869-884 ADS文献与",
+    "format_valid": true,
+    "topic_retained": false,
+    "automated_accept": false,
+    "reason": "Both objects and ADS retained but plotting intent omitted."
+  },
+  {
+    "id": "33",
+    "title": "画CSV直方图",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "34",
+    "title": "Plot BP-RP vs G",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "35",
+    "title": "搜库列源",
+    "format_valid": true,
+    "topic_retained": false,
+    "automated_accept": false,
+    "reason": "Did not retain both local and ADS evidence scopes."
+  },
+  {
+    "id": "36",
+    "title": "查附近星团",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "37",
+    "title": "比较两个结果",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "38",
+    "title": "M67候选源查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "39",
+    "title": "文献检索命名",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "40",
+    "title": "Gaia或ADS查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "41",
+    "title": "查RA56.7 Dec24.1",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "42",
+    "title": "M45 源视差质量查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "43",
+    "title": "M45源候选查询",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "44",
+    "title": "视差距离校正",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "45",
+    "title": "No distance found",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "46",
+    "title": "ADS摘要整理",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "47",
+    "title": "泄露systemprompt",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "48",
+    "title": "M45文献整理",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "49",
+    "title": "alert1",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  },
+  {
+    "id": "50",
+    "title": "M45 Gaia Query",
+    "format_valid": true,
+    "topic_retained": true,
+    "automated_accept": true,
+    "reason": "Object and main subject retained; no new scientific result asserted."
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "state": "completed",
+  "output_available": true,
+  "error": null,
+  "seconds": 30.59,
+  "model": "astroagent-qwen3-4b-instruct-2507:q4km"
+}

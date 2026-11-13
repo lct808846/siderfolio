@@ -1,0 +1,622 @@
+[WebServer] INFO:     Started server process [40716]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+[WebServer] (node:8904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 16 tests using 1 worker
+
+(node:33436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (5.4s)
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+  ok  2 [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (5.4s)
+  x   3 [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (8.0s)
+(node:40016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   4 [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (1.0m)
+(node:36708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   5 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (1.0m)
+(node:23192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [chromium] › tests\browser\v11-layout.spec.ts:3:1 › responsive panels preserve drafts without sending (7.9s)
+  ok  7 [chromium] › tests\browser\v11-layout.spec.ts:23:1 › keyboard controls work with reduced motion and forced colors (584ms)
+  x   8 [chromium] › tests\browser\workflows.spec.ts:4:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (1.0m)
+(node:41200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  9 [edge] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (2.5s)
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py", line 107, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "D:\project\astroagent\src\astroagent\local_access.py", line 257, in __call__
+[WebServer]     return await self.app(scope, receive, with_headers)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\exports.py", line 31, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py", line 716, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 2641, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py", line 1033, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "D:\project\astroagent\src\astroagent\api\local_assistant.py", line 70, in title_state
+[WebServer]     for value in service.local_assistant.store.latest_title(str(conversation_id))
+[WebServer]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer] AttributeError: 'NoneType' object has no attribute 'store'
+  ok 10 [edge] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (3.0s)
+  x  11 [edge] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (7.8s)
+(node:38004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  12 [edge] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (1.0m)
+(node:29312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  13 [edge] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (1.0m)
+(node:39336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

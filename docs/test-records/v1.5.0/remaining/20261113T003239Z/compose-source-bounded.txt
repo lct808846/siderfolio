@@ -1,0 +1,8 @@
+failed to connect to the docker API at npipe:////./pipe/docker_engine; check if the path is correct and if the daemon is running: open //./pipe/docker_engine: The system cannot find the file specified.
+Could not prepare the dedicated model volume; existing data volumes were retained.
+At D:\project\astroagent\scripts\containers.ps1:29 char:36
++ ... DE -ne 0) { throw 'Could not prepare the dedicated model volume; exis ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Could not prepa... were retained.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Could not prepare the dedicated model volume; existing data volumes were retained.
+ 

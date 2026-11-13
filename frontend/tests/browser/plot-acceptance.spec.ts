@@ -9,6 +9,9 @@ test('plot workflow requires confirmations before model and execution', async ({
   await page.route('**/api/v1/**', async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname
     const json = (body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) })
+    if (path === '/api/v1/conversations') return json([])
+    if (path === '/api/v1/projects') return json([{ id: projectId, name: '合成项目', revision: 0 }])
+    if (path === '/api/v1/projects/memberships') return json({})
     if (path === '/api/v1/models') return json({ configured: true, default_model: 'synthetic', models: [{ id: 'synthetic', label: 'synthetic' }] })
     if (path === '/api/v1/setup/plotting') return json({ storage_ready: true, execution_configured: true, message: '合成测试' })
     if (path === `/api/v1/projects/${projectId}`) return json({ id: projectId, name: '合成项目', snapshots: [], revision: 0, conversation_ids: [] })
@@ -40,7 +43,7 @@ test('plot workflow requires confirmations before model and execution', async ({
   expect(plans).toBe(0)
   await page.getByLabel(/确认将需求、列信息/).check()
   await page.getByRole('button', { name: '生成绘图方案' }).click()
-  await expect(page.getByText('实际绘图脚本')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()
   expect(plans).toBe(1)
   await expect(page.getByRole('button', { name: '确认隔离执行' })).toBeDisabled()
   expect(runs).toBe(0)

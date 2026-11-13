@@ -274,11 +274,7 @@ def decode_archive(raw):
             or not isinstance(project_file["reruns"], list)
         ):
             raise ValueError("Invalid collections")
-        if (
-            len(snapshots_raw) > 100
-            or len(conversations_raw) > 20
-            or len(project_file["reruns"]) > 100
-        ):
+        if len(snapshots_raw) > 100 or len(project_file["reruns"]) > 100:
             raise ValueError("Too many records")
         snapshots = [
             Snapshot.model_validate(s).verify_digest().model_dump(mode="json")
@@ -549,15 +545,8 @@ def import_archive(repository, raw):
         if repository.repo._used(db) + incoming > repository.settings.storage_bytes:
             raise ServiceError(409, "project_import_limit", "完整导入内容超过剩余存储预算。")
     with repository.repo.connection() as db, repository.repo.transaction(db):
-        if (
-            db.execute("SELECT count(*) FROM projects").fetchone()[0] >= 20
-            or db.execute("SELECT count(*) FROM conversations").fetchone()[0]
-            + len(bundle["conversations"])
-            > repository.settings.max_conversations
-        ):
-            raise ServiceError(
-                409, "project_import_limit", "导入将超过项目或会话配额，未写入数据。"
-            )
+        if db.execute("SELECT count(*) FROM projects").fetchone()[0] >= 20:
+            raise ServiceError(409, "project_import_limit", "导入将超过项目配额，未写入数据。")
         db.execute("INSERT INTO projects VALUES (?,?)", (project_id, encode(project)))
         for entry in bundle["conversations"]:
             c = deepcopy(entry["conversation"])
@@ -570,7 +559,9 @@ def import_archive(repository, raw):
             db.execute("INSERT INTO project_conversations VALUES (?,?)", (c["id"], project_id))
             for source_turn in entry["turns"]:
                 if len(entry["turns"]) > repository.settings.max_turns:
-                    raise ServiceError(409, "project_import_limit", "归档轮次超过当前会话配额。")
+                    raise ServiceError(
+                        409, "project_import_limit", "归档轮次超过单个会话的轮次上限。"
+                    )
                 t = deepcopy(source_turn)
                 t.update(turn_id=id_map["turns"][t["turn_id"]], conversation_id=c["id"])
                 context = t["context"]

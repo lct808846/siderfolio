@@ -32,6 +32,7 @@ export const plottingApi = {
     return (await binary(`${root(project)}/datasets/${id}/upload`, 'PUT', form)).json() as Promise<PlotDataset>
   },
   snapshot: (project: string, id: string, snapshot_id: string, query_index: number) => request<PlotDataset>(`${root(project)}/datasets/${id}/snapshot`, 'PUT', { snapshot_id, query_index }),
+  turn: (project: string, id: string, source: { conversation_id: string; turn_id: string; query_index: number }) => request<PlotDataset>(`${root(project)}/datasets/${id}/turn`, 'PUT', source),
   preview: (project: string, id: string) => request<DatasetPreview>(`${root(project)}/datasets/${id}/preview`),
   plan: (project: string, id: string, payload: PlotPlanRequest) => request<PlotOperation>(`${root(project)}/plans/${id}`, 'PUT', payload),
   run: (project: string, id: string, payload: PlotRunRequest) => request<PlotOperation>(`${root(project)}/runs/${id}`, 'PUT', payload),

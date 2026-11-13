@@ -173,6 +173,7 @@ class RagStatus(Contract):
 
 
 class SetupStatus(Contract):
+    deployment_mode: Literal["native", "container"] = "native"
     runtime_database: Literal["postgresql"] = "postgresql"
     configured: bool
     ready: bool

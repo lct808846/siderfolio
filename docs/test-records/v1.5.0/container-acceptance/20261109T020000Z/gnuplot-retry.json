@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "run_id": "401bcb92-0e0b-488a-9b8d-00ef79adb5cf",
+  "bundle_matches": true,
+  "isolation": "docker-desktop-wsl2-v1",
+  "seconds": 9.09
+}

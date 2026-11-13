@@ -1,0 +1,9 @@
+{
+  "large_storage": "passed: dedicated temporary PostgreSQL, 256 MiB payload; original intact",
+  "auto_title_races": "passed: 17 isolated PostgreSQL cases plus 24 client-boundary cases",
+  "archive_browser": "passed: Chromium and Edge full snapshots/export/import/reload/delete; mobile main height checked",
+  "workflow_browser": "passed: Chromium and Edge success/export/refresh and failure/cancel/resume/attempt history",
+  "quality": "passed under frozen thresholds, source-grounded scope; rejected title22 retained",
+  "release": "local gates passed; exact-commit remote CI and release verification pending",
+  "dependency_security": "npm audit: 0 known vulnerabilities after fixes"
+}

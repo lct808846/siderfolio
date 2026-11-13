@@ -1,0 +1,7 @@
+{
+  "DEEPSEEK_API_KEY": "",
+  "DEEPSEEK_BASE_URL": "https://api.deepseek.com",
+  "DEEPSEEK_MODEL": "deepseek-flash",
+  "CHAT_MODELS": [],
+  "ADS_API_TOKEN": ""
+}

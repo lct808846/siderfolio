@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import WorkspaceHeader from '../components/WorkspaceHeader.vue'
+import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import PanelSwitcher from '../components/PanelSwitcher.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -12,6 +13,7 @@ import type { AdsEvidenceParameters, ChatResponse, GaiaFieldParameters, ProjectD
 const route = useRoute(), router = useRouter()
 const project = ref<ProjectDetail | null>(null), catalog = ref<WorkflowTemplate[]>([]), runs = ref<WorkflowSummary[]>([])
 const run = ref<WorkflowDetail | null>(null), busy = ref(false), error = ref(''), message = ref(''), mobilePanel = ref('project')
+const editing = ref(!route.params.runId)
 const templateId = ref<'gaia_field' | 'ads_evidence'>('gaia_field'), name = ref('')
 const mode = ref<'name' | 'coordinates'>('coordinates'), objectName = ref(''), ra = ref(''), dec = ref('')
 const radius = ref(''), limit = ref(''), ruwe = ref(''), snr = ref(''), distance = ref(false)
@@ -26,6 +28,14 @@ const labels: Record<string, string> = { pending: '待执行', running: '运行�
 const plotNames = { proper_motion: '自行散点图', parallax_histogram: '视差直方图', observed_cmd: '观测颜色—星等图' }
 const print = (value: unknown) => JSON.stringify(value, null, 2)
 const state = (value: string) => labels[value] || value
+const parameterNames: Record<string, string> = { input_mode: '坐标来源', object_name: '天体名称', ra_deg: 'ICRS 赤经（度）', dec_deg: 'ICRS 赤纬（度）', radius_arcmin: '半径（角分）', limit: '交付行上限', ruwe_max: 'RUWE 上限', parallax_snr_min: '视差信噪比下限', estimate_distance: '近似距离估算', plots: '所选图表', query: 'ADS 检索式', rows: '本页篇数', start: '起始偏移', sort: '排序' }
+function parameterValue(key: string, value: unknown): string {
+  if (value === null || value === undefined || value === '') return '未设置'
+  if (key === 'input_mode') return value === 'coordinates' ? '明确的 ICRS 坐标' : 'SIMBAD 名称解析'
+  if (Array.isArray(value)) return value.map(v => plotNames[v as keyof typeof plotNames] || String(v)).join('、') || '未选择'
+  if (typeof value === 'boolean') return value ? '启用' : '不启用'
+  return ({ date_desc: '发表日期降序', citation_count_desc: '被引次数降序', relevance: '相关度降序' } as Record<string, string>)[String(value)] || String(value)
+}
 const completed = computed(() => run.value?.steps.filter(s => ['succeeded', 'skipped'].includes(s.state)).length || 0)
 const snapshotId = computed(() => run.value?.steps.flatMap(s => s.attempts ?? []).find(a => a.snapshot_id)?.snapshot_id)
 const response = computed(() => {
@@ -133,27 +143,34 @@ async function copyParameters() {
     snr.value = p.parallax_snr_min == null ? '' : String(p.parallax_snr_min); distance.value = p.estimate_distance === true
     plots.value = (p.plots || []) as typeof plots.value
   } else { query.value = String(p.query); rows.value = String(p.rows); start.value = String(p.start); sort.value = p.sort as typeof sort.value }
-  await router.push(`/projects/${r.project_id}/workflows`); mobilePanel.value = 'project'
+  await router.push(`/projects/${r.project_id}/workflows`); editing.value = true; mobilePanel.value = 'steps'
   message.value = '已复制参数到新建表单。确认参数后创建，再单独确认执行。'
 }
 watch(() => route.fullPath, () => {
   dialog.value?.close(); action.value = ''
   navigation++; run.value = null; project.value = null; pending.value = null; error.value = ''; message.value = ''
-  mobilePanel.value = route.params.runId ? 'steps' : 'project'
+  editing.value = !route.params.runId
+  mobilePanel.value = 'steps'
   const path = route.fullPath
   void refresh().catch(e => { if (route.fullPath === path) { report(e); mobilePanel.value = 'steps' } })
 }, { immediate: true })
 </script>
 
 <template>
-  <div class="workspace-panes project-workspace workflow-workspace" :data-panel="mobilePanel">
+  <div class="workspace-panes project-workspace workflow-workspace" :data-panel="mobilePanel" :data-results-open="!!run && !editing">
     <WorkspaceHeader title="固定科研流程" />
-    <PanelSwitcher v-model="mobilePanel" label="流程面板" :options="[{ value: 'project', label: '流程与参数' }, { value: 'steps', label: '执行记录' }, { value: 'results', label: '结果与下载' }]" />
+    <PanelSwitcher v-model="mobilePanel" label="流程面板" :options="[{ value: 'project', label: '流程列表' }, { value: 'steps', label: '参数与记录' }, { value: 'results', label: '结果与下载' }]" />
     <aside class="project-sidebar workflow-sidebar" aria-label="流程列表与新建">
       <RouterLink :to="`/projects/${route.params.projectId}/workflows`"><p class="eyebrow">WORKFLOWS · {{ runs.length }}/50</p><h2>{{ project?.name || '正在读取项目' }}</h2></RouterLink>
       <RouterLink v-for="item in runs" :key="item.id" class="project-item" :class="{selected:item.id===run?.id}" :to="`/projects/${item.project_id}/workflows/${item.id}`"><b>{{ item.name }}</b><small>{{ state(item.state) }} · r{{ item.revision }} · {{ item.provenance==='local' ? '本机' : '导入只读' }}</small></RouterLink>
-      <form class="project-form workflow-form" @submit.prevent="create">
-        <h2>新建运行</h2><p class="small muted">创建只保存参数。执行需另行确认。</p>
+      <button type="button" class="plot-primary" :disabled="busy" @click="router.push(`/projects/${route.params.projectId}/workflows`); editing = true; mobilePanel = 'steps'">新建科研流程</button>
+    </aside>
+    <main class="project-main workflow-main">
+      <WorkspacePaneHeader :title="editing ? '新建科研流程' : run?.name || '科研流程'" :level="1" :subtitle="project?.name" />
+      <div class="workspace-pane-body">
+      <div class="workflow-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在处理。断线不会取消已提交的执行，可刷新读取当前步骤。</p><button :disabled="refreshing" @click="refreshStatus">{{ refreshing ? '正在读取…' : '刷新记录' }}</button></div>
+      <form v-if="editing" class="project-form workflow-form" @submit.prevent="create">
+        <h2>参数设置</h2><p class="small muted">创建只保存参数。执行需另行确认。</p>
         <fieldset :disabled="busy || !project">
 <label for="workflow-template">固定模板</label><select id="workflow-template" v-model="templateId"><option v-for="item in catalog" :key="item.id" :value="item.id">{{ item.title }} · v{{ item.version }}</option></select>
           <label for="workflow-name">运行名称</label><input id="workflow-name" v-model="name" required maxlength="100">
@@ -174,25 +191,26 @@ watch(() => route.fullPath, () => {
           <button class="button-primary" :disabled="!name.trim() || runs.length>=50">创建待执行记录</button>
         </fieldset>
       </form>
-    </aside>
-    <main class="project-main workflow-main">
-      <div class="workflow-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在处理。断线不会取消已提交的执行，可刷新读取当前步骤。</p><button :disabled="refreshing" @click="refreshStatus">{{ refreshing ? '正在读取…' : '刷新记录' }}</button></div>
-      <template v-if="run">
+      <template v-if="run && !editing">
         <header class="project-heading">
-<p class="eyebrow">{{ run.template_id }} / v{{ run.template_version }} / r{{ run.revision }}</p><h1>{{ run.name }}</h1><p>{{ state(run.state) }} · {{ completed }}/{{ run.steps.length }} 步已完成或跳过</p><code>{{ run.id }}</code><p v-if="run.provenance==='imported_unverified'" class="notice">导入只读 · 来源未经认证。包内哈希不证明来源真实性；需要重新查询时，复制参数并建立本机新运行。</p><p v-if="run.error" class="notice danger">{{ run.error.message }} <code>{{ run.error.code }}</code></p>
-          <div class="project-actions"><RouterLink :to="{path:`/projects/${run.project_id}/overview`,query:{target_type:'workflow_run',target_id:run.id}}">关联本地原文证据 →</RouterLink><button v-if="canExecute" class="button-primary" :disabled="busy" @click="confirm('execute')">{{ run.state==='pending' ? '核对并启动' : '核对并继续' }}</button><button :disabled="busy" @click="copyParameters">复制参数，新建运行</button><button :disabled="busy || run.state==='running' || !!pending" @click="confirm('delete')">删除流程</button><RouterLink v-if="snapshotId" :to="`/projects/${run.project_id}?snapshot=${snapshotId}`">查看保存快照 →</RouterLink></div>
+<p class="eyebrow">{{ run.template_id }} / v{{ run.template_version }} / r{{ run.revision }}</p><h2>运行记录</h2><p>{{ state(run.state) }} · {{ completed }}/{{ run.steps.length }} 步已完成或跳过</p><code>{{ run.id }}</code><p v-if="run.provenance==='imported_unverified'" class="notice">导入只读 · 来源未经认证。包内哈希不证明来源真实性；需要重新查询时，复制参数并建立本机新运行。</p><p v-if="run.error" class="notice danger">{{ run.error.message }} <code>{{ run.error.code }}</code><span v-if="run.error.code === 'gaia_timeout'"> 本次未取得数据；已完成步骤保留。等待服务恢复后，可核对并继续，不会自动重复执行。</span></p>
+          <div class="project-actions"><RouterLink :to="{path:`/projects/${run.project_id}/overview`,query:{target_type:'workflow_run',target_id:run.id}}">关联本地原文证据 →</RouterLink><button v-if="canExecute" class="button-primary" :disabled="busy" @click="confirm('execute')">{{ run.state==='pending' ? '核对并启动' : '核对并继续' }}</button><button :disabled="busy" @click="copyParameters">复制参数，新建运行</button><button :disabled="busy || run.state==='running' || !!pending" class="button-danger" @click="confirm('delete')">删除流程</button><RouterLink v-if="snapshotId" :to="`/projects/${run.project_id}?snapshot=${snapshotId}`">查看保存快照 →</RouterLink></div>
           <div v-if="pending" class="notice"><p>此请求还未确认结束。刷新只读取状态；下方按钮使用原请求编号核对，不会自动重放步骤。</p><code>{{ pending.client_request_id }}</code><button :disabled="busy" @click="executePending">用原请求编号核对</button></div>
-          <details open><summary>保存的明确参数 · 不随继续操作改变</summary><pre>{{ print(run.parameters) }}</pre></details><details><summary>创建时输入与软件版本</summary><pre>{{ print({requested_parameters:run.requested_parameters,software:run.software,created_at:run.created_at,updated_at:run.updated_at,original_id:run.original_id,archive_sha256:run.archive_sha256}) }}</pre></details>
+          <dl class="workflow-parameter-summary"><template v-for="(value, parameterKey) in run.parameters" :key="parameterKey"><dt>{{ parameterNames[parameterKey] || parameterKey }}</dt><dd>{{ parameterValue(String(parameterKey), value) }}</dd></template></dl><details><summary>原始参数 JSON · 不随继续操作改变</summary><pre>{{ print(run.parameters) }}</pre></details><details><summary>创建时输入与软件版本</summary><pre>{{ print({requested_parameters:run.requested_parameters,software:run.software,created_at:run.created_at,updated_at:run.updated_at,original_id:run.original_id,archive_sha256:run.archive_sha256}) }}</pre></details>
         </header>
         <section aria-label="步骤与尝试" class="workflow-steps"><article v-for="(step, index) in run.steps" :key="step.id" class="workflow-step"><header><span class="workflow-number">{{ index+1 }}</span><h2>{{ step.title }}</h2><span class="tag" :class="{error:['failed','interrupted'].includes(step.state)}">{{ state(step.state) }}</span></header><p v-if="step.skip_reason" class="small muted">{{ step.skip_reason }}</p><p v-if="!(step.attempts?.length || 0) && step.state!=='skipped'" class="small muted">尚未执行，不存在实际结果。</p><details v-for="attempt in step.attempts" :key="attempt.id" :open="attempt.state!=='succeeded'"><summary>尝试 {{ attempt.sequence }}/5 · {{ state(attempt.state) }} · {{ attempt.started_at }}</summary><p class="small">查询：{{ attempt.query_status || '不适用' }} · 导出：{{ attempt.export_status || '不适用' }} · {{ attempt.elapsed_seconds == null ? '耗时未确认' : `${attempt.elapsed_seconds.toFixed(2)}秒` }}</p><p v-if="attempt.error" class="notice danger">{{ attempt.error.message }} <code>{{ attempt.error.code }}</code></p><p v-for="warning in attempt.warnings" :key="warning" class="small muted">{{ warning }}</p><details><summary>实际输入、依赖、软件及请求编号</summary><pre>{{ print({input:attempt.input,input_sha256:attempt.input_sha256,dependencies:attempt.dependencies,software:attempt.software,attempt_id:attempt.id,operation_id:attempt.operation_id,client_request_id:attempt.client_request_id,completed_at:attempt.completed_at}) }}</pre></details><details v-if="attempt.output"><summary>完整步骤输出及哈希</summary><code>{{ attempt.output_sha256 }}</code><pre>{{ print(attempt.output) }}</pre></details></details></article></section>
         <details><summary>执行请求历史（继续会新建请求及失败步骤的尝试）</summary><pre>{{ print(run.operations) }}</pre></details>
       </template>
-      <div v-else class="workflow-intro"><p class="eyebrow">FIXED RESEARCH WORKFLOWS</p><h1>参数明确，逐步留存</h1><p>选择两个固定模板之一，创建运行后核对参数并确认执行。成功步骤作为检查点保留，失败或中断后由你确认继续。</p><p class="small muted">流程同步执行，不调用语言模型。位置候选源不等于星团成员，ADS证据表仅含实际返回的书目与摘要。</p></div>
+      <div v-else-if="!editing" class="workflow-intro"><p class="eyebrow">FIXED RESEARCH WORKFLOWS</p><h1>参数明确，逐步留存</h1><p>选择两个固定模板之一，创建运行后核对参数并确认执行。成功步骤作为检查点保留，失败或中断后由你确认继续。</p><p class="small muted">流程同步执行，不调用语言模型。位置候选源不等于星团成员，ADS证据表仅含实际返回的书目与摘要。</p></div>
+</div>
     </main>
-    <section class="workflow-results" aria-label="流程结果与持久输出">
+    <section v-if="run && !editing" class="workflow-results" aria-label="流程结果与持久输出">
+      <WorkspacePaneHeader title="结果与下载" :level="2" />
+      <div class="workspace-pane-body">
       <section class="workflow-downloads"><p class="eyebrow">DURABLE OUTPUTS</p><h2>保存的输出文件</h2><p v-if="!run?.outputs.length" class="small muted">尚无已保存文件。导出失败时请先核对查询步骤和项目快照。</p><article v-for="output in run?.outputs" :key="output.id" class="workflow-output"><b>{{ output.filename }}</b><p class="small muted">{{ output.bytes }} 字节 · {{ output.provenance==='local' ? '本机生成' : '导入未认证' }}</p><details><summary>SHA-256与归属</summary><pre>{{ print(output) }}</pre></details><button :disabled="busy" @click="download(output)">核对哈希并下载</button></article><figure v-for="picture in pictures" :key="picture.id"><img :src="apiUrl(outputPath(picture))" :alt="picture.filename" loading="lazy" @error="error='保存的图片不可用，请刷新记录核对。'"><figcaption>{{ picture.filename }} · 只描述交付样本</figcaption></figure><details v-if="evidence"><summary>ADS证据表与CSV变更说明 · 原值保留</summary><pre>{{ print(evidence) }}</pre></details></section>
       <ResultPanel :turn="resultTurn" :historical="true" :disable-export="true" heading="本次流程的实际数据" />
+</div>
     </section>
-    <dialog ref="dialog" class="project-dialog" @close="action=''"><template v-if="action==='delete'"><h2>删除流程与专属文件</h2><p>将删除此流程的步骤、尝试与下载文件。已保存的项目快照和原始会话保留。</p></template><template v-else><h2>{{ run?.state==='pending' ? '确认启动科研流程' : '确认继续科研流程' }}</h2><p>将按下列保存参数按需访问外部科研服务。成功步骤通过完整性与版本核对后复用；失败或中断步骤新建尝试，远端可能已经执行过。</p><pre>{{ print(run?.parameters) }}</pre><ol><li v-for="step in run?.steps" :key="step.id">{{ step.title }} · {{ state(step.state) }}</li></ol><p>未调用模型；查询、保存和导出状态分别记录。确认后同步执行，请保留页面。</p></template><div class="project-actions"><button @click="dialog?.close()">取消</button><button class="button-primary" :disabled="busy" @click="confirmed">{{ action==='delete' ? '确认删除' : '确认执行' }}</button></div></dialog>
+    <dialog ref="dialog" class="project-dialog" @close="action=''"><template v-if="action==='delete'"><h2>删除流程与专属文件</h2><p>将删除此流程的步骤、尝试与下载文件。已保存的项目快照和原始会话保留。</p></template><template v-else><h2>{{ run?.state==='pending' ? '确认启动科研流程' : '确认继续科研流程' }}</h2><p>将按下列保存参数按需访问外部科研服务。成功步骤通过完整性与版本核对后复用；失败或中断步骤新建尝试，远端可能已经执行过。</p><dl v-if="run" class="workflow-parameter-summary"><template v-for="(value, parameterKey) in run.parameters" :key="parameterKey"><dt>{{ parameterNames[parameterKey] || parameterKey }}</dt><dd>{{ parameterValue(String(parameterKey), value) }}</dd></template></dl><details><summary>原始参数 JSON</summary><pre>{{ print(run?.parameters) }}</pre></details><ol><li v-for="step in run?.steps" :key="step.id">{{ step.title }} · {{ state(step.state) }}</li></ol><p>未调用模型；查询、保存和导出状态分别记录。确认后同步执行，请保留页面。</p></template><div class="project-actions"><button @click="dialog?.close()">取消</button><button class="button-primary" :disabled="busy" @click="confirmed">{{ action==='delete' ? '确认删除' : '确认执行' }}</button></div></dialog>
   </div>
 </template>

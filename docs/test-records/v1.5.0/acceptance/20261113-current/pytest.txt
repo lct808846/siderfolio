@@ -1,0 +1,82 @@
+............F............F.............................................. [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+..................sssssssssssssssssssssss                                [100%]
+================================== FAILURES ===================================
+____________ test_concurrency_idempotent_running_and_global_slots _____________
+
+tmp_path = WindowsPath('C:/Users/lct/AppData/Local/Temp/pytest-of-lct/pytest-0/test_concurrency_idempotent_ru0')
+
+    def test_concurrency_idempotent_running_and_global_slots(tmp_path):
+        repository = ConversationRepository(LocalSettings(data_dir=tmp_path / "parallel"))
+        repository.initialize()
+        service = ConversationService(repository)
+        conversations = [repository.create(str(i)) for i in range(3)]
+        entered = threading.Barrier(3)
+        release = threading.Event()
+    
+        class Blocking:
+            def converse(self, message, context):
+                entered.wait(timeout=10)
+                assert release.wait(10)
+                return ChatResponse(status="success", answer="done")
+    
+        requests = [
+            TurnRequest(message="����", client_request_id=str(uuid4()), expected_revision=0)
+            for _ in conversations
+        ]
+        try:
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                futures = [
+                    pool.submit(service.submit, conversations[i]["id"], requests[i], Blocking)
+                    for i in (0, 1)
+                ]
+                entered.wait(timeout=10)
+                repeated, status = service.submit(conversations[0]["id"], requests[0], Blocking)
+                assert status == 202 and repeated.execution_status == "running"
+                with pytest.raises(ServiceError) as error:
+                    service.submit(conversations[2]["id"], requests[2], Blocking)
+                assert error.value.error.code == "conversation_service_busy"
+                for operation in (
+                    lambda: repository.delete(conversations[0]["id"]),
+                    lambda: repository.rename(conversations[0]["id"], "busy"),
+                ):
+>                   with pytest.raises(ServiceError) as error:
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                   Failed: DID NOT RAISE ServiceError
+
+tests\test_conversations.py:294: Failed
+____ test_invalid_local_settings_keep_health_and_refuse_network_directory _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CABE2B30B0>
+
+    def test_invalid_local_settings_keep_health_and_refuse_network_directory(monkeypatch):
+        from pydantic import ValidationError
+    
+        with pytest.raises(ValidationError):
+            LocalSettings(data_dir="//server/share")
+        with pytest.raises(ValidationError):
+            LocalSettings(allowed_origins=["*"])
+        monkeypatch.setenv("ASTROAGENT_ALLOWED_ORIGINS", "broken JSON")
+        with TestClient(app, base_url="http://127.0.0.1") as client:
+>           assert client.get("/health").status_code == 200
+E           AssertionError: assert 400 == 200
+E            +  where 400 = <Response [400 Bad Request]>.status_code
+E            +    where <Response [400 Bad Request]> = get('/health')
+E            +      where get = <starlette.testclient.TestClient object at 0x000001CABDFA8B60>.get
+
+tests\test_conversations.py:526: AssertionError
+============================== warnings summary ===============================
+E:\miniconda3\envs\agent\Lib\site-packages\_pytest\cacheprovider.py:469
+  E:\miniconda3\envs\agent\Lib\site-packages\_pytest\cacheprovider.py:469: PytestCacheWarning: could not create cache path D:\project\astroagent\.pytest_cache\v\cache\nodeids: [WinError 5] �ܾ����ʡ�: 'D:\\project\\astroagent\\.pytest_cache\\v\\cache'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+E:\miniconda3\envs\agent\Lib\site-packages\_pytest\cacheprovider.py:423
+  E:\miniconda3\envs\agent\Lib\site-packages\_pytest\cacheprovider.py:423: PytestCacheWarning: could not create cache path D:\project\astroagent\.pytest_cache\v\cache\lastfailed: [WinError 5] �ܾ����ʡ�: 'D:\\project\\astroagent\\.pytest_cache\\v\\cache'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_conversations.py::test_concurrency_idempotent_running_and_global_slots
+FAILED tests/test_conversations.py::test_invalid_local_settings_keep_health_and_refuse_network_directory
+2 failed, 232 passed, 23 skipped, 2 warnings in 125.49s (0:02:05)

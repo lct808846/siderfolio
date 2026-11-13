@@ -1,6 +1,7 @@
 """本机 Host / Origin 与会话接收边界；不依赖模型配置或数据库可用性。"""
 
 import re
+import secrets
 import tempfile
 
 from fastapi.responses import JSONResponse
@@ -20,7 +21,9 @@ class LocalAccess:
         try:
             settings = LocalSettings()
         except Exception:
-            settings = LocalSettings.model_construct(allowed_origins=[])
+            settings = LocalSettings.model_construct(
+                allowed_origins=[], allowed_hosts=["127.0.0.1", "localhost", "[::1]"]
+            )
         headers = {k.lower(): v.decode("latin1") for k, v in scope.get("headers", [])}
         host = headers.get(b"host", "")
         hostname = host.split("]", 1)[0] + "]" if host.startswith("[") else host.split(":", 1)[0]
@@ -59,6 +62,12 @@ class LocalAccess:
 
         if hostname.lower() not in settings.allowed_hosts:
             return await failure(400, "invalid_host", "仅接受已配置的本机主机。")
+        if settings.deployment_mode == "container" and scope["path"] != "/health":
+            token = settings.proxy_token.get_secret_value()
+            if not token or not secrets.compare_digest(
+                headers.get(b"x-astroagent-proxy", ""), token
+            ):
+                return await failure(403, "proxy_required", "请通过已配置的本机网页入口访问。")
         if api and origin is not None and origin not in settings.allowed_origins:
             return await failure(403, "origin_not_allowed", "此网页来源未获允许。")
         if api and scope["method"] == "OPTIONS":
@@ -133,7 +142,12 @@ class LocalAccess:
 
                 return await self.app(scope, replay_upload, with_headers)
         if scope["path"].startswith(
-            ("/api/v1/conversations", "/api/v1/projects", "/api/v1/setup")
+            (
+                "/api/v1/conversations",
+                "/api/v1/projects",
+                "/api/v1/setup",
+                "/api/v1/local-assistant",
+            )
         ) and scope["method"] in {
             "POST",
             "PATCH",
