@@ -28,6 +28,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -e ".[dev]"
+      - name: Prepare real isolated plotting runtimes
+        run: |
+          docker build -f containers/plotting/python.Dockerfile -t astroagent-ci-plot-python containers/plotting
+          docker build -f containers/plotting/gnuplot.Dockerfile -t astroagent-ci-plot-gnuplot containers/plotting
+          echo "ASTROAGENT_PLOT_EXECUTION_ENABLED=true" >> "$GITHUB_ENV"
+          echo "ASTROAGENT_PLOT_PYTHON_IMAGE=$(docker image inspect --format '{{.Id}}' astroagent-ci-plot-python)" >> "$GITHUB_ENV"
+          echo "ASTROAGENT_PLOT_GNUPLOT_IMAGE=$(docker image inspect --format '{{.Id}}' astroagent-ci-plot-gnuplot)" >> "$GITHUB_ENV"
       - run: python -m pytest -m postgres -q
 
   test:
