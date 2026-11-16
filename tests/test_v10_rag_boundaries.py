@@ -4,11 +4,11 @@ import hashlib
 import json
 import os
 from io import BytesIO
-from types import SimpleNamespace
 from uuid import uuid4
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
+from langchain_core.messages import AIMessage
 from test_rag_postgres import build, preview, project_with_document
 
 pytest_plugins = ("test_rag_postgres",)
@@ -32,26 +32,20 @@ def test_unverified_model_output_is_not_exposed(pg_client, monkeypatch, response
     root, _ = project_with_document(client)
     build(client, root)
     view = preview(client, root)
+    invoked = []
 
     class Model:
-        def __init__(self, **kwargs):
-            self.chat = SimpleNamespace(completions=self)
+        def __init__(self, settings, **kwargs):
+            pass
 
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *args):
-            return False
-
-        def create(self, **kwargs):
-            return SimpleNamespace(
-                model="synthetic",
-                choices=[
-                    SimpleNamespace(finish_reason="stop", message=SimpleNamespace(content=response))
-                ],
+        def invoke(self, messages):
+            invoked.append(True)
+            return AIMessage(
+                content=response,
+                response_metadata={"model_name": "synthetic", "finish_reason": "stop"},
             )
 
-    monkeypatch.setattr("openai.OpenAI", Model)
+    monkeypatch.setattr("astroagent.model_client.chat_model", Model)
     answer = client.post(
         root + "/rag/answers",
         json={
@@ -62,6 +56,7 @@ def test_unverified_model_output_is_not_exposed(pg_client, monkeypatch, response
         },
     )
     assert answer.status_code == 200
+    assert invoked == [True]
     record = answer.json()["record"]
     assert record["state"] == "insufficient_evidence"
     assert record["citation_labels"] == []
@@ -101,18 +96,14 @@ def test_model_failures_do_not_expose_unverified_text(pg_client, monkeypatch, fa
     root, _ = project_with_document(client)
     build(client, root)
     view = preview(client, root)
+    invoked = []
 
     class Model:
-        def __init__(self, **kwargs):
-            self.chat = SimpleNamespace(completions=self)
+        def __init__(self, settings, **kwargs):
+            pass
 
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *args):
-            return False
-
-        def create(self, **kwargs):
+        def invoke(self, messages):
+            invoked.append(True)
             if failure == "timeout":
                 raise TimeoutError("synthetic timeout")
             value = (
@@ -123,17 +114,15 @@ def test_model_failures_do_not_expose_unverified_text(pg_client, monkeypatch, fa
                     '"citations":["E1"],"insufficient_evidence":false}'
                 )
             )
-            return SimpleNamespace(
-                model="synthetic",
-                choices=[
-                    SimpleNamespace(
-                        finish_reason="length" if failure == "truncated" else "stop",
-                        message=SimpleNamespace(content=value),
-                    )
-                ],
+            return AIMessage(
+                content=value,
+                response_metadata={
+                    "model_name": "synthetic",
+                    "finish_reason": "length" if failure == "truncated" else "stop",
+                },
             )
 
-    monkeypatch.setattr("openai.OpenAI", Model)
+    monkeypatch.setattr("astroagent.model_client.chat_model", Model)
     answer = client.post(
         root + "/rag/answers",
         json={
@@ -144,6 +133,7 @@ def test_model_failures_do_not_expose_unverified_text(pg_client, monkeypatch, fa
         },
     )
     assert answer.status_code in (200, 503)
+    assert invoked == [True]
     assert "NOT_VERIFIED_PRIVATE_TEXT" not in answer.text
     if answer.status_code == 200:
         assert answer.json()["record"]["state"] in ("failed", "insufficient_evidence")

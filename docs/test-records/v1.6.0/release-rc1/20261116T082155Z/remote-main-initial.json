@@ -1,0 +1,13 @@
+{
+  "commit": "8e8a5a762d271dfd8933365fc825f8c2e23a733e",
+  "run_url": "https://github.com/lct808846/astroagent/actions/runs/43831272914",
+  "test": "success",
+  "frontend": "success",
+  "postgres": {
+    "passed": 81,
+    "failed": 8,
+    "deselected": 680,
+    "cause": "Failure injections still patched the old SDK rather than the protocol adapter used by the updated fixture."
+  },
+  "assertions_preserved": true
+}
