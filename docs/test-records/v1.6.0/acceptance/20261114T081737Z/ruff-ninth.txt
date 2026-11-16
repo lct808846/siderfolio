@@ -1,0 +1,12 @@
+E501 Line too long (104 > 100)
+   --> tests\test_identity_postgres.py:491:101
+    |
+489 |     assert original.status_code == 200 and b"Binary cluster" in original.content
+490 |     revision = client.get(root).json()["revision"]
+491 |     exported = client.post(root + "/archive", json={"expected_revision": revision, "format_version": 6})
+    |                                                                                                     ^^^^
+492 |     assert exported.status_code == 200, exported.text
+493 |     restored = client.post("/api/v1/projects/import", content=exported.content, headers={
+    |
+
+Found 1 error.

@@ -1,0 +1,8 @@
+{
+  "config_valid": true,
+  "key_not_printed": true,
+  "smtp_configured": true,
+  "encrypted_transport": true,
+  "authentication": "passed",
+  "submission": "passed"
+}

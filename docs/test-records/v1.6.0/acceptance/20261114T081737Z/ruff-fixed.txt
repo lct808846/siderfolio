@@ -1,0 +1,12 @@
+E501 Line too long (101 > 100)
+   --> src\astroagent\auth_store.py:156:101
+    |
+154 |                     (
+155 |                         "INSERT INTO public.auth_rates VALUES (%s,%s,1,%s) "
+156 |                         "ON CONFLICT(key,bucket) DO UPDATE SET hits=auth_rates.hits+1 RETURNING hits"
+    |                                                                                                     ^
+157 |                     ),
+158 |                     (key, bucket, datetime.now(UTC) + timedelta(seconds=seconds * 2)),
+    |
+
+Found 1 error.

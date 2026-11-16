@@ -1,0 +1,5 @@
+{
+  "reporter_failed": "EPERM writing JSON because relative evidence path was resolved from frontend",
+  "tests_passed": 2,
+  "resolution": "Use absolute workspace record directory and fresh isolated accounts for retry"
+}

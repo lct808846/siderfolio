@@ -1,0 +1,68 @@
+[
+  {
+    "BlockIO": "0B / 0B",
+    "CPUPerc": "1.13%",
+    "Container": "9fd1ec19820728195878756609a53ee7eb2203d1be71689085b87152f0ecf0d5",
+    "ID": "9fd1ec198207",
+    "MemPerc": "4.02%",
+    "MemUsage": "164.7MiB / 4GiB",
+    "Name": "astroagent-v16-backend-1",
+    "NetIO": "155kB / 157kB",
+    "PIDs": "18"
+  },
+  {
+    "BlockIO": "5.06MB / 0B",
+    "CPUPerc": "0.00%",
+    "Container": "a190494cfc884116ebf22754926cb3c40076059812b258a3068cb9f954bdd95d",
+    "ID": "a190494cfc88",
+    "MemPerc": "8.15%",
+    "MemUsage": "20.87MiB / 256MiB",
+    "Name": "astroagent-v16-frontend-1",
+    "NetIO": "71.7kB / 836kB",
+    "PIDs": "11"
+  },
+  {
+    "BlockIO": "2.61MB / 0B",
+    "CPUPerc": "29.80%",
+    "Container": "0c466cff5cec0758f51a8fd2098def5a45a095ed8f7a62efaafecf8e4c3a046e",
+    "ID": "0c466cff5cec",
+    "MemPerc": "11.61%",
+    "MemUsage": "59.46MiB / 512MiB",
+    "Name": "astroagent-v16-plot-executor-1",
+    "NetIO": "2.31kB / 126B",
+    "PIDs": "16"
+  },
+  {
+    "BlockIO": "3.1MB / 0B",
+    "CPUPerc": "0.00%",
+    "Container": "868da1c88a67c30329498def32ab8ec7b60c84ba8274c54b93c86ad7a0623392",
+    "ID": "868da1c88a67",
+    "MemPerc": "25.99%",
+    "MemUsage": "33.26MiB / 128MiB",
+    "Name": "astroagent-v16-ingress-1",
+    "NetIO": "27MB / 27.1MB",
+    "PIDs": "11"
+  },
+  {
+    "BlockIO": "2.81GB / 8.19kB",
+    "CPUPerc": "0.00%",
+    "Container": "f53f84dd41b7921a444ac1d39efa5f085d1787909015beaf22916fd4e619cf71",
+    "ID": "f53f84dd41b7",
+    "MemPerc": "5.64%",
+    "MemUsage": "288.5MiB / 5GiB",
+    "Name": "astroagent-v16-ollama-1",
+    "NetIO": "26.9kB / 36.9kB",
+    "PIDs": "10"
+  },
+  {
+    "BlockIO": "16.7MB / 13.8MB",
+    "CPUPerc": "0.00%",
+    "Container": "7b297a812ae027906240b590bd636121f2d447a26d7c0ac2153d65eb5000b88b",
+    "ID": "7b297a812ae0",
+    "MemPerc": "3.49%",
+    "MemUsage": "35.74MiB / 1GiB",
+    "Name": "astroagent-v16-postgres-1",
+    "NetIO": "17MB / 17.7MB",
+    "PIDs": "7"
+  }
+]

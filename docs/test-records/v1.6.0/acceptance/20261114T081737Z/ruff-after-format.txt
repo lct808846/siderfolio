@@ -1,0 +1,13 @@
+src\astroagent\api\admin.py:125:101: E501 Line too long (112 > 100)
+src\astroagent\auth_mail.py:38:101: E501 Line too long (101 > 100)
+src\astroagent\auth_mail.py:89:82: E501 Line too long (136 > 100)
+src\astroagent\auth_mail.py:127:101: E501 Line too long (148 > 100)
+src\astroagent\auth_mail.py:130:101: E501 Line too long (101 > 100)
+src\astroagent\auth_mail.py:134:101: E501 Line too long (102 > 100)
+src\astroagent\auth_mail.py:157:101: E501 Line too long (113 > 100)
+src\astroagent\auth_store.py:155:101: E501 Line too long (102 > 100)
+src\astroagent\auth_store.py:226:101: E501 Line too long (106 > 100)
+src\astroagent\auth_store.py:239:101: E501 Line too long (102 > 100)
+src\astroagent\auth_store.py:297:101: E501 Line too long (102 > 100)
+src\astroagent\identity.py:48:101: E501 Line too long (102 > 100)
+Found 12 errors.

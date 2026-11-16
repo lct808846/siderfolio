@@ -1,0 +1,13 @@
+
+> astroagent-workbench@1.6.0-dev.0 lint
+> eslint . --max-warnings 0
+
+
+D:\project\astroagent\frontend\src\components\ModelProvidersSettings.vue
+  148:81  warning  Expected 1 line break after opening tag (`<details>`), but no line breaks found  vue/multiline-html-element-content-newline
+  169:48  warning  Expected 1 line break after opening tag (`<section>`), but no line breaks found  vue/multiline-html-element-content-newline
+
+✖ 2 problems (0 errors, 2 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+
+ESLint found too many warnings (maximum: 0).

@@ -1,0 +1,12 @@
+E501 Line too long (106 > 100)
+   --> tests\test_identity_postgres.py:245:101
+    |
+243 |     with client.store.connect() as db:
+244 |         statement = {
+245 |             "anomalous_source": "UPDATE public.auth_sessions SET source_hash='anomalous_remote_location'",
+    |                                                                                                     ^^^^^^
+246 |             "absolute": "UPDATE public.auth_sessions SET expires_at=now()-interval '1 second'",
+247 |             "revoked": "UPDATE public.auth_sessions SET revoked=true",
+    |
+
+Found 1 error.

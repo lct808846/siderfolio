@@ -1,0 +1,23 @@
+{
+  "/activate": {
+    "status": 200,
+    "html": true
+  },
+  "/reset-password": {
+    "status": 200,
+    "html": true
+  },
+  "/api/v1/auth/csrf": {
+    "cross_site_status": 403
+  },
+  "/api/v1/conversations": {
+    "cross_site_status": 403
+  },
+  "/projects": {
+    "cross_site_status": 403
+  },
+  "cross_site_confirmation_post": {
+    "status": 403,
+    "frontend_rejected": true
+  }
+}

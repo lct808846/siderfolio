@@ -7,18 +7,6 @@ const tooltipId = `astro-hint-${useId()}`
 const tooltip = ref<HTMLElement | null>(null)
 const visible = ref(false), text = ref(''), x = ref(0), y = ref(0), placement = ref('below')
 const selector = 'button, a[href], [role="button"], [role="tab"], [role="menuitem"], [data-tooltip], summary, input[type="file"], input[type="submit"], input[type="button"]'
-const explanations: Record<string, string> = {
-  '新建会话': '打开空白会话，开始新的查询',
-  '多选': '选择多个会话，集中整理或删除',
-  '多选整理': '选择多个会话，集中整理或删除',
-  '导出会话 JSON': '下载会话问题、回答和来源记录',
-  '发送': '发送当前问题；Enter 发送，Shift + Enter 换行',
-  '刷新本机状态': '重新读取数据库、嵌入模型和回答服务的配置状态',
-  '查询工作台': '查询天体、Gaia 数据和相关文献',
-  '项目归档': '组织会话、保存快照、比较与导出项目记录',
-  '本机设置': '查看数据库、嵌入模型和回答服务配置',
-  '接口文档 ↗': '在新标签页打开本机 API 文档',
-}
 let current: HTMLElement | null = null, hovered: HTMLElement | null = null, focused: HTMLElement | null = null
 let originalTitle: string | null = null, overTooltip = false, dismissed = false, touchInput = false, revision = 0
 let showTimer: ReturnType<typeof setTimeout> | undefined, leaveTimer: ReturnType<typeof setTimeout> | undefined
@@ -28,20 +16,38 @@ function control(target: EventTarget | null) {
   const element = target.closest<HTMLElement>(selector)
   return element && !element.closest('[inert], [aria-hidden="true"]') ? element : null
 }
+function hasReadableText(element: HTMLElement) {
+  if (element instanceof HTMLInputElement) {
+    if (element.type === 'submit' || element.type === 'button') return /[\p{L}\p{N}]/u.test(element.value)
+    return element.type !== 'file'
+  }
+  const clone = element.cloneNode(true) as HTMLElement
+  clone.querySelectorAll('svg, img, [aria-hidden="true"], .sr-only').forEach(node => node.remove())
+  const visibleText = (clone.textContent || '').replace(/\s+/g, ' ').trim()
+  return /[\p{L}\p{N}]/u.test(visibleText)
+}
+function formatTooltip(element: HTMLElement, rawText: string) {
+  const normalized = rawText.replace(/\s+/g, ' ').trim()
+  if (!normalized) return ''
+  const shortened = normalized.length > 160 ? `${normalized.slice(0, 159)}…` : normalized
+  return element.matches(':disabled, [aria-disabled="true"]') ? `${shortened}（当前不可用）` : shortened
+}
 function label(element: HTMLElement) {
   const explicit = element.getAttribute('data-tooltip')
   if (explicit === '') return ''
+  if (element.hasAttribute('data-tooltip-truncated')) {
+    const source = element.querySelector<HTMLElement>('[data-tooltip-source]') || element
+    const truncated = source.scrollHeight > source.clientHeight + 2 || source.scrollWidth > source.clientWidth + 2
+    return truncated ? formatTooltip(element, explicit || source.textContent || '') : ''
+  }
   const title = element.getAttribute('title') ?? (element === current ? originalTitle : null)
+  if (explicit || title) return formatTooltip(element, explicit || title || '')
+  if (hasReadableText(element)) return ''
   const labelled = (element.getAttribute('aria-labelledby') || '').split(/\s+/)
     .map(id => document.getElementById(id)?.textContent || '').join(' ')
-  const clone = element.cloneNode(true) as HTMLElement
-  clone.querySelectorAll('svg, [aria-hidden="true"], small, time, .tag').forEach(node => node.remove())
-  const content = (clone.textContent || '').replace(/\s+/g, ' ').trim()
-  const name = explicit || title || element.getAttribute('aria-label') || labelled.trim() || explanations[content] || content
-    || (element instanceof HTMLInputElement ? element.type === 'file' ? '选择要导入的文件' : element.value : '')
-  if (!name) return ''
-  const shortened = name.length > 160 ? `${name.slice(0, 159)}…` : name
-  return element.matches(':disabled, [aria-disabled="true"]') ? `${shortened}（当前不可用）` : shortened
+  const fallback = element.getAttribute('aria-label') || labelled
+    || (element instanceof HTMLInputElement && element.type === 'file' ? '选择要导入的文件' : '')
+  return formatTooltip(element, fallback)
 }
 function removeDescription() {
   if (!current) return

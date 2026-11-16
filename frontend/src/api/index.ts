@@ -1,3 +1,4 @@
+import { sessionFetch } from '../session-http'
 import type { ArtifactInfo, ChatAttachment, ChatModelCatalog, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
 
 const configured = import.meta.env.VITE_API_BASE_URL || ''
@@ -23,7 +24,7 @@ export function assertApiConfiguration(): void {
 export async function request<T>(path: string, method = 'GET', payload?: unknown): Promise<T> {
   assertApiConfiguration()
   let response: Response
-  try { response = await fetch(apiUrl(path), { method, headers: payload === undefined ? {} : { 'Content-Type': 'application/json' }, body: payload === undefined ? undefined : JSON.stringify(payload), cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl(path), { method, headers: payload === undefined ? {} : { 'Content-Type': 'application/json' }, body: payload === undefined ? undefined : JSON.stringify(payload), cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '连接已断开，处理可能仍在继续。请恢复会话核对状态，不要重复发送。') }
   if (!response.ok) {
     let body: { error?: { code?: string; message?: string }; conversation_id?: string; turn_id?: string } = {}
@@ -49,7 +50,7 @@ export const api = {
 export async function download(path: string): Promise<void> {
   assertApiConfiguration()
   let response: Response
-  try { response = await fetch(apiUrl(path), { cache: 'no-store' }) } catch { throw new ApiError('connection_lost', '下载连接已断开，请重新点击下载。') }
+  try { response = await sessionFetch(apiUrl(path), { cache: 'no-store' }) } catch { throw new ApiError('connection_lost', '下载连接已断开，请重新点击下载。') }
   if (!response.ok) {
     let body: {error?:{code?:string;message?:string}} = {}
     try { body = await response.json() } catch { /* Use safe fallback. */ }

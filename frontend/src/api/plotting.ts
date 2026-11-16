@@ -1,3 +1,4 @@
+import { sessionFetch } from '../session-http'
 import { ApiError, apiUrl, assertApiConfiguration, request } from './index'
 import type { components } from '../types/generated'
 
@@ -13,7 +14,7 @@ const root = (project: string) => `/api/v1/projects/${encodeURIComponent(project
 async function binary(path: string, method = 'GET', body?: BodyInit, json = false): Promise<Response> {
   assertApiConfiguration()
   let response: Response
-  try { response = await fetch(apiUrl(path), { method, body, headers: json ? { 'Content-Type': 'application/json' } : undefined, cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl(path), { method, body, headers: json ? { 'Content-Type': 'application/json' } : undefined, cache: 'no-store' }) }
   catch { throw new ApiError('plot_connection_lost', '连接中断，状态未确认。请先刷新记录，不会自动重试。') }
   if (!response.ok) {
     let message = '绘图操作失败，请刷新记录核对。', code = 'plot_request_failed'

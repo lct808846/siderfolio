@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { api, apiUrl, safeLink, validateApiOrigin, ApiError, download } from '../../src/api'
+import { resetCsrf, setCsrf } from '../../src/session-http'
 
-afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
+beforeEach(() => setCsrf('fixture-csrf'))
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); resetCsrf() })
 describe('API and unsafe content boundaries', () => {
   it('preserves exact strings and nullable values', async () => {
     const response = { turn_id: 'saved', response: { gaia_results: [{ data: [{ source_id: '5853498713190525696', parallax: null }] }] } }

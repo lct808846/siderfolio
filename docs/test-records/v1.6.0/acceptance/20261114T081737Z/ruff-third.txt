@@ -1,0 +1,137 @@
+E501 Line too long (108 > 100)
+  --> tests\test_identity_postgres.py:94:101
+   |
+92 |     assert response.status_code == 200, response.text
+93 |     setup = response.json()["setup_token"]
+94 |     assert post(client, "auth/activate/complete", {"token": setup, "password": PASSWORD}).status_code == 200
+   |                                                                                                     ^^^^^^^^
+95 |     if login:
+96 |         response = post(client, "auth/login", {"email": email, "password": PASSWORD})
+   |
+
+E501 Line too long (108 > 100)
+   --> tests\test_identity_postgres.py:136:101
+    |
+134 |     setup = post(client, "auth/activate/confirm", {"token": token}).json()["setup_token"]
+135 |     assert post(client, "auth/activate/confirm", {"token": token}).status_code == 422
+136 |     assert post(client, "auth/activate/complete", {"token": setup, "password": PASSWORD}).status_code == 200
+    |                                                                                                     ^^^^^^^^
+137 |     assert post(client, "auth/activate/complete", {"token": setup, "password": PASSWORD}).status_code == 422
+138 |     response = post(client, "auth/login", {"email": email, "password": PASSWORD})
+    |
+
+E501 Line too long (108 > 100)
+   --> tests\test_identity_postgres.py:137:101
+    |
+135 |     assert post(client, "auth/activate/confirm", {"token": token}).status_code == 422
+136 |     assert post(client, "auth/activate/complete", {"token": setup, "password": PASSWORD}).status_code == 200
+137 |     assert post(client, "auth/activate/complete", {"token": setup, "password": PASSWORD}).status_code == 422
+    |                                                                                                     ^^^^^^^^
+138 |     response = post(client, "auth/login", {"email": email, "password": PASSWORD})
+139 |     assert response.status_code == 200
+    |
+
+E501 Line too long (104 > 100)
+   --> tests\test_identity_postgres.py:156:101
+    |
+154 |         "Origin": "https://evil.example.org", "X-CSRF-Token": csrf,
+155 |     }).status_code == 403
+156 |     response = client.post("/api/v1/auth/login", content='{"password":"' + "z" * 17000 + '"}', headers={
+    |                                                                                                     ^^^^
+157 |         "Origin": ORIGIN, "X-CSRF-Token": csrf, "Content-Type": "application/json",
+158 |     })
+    |
+
+E501 Line too long (103 > 100)
+   --> tests\test_identity_postgres.py:177:101
+    |
+175 |     assert client.get("/api/v1/conversations/" + identifier).status_code == 404
+176 |     assert client.get("/api/v1/projects/" + project["id"]).status_code == 404
+177 |     assert post(client, "conversations/" + identifier, {"title": "stolen"}, "PATCH").status_code == 404
+    |                                                                                                     ^^^
+178 |     second = post(client, "conversations", {"title": "Second private data"})
+179 |     assert second.status_code == 201
+    |
+
+E501 Line too long (133 > 100)
+   --> tests\test_identity_postgres.py:183:101
+    |
+181 |     service = client.identity.tenants.for_user(user)
+182 |     with client.store.connect() as db:
+183 |         db.execute(sql.SQL("ALTER TABLE {}.conversations RENAME TO missing_conversations").format(sql.Identifier(user["namespace"])))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+184 |         db.execute("CREATE TABLE public.conversations(id text, title text)")
+185 |         db.execute("INSERT INTO public.conversations VALUES ('public-private','must not leak')")
+    |
+
+B017 Do not assert blind exception: `Exception`
+   --> tests\test_identity_postgres.py:186:10
+    |
+184 |         db.execute("CREATE TABLE public.conversations(id text, title text)")
+185 |         db.execute("INSERT INTO public.conversations VALUES ('public-private','must not leak')")
+186 |     with pytest.raises(Exception):
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^
+187 |         service.repository.list()
+188 |     assert not client.identity.store.authenticate(first_cookie)
+    |
+
+E501 Line too long (114 > 100)
+   --> tests\test_identity_postgres.py:210:101
+    |
+208 |     account(client)
+209 |     cookie = client.cookies.get("astroagent_session")
+210 |     response = post(client, "auth/forgot-password", {"email": "observer@example.org", "request_id": str(uuid4())})
+    |                                                                                                     ^^^^^^^^^^^^^^
+211 |     assert response.status_code == 200
+212 |     token = mail_token(client, "observer@example.org")
+    |
+
+E501 Line too long (109 > 100)
+   --> tests\test_identity_postgres.py:214:101
+    |
+212 |     token = mail_token(client, "observer@example.org")
+213 |     new_password = "Another synthetic nebula password 4096"
+214 |     assert post(client, "auth/reset-password", {"token": token, "password": new_password}).status_code == 200
+    |                                                                                                     ^^^^^^^^^
+215 |     assert not client.store.authenticate(cookie)
+216 |     assert post(client, "auth/reset-password", {"token": token, "password": new_password}).status_code == 422
+    |
+
+E501 Line too long (109 > 100)
+   --> tests\test_identity_postgres.py:216:101
+    |
+214 |     assert post(client, "auth/reset-password", {"token": token, "password": new_password}).status_code == 200
+215 |     assert not client.store.authenticate(cookie)
+216 |     assert post(client, "auth/reset-password", {"token": token, "password": new_password}).status_code == 422
+    |                                                                                                     ^^^^^^^^^
+217 |     assert post(client, "auth/login", {"email": "observer@example.org", "password": new_password}).status_code == 200
+    |
+
+E501 Line too long (117 > 100)
+   --> tests\test_identity_postgres.py:217:101
+    |
+215 |     assert not client.store.authenticate(cookie)
+216 |     assert post(client, "auth/reset-password", {"token": token, "password": new_password}).status_code == 422
+217 |     assert post(client, "auth/login", {"email": "observer@example.org", "password": new_password}).status_code == 200
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+
+E501 Line too long (126 > 100)
+   --> tests\test_identity_postgres.py:267:101
+    |
+265 |     assert len(sent) == 1
+266 |     with client.store.connect() as db:
+267 |         assert db.execute("SELECT state FROM public.auth_outbox WHERE id=%s", (row["id"],)).fetchone()["state"] == "cancelled"
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (101 > 100)
+   --> tests\test_identity_postgres.py:277:101
+    |
+275 |     repository = client.identity.tenants.for_user(user).repository
+276 |     with client.store.connect() as db:
+277 |         db.execute("UPDATE public.auth_users SET generation=generation+1 WHERE id=%s", (user["id"],))
+    |                                                                                                     ^
+278 |     with pytest.raises(ServiceError) as error:
+279 |         repository.create("must not commit")
+    |
+
+Found 14 errors (1 fixed, 13 remaining).

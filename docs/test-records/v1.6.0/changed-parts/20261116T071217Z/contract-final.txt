@@ -1,0 +1,4 @@
+Matplotlib is building the font cache; this may take a moment.
+✨ openapi-typescript 7.13.0
+🚀 D:\project\astroagent\.astroagent\contract-tmp\tmp3fyheh3y\openapi.json → D:\project\astroagent\.astroagent\contract-tmp\tmp3fyheh3y\generated.ts [2.9s]
+OpenAPI / TypeScript contract matches

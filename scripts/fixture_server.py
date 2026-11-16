@@ -6,16 +6,18 @@ import re
 import time
 from uuid import uuid4
 
+from fastapi.routing import APIRoute
 from langchain_core.messages import AIMessage
 
 import astroagent.main as main
 import astroagent.services as services
 from astroagent.agent import AstroAgent
 from astroagent.api import conversations, models, projects, workflows
+from astroagent.auth_access import IdentityAccess
 from astroagent.config import Settings
 from astroagent.conversations import ConversationRepository
 from astroagent.main import app as app
-from scripts.legacy_fixture_storage import compose
+from scripts.legacy_fixture_storage import compose, get_service, lifespan
 from scripts.synthetic_services import SyntheticAds, SyntheticGaia, SyntheticSimbad
 
 # Explicit old-contract fixture, not a PostgreSQL runtime acceptance server.
@@ -24,6 +26,41 @@ from scripts.synthetic_services import SyntheticAds, SyntheticGaia, SyntheticSim
 os.environ["ASTROAGENT_DATABASE_URL"] = ""
 main.PostgresRepository = ConversationRepository
 services.compose = compose
+app.router.lifespan_context = lifespan
+app.user_middleware = [m for m in app.user_middleware if m.cls is not IdentityAccess]
+app.dependency_overrides[conversations.get_service] = get_service
+conversations.get_service = get_service
+
+
+def fixture_identity():
+    """Synthetic business UI only; real authentication has separate acceptance."""
+    return {
+        "user": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "email": "fixture@example.org",
+            "admin": True,
+            "totp_enabled": True,
+            "mfa_verified": True,
+        },
+        "csrf_token": "synthetic-fixture-not-a-credential",
+        "registration_available": False,
+        "idle_seconds": 1800,
+        "absolute_seconds": 43200,
+    }
+
+
+for path in ("/api/v1/auth/session", "/api/v1/auth/csrf"):
+    app.router.routes.insert(0, APIRoute(path, fixture_identity, methods=["GET"]))
+
+
+def fixture_provider_catalog():
+    """Read-only synthetic settings fixture; never use real control-plane keys."""
+    return {"revision": 0, "default_model": "synthetic-model", "providers": []}
+
+
+app.router.routes.insert(
+    0, APIRoute("/api/v1/admin/model-providers", fixture_provider_catalog, methods=["GET"])
+)
 
 
 class SyntheticModel:

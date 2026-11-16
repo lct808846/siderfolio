@@ -1,0 +1,37 @@
+{
+  "reused_saved_turns": true,
+  "no_repeated_provider_calls": true,
+  "checks": {
+    "simbad": {
+      "state": "completed",
+      "result_statuses": [
+        "success"
+      ],
+      "error_codes": [
+        null
+      ],
+      "passed": true
+    },
+    "ads": {
+      "state": "completed",
+      "result_statuses": [
+        "error"
+      ],
+      "error_codes": [
+        "ads_not_configured"
+      ],
+      "passed": false
+    },
+    "gaia": {
+      "state": "completed",
+      "result_statuses": [
+        "success"
+      ],
+      "error_codes": [
+        null
+      ],
+      "passed": true,
+      "ids_are_strings": true
+    }
+  }
+}

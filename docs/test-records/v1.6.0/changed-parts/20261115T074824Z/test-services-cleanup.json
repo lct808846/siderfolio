@@ -1,0 +1,20 @@
+{
+  "qa_containers": [],
+  "test_ports": {
+    "8101": {
+      "listening": false
+    },
+    "8102": {
+      "listening": false
+    },
+    "5273": {
+      "listening": false
+    },
+    "5275": {
+      "listening": false
+    },
+    "5290": {
+      "listening": false
+    }
+  }
+}

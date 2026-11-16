@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src/astroagent/auth_store.py",
+    "deployed_matches": false,
+    "local_sha256": "264a3e19afb84f0001fb8590f9dac2a9a89f65ab354e7f4a4007da4c3a4970f0",
+    "container_sha256": "239107ff1e181951cdf9da1f26807f5870075d51472f398a0e5ba6c474f3de6e"
+  },
+  {
+    "file": "src/astroagent/api/auth.py",
+    "deployed_matches": false,
+    "local_sha256": "c77219cd014e729d70f55f27866998e5c411e91a9069bf5ecc66edb3458c7328",
+    "container_sha256": "0d447982fd844ded947f5b1b0cd726d4b70c2fd3c42dfc4074bcdb1e71181bf1"
+  },
+  {
+    "file": "src/astroagent/auth_config.py",
+    "deployed_matches": true,
+    "local_sha256": "6f1d739f241e49284f872a800455f7a25ab0f281eada3a9f53c8b3007bc096c5",
+    "container_sha256": "6f1d739f241e49284f872a800455f7a25ab0f281eada3a9f53c8b3007bc096c5"
+  },
+  {
+    "file": "frontend/dist/index.html",
+    "deployed_matches": true,
+    "local_sha256": "2f13e9643d6481b139944c5e4b168f7241625ea2d7bd81ac05fd3d40e22b1559",
+    "container_sha256": "2f13e9643d6481b139944c5e4b168f7241625ea2d7bd81ac05fd3d40e22b1559"
+  }
+]

@@ -1,0 +1,19 @@
+
+Running 10 tests using 1 worker
+
+(node:41208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\mail-navigation\email-links.spec.ts:64:1 › real email navigation loads activation without consuming the link until confirmation (593ms)
+  ok  2 [chromium] › tests\mail-navigation\email-links.spec.ts:79:1 › real email navigation opens reset page without changing a password (611ms)
+  ok  3 [chromium] › tests\mail-navigation\email-links.spec.ts:89:1 › cross-site APIs, writes, embeds and private pages stay rejected (144ms)
+  ok  4 [chromium] › tests\mail-navigation\email-links.spec.ts:107:1 › current two-step email flow opens password and optional verification step (860ms)
+  ok  5 [chromium] › tests\mail-navigation\email-links.spec.ts:119:1 › new email continuation displays activation notice and resend cooldown (497ms)
+(node:51004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [edge] › tests\mail-navigation\email-links.spec.ts:64:1 › real email navigation loads activation without consuming the link until confirmation (955ms)
+  ok  7 [edge] › tests\mail-navigation\email-links.spec.ts:79:1 › real email navigation opens reset page without changing a password (1.2s)
+  ok  8 [edge] › tests\mail-navigation\email-links.spec.ts:89:1 › cross-site APIs, writes, embeds and private pages stay rejected (240ms)
+  ok  9 [edge] › tests\mail-navigation\email-links.spec.ts:107:1 › current two-step email flow opens password and optional verification step (899ms)
+  ok 10 [edge] › tests\mail-navigation\email-links.spec.ts:119:1 › new email continuation displays activation notice and resend cooldown (833ms)
+
+  10 passed (9.9s)

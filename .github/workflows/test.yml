@@ -74,3 +74,5 @@ jobs:
         working-directory: frontend
       - run: npm run test:browser
         working-directory: frontend
+      - run: npx playwright test --config playwright.mail-navigation.ts
+        working-directory: frontend

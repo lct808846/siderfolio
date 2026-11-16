@@ -1,5 +1,6 @@
 """本机 Host / Origin 与会话接收边界；不依赖模型配置或数据库可用性。"""
 
+import ipaddress
 import re
 import secrets
 import tempfile
@@ -68,6 +69,11 @@ class LocalAccess:
                 headers.get(b"x-astroagent-proxy", ""), token
             ):
                 return await failure(403, "proxy_required", "请通过已配置的本机网页入口访问。")
+            try:
+                address = str(ipaddress.ip_address(headers.get(b"x-astroagent-client-address", "")))
+                scope.setdefault("state", {})["trusted_client_address"] = address
+            except ValueError:
+                pass
         if api and origin is not None and origin not in settings.allowed_origins:
             return await failure(403, "origin_not_allowed", "此网页来源未获允许。")
         if api and scope["method"] == "OPTIONS":
@@ -78,14 +84,15 @@ class LocalAccess:
                 if h.strip()
             }
             if method not in {"GET", "POST", "PATCH", "PUT", "DELETE"} or not requested_headers <= {
-                "content-type"
+                "content-type",
+                "x-csrf-token",
             }:
                 return await failure(403, "origin_not_allowed", "不支持此预检请求。")
             response = JSONResponse(
                 content={},
                 headers={
                     "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token",
                 },
             )
             return await response(scope, receive, with_headers)
@@ -94,11 +101,12 @@ class LocalAccess:
             r"/api/v1/projects/[0-9a-f-]{36}/documents(?:/[0-9a-f-]{36}/versions)?", scope["path"]
         )
         chat_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/chat/attachments"
+        avatar_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/profile/avatar"
         plot_uploading = scope["method"] == "PUT" and re.fullmatch(
             r"/api/v1/projects/[0-9a-fA-F-]{36}/plotting/datasets/[0-9a-fA-F-]{36}/upload",
             scope["path"],
         )
-        uploading = uploading or chat_uploading or plot_uploading
+        uploading = uploading or chat_uploading or avatar_uploading or plot_uploading
         if uploading:
             if (
                 headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
@@ -118,11 +126,10 @@ class LocalAccess:
                         return
                     chunk = message.get("body", b"")
                     received += len(chunk)
-                    if (
-                        received
-                        > (5 if plot_uploading else 10 if chat_uploading else 20) * 1024**2
-                        + 64 * 1024
-                    ):
+                    limit_mb = (
+                        5 if (plot_uploading or avatar_uploading) else 10 if chat_uploading else 20
+                    )
+                    if received > limit_mb * 1024**2 + 64 * 1024:
                         return await failure(
                             413, "knowledge_upload_too_large", "文件及multipart开销超过接收上限。"
                         )

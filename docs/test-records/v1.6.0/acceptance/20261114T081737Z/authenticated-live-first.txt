@@ -1,0 +1,6 @@
+python_plot True
+gnuplot_plot True
+semantic_rag True
+simbad_authenticated False
+ads_authenticated True
+gaia_authenticated True

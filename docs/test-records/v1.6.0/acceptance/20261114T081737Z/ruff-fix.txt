@@ -1,0 +1,1447 @@
+E501 Line too long (122 > 100)
+  --> scripts\identity_backup.py:18:101
+   |
+16 |     parser.add_argument("--env-file", type=Path, required=True)
+17 |     parser.add_argument("--output", type=Path, required=True)
+18 |     parser.add_argument("--docker", default=shutil.which("docker") or r"D:\Program Files\Docker\resources\bin\docker.exe")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+19 |     parser.add_argument("--confirm-backend-stopped", action="store_true", required=True)
+20 |     args = parser.parse_args()
+   |
+
+E501 Line too long (224 > 100)
+  --> scripts\identity_backup.py:33:101
+   |
+31 | …
+32 | …
+33 | …solve()), "-f", str(root / "compose.yaml"), "-f", str(root / "compose.plotting.yaml"), "-f", str(root / "compose.identity.yaml")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+34 | …put=True, check=True, timeout=30).stdout.decode().splitlines()
+35 | …
+   |
+
+E501 Line too long (157 > 100)
+  --> scripts\identity_backup.py:34:101
+   |
+32 | …]
+33 | …--env-file", str(args.env_file.resolve()), "-f", str(root / "compose.yaml"), "-f", str(root / "compose.plotting.yaml"), "-f", str(roo…
+34 | …ning", "--services"], capture_output=True, check=True, timeout=30).stdout.decode().splitlines()
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+35 | …
+36 | …a migration backup")
+   |
+
+E501 Line too long (185 > 100)
+  --> scripts\identity_backup.py:41:101
+   |
+39 | …)
+40 | …
+41 | …p", "-U", "postgres", "-d", database, "--format=custom"], stdout=stream, stderr=subprocess.PIPE, timeout=600)
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+42 | …
+43 | …ile for inspection")
+   |
+
+E501 Line too long (216 > 100)
+  --> scripts\identity_backup.py:49:101
+   |
+47 | …
+48 | …
+49 | …", "created_at": datetime.now(UTC).isoformat(), "bytes": target.stat().st_size, "sha256": sha256, "restore_verified": False}
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+50 | …
+51 | …
+   |
+
+E501 Line too long (118 > 100)
+  --> scripts\identity_backup.py:54:101
+   |
+52 |     with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+53 |         json.dump(manifest, stream, ensure_ascii=False, indent=2)
+54 |     print(json.dumps({"backup": str(target), "manifest": str(metadata), "sha256": sha256, "restore_verified": False}))
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (126 > 100)
+  --> scripts\identity_backup.py:61:64
+   |
+59 |         main()
+60 |     except (Exception, KeyboardInterrupt):
+61 |         raise SystemExit("备份未完成；不会覆盖原文件，请检查服务状态及输出位置。部分文件会保留，不能当作有效备份。") from None
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (109 > 100)
+  --> src\astroagent\api\admin.py:53:101
+   |
+51 |             'admin AND active AND NOT disabled) AS administrators FROM public.auth_users'
+52 |         ).fetchone()
+53 |         mail = db.execute("SELECT state,count(*) AS count FROM public.auth_outbox GROUP BY state").fetchall()
+   |                                                                                                     ^^^^^^^^^
+54 |     return {"users": counts, "mail_configured": service.settings.mail_ready, "registration_available": service.registration_ready, "ma…
+   |
+
+E501 Line too long (256 > 100)
+  --> src\astroagent\api\admin.py:54:101
+   |
+52 | …
+53 | …e").fetchall()
+54 | …lable": service.registration_ready, "mail": mail, "mail_hour_limit": service.settings.mail_hour_limit, "registration_limit": service.settings.registration_limit}
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (126 > 100)
+  --> src\astroagent\api\admin.py:65:101
+   |
+63 |             'public.auth_users ORDER BY created_at DESC,id LIMIT 30 OFFSET %s'
+64 |         ), ((page - 1) * 30,)).fetchall()
+65 |     return [{**{k: v for k, v in row.items() if k != "email_display"}, "email": masked(row["email_display"])} for row in rows]
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (113 > 100)
+  --> src\astroagent\api\admin.py:75:101
+   |
+73 |         db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+74 |         writable(db, user)
+75 |         target = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (str(user_id),)).fetchone()
+   |                                                                                                     ^^^^^^^^^^^^^
+76 |         if not target:
+77 |             raise ServiceError(404, "user_not_found", "目标账号不存在。")
+   |
+
+E501 Line too long (122 > 100)
+  --> src\astroagent\api\admin.py:80:101
+   |
+78 |         if str(user_id) == user["id"] and body.action in {"disable", "revoke_admin"}:
+79 |             raise ServiceError(409, "self_lockout", "不能禁用或降权当前管理员。")
+80 |         if body.action in {"disable", "revoke_admin"} and target["admin"] and target["active"] and not target["disabled"]:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+81 |             count = db.execute(
+82 |                 'SELECT count(*) AS n FROM public.auth_users WHERE admin AND active AND NOT '
+   |
+
+E501 Line too long (164 > 100)
+  --> src\astroagent\api\admin.py:89:101
+   |
+87 | …or target["disabled"]):
+88 | … 活且未禁用的账号。")
+89 | …("disabled", True), "grant_admin": ("admin", True), "revoke_admin": ("admin", False)}[body.action]
+   |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+90 | …e mapping.
+91 | …}=%s,generation=generation+1 WHERE id=%s RETURNING generation", (value, str(user_id))).fetchone()
+   |
+
+E501 Line too long (163 > 100)
+  --> src\astroagent\api\admin.py:91:101
+   |
+89 | … ("disabled", True), "grant_admin": ("admin", True), "revoke_admin": ("admin", False)}[body.action]
+90 | …de mapping.
+91 | …d}=%s,generation=generation+1 WHERE id=%s RETURNING generation", (value, str(user_id))).fetchone()
+   |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+92 | …
+93 | …, "ok", str(user_id), service.source_hash(source(request)), body.reason)
+   |
+
+E501 Line too long (137 > 100)
+  --> src\astroagent\api\admin.py:93:101
+   |
+91 | …ers SET {field}=%s,generation=generation+1 WHERE id=%s RETURNING generation", (value, str(user_id))).fetchone()
+92 | …
+93 | …+ body.action, "ok", str(user_id), service.source_hash(source(request)), body.reason)
+   |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+94 | …["generation"])
+95 | …}
+   |
+
+E501 Line too long (123 > 100)
+  --> src\astroagent\api\auth.py:83:101
+   |
+81 | def source(request):
+82 |     # Only LocalAccess, after verifying the private proxy credential, can set this.
+83 |     return getattr(request.state, "trusted_client_address", None) or (request.client.host if request.client else "unknown")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (103 > 100)
+  --> src\astroagent\api\auth.py:87:101
+   |
+86 | def set_session(response, settings, token):
+87 |     response.set_cookie(COOKIE, token, secure=settings.secure, httponly=True, samesite="lax", path="/")
+   |                                                                                                     ^^^
+88 |     response.delete_cookie(PREAUTH, secure=settings.secure, httponly=True, samesite="lax", path="/")
+   |
+
+E501 Line too long (129 > 100)
+   --> src\astroagent\api\auth.py:130:101
+    |
+128 |     if not token or len(token) > 256:
+129 |         token = opaque()
+130 |         response.set_cookie(PREAUTH, token, max_age=900, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131 |     return {"csrf_token": service.csrf(token), "registration_available": service.registration_ready}
+    |
+
+E501 Line too long (215 > 100)
+   --> src\astroagent\api\auth.py:137:101
+    |
+135 | …
+136 | …
+137 | …ies.get(COOKIE, "")), "idle_seconds": service.settings.idle_seconds, "absolute_seconds": service.settings.absolute_seconds}
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (114 > 100)
+   --> src\astroagent\api\auth.py:145:78
+    |
+143 |     service.store.rate("email", source(request), canonical, limit=5, seconds=3600)
+144 |     if not service.registration_ready:
+145 |         raise ServiceError(503, "email_unavailable", "邮件注册或找回服务暂不可用，请联系管理员；已有账号可登录。")
+    |                                                                                                     ^^^^^^^^^^^^^^
+146 |     with service.store.connect() as db:
+147 |         db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+    |
+
+E501 Line too long (150 > 100)
+   --> src\astroagent\api\auth.py:148:101
+    |
+146 | …
+147 | …H_LOCK,))
+148 | …nt(*) AS n FROM public.auth_users").fetchone()["n"] >= service.settings.registration_limit:
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+149 | …, "注册与重发服务暂已达到名额上限，请联系管理员。")
+150 | …WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+    |
+
+E501 Line too long (110 > 100)
+   --> src\astroagent\api\auth.py:149:82
+    |
+147 | …     db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+148 | …     if purpose == "activate" and db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"] >= service.settings.regi…
+149 | …         raise ServiceError(503, "registration_capacity", "注册与重发服务暂已达到名额上限，请联系管理员。")
+    |                                                                                                   ^^^^^^^^^^
+150 | …     user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+151 | …     if purpose == "activate" and not user:
+    |
+
+E501 Line too long (115 > 100)
+   --> src\astroagent\api\auth.py:150:101
+    |
+148 | …     if purpose == "activate" and db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"] >= service.settings.regi…
+149 | …         raise ServiceError(503, "registration_capacity", "注册与重发服务暂已达到名额上限，请联系管理员。")
+150 | …     user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+    |                                                                                                   ^^^^^^^^^^^^^^^
+151 | …     if purpose == "activate" and not user:
+152 | …         identifier = str(uuid4())
+    |
+
+E501 Line too long (144 > 100)
+   --> src\astroagent\api\auth.py:157:101
+    |
+155 | …
+156 | …UUID(identifier).hex)).fetchone()
+157 | …urpose == "activate" and not user["active"]) or (purpose == "reset" and user["active"]))
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+158 | …
+159 | …ody.request_id))
+    |
+
+E501 Line too long (114 > 100)
+   --> src\astroagent\api\auth.py:160:101
+    |
+158 |         if eligible:
+159 |             service.store.token(db, user, purpose, str(body.request_id))
+160 |         service.store.audit(db, None, "email_" + purpose, "accepted", source=service.source_hash(source(request)))
+    |                                                                                                     ^^^^^^^^^^^^^^
+161 |     return GENERIC
+    |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\api\auth.py:185:101
+    |
+183 |     with service.store.connect() as db:
+184 |         user_id = consume(db, body.token.get_secret_value(), "activate")
+185 |         user = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)).fetchone()
+    |                                                                                                     ^^^^^^
+186 |         if user["active"] or user["disabled"]:
+187 |             raise invalid_link()
+    |
+
+E501 Line too long (160 > 100)
+   --> src\astroagent\api\auth.py:189:101
+    |
+187 | …
+188 | …
+189 | …,'activate_setup',%s,NULL)", (digest(token), user_id, datetime.now(UTC) + timedelta(minutes=5)))
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+190 | …
+    |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\api\auth.py:199:101
+    |
+197 |     with service.store.connect() as db:
+198 |         user_id = consume(db, body.token.get_secret_value(), purpose)
+199 |         user = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)).fetchone()
+    |                                                                                                     ^^^^^^
+200 |         if user["disabled"] or (purpose == "activate_setup" and user["active"]) or (purpose == "reset" and not user["active"]):
+201 |             raise invalid_link()
+    |
+
+E501 Line too long (127 > 100)
+   --> src\astroagent\api\auth.py:200:101
+    |
+198 |         user_id = consume(db, body.token.get_secret_value(), purpose)
+199 |         user = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)).fetchone()
+200 |         if user["disabled"] or (purpose == "activate_setup" and user["active"]) or (purpose == "reset" and not user["active"]):
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+201 |             raise invalid_link()
+202 |         db.execute((
+    |
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\api\auth.py:211:101
+    |
+209 |         ), (user_id,))
+210 |         service.store.revoke(db, user_id)
+211 |         service.store.audit(db, user_id, "activated" if purpose == "activate_setup" else "password_reset", "ok")
+    |                                                                                                     ^^^^^^^^^^^^
+212 |         if purpose == "reset":
+213 |             service.store.security_mail(db, user, "密码已重置；所有旧会话已退出。")
+    |
+
+E501 Line too long (115 > 100)
+   --> src\astroagent\api\auth.py:238:101
+    |
+236 |     password = body.password.get_secret_value()
+237 |     with service.store.connect() as db:
+238 |         user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+    |                                                                                                     ^^^^^^^^^^^^^^^
+239 |         valid = verify_password(user["password_hash"] if user and user["password_hash"] else service.dummy_hash, password)
+240 |         valid = valid and user and user["active"] and not user["disabled"]
+    |
+
+E501 Line too long (122 > 100)
+   --> src\astroagent\api\auth.py:239:101
+    |
+237 |     with service.store.connect() as db:
+238 |         user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+239 |         valid = verify_password(user["password_hash"] if user and user["password_hash"] else service.dummy_hash, password)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+240 |         valid = valid and user and user["active"] and not user["disabled"]
+241 |         mfa = check_otp(service.store, db, user, body.code) if valid and user["totp_secret"] else False
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\api\auth.py:241:101
+    |
+239 |         valid = verify_password(user["password_hash"] if user and user["password_hash"] else service.dummy_hash, password)
+240 |         valid = valid and user and user["active"] and not user["disabled"]
+241 |         mfa = check_otp(service.store, db, user, body.code) if valid and user["totp_secret"] else False
+    |                                                                                                     ^^^
+242 |         if valid and user["totp_secret"] and not mfa:
+243 |             valid = False
+    |
+
+E501 Line too long (105 > 100)
+   --> src\astroagent\api\auth.py:245:101
+    |
+243 |             valid = False
+244 |         if not valid:
+245 |             service.store.audit(db, None, "login", "denied", source=service.source_hash(source(request)))
+    |                                                                                                     ^^^^^
+246 |         else:
+247 |             old = getattr(request.state, "principal", None)
+    |
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\api\auth.py:249:101
+    |
+247 | …     old = getattr(request.state, "principal", None)
+248 | …     if old:
+249 | …         db.execute("UPDATE public.auth_sessions SET revoked=true WHERE hash=%s", (old["session_hash"],))
+    |                                                                                               ^^^^^^^^^^^^
+250 | …     if PASSWORDS.check_needs_rehash(user["password_hash"]):
+251 | …         db.execute("UPDATE public.auth_users SET password_hash=%s WHERE id=%s", (PASSWORDS.hash(unicodedata.normalize("NFC", passwo…
+    |
+
+E501 Line too long (157 > 100)
+   --> src\astroagent\api\auth.py:251:101
+    |
+249 | …oked=true WHERE hash=%s", (old["session_hash"],))
+250 | …"]):
+251 | …rd_hash=%s WHERE id=%s", (PASSWORDS.hash(unicodedata.normalize("NFC", password)), user["id"]))
+    |                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+252 | …
+253 | …=now() WHERE id=%s", (user["id"],))
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\api\auth.py:254:101
+    |
+252 |             token = service.store.session(db, user["id"], mfa)
+253 |             db.execute("UPDATE public.auth_users SET last_login=now() WHERE id=%s", (user["id"],))
+254 |             service.store.audit(db, user["id"], "login", "ok", source=service.source_hash(source(request)))
+    |                                                                                                     ^^^^^^^
+255 |     if not valid:
+256 |         service.store.login_backoff(canonical, source(request), failed=True)
+    |
+
+E501 Line too long (105 > 100)
+   --> src\astroagent\api\auth.py:267:101
+    |
+265 |     service, user = runtime(request), actor(request)
+266 |     with service.store.connect() as db:
+267 |         db.execute("UPDATE public.auth_sessions SET revoked=true WHERE hash=%s", (user["session_hash"],))
+    |                                                                                                     ^^^^^
+268 |         service.store.audit(db, user["id"], "logout", "ok")
+269 |     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\api\auth.py:269:101
+    |
+267 |         db.execute("UPDATE public.auth_sessions SET revoked=true WHERE hash=%s", (user["session_hash"],))
+268 |         service.store.audit(db, user["id"], "logout", "ok")
+269 |     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+    |                                                                                                     ^^^^^^^
+270 |     return {"message": "已退出。"}
+    |
+
+E501 Line too long (108 > 100)
+   --> src\astroagent\api\auth.py:275:101
+    |
+273 | def proof(service, request, body, db):
+274 |     user = actor(request)
+275 |     current = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user["id"],)).fetchone()
+    |                                                                                                     ^^^^^^^^
+276 |     if not current or not current["active"] or current["disabled"] or not verify_password(current["password_hash"], body.password.get…
+277 |         raise ServiceError(403, "reauth_failed", "重新认证失败。")
+    |
+
+E501 Line too long (150 > 100)
+   --> src\astroagent\api\auth.py:276:101
+    |
+274 | …
+275 | …HERE id=%s FOR UPDATE", (user["id"],)).fetchone()
+276 | …abled"] or not verify_password(current["password_hash"], body.password.get_secret_value()):
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+277 | … 败。")
+278 | …re, db, current, body.code):
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\api\auth.py:311:101
+    |
+309 |         service.store.security_mail(db, current, "密码已修改；所有会话已退出。")
+310 |         service.store.audit(db, user["id"], "password_changed", "ok")
+311 |     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+    |                                                                                                     ^^^^^^^
+312 |     return {"message": "密码已修改，请重新登录。"}
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\api\auth.py:325:101
+    |
+323 |             'LIMIT 100'
+324 |         ), (user["id"], service.settings.idle_seconds)).fetchall()
+325 |     return [{"current": hmac.compare_digest(row.pop("hash"), user["session_hash"]), **row} for row in rows]
+    |                                                                                                     ^^^^^^^
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\api\auth.py:336:101
+    |
+334 |         service.store.revoke(db, user["id"])
+335 |         service.store.audit(db, user["id"], "sessions_revoked", "ok")
+336 |     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+    |                                                                                                     ^^^^^^^
+337 |     return {"message": "所有会话已退出。"}
+    |
+
+E501 Line too long (148 > 100)
+   --> src\astroagent\api\auth.py:351:98
+    |
+349 | …val '10 minutes' WHERE id=%s"
+350 | …ecode(), user["id"]))
+351 | …od": 30, "digits": 6, "message": "将密钥加入验证器，输入6位验证码确认；密钥仅本次显示。"}
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\api\auth.py:359:101
+    |
+357 |     service.store.rate("totp_confirm", source(request), user["id"], limit=10)
+358 |     with service.store.connect() as db:
+359 |         current = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user["id"],)).fetchone()
+    |                                                                                                     ^^^^^^^^^^^^
+360 |         if not current["totp_pending"] or current["totp_pending_until"] < datetime.now(UTC):
+361 |             raise ServiceError(422, "totp_expired", "绑定已过期，请重新开始。")
+    |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\api\auth.py:373:101
+    |
+371 |         codes = [secrets.token_hex(10) for _ in range(10)]
+372 |         for code in codes:
+373 |             db.execute("INSERT INTO public.auth_recovery VALUES (%s,%s,NULL)", (digest(code), user["id"]))
+    |                                                                                                     ^^^^^^
+374 |         service.store.revoke(db, user["id"])
+375 |         token = service.store.session(db, user["id"], True)
+    |
+
+E501 Line too long (115 > 100)
+  --> src\astroagent\auth_access.py:16:101
+   |
+14 |     ("GET", "/api/v1/auth/session"),
+15 |     *(('POST', f"/api/v1/auth/{path}") for path in (
+16 |         "register", "resend", "forgot-password", "activate/confirm", "activate/complete", "reset-password", "login"
+   |                                                                                                     ^^^^^^^^^^^^^^^
+17 |     )),
+18 | }
+   |
+
+E501 Line too long (110 > 100)
+  --> src\astroagent\auth_access.py:24:101
+   |
+22 |     if not user or not user["admin"] or not user["totp_secret"] or not user.get("mfa_at"):
+23 |         raise ServiceError(403, "access_denied", "无权访问此功能。")
+24 |     if recent and (not user.get("reauth_at") or user["reauth_at"] < datetime.now(UTC) - timedelta(minutes=5)):
+   |                                                                                                     ^^^^^^^^^^
+25 |         raise ServiceError(403, "reauth_required", "请先重新认证，再执行管理操作。")
+   |
+
+E501 Line too long (232 > 100)
+  --> src\astroagent\auth_access.py:43:101
+   |
+42 | …
+43 | …alse}}, status_code=status, headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"})
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 | …
+   |
+
+E501 Line too long (118 > 100)
+  --> src\astroagent\auth_access.py:64:101
+   |
+62 |                 return await fail(401, "login_required", "请先登录。")
+63 |             if method not in {"GET", "HEAD"}:
+64 |                 if headers.get("origin") != identity.settings.origin or headers.get("sec-fetch-site") == "cross-site":
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^
+65 |                     return await fail(403, "csrf_origin", "请从本站页面提交操作。")
+66 |                 secret = session if user else anonymous
+   |
+
+E501 Line too long (134 > 100)
+  --> src\astroagent\auth_access.py:67:101
+   |
+65 |                     return await fail(403, "csrf_origin", "请从本站页面提交操作。")
+66 |                 secret = session if user else anonymous
+67 |                 if not secret or len(secret) > 256 or not hmac.compare_digest(headers.get("x-csrf-token", ""), identity.csrf(secret)):
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |                     return await fail(403, "csrf_invalid", "页面验证已失效，请刷新后重试。")
+69 |             if user and user["admin"] and (not user["totp_secret"] or not user["mfa_at"]) and not path.startswith("/api/v1/auth/"):
+   |
+
+E501 Line too long (131 > 100)
+  --> src\astroagent\auth_access.py:69:101
+   |
+67 | …         if not secret or len(secret) > 256 or not hmac.compare_digest(headers.get("x-csrf-token", ""), identity.csrf(secret)):
+68 | …             return await fail(403, "csrf_invalid", "页面验证已失效，请刷新后重试。")
+69 | …     if user and user["admin"] and (not user["totp_secret"] or not user["mfa_at"]) and not path.startswith("/api/v1/auth/"):
+   |                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+70 | …         return await fail(403, "mfa_required", "管理员须先完成双因素认证。")
+71 | …     if path in {"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect", "/api/v1/setup/status", "/api/v1/setup/initialize"} or …
+   |
+
+E501 Line too long (174 > 100)
+  --> src\astroagent\auth_access.py:71:101
+   |
+69 | …ot user["mfa_at"]) and not path.startswith("/api/v1/auth/"):
+70 | … 因素认证。")
+71 | …h2-redirect", "/api/v1/setup/status", "/api/v1/setup/initialize"} or path.startswith("/api/v1/admin/"):
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+72 | …in/") and method not in {"GET", "HEAD"})
+73 | …
+   |
+
+E501 Line too long (111 > 100)
+  --> src\astroagent\auth_access.py:72:101
+   |
+70 | …         return await fail(403, "mfa_required", "管理员须先完成双因素认证。")
+71 | …     if path in {"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect", "/api/v1/setup/status", "/api/v1/setup/initialize"} or …
+72 | …         administrator(user, recent=path.startswith("/api/v1/admin/") and method not in {"GET", "HEAD"})
+   |                                                                                               ^^^^^^^^^^^
+73 | …     scope.setdefault("state", {})["principal"] = user
+74 | …     # Bound all authentication inputs before pydantic or password hashing.
+   |
+
+E501 Line too long (177 > 100)
+   --> src\astroagent\auth_access.py:109:101
+    |
+107 | …
+108 | …
+109 | …["type"] == "http.response.start" or (message["type"] == "http.response.body" and message.get("body"))):
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+110 | …each file chunk.
+111 | …
+    |
+
+E501 Line too long (150 > 100)
+   --> src\astroagent\auth_access.py:125:101
+    |
+123 | …
+124 | …
+125 | …get("headers", []), (b"cache-control", b"no-store"), (b"referrer-policy", b"no-referrer")]}
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+126 | …
+127 | …
+    |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\auth_config.py:11:101
+   |
+10 | class AuthSettings(BaseSettings):
+11 |     model_config = SettingsConfigDict(env_prefix="ASTROAGENT_AUTH_", env_file=".env", extra="ignore")
+   |                                                                                                     ^
+12 |     origin: str = "http://127.0.0.1:5173"
+13 |     local_http: bool = False
+   |
+
+E501 Line too long (103 > 100)
+  --> src\astroagent\auth_config.py:29:101
+   |
+27 |     audit_days: int = Field(default=90, ge=7, le=365)
+28 |     password_blocklist: Path | None = Path(__file__).parent / "auth_data" / "common-passwords.txt"
+29 |     password_blocklist_sha256: str = "1472aafa2561df5e3293aee252aee3ca660c12b399a283cf808bb01b39be388b"
+   |                                                                                                     ^^^
+30 |
+31 |     @property
+   |
+
+E501 Line too long (107 > 100)
+  --> src\astroagent\auth_config.py:37:101
+   |
+35 |     @property
+36 |     def mail_ready(self):
+37 |         return all((self.smtp_host, self.smtp_user, self.smtp_password.get_secret_value(), self.smtp_from))
+   |                                                                                                     ^^^^^^^
+38 |
+39 |     @model_validator(mode="after")
+   |
+
+E501 Line too long (103 > 100)
+  --> src\astroagent\auth_config.py:43:101
+   |
+41 |         parsed = urlsplit(self.origin)
+42 |         if (parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username
+43 |                 or parsed.password or parsed.path not in {"", "/"} or parsed.query or parsed.fragment):
+   |                                                                                                     ^^^
+44 |             raise ValueError("A fixed trusted site origin is required")
+45 |         if parsed.scheme == "http" and not (
+   |
+
+E501 Line too long (107 > 100)
+  --> src\astroagent\auth_config.py:56:101
+   |
+54 |         host = f"[{hostname}]" if ":" in hostname else hostname
+55 |         port = parsed.port
+56 |         suffix = f":{port}" if port and (parsed.scheme, port) not in {("http", 80), ("https", 443)} else ""
+   |                                                                                                     ^^^^^^^
+57 |         self.origin = f"{parsed.scheme}://{host}{suffix}"
+58 |         return self
+   |
+
+E501 Line too long (120 > 100)
+  --> src\astroagent\auth_mail.py:45:101
+   |
+43 |         payload = json.loads(self.store.crypto.decrypt(row["payload"].encode()).decode())
+44 |         with self.store.connect() as db:
+45 |             user = db.execute("SELECT active,disabled FROM public.auth_users WHERE id=%s", (row["user_id"],)).fetchone()
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+46 |             valid = user and not user["disabled"]
+47 |             if payload["purpose"] != "security":
+   |
+
+E501 Line too long (176 > 100)
+  --> src\astroagent\auth_mail.py:63:97
+   |
+61 | …d["email"]
+62 | …
+63 | … == "security" else "AstroAgent 邮箱验证" if payload["purpose"] == "activate" else "AstroAgent 重置密码"
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+64 | …yload["purpose"] == "security" else f"请打开以下链接并主动确认。有效期{payload['minutes']}分钟。\n\n{payload['url']}\n\n如果不是您发…
+65 | …
+   |
+
+E501 Line too long (225 > 100)
+  --> src\astroagent\auth_mail.py:64:101
+   |
+62 | …
+63 | …troAgent 邮箱验证" if payload["purpose"] == "activate" else "AstroAgent 重置密码"
+64 | …curity" else f"请打开以下链接并主动确认。有效期{payload['minutes']}分钟。\n\n{payload['url']}\n\n如果不是您发起的操作，请忽略。"))
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 | …
+66 | …
+   |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\auth_mail.py:68:101
+   |
+66 |         factory = smtplib.SMTP_SSL if self.settings.smtp_mode == "tls" else smtplib.SMTP
+67 |         kwargs = {"context": context} if self.settings.smtp_mode == "tls" else {}
+68 |         with factory(self.settings.smtp_host, self.settings.smtp_port, timeout=10, **kwargs) as smtp:
+   |                                                                                                     ^
+69 |             if self.settings.smtp_mode == "starttls":
+70 |                 smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> src\astroagent\auth_mail.py:70:28
+   |
+68 |         with factory(self.settings.smtp_host, self.settings.smtp_port, timeout=10, **kwargs) as smtp:
+69 |             if self.settings.smtp_mode == "starttls":
+70 |                 smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
+   |                            ^
+71 |             smtp.login(self.settings.smtp_user, self.settings.smtp_password.get_secret_value())
+72 |             smtp.send_message(message)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> src\astroagent\auth_mail.py:70:60
+   |
+68 |         with factory(self.settings.smtp_host, self.settings.smtp_port, timeout=10, **kwargs) as smtp:
+69 |             if self.settings.smtp_mode == "starttls":
+70 |                 smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
+   |                                                            ^
+71 |             smtp.login(self.settings.smtp_user, self.settings.smtp_password.get_secret_value())
+72 |             smtp.send_message(message)
+   |
+
+E501 Line too long (104 > 100)
+  --> src\astroagent\auth_mail.py:89:101
+   |
+87 | …             self.deliver(row)
+88 | …     with self.store.connect() as db:
+89 | …         db.execute("DELETE FROM public.auth_tokens WHERE expires_at<now()-interval '1 day'")
+   |                                                                                           ^^^^
+90 | …         db.execute("DELETE FROM public.auth_sessions WHERE expires_at<now()-interval '1 day' OR (revoked AND last_seen<now()-interva…
+91 | …         db.execute("DELETE FROM public.auth_audit WHERE created_at<now()-(%s*interval '1 day')", (self.settings.audit_days,))
+   |
+
+E501 Line too long (156 > 100)
+  --> src\astroagent\auth_mail.py:90:101
+   |
+88 | …
+89 | … WHERE expires_at<now()-interval '1 day'")
+90 | …ns WHERE expires_at<now()-interval '1 day' OR (revoked AND last_seen<now()-interval '1 day')")
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+91 | …WHERE created_at<now()-(%s*interval '1 day')", (self.settings.audit_days,))
+92 | …
+   |
+
+E501 Line too long (137 > 100)
+  --> src\astroagent\auth_mail.py:91:101
+   |
+89 | …     db.execute("DELETE FROM public.auth_tokens WHERE expires_at<now()-interval '1 day'")
+90 | …     db.execute("DELETE FROM public.auth_sessions WHERE expires_at<now()-interval '1 day' OR (revoked AND last_seen<now()-interval '1…
+91 | …     db.execute("DELETE FROM public.auth_audit WHERE created_at<now()-(%s*interval '1 day')", (self.settings.audit_days,))
+   |                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+92 | …     db.execute(
+93 | …         "UPDATE public.auth_outbox SET payload='' WHERE created_at<now()-interval '1 "
+   |
+
+E501 Line too long (102 > 100)
+  --> src\astroagent\auth_mail.py:93:101
+   |
+91 | …     db.execute("DELETE FROM public.auth_audit WHERE created_at<now()-(%s*interval '1 day')", (self.settings.audit_days,))
+92 | …     db.execute(
+93 | …         "UPDATE public.auth_outbox SET payload='' WHERE created_at<now()-interval '1 "
+   |                                                                                       ^^
+94 | …         "day'"
+95 | …     )
+   |
+
+E501 Line too long (200 > 100)
+   --> src\astroagent\auth_mail.py:104:101
+    |
+102 | ….
+103 | …
+104 | …AuthenticationError) else "smtp_rejected" if isinstance(exc, smtplib.SMTPResponseException) else "temporary_failure"
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+105 | …
+106 | …
+    |
+
+E501 Line too long (109 > 100)
+   --> src\astroagent\auth_mail.py:109:101
+    |
+107 | …                     db.execute((
+108 | …                         'UPDATE public.auth_outbox SET '
+109 | …                         "state='failed',error_class=%s,lease_until=NULL,available_at=now()+interval "
+    |                                                                                               ^^^^^^^^^
+110 | …                         "'5 minutes' WHERE id=%s"
+111 | …                     ), (category, row["id"]))
+    |
+
+E501 Line too long (123 > 100)
+  --> src\astroagent\auth_security.py:47:101
+   |
+46 | def keyed(settings, purpose, value):
+47 |     return hmac.new(settings.secret.get_secret_value().encode(), f"{purpose}:{value}".encode(), hashlib.sha256).hexdigest()
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (111 > 100)
+  --> src\astroagent\auth_security.py:56:101
+   |
+54 |         if len(raw) > 16 * 1024**2 or hashlib.sha256(raw).hexdigest() != expected:
+55 |             raise ValueError("Invalid password blocklist")
+56 |         values = frozenset(unicodedata.normalize("NFC", line).casefold() for line in raw.decode().splitlines())
+   |                                                                                                     ^^^^^^^^^^^
+57 |         if len(values) < 9000:
+58 |             raise ValueError("Password blocklist is incomplete")
+   |
+
+E501 Line too long (109 > 100)
+  --> src\astroagent\auth_security.py:61:84
+   |
+59 |         return values
+60 |     except Exception as exc:
+61 |         raise ServiceError(503, "password_policy_unavailable", "密码安全词表未配置，请联系管理员。") from exc
+   |                                                                                                     ^^^^^^^^^
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\auth_security.py:67:80
+   |
+65 |     password = unicodedata.normalize("NFC", password)
+66 |     if not 15 <= len(password) <= 128 or len(password.encode()) > 1024:
+67 |         raise ServiceError(422, "password_policy", "密码需要15至128个字符，可使用空格和密码管理器。")
+   |                                                                                                     ^
+68 |     if not settings.password_blocklist or not settings.password_blocklist_sha256:
+69 |         raise ServiceError(503, "password_policy_unavailable", "密码安全词表尚未配置。")
+   |
+
+E501 Line too long (132 > 100)
+  --> src\astroagent\auth_security.py:70:101
+   |
+68 |     if not settings.password_blocklist or not settings.password_blocklist_sha256:
+69 |         raise ServiceError(503, "password_policy_unavailable", "密码安全词表尚未配置。")
+70 |     if password.casefold() in blocklist(settings.password_blocklist, settings.password_blocklist_sha256) or len(set(password)) == 1:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+71 |         raise ServiceError(422, "password_common", "该密码过于常见，请换用独立的长密码。")
+72 |     return PASSWORDS.hash(password)
+   |
+
+E501 Line too long (135 > 100)
+  --> src\astroagent\auth_store.py:80:101
+   |
+78 |         try:
+79 |             db = psycopg.connect(self.local.database_url.get_secret_value(), row_factory=dict_row,
+80 |                                  connect_timeout=5, options="-c search_path=pg_catalog -c statement_timeout=5000 -c lock_timeout=2000")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+81 |         except Exception as exc:
+82 |             raise ServiceError(503, "identity_unavailable", "身份服务暂不可用，请稍后重试。") from exc
+   |
+
+E501 Line too long (102 > 100)
+  --> src\astroagent\auth_store.py:82:86
+   |
+80 |                                  connect_timeout=5, options="-c search_path=pg_catalog -c statement_timeout=5000 -c lock_timeout=2000")
+81 |         except Exception as exc:
+82 |             raise ServiceError(503, "identity_unavailable", "身份服务暂不可用，请稍后重试。") from exc
+   |                                                                                                     ^^
+83 |         try:
+84 |             with db:
+   |
+
+E501 Line too long (102 > 100)
+  --> src\astroagent\auth_store.py:94:101
+   |
+92 |             if not value or value["value"] != "1":
+93 |                 raise ServiceError(503, "identity_not_initialized", "身份服务等待本机初始化。")
+94 |             key = db.execute("SELECT value FROM public.auth_meta WHERE key='key_identity'").fetchone()
+   |                                                                                                     ^^
+95 |             if not key or key["value"] != keyed(self.settings, "key", "identity-v1"):
+96 |                 raise ServiceError(503, "identity_key_mismatch", "身份服务密钥不匹配，请恢复原密钥。")
+   |
+
+E501 Line too long (102 > 100)
+  --> src\astroagent\auth_store.py:96:84
+   |
+94 |             key = db.execute("SELECT value FROM public.auth_meta WHERE key='key_identity'").fetchone()
+95 |             if not key or key["value"] != keyed(self.settings, "key", "identity-v1"):
+96 |                 raise ServiceError(503, "identity_key_mismatch", "身份服务密钥不匹配，请恢复原密钥。")
+   |                                                                                                     ^^
+97 |
+98 |     def install(self):
+   |
+
+E501 Line too long (115 > 100)
+   --> src\astroagent\auth_store.py:107:101
+    |
+105 |                 "n.oid=e.extnamespace WHERE e.extname IN ('vector','pg_trgm')"
+106 |             ).fetchall()
+107 |             if {(v["extname"], v["nspname"]) for v in extensions} != {("vector", "public"), ("pg_trgm", "public")}:
+    |                                                                                                     ^^^^^^^^^^^^^^^
+108 |                 raise ServiceError(503, "identity_extensions", "请先由本机运维在public安装vector及pg_trgm扩展。")
+109 |             for statement in DDL:
+    |
+
+E501 Line too long (113 > 100)
+   --> src\astroagent\auth_store.py:108:90
+    |
+106 |             ).fetchall()
+107 |             if {(v["extname"], v["nspname"]) for v in extensions} != {("vector", "public"), ("pg_trgm", "public")}:
+108 |                 raise ServiceError(503, "identity_extensions", "请先由本机运维在public安装vector及pg_trgm扩展。")
+    |                                                                                                     ^^^^^^^^^^^^^
+109 |             for statement in DDL:
+110 |                 db.execute(statement)
+    |
+
+E501 Line too long (144 > 100)
+   --> src\astroagent\auth_store.py:111:101
+    |
+109 | …
+110 | …
+111 | …UES ('version','1'),('key_identity',%s)", (keyed(self.settings, "key", "identity-v1"),))
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+112 | … "ok")
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\auth_store.py:125:101
+    |
+123 |         exceeded = False
+124 |         with self.connect() as db:
+125 |             for value in {"source:" + source, "account:" + account if account else "source:" + source}:
+    |                                                                                                     ^^^
+126 |                 key = keyed(self.settings, "rate:" + action, value)
+127 |                 row = db.execute((
+    |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\auth_store.py:137:101
+    |
+136 |     def token(self, db, user, purpose, request_id):
+137 |         if db.execute("SELECT 1 FROM public.auth_outbox WHERE request_id=%s", (request_id,)).fetchone():
+    |                                                                                                     ^^^^
+138 |             return
+139 |         db.execute((
+    |
+
+E501 Line too long (184 > 100)
+   --> src\astroagent\auth_store.py:148:101
+    |
+146 | …
+147 | …
+148 | …", (digest(token), user["id"], purpose, datetime.now(UTC) + timedelta(seconds=self.settings.token_seconds)))
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+149 | …
+150 | …{self.settings.origin}/{page}#token={token}", "minutes": self.settings.token_seconds // 60}
+    |
+
+E501 Line too long (167 > 100)
+   --> src\astroagent\auth_store.py:150:101
+    |
+148 | …%s,NULL)", (digest(token), user["id"], purpose, datetime.now(UTC) + timedelta(seconds=self.settings.token_seconds)))
+149 | …ord"
+150 | …url": f"{self.settings.origin}/{page}#token={token}", "minutes": self.settings.token_seconds // 60}
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+151 | …
+152 | …rpose,payload) VALUES'
+    |
+
+E501 Line too long (119 > 100)
+   --> src\astroagent\auth_store.py:154:101
+    |
+152 |             'INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES'
+153 |             ' (%s,%s,%s,%s,%s)'
+154 |         ), (str(uuid4()), user["id"], request_id, purpose, self.crypto.encrypt(json.dumps(payload).encode()).decode()))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+155 |
+156 |     def login_backoff(self, account, source, failed=False):
+    |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\auth_store.py:166:101
+    |
+164 |                         "seconds',now()) ON CONFLICT(key) DO UPDATE SET failures=CASE WHEN "
+165 |                         "auth_attempts.last_failure<now()-interval '1 hour' THEN 1 ELSE "
+166 |                         'auth_attempts.failures+1 END, blocked_until=now()+least(900,power(2,least(10'
+    |                                                                                                     ^^
+167 |                         ",auth_attempts.failures+1)))*interval '1 second',last_failure=now() "
+168 |                         'RETURNING failures'
+    |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\auth_store.py:171:101
+    |
+169 | …         ), (key,)).fetchone()
+170 | …         if row["failures"] in (5, 10, 20):
+171 | …             self.audit(db, None, "repeated_login_failures", "throttled", source=key[:24])
+    |                                                                                           ^
+172 | …     else:
+173 | …         blocked |= bool(db.execute("SELECT 1 FROM public.auth_attempts WHERE key=%s AND blocked_until>now()", (key,)).fetchone())
+    |
+
+E501 Line too long (141 > 100)
+   --> src\astroagent\auth_store.py:173:101
+    |
+171 | …login_failures", "throttled", source=key[:24])
+172 | …
+173 | …1 FROM public.auth_attempts WHERE key=%s AND blocked_until>now()", (key,)).fetchone())
+    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+174 | …s WHERE last_failure<now()-interval '1 day'")
+175 | …
+    |
+
+E501 Line too long (135 > 100)
+   --> src\astroagent\auth_store.py:180:101
+    |
+178 | …
+179 | …
+180 | …mpts WHERE key=%s", (keyed(self.settings, "login-backoff", "account:" + account),))
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+181 | …
+182 | …
+    |
+
+E501 Line too long (115 > 100)
+   --> src\astroagent\auth_store.py:193:101
+    |
+191 |             ), (digest(token), self.settings.idle_seconds)).fetchone()
+192 |             if row and touch:
+193 |                 db.execute("UPDATE public.auth_sessions SET last_seen=now() WHERE hash=%s", (row["session_hash"],))
+    |                                                                                                     ^^^^^^^^^^^^^^^
+194 |             return row
+    |
+
+E501 Line too long (108 > 100)
+   --> src\astroagent\auth_store.py:204:101
+    |
+202 |             'INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES'
+203 |             " (%s,%s,%s,'security',%s)"
+204 |         ), (identifier, user["id"], identifier, self.crypto.encrypt(json.dumps(payload).encode()).decode()))
+    |                                                                                                     ^^^^^^^^
+205 |
+206 |     def active(self, user_id, generation):
+    |
+
+E501 Line too long (120 > 100)
+   --> src\astroagent\auth_store.py:219:101
+    |
+217 |             'INSERT INTO public.auth_sessions(hash,user_id,expires_at,mfa_at,reauth_at) '
+218 |             'VALUES (%s,%s,%s,%s,%s)'
+219 |         ), (digest(token), user_id, now + timedelta(seconds=self.settings.absolute_seconds), now if mfa else None, now))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+220 |         return token
+    |
+
+E501 Line too long (174 > 100)
+   --> src\astroagent\auth_store.py:227:101
+    |
+225 | …
+226 | …
+227 | …n": user["admin"], "totp_enabled": bool(user["totp_secret"]), "mfa_verified": bool(user.get("mfa_at"))}
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (128 > 100)
+   --> src\astroagent\config.py:183:101
+    |
+181 |             try:
+182 |                 site = AuthSettings()
+183 |                 trusted = {site.origin} if urlsplit(site.origin).scheme == "https" and not site.local_http else loopback_origins
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+184 |             except Exception:
+185 |                 trusted = loopback_origins
+    |
+
+E501 Line too long (126 > 100)
+   --> src\astroagent\config.py:186:101
+    |
+184 |             except Exception:
+185 |                 trusted = loopback_origins
+186 |             if not set(self.allowed_origins) <= trusted or not set(self.allowed_hosts) <= {"127.0.0.1", "localhost", "[::1]"}:
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+187 |                 raise ValueError("Container mode only permits the fixed local browser entry")
+188 |         return self
+    |
+
+E501 Line too long (112 > 100)
+  --> src\astroagent\identity.py:41:101
+   |
+39 |             if not re.fullmatch(r"aa_[0-9a-f]{32}", namespace):
+40 |                 raise ServiceError(503, "ownership_invalid", "数据归属配置无效，业务访问已关闭。")
+41 |             settings = self.local.model_copy(update={"data_dir": self.local.data_dir / "accounts" / identifier})
+   |                                                                                                     ^^^^^^^^^^^^
+42 |             with self.store.connect() as db:
+43 |                 db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+   |
+
+E501 Line too long (130 > 100)
+  --> src\astroagent\identity.py:49:101
+   |
+47 |                 ), (identifier, namespace)).fetchone():
+48 |                     raise ServiceError(403, "account_unavailable", "账号暂不可用。")
+49 |                 db.execute(sql.SQL("CREATE SCHEMA IF NOT EXISTS {} AUTHORIZATION CURRENT_USER").format(sql.Identifier(namespace)))
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+50 |                 db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+51 |             def authorized():
+   |
+
+E501 Line too long (108 > 100)
+  --> src\astroagent\identity.py:50:101
+   |
+48 |                     raise ServiceError(403, "account_unavailable", "账号暂不可用。")
+49 |                 db.execute(sql.SQL("CREATE SCHEMA IF NOT EXISTS {} AUTHORIZATION CURRENT_USER").format(sql.Identifier(namespace)))
+50 |                 db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+   |                                                                                                     ^^^^^^^^
+51 |             def authorized():
+52 |                 self.control_guard()
+   |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\identity.py:54:101
+   |
+52 |                 self.control_guard()
+53 |                 return self.store.active(identifier, user["generation"])
+54 |             repository = PostgresRepository(settings, namespace=namespace, identity_guard=authorized)
+   |                                                                                                     ^
+55 |             try:
+56 |                 repository.initialize(create=True)
+   |
+
+E501 Line too long (110 > 100)
+  --> src\astroagent\identity.py:95:101
+   |
+93 |         self.lock_connection = self.store.connect()
+94 |         self.guard = self.lock_connection.__enter__()
+95 |         if not self.guard.execute("SELECT pg_try_advisory_lock(%s) AS ok", (AUTH_LOCK + 1,)).fetchone()["ok"]:
+   |                                                                                                     ^^^^^^^^^^
+96 |             self.lock_connection.__exit__(None, None, None)
+97 |             raise ServiceError(503, "identity_in_use", "只允许一个身份服务进程。")
+   |
+
+E501 Line too long (127 > 100)
+   --> src\astroagent\identity.py:111:101
+    |
+109 |     @property
+110 |     def registration_ready(self):
+111 |         if not self.settings.mail_ready or not self.settings.password_blocklist or not self.settings.password_blocklist_sha256:
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+112 |             return False
+113 |         try:
+    |
+
+E501 Line too long (109 > 100)
+   --> src\astroagent\identity.py:114:101
+    |
+112 |             return False
+113 |         try:
+114 |             return bool(blocklist(self.settings.password_blocklist, self.settings.password_blocklist_sha256))
+    |                                                                                                     ^^^^^^^^^
+115 |         except ServiceError:
+116 |             return False
+    |
+
+E501 Line too long (120 > 100)
+   --> src\astroagent\identity.py:129:83
+    |
+127 |                 self.guard.commit()
+128 |             except Exception as exc:
+129 |                 raise ServiceError(503, "identity_lock_lost", "身份服务锁已失效，请重启服务；业务访问已关闭。") from exc
+    |                                                                                                      ^^^^^^^^^^^^^^^^^^^
+130 |
+131 |     def source_hash(self, value):
+    |
+
+E501 Line too long (120 > 100)
+  --> src\astroagent\identity_cli.py:19:101
+   |
+18 | BUSINESS_TABLES = set(COLUMNS) | {
+19 |     "astroagent_meta", "rag_indexes", "rag_active", "rag_vectors", "rag_previews", "rag_answers", "rag_answer_requests",
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+20 |     "plot_meta", "plot_datasets", "plot_operations", "plot_outputs", "local_assistant_meta", "local_assistant_tasks",
+21 | }
+   |
+
+E501 Line too long (117 > 100)
+  --> src\astroagent\identity_cli.py:20:101
+   |
+18 | BUSINESS_TABLES = set(COLUMNS) | {
+19 |     "astroagent_meta", "rag_indexes", "rag_active", "rag_vectors", "rag_previews", "rag_answers", "rag_answer_requests",
+20 |     "plot_meta", "plot_datasets", "plot_operations", "plot_outputs", "local_assistant_meta", "local_assistant_tasks",
+   |                                                                                                     ^^^^^^^^^^^^^^^^^
+21 | }
+22 | METADATA = {"astroagent_meta", "knowledge_meta", "local_assistant_meta", "plot_meta"}
+   |
+
+E501 Line too long (133 > 100)
+  --> src\astroagent\identity_cli.py:26:101
+   |
+25 | def inventory(db, namespace):
+26 |     tables = {row["tablename"] for row in db.execute("SELECT tablename FROM pg_tables WHERE schemaname=%s", (namespace,)).fetchall()}
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     if namespace == "public":
+28 |         tables = {name for name in tables if not name.startswith("auth_")}
+   |
+
+E501 Line too long (105 > 100)
+  --> src\astroagent\identity_cli.py:30:82
+   |
+28 |         tables = {name for name in tables if not name.startswith("auth_")}
+29 |     if tables - BUSINESS_TABLES:
+30 |         raise ServiceError(409, "migration_unknown_tables", "发现不属于迁移清单的表，请停止并人工核对。")
+   |                                                                                                      ^^^^
+31 |     counts = {}
+32 |     for table in sorted(tables):
+   |
+
+E501 Line too long (151 > 100)
+  --> src\astroagent\identity_cli.py:33:101
+   |
+31 | …
+32 | …
+33 | … AS n FROM {}.{}").format(sql.Identifier(namespace), sql.Identifier(table))).fetchone()["n"]
+   |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+34 | …
+   |
+
+E501 Line too long (125 > 100)
+  --> src\astroagent\identity_cli.py:38:101
+   |
+37 | def confirm(user, action):
+38 |     print(json.dumps({"action": action, "target_id": user["id"], "target_email": user["email_display"]}, ensure_ascii=False))
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+39 |     if input("请输入完整目标账号ID确认：").strip() != user["id"]:
+40 |         raise ValueError("Confirmation did not match")
+   |
+
+E501 Line too long (115 > 100)
+  --> src\astroagent\identity_cli.py:53:101
+   |
+51 |         entry.add_argument("--apply", action="store_true")
+52 |         if name == "recover-admin-totp":
+53 |             entry.add_argument("--reason", choices=["lost_authenticator", "administrator_recovery"], required=True)
+   |                                                                                                     ^^^^^^^^^^^^^^^
+54 |         if name == "claim-legacy":
+55 |             entry.add_argument("--backup-file", type=Path)
+   |
+
+E501 Line too long (109 > 100)
+  --> src\astroagent\identity_cli.py:76:101
+   |
+74 |         db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+75 |         key, _ = email_address(args.email)
+76 |         user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (key,)).fetchone()
+   |                                                                                                     ^^^^^^^^^
+77 |         if not user or not user["active"] or user["disabled"]:
+78 |             raise ValueError("An existing activated, enabled account is required")
+   |
+
+E501 Line too long (107 > 100)
+  --> src\astroagent\identity_cli.py:81:101
+   |
+79 | …     if args.action == "bootstrap-admin":
+80 | …         if db.execute("SELECT 1 FROM public.auth_users WHERE admin LIMIT 1").fetchone():
+81 | …             raise ValueError("Administrator already exists; use the authenticated administration flow")
+   |                                                                                                   ^^^^^^^
+82 | …         if not args.apply:
+83 | …             print(json.dumps({"target_id": user["id"], "email": user["email_display"], "status": "preview_only"}, ensure_ascii=False…
+   |
+
+E501 Line too long (146 > 100)
+  --> src\astroagent\identity_cli.py:83:101
+   |
+81 | …xists; use the authenticated administration flow")
+82 | …
+83 | …, "email": user["email_display"], "status": "preview_only"}, ensure_ascii=False)); return
+   |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+84 | …
+85 | …n=true,generation=generation+1 WHERE id=%s", (user["id"],))
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> src\astroagent\identity_cli.py:83:139
+   |
+81 | …authenticated administration flow")
+82 | …
+83 | …["email_display"], "status": "preview_only"}, ensure_ascii=False)); return
+   |                                                                    ^
+84 | …
+85 | …on=generation+1 WHERE id=%s", (user["id"],))
+   |
+
+E501 Line too long (116 > 100)
+  --> src\astroagent\identity_cli.py:85:101
+   |
+83 | …         print(json.dumps({"target_id": user["id"], "email": user["email_display"], "status": "preview_only"}, ensure_ascii=False)); …
+84 | …     confirm(user, args.action)
+85 | …     db.execute("UPDATE public.auth_users SET admin=true,generation=generation+1 WHERE id=%s", (user["id"],))
+   |                                                                                               ^^^^^^^^^^^^^^^^
+86 | …     store.revoke(db, user["id"])
+87 | …     store.audit(db, None, "admin_bootstrapped_offline", "ok", user["id"], reason="local_operator_confirmation")
+   |
+
+E501 Line too long (119 > 100)
+  --> src\astroagent\identity_cli.py:87:101
+   |
+85 |             db.execute("UPDATE public.auth_users SET admin=true,generation=generation+1 WHERE id=%s", (user["id"],))
+86 |             store.revoke(db, user["id"])
+87 |             store.audit(db, None, "admin_bootstrapped_offline", "ok", user["id"], reason="local_operator_confirmation")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+88 |         elif args.action == "recover-admin-totp":
+89 |             if not user["admin"]:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> src\astroagent\identity_cli.py:92:87
+   |
+90 |                 raise ValueError("Only an existing administrator can be recovered")
+91 |             if not args.apply:
+92 |                 print(json.dumps({"target_id": user["id"], "status": "preview_only"})); return
+   |                                                                                       ^
+93 |             confirm(user, args.action)
+94 |             db.execute((
+   |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\identity_cli.py:100:101
+    |
+ 98 |             db.execute("DELETE FROM public.auth_recovery WHERE user_id=%s", (user["id"],))
+ 99 |             store.revoke(db, user["id"])
+100 |             store.audit(db, None, "admin_totp_recovered_offline", "ok", user["id"], reason=args.reason)
+    |                                                                                                     ^^^
+101 |         else:
+102 |             counts = inventory(db, "public")
+    |
+
+E501 Line too long (245 > 100)
+   --> src\astroagent\identity_cli.py:104:101
+    |
+102 | …
+103 | …
+104 | …one()["name"], "target_id": user["id"], "email": user["email_display"], "legacy_counts": counts, "target_counts": target_counts}, ensure_ascii=False))
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+105 | …
+106 | …
+    |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\identity_cli.py:108:101
+    |
+106 |                 raise ValueError("No unclaimed legacy data was found")
+107 |             if any(n for table, n in target_counts.items() if table not in METADATA):
+108 |                 raise ValueError("Target already has business data; no merge or overwrite is supported")
+    |                                                                                                     ^^^^
+109 |             if not args.apply:
+110 |                 return
+    |
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\identity_cli.py:123:101
+    |
+121 |             confirm(user, args.action)
+122 |             namespace = "aa_" + uuid4().hex
+123 |             db.execute(sql.SQL("CREATE SCHEMA {} AUTHORIZATION CURRENT_USER").format(sql.Identifier(namespace)))
+    |                                                                                                     ^^^^^^^^^^^^
+124 |             db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+125 |             for table in counts:
+    |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\identity_cli.py:124:101
+    |
+122 |             namespace = "aa_" + uuid4().hex
+123 |             db.execute(sql.SQL("CREATE SCHEMA {} AUTHORIZATION CURRENT_USER").format(sql.Identifier(namespace)))
+124 |             db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+    |                                                                                                     ^^^^
+125 |             for table in counts:
+126 |                 db.execute(sql.SQL("ALTER TABLE public.{} SET SCHEMA {}").format(sql.Identifier(table), sql.Identifier(namespace)))
+    |
+
+E501 Line too long (131 > 100)
+   --> src\astroagent\identity_cli.py:126:101
+    |
+124 |             db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+125 |             for table in counts:
+126 |                 db.execute(sql.SQL("ALTER TABLE public.{} SET SCHEMA {}").format(sql.Identifier(table), sql.Identifier(namespace)))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+127 |             if inventory(db, namespace) != counts:
+128 |                 raise ValueError("Transferred row counts do not match; transaction will roll back")
+    |
+
+E501 Line too long (128 > 100)
+   --> src\astroagent\identity_cli.py:129:101
+    |
+127 | …     if inventory(db, namespace) != counts:
+128 | …         raise ValueError("Transferred row counts do not match; transaction will roll back")
+129 | …     db.execute("UPDATE public.auth_users SET namespace=%s,generation=generation+1 WHERE id=%s", (namespace, user["id"]))
+    |                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+130 | …     db.execute("INSERT INTO public.auth_meta(key,value) VALUES ('legacy_claim',%s)", (json.dumps({"owner": user["id"], "namespace":…
+131 | …     store.revoke(db, user["id"])
+    |
+
+E501 Line too long (199 > 100)
+   --> src\astroagent\identity_cli.py:130:101
+    |
+128 | …ill roll back")
+129 | …ion+1 WHERE id=%s", (namespace, user["id"]))
+130 | …m',%s)", (json.dumps({"owner": user["id"], "namespace": namespace, "counts": counts, "backup_sha256": checksum}),))
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131 | …
+132 | …="verified_backup_and_explicit_confirmation")
+    |
+
+E501 Line too long (129 > 100)
+   --> src\astroagent\identity_cli.py:132:101
+    |
+130 | …         db.execute("INSERT INTO public.auth_meta(key,value) VALUES ('legacy_claim',%s)", (json.dumps({"owner": user["id"], "namespa…
+131 | …         store.revoke(db, user["id"])
+132 | …         store.audit(db, None, "legacy_claimed_offline", "ok", user["id"], reason="verified_backup_and_explicit_confirmation")
+    |                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+133 | …     print("操作完成。保留原备份；请重启V1.6并安排隔离环境验收。")
+    |
+
+E501 Line too long (114 > 100)
+   --> src\astroagent\identity_cli.py:141:64
+    |
+139 |     except (Exception, KeyboardInterrupt):
+140 |         # Never echo parser input, credentials, database URLs or SQL parameters.
+141 |         raise SystemExit("本机管理操作未完成；未提交的变更已回滚。请检查配置、服务停机状态与确认参数。") from None
+    |                                                                                                     ^^^^^^^^^^^^^^
+
+E501 Line too long (104 > 100)
+  --> src\astroagent\main.py:58:101
+   |
+58 | app = FastAPI(title="AstroAgent", version=__version__, lifespan=lifespan, docs_url=None, redoc_url=None)
+   |                                                                                                     ^^^^
+59 | app.include_router(health_router)
+60 | app.include_router(auth_router)
+   |
+
+E501 Line too long (166 > 100)
+   --> src\astroagent\main.py:122:101
+    |
+120 | …lidationError):
+121 | …/")):
+122 | …de": "invalid_identity_request", "message": "身份请求参数无效，请核对输入。", "retryable": False}})
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+123 | …
+124 | …
+    |
+
+E501 Line too long (105 > 100)
+   --> src\astroagent\postgres.py:236:101
+    |
+234 |         self.session = self.connect()
+235 |         try:
+236 |             locked = self.session.execute("SELECT pg_try_advisory_lock(%s)", (self.lock_id,)).fetchone()[
+    |                                                                                                     ^^^^^
+237 |                 0
+238 |             ]
+    |
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\postgres.py:245:101
+    |
+243 |             self._session_required = True
+244 |             with self.connection() as db:
+245 |                 meta = db.execute("SELECT to_regclass(?)", (f"{self.namespace}.astroagent_meta",)).fetchone()[0]
+    |                                                                                                     ^^^^^^^^^^^^
+246 |                 if not meta:
+247 |                     if not create:
+    |
+
+Found 148 errors (11 fixed, 137 remaining).

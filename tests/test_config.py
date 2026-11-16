@@ -24,7 +24,7 @@ def test_model_has_timeout_no_retries_and_registered_tool(monkeypatch):
             captured["tools"] = tools
             return self
 
-    monkeypatch.setattr("astroagent.agent.ChatOpenAI", Model)
+    monkeypatch.setattr("astroagent.model_client.ChatOpenAI", Model)
     settings = Settings(_env_file=None, deepseek_api_key="test-key", llm_timeout_seconds=9)
     create_model(settings)
     assert captured["api_key"] == "test-key"

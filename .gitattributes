@@ -1,5 +1,6 @@
 # Preserve the exact bytes of immutable test evidence, including raw XML and transcripts.
-docs/test-records/** -text
+docs/test-records/** -text -whitespace
 *.sh text eol=lf
 Dockerfile text eol=lf
 *.Dockerfile text eol=lf
+src/astroagent/auth_data/common-passwords.txt -text

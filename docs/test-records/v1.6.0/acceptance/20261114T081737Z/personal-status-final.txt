@@ -1,0 +1,7 @@
+NAME                             IMAGE                                                                                       COMMAND                  SERVICE         CREATED          STATUS                    PORTS
+astroagent-v16-backend-1         astroagent-backend:1.6.0-dev.0                                                              "python -m astroagen…"   backend         18 minutes ago   Up 18 minutes (healthy)   
+astroagent-v16-frontend-1        astroagent-frontend:1.6.0-dev.0                                                             "docker-entrypoint.s…"   frontend        30 minutes ago   Up 29 minutes (healthy)   
+astroagent-v16-ingress-1         astroagent-ingress:1.6.0-dev.0                                                              "docker-entrypoint.s…"   ingress         30 minutes ago   Up 29 minutes (healthy)   127.0.0.1:5173->5173/tcp
+astroagent-v16-ollama-1          ollama/ollama@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761       "/bin/ollama serve"      ollama          30 minutes ago   Up 30 minutes (healthy)   11434/tcp
+astroagent-v16-plot-executor-1   astroagent-plot-executor:1.6.0-dev.0                                                        "python -m astroagen…"   plot-executor   30 minutes ago   Up 30 minutes (healthy)   
+astroagent-v16-postgres-1        pgvector/pgvector@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f   "docker-entrypoint.s…"   postgres        30 minutes ago   Up 30 minutes (healthy)   5432/tcp

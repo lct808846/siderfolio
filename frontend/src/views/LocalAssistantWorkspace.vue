@@ -71,10 +71,10 @@ onBeforeUnmount(() => { generation++; sourceGeneration++; if (timer) clearTimeou
   <div class="workspace-panes primary-workspace local-assistant-workspace">
     <WorkspaceHeader title="本地轻量助手" />
     <main class="local-assistant-main">
-      <WorkspacePaneHeader title="本地助手"><template #actions><div class="local-actions"><span v-if="state" class="tag">{{ state.state === 'ready' ? '本机可用' : state.state === 'busy' ? '本机处理中' : state.message }}</span><button type="button" @click="refreshStatus">刷新状态</button><RouterLink to="/settings">模型与开关设置 →</RouterLink></div></template></WorkspacePaneHeader>
+      <WorkspacePaneHeader title="本地助手"><template #actions><div class="local-actions"><span v-if="state" class="tag">{{ state.state === 'ready' ? '本机可用' : state.state === 'busy' ? '本机处理中' : state.message }}</span><RouterLink to="/settings?section=assistant">模型与开关设置 →</RouterLink></div></template></WorkspacePaneHeader>
       <div class="local-assistant-reading">
         <p class="muted">由本机千问辅助处理选定文本。明示条件按原文提取，模型只建议任务类型；摘要选取原文片段，格式整理保留原文。结果供核对和编辑，不自动改写会话或执行科研工具。</p>
-        <p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p>
+        <p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p>
         <div class="local-task-tabs" role="group" aria-label="选择本地文本任务"><button v-for="(label, key) in titles" :key="key" type="button" :aria-pressed="operation === key" :disabled="busy || !!pendingId" @click="operation = key">{{ label }}</button></div>
         <div class="local-assistant-grid">
           <section class="local-input-panel">
@@ -104,7 +104,7 @@ onBeforeUnmount(() => { generation++; sourceGeneration++; if (timer) clearTimeou
               <details><summary>任务范围与用量</summary><p class="small">编号：{{ view.task.id }}<br />实际输入：{{ view.task.input_characters }}字符{{ view.task.input_truncated ? '（已截取）' : '' }}<br />模型摘要：{{ view.task.model_digest }}<br />输入摘要：{{ view.task.input_sha256 }}</p><pre>{{ JSON.stringify(view.task.usage, null, 2) }}</pre></details>
             </template>
             <div v-else class="local-assistant-empty"><h3>先选择文本和操作</h3><p>条件提取会显示原文依据、缺失值与任务建议；建议不会直接发起查询。</p></div>
-            <div v-if="pendingId" class="notice"><p class="small">当前请求：{{ pendingId }}。断开页面不代表取消；只刷新状态，不自动重发。</p><label class="local-check"><input v-model="autoRefresh" type="checkbox" />自动刷新状态</label><div class="local-actions"><button type="button" :disabled="checking" @click="refreshTask()">刷新原编号状态</button><button type="button" @click="releasePending">结束本页等待</button></div></div>
+            <div v-if="pendingId" class="notice"><p class="small">当前请求：{{ pendingId }}。断开页面不代表取消；自动更新只查询状态，不自动重发。</p><label class="local-check"><input v-model="autoRefresh" type="checkbox" />自动更新状态</label><div class="local-actions"><button type="button" @click="releasePending">结束本页等待</button></div></div>
           </section>
         </div>
       </div>

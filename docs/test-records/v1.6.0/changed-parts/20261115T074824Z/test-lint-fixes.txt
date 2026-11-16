@@ -1,0 +1,12 @@
+E501 Line too long (104 > 100)
+   --> tests\test_model_providers.py:387:101
+    |
+385 |             **kwargs,
+386 |             http_client=httpx.Client(transport=httpx.MockTransport(handle), trust_env=False),
+387 |             http_async_client=httpx.AsyncClient(transport=httpx.MockTransport(handle), trust_env=False),
+    |                                                                                                     ^^^^
+388 |         ),
+389 |     )
+    |
+
+Found 1 error.

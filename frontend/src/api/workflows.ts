@@ -1,3 +1,4 @@
+import { sessionFetch } from '../session-http'
 import { ApiError, apiUrl, assertApiConfiguration, request } from './index'
 import type { WorkflowCreate, WorkflowDetail, WorkflowExecute, WorkflowExecution, WorkflowOutput, WorkflowSummary, WorkflowTemplate } from '../types'
 
@@ -14,7 +15,7 @@ export const outputPath = (output: WorkflowOutput) => `${prefix(output.project_i
 export async function downloadWorkflowOutput(output: WorkflowOutput): Promise<void> {
   assertApiConfiguration()
   let response: Response
-  try { response = await fetch(apiUrl(outputPath(output)), { cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl(outputPath(output)), { cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '下载连接已断开，请重新点击下载。') }
   if (!response.ok) {
     let text = `流程输出不可用（${response.status}）`

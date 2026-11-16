@@ -1,3 +1,4 @@
+import { sessionFetch } from '../session-http'
 import { ApiError, apiUrl, assertApiConfiguration, request } from './index'
 import type { DocumentAction, DocumentDetail, DocumentResult, DocumentUpload, DocumentVersion, EvidenceRecord, EvidenceView, KnowledgeDocument, KnowledgeOperation, KnowledgeQuery, KnowledgeResult, TextPreview } from '../types'
 
@@ -18,7 +19,7 @@ export async function uploadDocument(project: string, file: File, options: Docum
   if (!file.size || file.size > 20 * 1024 ** 2) throw new ApiError('knowledge_file_size', '文件必须非空且不超过20 MiB。')
   const body = new FormData(); body.append('file', file); body.append('options', JSON.stringify(options))
   let response: Response
-  try { response = await fetch(apiUrl(`${root(project)}/documents${document ? `/${document}/versions` : ''}`), { method: 'POST', body, cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl(`${root(project)}/documents${document ? `/${document}/versions` : ''}`), { method: 'POST', body, cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '上传连接断开。原文件可能已保存；先使用原请求编号核对，不要创建新的请求。') }
   const value = await response.json().catch(() => { throw new ApiError('knowledge_response_unconfirmed', '服务未返回可核对的JSON，请保留原请求编号读取状态。', response.status) })
   if (!response.ok && !(value?.operation?.id && value?.document?.id)) {
@@ -31,7 +32,7 @@ export async function uploadDocument(project: string, file: File, options: Docum
 async function reindexDocument(path: string, body: DocumentAction): Promise<DocumentResult> {
   assertApiConfiguration()
   let response: Response
-  try { response = await fetch(apiUrl(path), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl(path), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '重建连接断开，请保留原请求编号核对状态。') }
   const value = await response.json().catch(() => { throw new ApiError('knowledge_response_unconfirmed', '服务未返回可核对的JSON，请保留原请求编号读取状态。', response.status) })
   if (!response.ok && !(value?.operation?.id && value?.document?.id)) throw new ApiError(value.error?.code || 'knowledge_reindex_failed', value.error?.message || '本地重建未完成。', response.status)
@@ -39,7 +40,7 @@ async function reindexDocument(path: string, body: DocumentAction): Promise<Docu
 }
 export async function originalContent(project: string, document: string, version: DocumentVersion): Promise<Blob> {
   assertApiConfiguration()
-  const response = await fetch(apiUrl(`${root(project)}/documents/${document}/versions/${version.id}/content`), { cache: 'no-store' })
+  const response = await sessionFetch(apiUrl(`${root(project)}/documents/${document}/versions/${version.id}/content`), { cache: 'no-store' })
   if (!response.ok) {
     let message = '原文件不可用，请核对是否为仅元数据归档或原文已删除。'
     try { const value = await response.json(); message = value.error?.message || message } catch { /* Use safe fallback. */ }

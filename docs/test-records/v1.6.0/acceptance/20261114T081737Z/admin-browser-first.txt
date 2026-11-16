@@ -1,0 +1,51 @@
+
+Running 2 tests using 1 worker
+
+(node:37868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\identity-browser\admin.spec.ts:3:1 › synthetic administrator confirms account actions and sees only masked metadata (4.6s)
+(node:3704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [edge] › tests\identity-browser\admin.spec.ts:3:1 › synthetic administrator confirms account actions and sees only masked metadata (3.9s)
+
+
+  1) [edge] › tests\identity-browser\admin.spec.ts:3:1 › synthetic administrator confirms account actions and sees only masked metadata 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('cell', { name: 'user_disable', exact: true })
+    Expected: visible
+    Error: strict mode violation: getByRole('cell', { name: 'user_disable', exact: true }) resolved to 2 elements:
+        1) <td>user_disable</td> aka getByRole('cell', { name: 'user_disable' }).first()
+        2) <td>user_disable</td> aka getByRole('cell', { name: 'user_disable' }).nth(1)
+
+    Call log:
+      - Expect "toBeVisible" getByRole('cell', { name: 'user_disable', exact: true }) with timeout 5000ms
+      - waiting for getByRole('cell', { name: 'user_disable', exact: true })
+
+
+      29 |   await expect(page.getByRole('columnheader', { name: '提交状态' })).toBeVisible()
+      30 |   await page.getByRole('button', { name: '审计日志', exact: true }).click()
+    > 31 |   await expect(page.getByRole('cell', { name: 'user_disable', exact: true })).toBeVisible()
+         |                                                                               ^
+      32 | })
+      33 |
+        at D:\project\astroagent\frontend\tests\identity-browser\admin.spec.ts:31:79
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\admin-synthetic-administra-9f891-d-sees-only-masked-metadata-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\admin-synthetic-administra-9f891-d-sees-only-masked-metadata-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\admin-synthetic-administra-9f891-d-sees-only-masked-metadata-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\admin-synthetic-administra-9f891-d-sees-only-masked-metadata-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [edge] › tests\identity-browser\admin.spec.ts:3:1 › synthetic administrator confirms account actions and sees only masked metadata 
+  1 passed (11.9s)

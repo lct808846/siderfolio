@@ -233,14 +233,14 @@ onBeforeUnmount(() => { navigation++; imageNavigation++; previewNavigation++; so
       <header class="chat-heading">
         <button class="chat-toolbar-button history-toggle" type="button" :aria-expanded="sidebarOpen" :aria-label="sidebarOpen ? '收起绘图列表' : '展开绘图列表'" @click="sidebarOpen = !sidebarOpen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16m7-6-2-2 2-2" /></svg></button>
         <h1>{{ project?.name || '项目' }} · 科研绘图</h1>
-        <div class="plot-toolbar"><button type="button" :disabled="busy" @click="action(refresh)">刷新记录</button><button v-show="!resultsOpen" type="button" class="chat-toolbar-button" aria-label="打开绘图结果" @click="resultsOpen = true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M15 4v16m-6-6 2-2-2-2" /></svg></button></div>
+        <div class="plot-toolbar"><button v-show="!resultsOpen" type="button" class="chat-toolbar-button" aria-label="打开绘图结果" @click="resultsOpen = true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M15 4v16m-6-6 2-2-2-2" /></svg></button></div>
       </header>
       <div class="plot-reading">
-        <p v-if="error" role="alert" class="notice danger">{{ error }}</p><p v-if="message" role="status" class="notice">{{ message }}</p>
+        <p v-if="error" role="alert" class="notice danger">{{ error }}</p><p v-if="message" role="status" class="notice info">{{ message }}</p>
         <p v-if="busy || active" class="processing" role="status">{{ busy ? '正在处理，请稍候…' : '项目有正在处理的操作，可刷新核对。' }}</p>
         <div v-if="status && !status.storage_ready" class="plot-setup"><h2>准备绘图记录存储</h2><p>首次使用需要在当前 PostgreSQL 中新增绘图扩展表，核心数据库版本保持不变。确认后才创建。</p><button type="button" :disabled="busy" @click="setupDialog?.showModal()">准备绘图数据库</button></div>
         <p v-if="status" class="plot-environment small" :class="{ muted: !status.execution_configured }">{{ status.message }}</p>
-        <div v-if="pending" class="notice"><p>保留的{{ pending.kind === 'plan' ? '方案' : '运行' }}请求：<code>{{ pending.id }}</code>。连接中断不代表取消，不会自动重放。</p><button type="button" :disabled="busy" @click="action(refresh)">先刷新记录</button> <button type="button" :disabled="busy" @click="submitPending">使用同一编号继续提交</button></div>
+        <div v-if="pending" class="notice"><p>保留的{{ pending.kind === 'plan' ? '方案' : '运行' }}请求：<code>{{ pending.id }}</code>。连接中断不代表取消，不会自动重放。</p><button type="button" :disabled="busy" @click="submitPending">使用同一编号继续提交</button></div>
         <section v-if="!dataset && !selected" class="plot-empty"><span class="eyebrow">PYTHON · GNUPLOT</span><h2>从数据到可复现的图形</h2><p>导入数据，描述图形，审阅方案与脚本，再确认隔离执行。</p><p class="small muted">支持散点、折线、直方图与误差棒；先选择下方数据来源。</p><div class="plot-empty-actions"><button type="button" class="plot-primary" :disabled="busy || !status?.storage_ready" @click="fileInput?.click()">导入 CSV / TSV</button><RouterLink :to="`/projects/${projectId}`">选择项目查询快照 →</RouterLink><RouterLink to="/">查询新数据 →</RouterLink></div></section>
         <section v-if="dataset && !selected" class="plot-dataset-detail">
           <div class="plot-section-heading"><h2>{{ dataset.name }}</h2><button type="button" :disabled="busy" @click="downloadData">下载输入数据</button></div>

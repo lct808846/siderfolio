@@ -1,0 +1,3 @@
+✨ openapi-typescript 7.13.0
+🚀 C:\Users\lct\AppData\Local\Temp\tmpg45seez6\openapi.json → C:\Users\lct\AppData\Local\Temp\tmpg45seez6\generated.ts [413.7ms]
+Generated OpenAPI / TypeScript files; validation was not run

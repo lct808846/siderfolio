@@ -1,0 +1,12 @@
+E501 Line too long (103 > 100)
+   --> src\astroagent\api\auth.py:318:101
+    |
+316 |                 clean_username(body.username)
+317 |                 if body.username.strip()
+318 |                 else ((user.get("username") or "").strip() or user["email_display"].split("@")[0][:32])
+    |                                                                                                     ^^^
+319 |             )
+320 |             db.execute(
+    |
+
+Found 1 error.

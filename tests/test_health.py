@@ -16,20 +16,15 @@ def test_health_without_deepseek_key(monkeypatch):
     assert response.json() == {"status": "ok"}
 
 
-def test_swagger_ui_is_available():
+def test_swagger_ui_is_disabled_in_v16():
     with TestClient(app) as client:
         response = client.get("/docs")
 
-    assert response.status_code == 200
-    assert "text/html" in response.headers["content-type"]
-    assert "/openapi.json" in response.text
+    assert response.status_code == 404
+    assert "application/json" in response.headers["content-type"]
 
 
 def test_health_is_documented_in_openapi():
-    with TestClient(app) as client:
-        response = client.get("/openapi.json")
-
-    assert response.status_code == 200
-    schema = response.json()
+    schema = app.openapi()
     assert schema["info"]["title"] == "AstroAgent"
     assert "200" in schema["paths"]["/health"]["get"]["responses"]

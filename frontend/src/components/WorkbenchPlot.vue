@@ -65,7 +65,6 @@ defineExpose({ canPrepare, busy, canUpload, submitQuestion: (question: string) =
       <label v-if="sources.length">会话查询数据<select v-model="sourceKey" :disabled="busy"><option v-for="source in sources" :key="source.key" :value="source.key">{{ source.label }}</option></select></label>
       <button v-if="sources.length" type="button" :disabled="busy || !projectId || !sourceKey" @click="loadSource">载入查询数据</button>
       <button type="button" :disabled="busy || projects.length >= 20" :aria-expanded="newProjectOpen" @click="newProjectOpen = !newProjectOpen">新建项目</button>
-      <button v-if="error" type="button" :disabled="busy" @click="load">刷新项目</button>
       <form v-if="newProjectOpen" class="workbench-plot-create" @submit.prevent="createProject"><label for="workbench-plot-project">项目名称</label><input id="workbench-plot-project" v-model="newName" maxlength="100" required :disabled="creating" /><button type="submit" class="button-primary" :disabled="creating || !newName.trim()">创建项目</button></form>
       <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
     </div>

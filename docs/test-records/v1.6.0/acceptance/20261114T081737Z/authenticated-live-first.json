@@ -1,0 +1,54 @@
+{
+  "qa_origin": "http://127.0.0.1:5174",
+  "personal_data_used": false,
+  "checks": {
+    "python_plot": {
+      "passed": true,
+      "seconds": 12.56,
+      "detail": {
+        "png_sha256": "75bead975c9a5db521367dc3908cc7a5800172f05e30e8c87d94da281a3f7f11",
+        "real_internal_executor": true,
+        "engine": "python"
+      }
+    },
+    "gnuplot_plot": {
+      "passed": true,
+      "seconds": 8.78,
+      "detail": {
+        "png_sha256": "7eaf9106f26cf14328817ca9804c3bacd8ccdb9b2e47ddc056440d72dfffbe4b",
+        "real_internal_executor": true,
+        "engine": "gnuplot"
+      }
+    },
+    "semantic_rag": {
+      "passed": true,
+      "seconds": 38.08,
+      "detail": {
+        "semantic_status": "ready",
+        "original_sha256": "b2d804c81a482745a2b7937a89524a3ebe2b1606cb99eb440e67db1ceb3f4506",
+        "external_answer_returned": true
+      }
+    },
+    "simbad_authenticated": {
+      "passed": false,
+      "seconds": 9.75,
+      "error": "No successful simbad result; error codes: []"
+    },
+    "ads_authenticated": {
+      "passed": true,
+      "seconds": 2.98,
+      "detail": {
+        "completed": true,
+        "result_count": 1
+      }
+    },
+    "gaia_authenticated": {
+      "passed": true,
+      "seconds": 8.14,
+      "detail": {
+        "completed": true,
+        "result_count": 1
+      }
+    }
+  }
+}

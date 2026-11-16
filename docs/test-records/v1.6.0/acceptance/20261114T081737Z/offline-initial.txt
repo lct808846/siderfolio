@@ -1,0 +1,43 @@
+E
+=================================== ERRORS ====================================
+____________ ERROR at setup of test_invalid_arguments[arguments0] _____________
+
+tmp_path = WindowsPath('D:/project/astroagent/.astroagent/acceptance-tmp/v16-initial/test_invalid_arguments_argumen0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC1747E2D0>
+request = <SubRequest 'isolate_local_storage' for <Function test_invalid_arguments[arguments0]>>
+
+    @pytest.fixture(autouse=True)
+    def isolate_local_storage(tmp_path, monkeypatch, request):
+        monkeypatch.setenv("ASTROAGENT_DATA_DIR", str(tmp_path / "local-data"))
+        monkeypatch.setenv("ASTROAGENT_DATABASE_URL", "")
+        monkeypatch.setenv("ASTROAGENT_ALLOWED_HOSTS", '["testserver","127.0.0.1","localhost","[::1]"]')
+        if not request.node.get_closest_marker("postgres"):
+            # Explicit legacy contract double, never a production fallback. This also
+            # prevents an ordinary old test from opening a personal PostgreSQL DB.
+            import astroagent.main as main
+            import astroagent.services as services
+            from astroagent.artifacts import ArtifactCache
+            from astroagent.conversation_service import ConversationService
+            from astroagent.conversations import ConversationRepository
+            from astroagent.knowledge_service import KnowledgeService
+            from astroagent.project_links import ProjectLinks
+            from astroagent.project_service import ProjectService
+            from astroagent.workflow_service import WorkflowService
+    
+            def legacy_compose(repository, settings):
+                service = ConversationService(repository)
+                ArtifactCache(service, settings)
+                service.projects = ProjectService(service)
+                service.workflows = WorkflowService(service)
+                service.knowledge = KnowledgeService(service)
+                service.links = ProjectLinks(service)
+                return service
+    
+>           monkeypatch.setattr(main, "PostgresRepository", ConversationRepository)
+E           AttributeError: <module 'astroagent.main' from 'D:\\project\\astroagent\\src\\astroagent\\main.py'> has no attribute 'PostgresRepository'
+
+tests\conftest.py:35: AttributeError
+=========================== short test summary info ===========================
+ERROR tests/test_ads.py::test_invalid_arguments[arguments0] - AttributeError:...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 error in 6.58s

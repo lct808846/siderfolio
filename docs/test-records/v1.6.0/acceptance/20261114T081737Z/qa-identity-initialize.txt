@@ -1,0 +1,12 @@
+ Network astroagent-v16-qa_web Creating 
+ Network astroagent-v16-qa_outbound Creating 
+ Network astroagent-v16-qa_web Creating 
+ Network astroagent-v16-qa_outbound Creating 
+ Network astroagent-v16-qa_outbound Created 
+ Network astroagent-v16-qa_outbound Created 
+ Network astroagent-v16-qa_web Created 
+ Network astroagent-v16-qa_web Created 
+ Container astroagent-v16-qa-backend-run-f4ce5e826428 Creating 
+ Container astroagent-v16-qa-backend-run-f4ce5e826428 Created 
+Container configuration is invalid; check mounted settings without printing secrets.
+

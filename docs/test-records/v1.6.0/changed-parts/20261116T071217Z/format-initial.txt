@@ -1,0 +1,14 @@
+unformatted: File would be reformatted
+   --> src\astroagent\local_access.py:130:26
+    |
+129 |                     limit_mb = (
+    -                         5
+    -                         if (plot_uploading or avatar_uploading)
+    -                         else 10
+    -                         if chat_uploading
+    -                         else 20
+130 +                         5 if (plot_uploading or avatar_uploading) else 10 if chat_uploading else 20
+131 |                     )
+    |
+
+1 file would be reformatted, 174 files already formatted

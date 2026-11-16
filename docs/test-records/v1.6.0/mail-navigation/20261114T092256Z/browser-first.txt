@@ -1,0 +1,85 @@
+
+Running 6 tests using 1 worker
+
+(node:37648) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\mail-navigation\email-links.spec.ts:59:1 › real email navigation loads activation without consuming the link until confirmation (5.6s)
+(node:32504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\mail-navigation\email-links.spec.ts:74:1 › real email navigation opens reset page without changing a password (411ms)
+  ok 3 [chromium] › tests\mail-navigation\email-links.spec.ts:84:1 › cross-site APIs, writes, embeds and private pages stay rejected (81ms)
+(node:38316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 [edge] › tests\mail-navigation\email-links.spec.ts:59:1 › real email navigation loads activation without consuming the link until confirmation (5.8s)
+(node:34580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [edge] › tests\mail-navigation\email-links.spec.ts:74:1 › real email navigation opens reset page without changing a password (686ms)
+  ok 6 [edge] › tests\mail-navigation\email-links.spec.ts:84:1 › cross-site APIs, writes, embeds and private pages stay rejected (120ms)
+
+
+  1) [chromium] › tests\mail-navigation\email-links.spec.ts:59:1 › real email navigation loads activation without consuming the link until confirmation 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByLabel('新密码', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByLabel('新密码', { exact: true }) with timeout 5000ms
+      - waiting for getByLabel('新密码', { exact: true })
+
+
+      68 |   expect(page.url()).toBe(origin + '/activate')
+      69 |   await page.getByRole('button', { name: '确认邮箱并继续', exact: true }).click()
+    > 70 |   await expect(page.getByLabel('新密码', { exact: true })).toBeVisible()
+         |                                                         ^
+      71 |   expect(posts).toEqual([{ path: '/api/v1/auth/activate/confirm', token }])
+      72 | })
+      73 |
+        at D:\project\astroagent\frontend\tests\mail-navigation\email-links.spec.ts:70:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\email-links-real-email-nav-da73f-the-link-until-confirmation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\email-links-real-email-nav-da73f-the-link-until-confirmation-chromium\error-context.md
+
+    Error Context: test-results\email-links-real-email-nav-da73f-the-link-until-confirmation-chromium\error-context.md
+
+  2) [edge] › tests\mail-navigation\email-links.spec.ts:59:1 › real email navigation loads activation without consuming the link until confirmation 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByLabel('新密码', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByLabel('新密码', { exact: true }) with timeout 5000ms
+      - waiting for getByLabel('新密码', { exact: true })
+
+
+      68 |   expect(page.url()).toBe(origin + '/activate')
+      69 |   await page.getByRole('button', { name: '确认邮箱并继续', exact: true }).click()
+    > 70 |   await expect(page.getByLabel('新密码', { exact: true })).toBeVisible()
+         |                                                         ^
+      71 |   expect(posts).toEqual([{ path: '/api/v1/auth/activate/confirm', token }])
+      72 | })
+      73 |
+        at D:\project\astroagent\frontend\tests\mail-navigation\email-links.spec.ts:70:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\email-links-real-email-nav-da73f-the-link-until-confirmation-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\email-links-real-email-nav-da73f-the-link-until-confirmation-edge\error-context.md
+
+    Error Context: test-results\email-links-real-email-nav-da73f-the-link-until-confirmation-edge\error-context.md
+
+  2 failed
+    [chromium] › tests\mail-navigation\email-links.spec.ts:59:1 › real email navigation loads activation without consuming the link until confirmation 
+    [edge] › tests\mail-navigation\email-links.spec.ts:59:1 › real email navigation loads activation without consuming the link until confirmation 
+  4 passed (18.5s)

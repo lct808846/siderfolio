@@ -1,16 +1,13 @@
 /* Row actions stay reachable on touch screens and keyboard focus. */
 .history-list-heading { display: flex; align-items: center; gap: 8px; }
 .history-list-heading .history-label { flex: 1; }
-.history-manage { padding: 4px 7px; border: 0; background: transparent; color: #527464; font-size: 11px; margin-top: 16px; }
+.history-manage { padding: 4px 7px; border: 0; background: transparent; color: #527464; font-size: 11px; margin-top: 0; }
 .conversation-list { min-width: 0; }
 .conversation-row { display: flex; align-items: center; min-width: 0; border-radius: 10px; margin-block: 4px; }
-.conversation-row.selected { background: linear-gradient(115deg, #e0eee3, #edf5ec); box-shadow: inset 0 1px rgba(255, 255, 255, .8); }
-.conversation-row .conversation-item { flex: 1; min-width: 0; width: auto; margin: 0; padding-right: 3px; }
-.conversation-row .conversation-item.selected { background: transparent; box-shadow: none; }
+.conversation-row .conversation-item { flex: 1; min-width: 0; width: auto; margin: 0; padding-right: 4px; border: 0; background: transparent; box-shadow: none; }
 .conversation-row .conversation-item > span:last-child { flex: 1; }
 .conversation-row .conversation-item b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.conversation-more { flex: 0 0 29px; width: 29px; height: 32px; border: 0; padding: 0; margin-right: 4px; border-radius: 8px; background: transparent; color: #526f62; font-family: var(--font-ui); font-size: 22px; line-height: 1; }
-.conversation-more:hover:not(:disabled), .conversation-more[aria-expanded="true"] { background: #d6e5d9; }
+.conversation-more { flex: 0 0 28px; width: 28px; height: 28px; border: 0; padding: 0; border-radius: 7px; background: transparent; color: #526f62; font-family: var(--font-ui); line-height: 1; box-shadow: none; }
 .conversation-row > input { flex: 0 0 auto; margin: 0 0 0 6px; width: 16px; height: 16px; accent-color: #3b7058; }
 .conversation-pinned { color: #315f4e; }
 .conversation-selection { padding: 10px; border: 1px solid #c8dccc; border-radius: 10px; background: #f3f8ef; }

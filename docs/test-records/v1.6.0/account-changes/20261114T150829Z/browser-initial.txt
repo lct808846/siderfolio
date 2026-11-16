@@ -1,0 +1,156 @@
+[WebServer] INFO:     Started server process [7900]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8101 (Press CTRL+C to quit)
+[WebServer] (node:47204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:53676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout (1.0m)
+(node:35884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state (1.0m)
+(node:37500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [edge] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout (1.0m)
+(node:43944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 [edge] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state (1.0m)
+
+
+  1) [chromium] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '确认绑定' })
+
+
+      41 |   }
+      42 |   await page.getByLabel('6 位动态验证码', { exact: true }).fill('000000')
+    > 43 |   await page.getByRole('button', { name: '确认并完成绑定', exact: true }).click()
+         |                                                                  ^
+      44 |   await expect(page.getByRole('alert')).toContainText('验证码不正确')
+      45 |   await page.getByLabel('6 位动态验证码', { exact: true }).fill('123456')
+      46 |   await page.getByRole('button', { name: '确认并完成绑定', exact: true }).click()
+        at D:\project\astroagent\frontend\tests\browser\account-changes.spec.ts:43:66
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\account-changes-account-QR-498ce--download-and-narrow-layout-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\account-changes-account-QR-498ce--download-and-narrow-layout-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\account-changes-account-QR-498ce--download-and-narrow-layout-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\account-changes-account-QR-498ce--download-and-narrow-layout-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.fill: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByLabel('用户名', { exact: true })
+
+
+      59 | test('username propagates to sidebar, menu closes and logout clears private browser state', async ({ page }) => {
+      60 |   await page.goto('/account')
+    > 61 |   await page.getByLabel('用户名', { exact: true }).fill('New Synthetic Observer')
+         |                                                 ^
+      62 |   await page.getByRole('button', { name: '保存用户名', exact: true }).click()
+      63 |   await expect(page.getByRole('status')).toContainText('用户名已更新')
+      64 |   await page.goto('/')
+        at D:\project\astroagent\frontend\tests\browser\account-changes.spec.ts:61:49
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\account-changes-username-p-90f3c-lears-private-browser-state-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\account-changes-username-p-90f3c-lears-private-browser-state-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\account-changes-username-p-90f3c-lears-private-browser-state-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\account-changes-username-p-90f3c-lears-private-browser-state-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [edge] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '确认绑定' })
+
+
+      41 |   }
+      42 |   await page.getByLabel('6 位动态验证码', { exact: true }).fill('000000')
+    > 43 |   await page.getByRole('button', { name: '确认并完成绑定', exact: true }).click()
+         |                                                                  ^
+      44 |   await expect(page.getByRole('alert')).toContainText('验证码不正确')
+      45 |   await page.getByLabel('6 位动态验证码', { exact: true }).fill('123456')
+      46 |   await page.getByRole('button', { name: '确认并完成绑定', exact: true }).click()
+        at D:\project\astroagent\frontend\tests\browser\account-changes.spec.ts:43:66
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\account-changes-account-QR-498ce--download-and-narrow-layout-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\account-changes-account-QR-498ce--download-and-narrow-layout-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\account-changes-account-QR-498ce--download-and-narrow-layout-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\account-changes-account-QR-498ce--download-and-narrow-layout-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [edge] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.fill: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByLabel('用户名', { exact: true })
+
+
+      59 | test('username propagates to sidebar, menu closes and logout clears private browser state', async ({ page }) => {
+      60 |   await page.goto('/account')
+    > 61 |   await page.getByLabel(/^用户名/).fill('New Synthetic Observer')
+         |                                                 ^
+      62 |   await page.getByRole('button', { name: '保存用户名', exact: true }).click()
+      63 |   await expect(page.getByRole('status')).toContainText('用户名已更新')
+      64 |   await page.goto('/')
+        at D:\project\astroagent\frontend\tests\browser\account-changes.spec.ts:61:49
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\account-changes-username-p-90f3c-lears-private-browser-state-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\account-changes-username-p-90f3c-lears-private-browser-state-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\account-changes-username-p-90f3c-lears-private-browser-state-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\account-changes-username-p-90f3c-lears-private-browser-state-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout 
+    [chromium] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state 
+    [edge] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout 
+    [edge] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state 

@@ -3,6 +3,8 @@ import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import InteractionHints from '../components/InteractionHints.vue'
 import ModelSelector from '../components/ModelSelector.vue'
 import ModelChangeNotice from '../components/ModelChangeNotice.vue'
+import ConversationErrorNotice from '../components/ConversationErrorNotice.vue'
+import ContextNotice from '../components/ContextNotice.vue'
 import AttachmentButton from '../components/AttachmentButton.vue'
 import AttachmentTray from '../components/AttachmentTray.vue'
 import ConversationSidebar from '../components/ConversationSidebar.vue'
@@ -18,10 +20,10 @@ import ProjectWorkspace from './ProjectWorkspace.vue'
 import WorkflowWorkspace from './WorkflowWorkspace.vue'
 import KnowledgeWorkspace from './KnowledgeWorkspace.vue'
 import ProjectOverview from './ProjectOverview.vue'
-import SettingsWorkspace from './SettingsWorkspace.vue'
 import RagWorkspace from './RagWorkspace.vue'
 import WorkbenchPlot from '../components/WorkbenchPlot.vue'
 import LocalAssistantWorkspace from './LocalAssistantWorkspace.vue'
+import ProfileWorkspace from './ProfileWorkspace.vue'
 import LocalTitleStatus from '../components/LocalTitleStatus.vue'
 import { safeLink } from '../api'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
@@ -31,7 +33,8 @@ const models = useModels()
 const attachments = useAttachments()
 const dragDepth = ref(0)
 const draft = ref(''), composing = ref(false)
-const plotMode = computed(() => route.query.mode === 'plot')
+const profileMode = computed(() => route.path === '/profile')
+const plotMode = computed(() => !profileMode.value && route.query.mode === 'plot')
 const openedPlot = ref(false), plotDraft = ref('')
 const plotPanel = ref<InstanceType<typeof WorkbenchPlot> | null>(null)
 const nbodyDialog = ref<HTMLDialogElement | null>(null)
@@ -294,23 +297,22 @@ onBeforeUnmount(() => {
 
 <template>
   <InteractionHints />
-  <SettingsWorkspace v-if="route.path==='/settings'" />
-  <LocalAssistantWorkspace v-else-if="route.path==='/local-assistant'" />
+  <LocalAssistantWorkspace v-if="route.path==='/local-assistant'" />
   <RagWorkspace v-else-if="route.path.endsWith('/rag')" />
   <ProjectOverview v-else-if="route.path.endsWith('/overview')" />
   <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />
   <ProjectWorkspace v-else-if="route.path.startsWith('/projects')" />
-  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="plotMode ? 'chat' : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!plotMode && store.panel==='results'" :data-results-restoring="restoringResults">
+  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode || plotMode ? 'chat' : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && !plotMode && store.panel==='results'" :data-results-restoring="restoringResults">
     <WorkspaceHeader title="本地科研工作台" />
     <ConversationSidebar id="conversation-history" :inert="!historyVisible" :aria-hidden="!historyVisible" @create="create" @removed="afterRemoval" />
     <main class="chat-panel">
       <header class="chat-heading">
         <button type="button" class="chat-toolbar-button history-toggle" :aria-expanded="historyVisible" aria-controls="conversation-history" :aria-label="historyVisible ? '收起会话列表' : '展开会话列表'" :title="historyVisible ? '收起会话列表' : '展开会话列表'" @click="toggleHistory"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /><path class="history-toggle-chevron" d="m16 10-2 2 2 2" /></svg></button>
-        <h1 :title="conversationTitle">{{ conversationTitle }}</h1>
-        <LocalTitleStatus silent :conversation-id="conversationId" :has-message="!!store.turns.length || store.pending" :submitting="store.pending" />
+        <h1 :title="profileMode ? '个人资料' : conversationTitle">{{ profileMode ? '个人资料' : conversationTitle }}</h1>
+        <LocalTitleStatus v-if="!profileMode" silent :conversation-id="conversationId" :has-message="!!store.turns.length || store.pending" :submitting="store.pending" />
         <button
-          v-show="!plotMode && store.panel !== 'results'"
+          v-show="!profileMode && !plotMode && store.panel !== 'results'"
           ref="resultsToggle"
           type="button"
           class="chat-toolbar-button results-toggle"
@@ -324,7 +326,9 @@ onBeforeUnmount(() => {
           </svg>
         </button>
       </header>
-      <div v-if="store.error" class="global-error notice danger" role="alert"><p>{{ store.error }}</p><details><summary>错误详情</summary><code>{{ store.errorCode }}</code></details><button @click="store.recover">恢复会话 / 刷新状态</button><button v-if="draft.trim() && !store.disconnectedRequest" :disabled="store.running" title="会产生新的模型用量" @click="send">重新执行（新一轮）</button></div>
+      <ProfileWorkspace v-if="profileMode" />
+      <template v-else>
+        <ConversationErrorNotice v-if="store.error" class="global-error" :message="store.error" :code="store.errorCode" current :busy="store.running || store.loading" :can-retry="!!draft.trim() && !store.disconnectedRequest" @retry="send" />
       <div v-if="store.disconnectedRequest" class="notice"><p>断线前的问题尚未确认。先恢复会话；若仍未显示，可用原请求编号重新核对，避免重复执行。</p><button @click="store.resendSameRequest">用原请求编号核对</button></div>
       <div v-show="!plotMode" class="chat-scroll" :class="{'chat-scroll-empty':showWelcome}" :aria-busy="store.loading" aria-live="polite">
         <div v-if="store.loading && !store.turns.length" class="conversation-loading" role="status">
@@ -339,7 +343,7 @@ onBeforeUnmount(() => {
         </div>
         <template v-for="{ turn, modelChange } in conversationTimeline" :key="turn.turn_id">
           <ModelChangeNotice v-if="modelChange" :from="models.labelFor(modelChange.from)" :to="models.labelFor(modelChange.to)" />
-          <article class="turn" :class="{ 'selected-turn':store.selectedTurnId===turn.turn_id }"><div class="turn-label"><span class="eyebrow">第 {{ turn.revision }} 轮</span><time>{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="tag">历史记录</span></div><UserMessage :text="turn.message" :attachments="turn.attachments" :turn-number="turn.revision" :disabled="store.running || store.creating || store.loading || sending || !!store.disconnectedRequest" @edit="editQuestion($event, turn.revision, turn.conversation_id)" /><div class="answer"><div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response" class="tag" :class="turn.response.status">{{ turn.response.status === 'success' ? '已完成' : turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div><p v-if="turn.execution_status==='running'" class="processing">正在处理。刷新页面可恢复状态，不会自动重新执行。<button @click="store.recover">刷新状态</button></p><p v-if="turn.error" class="notice danger">{{ turn.error.message }}</p><MarkdownAnswer v-if="turn.response" class="answer-text" :text="turn.response.answer" /><p v-for="warning in turn.context?.warnings" :key="warning" class="notice">{{ warning }}</p><details v-if="turn.context?.included_turn_ids?.length" class="small"><summary>使用了 {{ turn.context.included_turn_ids.length }} 轮历史上下文</summary><p>历史数据保持原查询时间，不代表本轮重新查询。</p><code>{{ turn.context.included_turn_ids.join('\n') }}</code></details><div v-if="turn.response?.sources?.length" class="source-links"><template v-for="source in turn.response.sources" :key="source.url"><a v-if="safeLink(source.url)" :href="safeLink(source.url)!" target="_blank" rel="noopener noreferrer">{{ source.name }} ↗</a><span v-else>{{ source.url }}</span></template></div><button class="view-results" @click="openResults(turn.turn_id)">核查本轮结果与导出 <span aria-hidden="true">→</span></button></div></article>
+          <article class="turn" :class="{ 'selected-turn':store.selectedTurnId===turn.turn_id }"><div class="turn-label"><span class="eyebrow">第 {{ turn.revision }} 轮</span><time>{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="tag">历史记录</span></div><UserMessage :text="turn.message" :attachments="turn.attachments" :turn-number="turn.revision" :disabled="store.running || store.creating || store.loading || sending || !!store.disconnectedRequest" @edit="editQuestion($event, turn.revision, turn.conversation_id)" /><div class="answer"><div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response" class="tag" :class="turn.response.status">{{ turn.response.status === 'success' ? '已完成' : turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div><p v-if="turn.execution_status==='running'" class="processing">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</p><ConversationErrorNotice v-if="turn.error" :message="turn.error.message" :code="turn.error.code" /><MarkdownAnswer v-if="turn.response" class="answer-text" :text="turn.response.answer" /><ContextNotice v-if="turn.context?.warnings?.length" :messages="turn.context?.warnings || []" /><details v-if="turn.context?.included_turn_ids?.length" class="small"><summary>使用了 {{ turn.context.included_turn_ids.length }} 轮历史上下文</summary><p>历史数据保持原查询时间，不代表本轮重新查询。</p><code>{{ turn.context.included_turn_ids.join('\n') }}</code></details><div v-if="turn.response?.sources?.length" class="source-links"><template v-for="source in turn.response.sources" :key="source.url"><a v-if="safeLink(source.url)" :href="safeLink(source.url)!" target="_blank" rel="noopener noreferrer">{{ source.name }} ↗</a><span v-else>{{ source.url }}</span></template></div><button class="view-results" @click="openResults(turn.turn_id)">核查本轮结果与导出 <span aria-hidden="true">→</span></button></div></article>
         </template>
         <p v-if="store.pending" class="processing pending"><span class="status-dot"></span>正在处理，请稍候…</p>
         <p v-if="store.loading && store.turns.length" class="small muted">正在读取本地记录…</p>
@@ -351,7 +355,7 @@ onBeforeUnmount(() => {
         <div v-if="!plotMode && editingTurn!==null" class="composer-editing"><p>编辑第 {{ editingTurn }} 轮问题 · 确认发送后作为新一轮，原记录保留。{{ draftBeforeEdit ? '取消编辑可恢复原草稿。' : '' }}</p><button type="button" :disabled="sending || store.running" @click="cancelEdit">取消编辑</button></div>
         <label class="sr-only" for="question">{{ plotMode ? '绘图需求' : '天文问题' }}</label>
         <textarea id="question" ref="input" v-model="composerDraft" rows="2" maxlength="4000" :placeholder="plotMode ? '描述需要的图形，例如：画 BP−RP 与 G 星等的散点图，星等轴反向…' : '输入一个天文问题，或继续追问刚才的结果…'" :disabled="store.running || store.creating || sending || !!store.disconnectedRequest" @keydown="keydown" @compositionstart="composing=true" @compositionend="composing=false"></textarea>
-        <div v-if="!plotMode && (models.error || (models.loaded && !models.configured))" class="model-catalog-error" role="status"><span>{{ models.error || '服务端尚未配置回答模型。' }}</span><button type="button" :disabled="models.loading" @click="models.load(true)">刷新模型</button></div>
+        <div v-if="!plotMode && (models.error || (models.loaded && !models.configured))" class="model-catalog-error" role="status"><span>{{ models.error || '服务端尚未配置回答模型。' }}</span></div>
         <div class="composer-bottom">
           <div class="composer-task-tools">
             <button type="button" class="composer-task-button composer-plot-toggle" :class="{ active: plotMode }" :aria-pressed="plotMode" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" :data-tooltip="plotMode ? '返回对话，保留绘图进度和草稿' : '在当前工作台选择数据、描述图形并审阅绘图方案'" @click="togglePlot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M7 15l4-5 4 3 5-7" /><circle cx="11" cy="10" r="1" /></svg><span>科研绘图</span><span v-if="plotMode" class="composer-plot-return">返回对话</span></button>
@@ -367,8 +371,9 @@ onBeforeUnmount(() => {
         </div>
         <p>{{ plotMode ? '生成方案后请核对数据、单位与脚本；确认执行后才会绘图。' : '模型回答需对照原始数据核查；位置候选源不等于星团成员。' }}</p>
       </form>
+      </template>
     </main>
-    <ResultPanel id="workbench-results" :inert="plotMode || store.panel !== 'results'" :aria-hidden="plotMode || store.panel !== 'results'" :pending="store.pending" :turn="store.selectedTurn" :historical="!!store.selectedTurn && store.selectedTurn.turn_id!==newest" dismissible @close="closeResults" />
+    <ResultPanel id="workbench-results" :inert="profileMode || plotMode || store.panel !== 'results'" :aria-hidden="profileMode || plotMode || store.panel !== 'results'" :pending="store.pending" :turn="store.selectedTurn" :historical="!!store.selectedTurn && store.selectedTurn.turn_id!==newest" dismissible @close="closeResults" />
     <dialog ref="nbodyDialog" class="project-dialog nbody-placeholder" aria-labelledby="nbody-title" aria-describedby="nbody-description">
       <h2 id="nbody-title">N 体模拟 · 待开放</h2>
       <p id="nbody-description">模拟入口已预留，后续将在这里接入 N 体模拟功能。</p>

@@ -21,7 +21,6 @@ const plots = ref<NonNullable<GaiaFieldParameters['plots']>>([])
 const query = ref(''), rows = ref('10'), start = ref('0'), sort = ref<AdsEvidenceParameters['sort']>('date_desc')
 const dialog = ref<HTMLDialogElement | null>(null), action = ref<'execute' | 'delete' | ''>('')
 const pending = ref<WorkflowExecute | null>(null)
-const refreshing = ref(false)
 let navigation = 0
 const template = computed(() => catalog.value.find(t => t.id === templateId.value))
 const labels: Record<string, string> = { pending: '待执行', running: '运行中', succeeded: '完成', failed: '失败', skipped: '跳过', interrupted: '已中断' }
@@ -73,11 +72,6 @@ async function act(task: () => Promise<unknown>) {
   if (busy.value) return
   busy.value = true; error.value = ''; message.value = ''
   try { await task() } catch (e) { report(e); mobilePanel.value = 'steps' } finally { busy.value = false }
-}
-async function refreshStatus() {
-  if (refreshing.value) return
-  refreshing.value = true; error.value = ''
-  try { await refresh() } catch (e) { report(e) } finally { refreshing.value = false }
 }
 function number(text: string, label: string, optional = false): number | null {
   if (!String(text).trim()) { if (optional) return null; throw new Error(`请填写${label}。`) }
@@ -168,7 +162,7 @@ watch(() => route.fullPath, () => {
     <main class="project-main workflow-main">
       <WorkspacePaneHeader :title="editing ? '新建科研流程' : run?.name || '科研流程'" :level="1" :subtitle="project?.name" />
       <div class="workspace-pane-body">
-      <div class="workflow-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在处理。断线不会取消已提交的执行，可刷新读取当前步骤。</p><button :disabled="refreshing" @click="refreshStatus">{{ refreshing ? '正在读取…' : '刷新记录' }}</button></div>
+      <div class="workflow-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在处理。断线不会取消已提交的执行，可重新打开页面查看当前步骤。</p></div>
       <form v-if="editing" class="project-form workflow-form" @submit.prevent="create">
         <h2>参数设置</h2><p class="small muted">创建只保存参数。执行需另行确认。</p>
         <fieldset :disabled="busy || !project">

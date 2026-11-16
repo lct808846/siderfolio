@@ -1,0 +1,57 @@
+.................F.                                                      [100%]
+================================== FAILURES ===================================
+______________ test_tenant_document_vector_and_archive_roundtrip ______________
+
+identity_client = <starlette.testclient.TestClient object at 0x00000218DA9D8E90>
+
+    def test_tenant_document_vector_and_archive_roundtrip(identity_client):
+        from test_rag_postgres import build, preview, project_with_document
+    
+        client = identity_client
+        account(client)
+        csrf = client.get("/api/v1/auth/csrf").json()["csrf_token"]
+        client.headers.update({"Origin": ORIGIN, "X-CSRF-Token": csrf})
+        root, document = project_with_document(client)
+        user = client.store.authenticate(client.cookies.get("astroagent_session"))
+        service = client.identity.tenants.for_user(user)
+    
+        class Embedder:
+            def identity(self):
+                return "f" * 64
+    
+            def encode(self, texts):
+                return [[1 / math.sqrt(384)] * 384 for _ in texts]
+    
+        service.rag.embedder = Embedder()
+        build(client, root)
+>       evidence = preview(client, root)
+                   ^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_identity_postgres.py:484: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <starlette.testclient.TestClient object at 0x00000218DA9D8E90>
+root = '/api/v1/projects/3708039b-2350-4dd5-b68a-855e68f50057'
+
+    def preview(client, root):
+        response = client.post(
+            root + "/rag/previews",
+            json={
+                "question": "binary cluster",
+                "document_ids": [],
+                "version_ids": [],
+                "history_ids": [],
+            },
+        )
+        assert response.status_code == 200
+        value = response.json()
+>       assert value["evidence"] and value["lexical_status"] == value["semantic_status"] == "ready"
+E       AssertionError: assert ([{'label': 'E1', 'view': {'evidence': {'id': 'aff289d1-c88d-448a-a0fd-a6a0330662df', 'project_id': '3708039b-2350-4dd5....\n', 'heading_path': ['Reference'], 'historical_version': False, ...}, 'lexical_rank': 1, 'semantic_rank': None, ...}] and 'ready' == 'stale'
+E         
+E         - stale
+E         + ready)
+
+tests\test_rag_postgres.py:241: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_identity_postgres.py::test_tenant_document_vector_and_archive_roundtrip
+1 failed, 18 passed, 662 deselected in 26.45s

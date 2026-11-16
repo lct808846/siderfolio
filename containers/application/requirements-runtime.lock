@@ -1,6 +1,10 @@
 # Generated from prepared native distribution metadata for Linux x86_64 / CPython 3.12.
 # Version pins only; Linux installation and wheel compatibility remain unverified.
 # CPU torch is obtained from the official CPU wheel index, never a CUDA dependency set.
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
+email-validator==2.3.0
+dnspython==2.8.0
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.14.2

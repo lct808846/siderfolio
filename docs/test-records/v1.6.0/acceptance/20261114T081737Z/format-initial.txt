@@ -1,0 +1,1825 @@
+unformatted: File would be reformatted
+   --> scripts\identity_backup.py:18:25
+    |
+17  |     parser.add_argument("--output", type=Path, required=True)
+    -     parser.add_argument("--docker", default=shutil.which("docker") or r"D:\Program Files\Docker\resources\bin\docker.exe")
+18  +     parser.add_argument(
+19  +         "--docker",
+20  +         default=shutil.which("docker") or r"D:\Program Files\Docker\resources\bin\docker.exe",
+21  +     )
+22  |     parser.add_argument("--confirm-backend-stopped", action="store_true", required=True)
+--------------------------------------------------------------------------------
+35  |         command += ["--host", "npipe:////./pipe/docker_engine"]
+    -     command += ["compose", "--project-directory", str(root), "--env-file", str(args.env_file.resolve()), "-f", str(root / "compose.yaml"), "-f", str(root / "compose.plotting.yaml"), "-f", str(root / "compose.identity.yaml")]
+    -     running = subprocess.run([*command, "ps", "--status", "running", "--services"], capture_output=True, check=True, timeout=30).stdout.decode().splitlines()
+36  +     command += [
+37  +         "compose",
+38  +         "--project-directory",
+39  +         str(root),
+40  +         "--env-file",
+41  +         str(args.env_file.resolve()),
+42  +         "-f",
+43  +         str(root / "compose.yaml"),
+44  +         "-f",
+45  +         str(root / "compose.plotting.yaml"),
+46  +         "-f",
+47  +         str(root / "compose.identity.yaml"),
+48  +     ]
+49  +     running = (
+50  +         subprocess.run(
+51  +             [*command, "ps", "--status", "running", "--services"],
+52  +             capture_output=True,
+53  +             check=True,
+54  +             timeout=30,
+55  +         )
+56  +         .stdout.decode()
+57  +         .splitlines()
+58  +     )
+59  |     if "backend" in running:
+--------------------------------------------------------------------------------
+64  |     with os.fdopen(descriptor, "wb") as stream:
+    -         result = subprocess.run([*command, "exec", "-T", "postgres", "pg_dump", "-U", "postgres", "-d", database, "--format=custom"], stdout=stream, stderr=subprocess.PIPE, timeout=600)
+65  +         result = subprocess.run(
+66  +             [
+67  +                 *command,
+68  +                 "exec",
+69  +                 "-T",
+70  +                 "postgres",
+71  +                 "pg_dump",
+72  +                 "-U",
+73  +                 "postgres",
+74  +                 "-d",
+75  +                 database,
+76  +                 "--format=custom",
+77  +             ],
+78  +             stdout=stream,
+79  +             stderr=subprocess.PIPE,
+80  +             timeout=600,
+81  +         )
+82  |     if result.returncode:
+--------------------------------------------------------------------------------
+88  |         sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
+    -     manifest = {"format": "pg_dump-custom", "database": database, "project": "astroagent-v16", "created_at": datetime.now(UTC).isoformat(), "bytes": target.stat().st_size, "sha256": sha256, "restore_verified": False}
+89  +     manifest = {
+90  +         "format": "pg_dump-custom",
+91  +         "database": database,
+92  +         "project": "astroagent-v16",
+93  +         "created_at": datetime.now(UTC).isoformat(),
+94  +         "bytes": target.stat().st_size,
+95  +         "sha256": sha256,
+96  +         "restore_verified": False,
+97  +     }
+98  |     metadata = target.with_name(target.name + ".manifest.json")
+99  |     descriptor = os.open(metadata, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+100 |     with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+101 |         json.dump(manifest, stream, ensure_ascii=False, indent=2)
+    -     print(json.dumps({"backup": str(target), "manifest": str(metadata), "sha256": sha256, "restore_verified": False}))
+102 +     print(
+103 +         json.dumps(
+104 +             {
+105 +                 "backup": str(target),
+106 +                 "manifest": str(metadata),
+107 +                 "sha256": sha256,
+108 +                 "restore_verified": False,
+109 +             }
+110 +         )
+111 +     )
+112 |
+--------------------------------------------------------------------------------
+117 |     except (Exception, KeyboardInterrupt):
+    -         raise SystemExit("备份未完成；不会覆盖原文件，请检查服务状态及输出位置。部分文件会保留，不能当作有效备份。") from None
+118 +         raise SystemExit(
+119 +             "备份未完成；不会覆盖原文件，请检查服务状态及输出位置。部分文件会保留，不能当作有效备份。"
+120 +         ) from None
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\api\admin.py:33:22
+    |
+32  | def writable(db, user):
+    -     row = db.execute((
+    -         'SELECT u.* FROM public.auth_users u JOIN public.auth_sessions s ON '
+    -         's.user_id=u.id WHERE u.id=%s AND s.hash=%s AND NOT s.revoked AND '
+    -         "s.expires_at>now() AND s.reauth_at>now()-interval '5 minutes' AND s.mfa_at "
+    -         'IS NOT NULL AND u.admin AND u.active AND NOT u.disabled AND u.totp_secret IS'
+    -         ' NOT NULL FOR UPDATE OF u'
+    -     ), (user["id"], user["session_hash"])).fetchone()
+33  +     row = db.execute(
+34  +         (
+35  +             "SELECT u.* FROM public.auth_users u JOIN public.auth_sessions s ON "
+36  +             "s.user_id=u.id WHERE u.id=%s AND s.hash=%s AND NOT s.revoked AND "
+37  +             "s.expires_at>now() AND s.reauth_at>now()-interval '5 minutes' AND s.mfa_at "
+38  +             "IS NOT NULL AND u.admin AND u.active AND NOT u.disabled AND u.totp_secret IS"
+39  +             " NOT NULL FOR UPDATE OF u"
+40  +         ),
+41  +         (user["id"], user["session_hash"]),
+42  +     ).fetchone()
+43  |     if not row:
+--------------------------------------------------------------------------------
+50  |     with service.store.connect() as db:
+    -         counts = db.execute((
+    -             'SELECT count(*) AS total,count(*) FILTER(WHERE NOT active) AS '
+    -             'pending,count(*) FILTER(WHERE disabled) AS disabled,count(*) FILTER(WHERE '
+    -             'admin AND active AND NOT disabled) AS administrators FROM public.auth_users'
+    -         )).fetchone()
+    -         mail = db.execute("SELECT state,count(*) AS count FROM public.auth_outbox GROUP BY state").fetchall()
+    -     return {"users": counts, "mail_configured": service.settings.mail_ready, "registration_available": service.registration_ready, "mail": mail, "mail_hour_limit": service.settings.mail_hour_limit, "registration_limit": service.settings.registration_limit}
+51  +         counts = db.execute(
+52  +             (
+53  +                 "SELECT count(*) AS total,count(*) FILTER(WHERE NOT active) AS "
+54  +                 "pending,count(*) FILTER(WHERE disabled) AS disabled,count(*) FILTER(WHERE "
+55  +                 "admin AND active AND NOT disabled) AS administrators FROM public.auth_users"
+56  +             )
+57  +         ).fetchone()
+58  +         mail = db.execute(
+59  +             "SELECT state,count(*) AS count FROM public.auth_outbox GROUP BY state"
+60  +         ).fetchall()
+61  +     return {
+62  +         "users": counts,
+63  +         "mail_configured": service.settings.mail_ready,
+64  +         "registration_available": service.registration_ready,
+65  +         "mail": mail,
+66  +         "mail_hour_limit": service.settings.mail_hour_limit,
+67  +         "registration_limit": service.settings.registration_limit,
+68  +     }
+69  |
+--------------------------------------------------------------------------------
+74  |     with service.store.connect() as db:
+    -         rows = db.execute((
+    -             'SELECT id,email_display,active,disabled,admin,created_at,last_login FROM '
+    -             'public.auth_users ORDER BY created_at DESC,id LIMIT 30 OFFSET %s'
+    -         ), ((page - 1) * 30,)).fetchall()
+    -     return [{**{k: v for k, v in row.items() if k != "email_display"}, "email": masked(row["email_display"])} for row in rows]
+75  +         rows = db.execute(
+76  +             (
+77  +                 "SELECT id,email_display,active,disabled,admin,created_at,last_login FROM "
+78  +                 "public.auth_users ORDER BY created_at DESC,id LIMIT 30 OFFSET %s"
+79  +             ),
+80  +             ((page - 1) * 30,),
+81  +         ).fetchall()
+82  +     return [
+83  +         {
+84  +             **{k: v for k, v in row.items() if k != "email_display"},
+85  +             "email": masked(row["email_display"]),
+86  +         }
+87  +         for row in rows
+88  +     ]
+89  |
+--------------------------------------------------------------------------------
+97  |         writable(db, user)
+    -         target = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (str(user_id),)).fetchone()
+98  +         target = db.execute(
+99  +             "SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (str(user_id),)
+100 +         ).fetchone()
+101 |         if not target:
+102 |             raise ServiceError(404, "user_not_found", "目标账号不存在。")
+103 |         if str(user_id) == user["id"] and body.action in {"disable", "revoke_admin"}:
+104 |             raise ServiceError(409, "self_lockout", "不能禁用或降权当前管理员。")
+    -         if body.action in {"disable", "revoke_admin"} and target["admin"] and target["active"] and not target["disabled"]:
+    -             count = db.execute((
+    -                 'SELECT count(*) AS n FROM public.auth_users WHERE admin AND active AND NOT '
+    -                 'disabled AND totp_secret IS NOT NULL'
+    -             )).fetchone()["n"]
+105 +         if (
+106 +             body.action in {"disable", "revoke_admin"}
+107 +             and target["admin"]
+108 +             and target["active"]
+109 +             and not target["disabled"]
+110 +         ):
+111 +             count = db.execute(
+112 +                 (
+113 +                     "SELECT count(*) AS n FROM public.auth_users WHERE admin AND active AND NOT "
+114 +                     "disabled AND totp_secret IS NOT NULL"
+115 +                 )
+116 +             ).fetchone()["n"]
+117 |             if target["totp_secret"] and count <= 1:
+118 |                 raise ServiceError(409, "last_administrator", "不能禁用或降权最后一位有效管理员。")
+119 |         if body.action == "grant_admin" and (not target["active"] or target["disabled"]):
+120 |             raise ServiceError(409, "user_not_active", "只能授权已激活且未禁用的账号。")
+    -         field, value = {"enable": ("disabled", False), "disable": ("disabled", True), "grant_admin": ("admin", True), "revoke_admin": ("admin", False)}[body.action]
+121 +         field, value = {
+122 +             "enable": ("disabled", False),
+123 +             "disable": ("disabled", True),
+124 +             "grant_admin": ("admin", True),
+125 +             "revoke_admin": ("admin", False),
+126 +         }[body.action]
+127 |         # Field names come exclusively from this finite server-side mapping.
+    -         updated = db.execute(f"UPDATE public.auth_users SET {field}=%s,generation=generation+1 WHERE id=%s RETURNING generation", (value, str(user_id))).fetchone()
+128 +         updated = db.execute(
+129 +             f"UPDATE public.auth_users SET {field}=%s,generation=generation+1 WHERE id=%s RETURNING generation",
+130 +             (value, str(user_id)),
+131 +         ).fetchone()
+132 |         service.store.revoke(db, str(user_id))
+    -         service.store.audit(db, user["id"], "user_" + body.action, "ok", str(user_id), service.source_hash(source(request)), body.reason)
+133 +         service.store.audit(
+134 +             db,
+135 +             user["id"],
+136 +             "user_" + body.action,
+137 +             "ok",
+138 +             str(user_id),
+139 +             service.source_hash(source(request)),
+140 +             body.reason,
+141 +         )
+142 |     service.tenants.invalidate(str(user_id), updated["generation"])
+--------------------------------------------------------------------------------
+149 |     with service.store.connect() as db:
+    -         return db.execute((
+    -             'SELECT id,purpose,state,attempts,created_at,submitted_at,error_class FROM '
+    -             'public.auth_outbox ORDER BY created_at DESC,id LIMIT 30 OFFSET %s'
+    -         ), ((page - 1) * 30,)).fetchall()
+150 +         return db.execute(
+151 +             (
+152 +                 "SELECT id,purpose,state,attempts,created_at,submitted_at,error_class FROM "
+153 +                 "public.auth_outbox ORDER BY created_at DESC,id LIMIT 30 OFFSET %s"
+154 +             ),
+155 +             ((page - 1) * 30,),
+156 +         ).fetchall()
+157 |
+--------------------------------------------------------------------------------
+164 |         writable(db, user)
+    -         row = db.execute((
+    -             'UPDATE public.auth_outbox SET '
+    -             "state='pending',available_at=now(),attempts=0,error_class=NULL WHERE id=%s "
+    -             "AND state='failed' AND payload<>'' AND created_at>now()-interval '1 day' "
+    -             'RETURNING id'
+    -         ), (str(mail_id),)).fetchone()
+165 +         row = db.execute(
+166 +             (
+167 +                 "UPDATE public.auth_outbox SET "
+168 +                 "state='pending',available_at=now(),attempts=0,error_class=NULL WHERE id=%s "
+169 +                 "AND state='failed' AND payload<>'' AND created_at>now()-interval '1 day' "
+170 +                 "RETURNING id"
+171 +             ),
+172 +             (str(mail_id),),
+173 +         ).fetchone()
+174 |         if not row:
+--------------------------------------------------------------------------------
+183 |     with service.store.connect() as db:
+    -         return db.execute((
+    -             'SELECT id,actor,target,event,result,source,reason,created_at FROM '
+    -             'public.auth_audit ORDER BY id DESC LIMIT 50 OFFSET %s'
+    -         ), ((page - 1) * 50,)).fetchall()
+184 +         return db.execute(
+185 +             (
+186 +                 "SELECT id,actor,target,event,result,source,reason,created_at FROM "
+187 +                 "public.auth_audit ORDER BY id DESC LIMIT 50 OFFSET %s"
+188 +             ),
+189 +             ((page - 1) * 50,),
+190 +         ).fetchall()
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\api\auth.py:13:38
+    |
+12  |
+    - from astroagent.auth_security import PASSWORDS, digest, email_address, hash_password, opaque, totp_step, verify_password
+13  + from astroagent.auth_security import (
+14  +     PASSWORDS,
+15  +     digest,
+16  +     email_address,
+17  +     hash_password,
+18  +     opaque,
+19  +     totp_step,
+20  +     verify_password,
+21  + )
+22  | from astroagent.auth_store import AUTH_LOCK
+--------------------------------------------------------------------------------
+82  |     # Only LocalAccess, after verifying the private proxy credential, can set this.
+    -     return getattr(request.state, "trusted_client_address", None) or (request.client.host if request.client else "unknown")
+83  +     return getattr(request.state, "trusted_client_address", None) or (
+84  +         request.client.host if request.client else "unknown"
+85  +     )
+86  |
+87  |
+88  | def set_session(response, settings, token):
+    -     response.set_cookie(COOKIE, token, secure=settings.secure, httponly=True, samesite="lax", path="/")
+89  +     response.set_cookie(
+90  +         COOKIE, token, secure=settings.secure, httponly=True, samesite="lax", path="/"
+91  +     )
+92  |     response.delete_cookie(PREAUTH, secure=settings.secure, httponly=True, samesite="lax", path="/")
+--------------------------------------------------------------------------------
+101 |         raise invalid_link()
+    -     row = db.execute((
+    -         'SELECT * FROM public.auth_tokens WHERE hash=%s AND purpose=%s AND '
+    -         'consumed_at IS NULL AND expires_at>now() FOR UPDATE'
+    -     ), (digest(token), purpose)).fetchone()
+102 +     row = db.execute(
+103 +         (
+104 +             "SELECT * FROM public.auth_tokens WHERE hash=%s AND purpose=%s AND "
+105 +             "consumed_at IS NULL AND expires_at>now() FOR UPDATE"
+106 +         ),
+107 +         (digest(token), purpose),
+108 +     ).fetchone()
+109 |     if not row:
+--------------------------------------------------------------------------------
+122 |         return True
+    -     result = db.execute((
+    -         'UPDATE public.auth_recovery SET consumed_at=now() WHERE user_id=%s AND '
+    -         'hash=%s AND consumed_at IS NULL RETURNING hash'
+    -     ), (user["id"], digest(code))).fetchone()
+123 +     result = db.execute(
+124 +         (
+125 +             "UPDATE public.auth_recovery SET consumed_at=now() WHERE user_id=%s AND "
+126 +             "hash=%s AND consumed_at IS NULL RETURNING hash"
+127 +         ),
+128 +         (user["id"], digest(code)),
+129 +     ).fetchone()
+130 |     return bool(result)
+--------------------------------------------------------------------------------
+139 |         token = opaque()
+    -         response.set_cookie(PREAUTH, token, max_age=900, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+140 +         response.set_cookie(
+141 +             PREAUTH,
+142 +             token,
+143 +             max_age=900,
+144 +             secure=service.settings.secure,
+145 +             httponly=True,
+146 +             samesite="lax",
+147 +             path="/",
+148 +         )
+149 |     return {"csrf_token": service.csrf(token), "registration_available": service.registration_ready}
+--------------------------------------------------------------------------------
+154 |     service, user = runtime(request), actor(request)
+    -     return {"user": service.store.public_user(user), "csrf_token": service.csrf(request.cookies.get(COOKIE, "")), "idle_seconds": service.settings.idle_seconds, "absolute_seconds": service.settings.absolute_seconds}
+155 +     return {
+156 +         "user": service.store.public_user(user),
+157 +         "csrf_token": service.csrf(request.cookies.get(COOKIE, "")),
+158 +         "idle_seconds": service.settings.idle_seconds,
+159 +         "absolute_seconds": service.settings.absolute_seconds,
+160 +     }
+161 |
+--------------------------------------------------------------------------------
+167 |     if not service.registration_ready:
+    -         raise ServiceError(503, "email_unavailable", "邮件注册或找回服务暂不可用，请联系管理员；已有账号可登录。")
+168 +         raise ServiceError(
+169 +             503, "email_unavailable", "邮件注册或找回服务暂不可用，请联系管理员；已有账号可登录。"
+170 +         )
+171 |     with service.store.connect() as db:
+172 |         db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+    -         if purpose == "activate" and db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"] >= service.settings.registration_limit:
+    -             raise ServiceError(503, "registration_capacity", "注册与重发服务暂已达到名额上限，请联系管理员。")
+    -         user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+173 +         if (
+174 +             purpose == "activate"
+175 +             and db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"]
+176 +             >= service.settings.registration_limit
+177 +         ):
+178 +             raise ServiceError(
+179 +                 503, "registration_capacity", "注册与重发服务暂已达到名额上限，请联系管理员。"
+180 +             )
+181 +         user = db.execute(
+182 +             "SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)
+183 +         ).fetchone()
+184 |         if purpose == "activate" and not user:
+185 |             identifier = str(uuid4())
+    -             user = db.execute((
+    -                 'INSERT INTO public.auth_users(id,email_key,email_display,namespace) VALUES '
+    -                 '(%s,%s,%s,%s) RETURNING *'
+    -             ), (identifier, canonical, display, "aa_" + UUID(identifier).hex)).fetchone()
+    -         eligible = user and not user["disabled"] and ((purpose == "activate" and not user["active"]) or (purpose == "reset" and user["active"]))
+186 +             user = db.execute(
+187 +                 (
+188 +                     "INSERT INTO public.auth_users(id,email_key,email_display,namespace) VALUES "
+189 +                     "(%s,%s,%s,%s) RETURNING *"
+190 +                 ),
+191 +                 (identifier, canonical, display, "aa_" + UUID(identifier).hex),
+192 +             ).fetchone()
+193 +         eligible = (
+194 +             user
+195 +             and not user["disabled"]
+196 +             and (
+197 +                 (purpose == "activate" and not user["active"])
+198 +                 or (purpose == "reset" and user["active"])
+199 +             )
+200 +         )
+201 |         if eligible:
+202 |             service.store.token(db, user, purpose, str(body.request_id))
+    -         service.store.audit(db, None, "email_" + purpose, "accepted", source=service.source_hash(source(request)))
+203 +         service.store.audit(
+204 +             db, None, "email_" + purpose, "accepted", source=service.source_hash(source(request))
+205 +         )
+206 |     return GENERIC
+--------------------------------------------------------------------------------
+229 |         user_id = consume(db, body.token.get_secret_value(), "activate")
+    -         user = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)).fetchone()
+230 +         user = db.execute(
+231 +             "SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)
+232 +         ).fetchone()
+233 |         if user["active"] or user["disabled"]:
+234 |             raise invalid_link()
+235 |         token = opaque()
+    -         db.execute("INSERT INTO public.auth_tokens VALUES (%s,%s,'activate_setup',%s,NULL)", (digest(token), user_id, datetime.now(UTC) + timedelta(minutes=5)))
+236 +         db.execute(
+237 +             "INSERT INTO public.auth_tokens VALUES (%s,%s,'activate_setup',%s,NULL)",
+238 +             (digest(token), user_id, datetime.now(UTC) + timedelta(minutes=5)),
+239 +         )
+240 |     return {"setup_token": token}
+--------------------------------------------------------------------------------
+248 |         user_id = consume(db, body.token.get_secret_value(), purpose)
+    -         user = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)).fetchone()
+    -         if user["disabled"] or (purpose == "activate_setup" and user["active"]) or (purpose == "reset" and not user["active"]):
+249 +         user = db.execute(
+250 +             "SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user_id,)
+251 +         ).fetchone()
+252 +         if (
+253 +             user["disabled"]
+254 +             or (purpose == "activate_setup" and user["active"])
+255 +             or (purpose == "reset" and not user["active"])
+256 +         ):
+257 |             raise invalid_link()
+    -         db.execute((
+    -             'UPDATE public.auth_users SET '
+    -             'active=true,password_hash=%s,generation=generation+1 WHERE id=%s'
+    -         ), (encoded, user_id))
+    -         db.execute((
+    -             'UPDATE public.auth_tokens SET consumed_at=now() WHERE user_id=%s AND '
+    -             'consumed_at IS NULL'
+    -         ), (user_id,))
+258 +         db.execute(
+259 +             (
+260 +                 "UPDATE public.auth_users SET "
+261 +                 "active=true,password_hash=%s,generation=generation+1 WHERE id=%s"
+262 +             ),
+263 +             (encoded, user_id),
+264 +         )
+265 +         db.execute(
+266 +             (
+267 +                 "UPDATE public.auth_tokens SET consumed_at=now() WHERE user_id=%s AND "
+268 +                 "consumed_at IS NULL"
+269 +             ),
+270 +             (user_id,),
+271 +         )
+272 |         service.store.revoke(db, user_id)
+    -         service.store.audit(db, user_id, "activated" if purpose == "activate_setup" else "password_reset", "ok")
+273 +         service.store.audit(
+274 +             db, user_id, "activated" if purpose == "activate_setup" else "password_reset", "ok"
+275 +         )
+276 |         if purpose == "reset":
+--------------------------------------------------------------------------------
+301 |     with service.store.connect() as db:
+    -         user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)).fetchone()
+    -         valid = verify_password(user["password_hash"] if user and user["password_hash"] else service.dummy_hash, password)
+302 +         user = db.execute(
+303 +             "SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)
+304 +         ).fetchone()
+305 +         valid = verify_password(
+306 +             user["password_hash"] if user and user["password_hash"] else service.dummy_hash,
+307 +             password,
+308 +         )
+309 |         valid = valid and user and user["active"] and not user["disabled"]
+    -         mfa = check_otp(service.store, db, user, body.code) if valid and user["totp_secret"] else False
+310 +         mfa = (
+311 +             check_otp(service.store, db, user, body.code)
+312 +             if valid and user["totp_secret"]
+313 +             else False
+314 +         )
+315 |         if valid and user["totp_secret"] and not mfa:
+316 |             valid = False
+317 |         if not valid:
+    -             service.store.audit(db, None, "login", "denied", source=service.source_hash(source(request)))
+318 +             service.store.audit(
+319 +                 db, None, "login", "denied", source=service.source_hash(source(request))
+320 +             )
+321 |         else:
+322 |             old = getattr(request.state, "principal", None)
+323 |             if old:
+    -                 db.execute("UPDATE public.auth_sessions SET revoked=true WHERE hash=%s", (old["session_hash"],))
+324 +                 db.execute(
+325 +                     "UPDATE public.auth_sessions SET revoked=true WHERE hash=%s",
+326 +                     (old["session_hash"],),
+327 +                 )
+328 |             if PASSWORDS.check_needs_rehash(user["password_hash"]):
+    -                 db.execute("UPDATE public.auth_users SET password_hash=%s WHERE id=%s", (PASSWORDS.hash(unicodedata.normalize("NFC", password)), user["id"]))
+329 +                 db.execute(
+330 +                     "UPDATE public.auth_users SET password_hash=%s WHERE id=%s",
+331 +                     (PASSWORDS.hash(unicodedata.normalize("NFC", password)), user["id"]),
+332 +                 )
+333 |             token = service.store.session(db, user["id"], mfa)
+334 |             db.execute("UPDATE public.auth_users SET last_login=now() WHERE id=%s", (user["id"],))
+    -             service.store.audit(db, user["id"], "login", "ok", source=service.source_hash(source(request)))
+335 +             service.store.audit(
+336 +                 db, user["id"], "login", "ok", source=service.source_hash(source(request))
+337 +             )
+338 |     if not valid:
+--------------------------------------------------------------------------------
+349 |     with service.store.connect() as db:
+    -         db.execute("UPDATE public.auth_sessions SET revoked=true WHERE hash=%s", (user["session_hash"],))
+350 +         db.execute(
+351 +             "UPDATE public.auth_sessions SET revoked=true WHERE hash=%s", (user["session_hash"],)
+352 +         )
+353 |         service.store.audit(db, user["id"], "logout", "ok")
+    -     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+354 +     response.delete_cookie(
+355 +         COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/"
+356 +     )
+357 |     return {"message": "已退出。"}
+--------------------------------------------------------------------------------
+361 |     user = actor(request)
+    -     current = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user["id"],)).fetchone()
+    -     if not current or not current["active"] or current["disabled"] or not verify_password(current["password_hash"], body.password.get_secret_value()):
+362 +     current = db.execute(
+363 +         "SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user["id"],)
+364 +     ).fetchone()
+365 +     if (
+366 +         not current
+367 +         or not current["active"]
+368 +         or current["disabled"]
+369 +         or not verify_password(current["password_hash"], body.password.get_secret_value())
+370 +     ):
+371 |         raise ServiceError(403, "reauth_failed", "重新认证失败。")
+--------------------------------------------------------------------------------
+382 |         current = proof(service, request, body, db)
+    -         db.execute((
+    -             'UPDATE public.auth_sessions SET reauth_at=now(),mfa_at=CASE WHEN %s THEN '
+    -             'now() ELSE mfa_at END WHERE hash=%s'
+    -         ), (bool(current["totp_secret"]), user["session_hash"]))
+383 +         db.execute(
+384 +             (
+385 +                 "UPDATE public.auth_sessions SET reauth_at=now(),mfa_at=CASE WHEN %s THEN "
+386 +                 "now() ELSE mfa_at END WHERE hash=%s"
+387 +             ),
+388 +             (bool(current["totp_secret"]), user["session_hash"]),
+389 +         )
+390 |         service.store.audit(db, user["id"], "reauthenticated", "ok")
+--------------------------------------------------------------------------------
+400 |         current = proof(service, request, body, db)
+    -         db.execute((
+    -             'UPDATE public.auth_users SET password_hash=%s,generation=generation+1 WHERE '
+    -             'id=%s'
+    -         ), (encoded, user["id"]))
+401 +         db.execute(
+402 +             ("UPDATE public.auth_users SET password_hash=%s,generation=generation+1 WHERE id=%s"),
+403 +             (encoded, user["id"]),
+404 +         )
+405 |         service.store.revoke(db, user["id"])
+406 |         service.store.security_mail(db, current, "密码已修改；所有会话已退出。")
+407 |         service.store.audit(db, user["id"], "password_changed", "ok")
+    -     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+408 +     response.delete_cookie(
+409 +         COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/"
+410 +     )
+411 |     return {"message": "密码已修改，请重新登录。"}
+--------------------------------------------------------------------------------
+417 |     with service.store.connect() as db:
+    -         rows = db.execute((
+    -             'SELECT hash,created_at,last_seen,expires_at FROM public.auth_sessions WHERE '
+    -             "user_id=%s AND NOT revoked AND expires_at>now() "
+    -             "AND last_seen>now()-(%s*interval '1 second') ORDER BY created_at DESC "
+    -             'LIMIT 100'
+    -         ), (user["id"], service.settings.idle_seconds)).fetchall()
+    -     return [{"current": hmac.compare_digest(row.pop("hash"), user["session_hash"]), **row} for row in rows]
+418 +         rows = db.execute(
+419 +             (
+420 +                 "SELECT hash,created_at,last_seen,expires_at FROM public.auth_sessions WHERE "
+421 +                 "user_id=%s AND NOT revoked AND expires_at>now() "
+422 +                 "AND last_seen>now()-(%s*interval '1 second') ORDER BY created_at DESC "
+423 +                 "LIMIT 100"
+424 +             ),
+425 +             (user["id"], service.settings.idle_seconds),
+426 +         ).fetchall()
+427 +     return [
+428 +         {"current": hmac.compare_digest(row.pop("hash"), user["session_hash"]), **row}
+429 +         for row in rows
+430 +     ]
+431 |
+--------------------------------------------------------------------------------
+440 |         service.store.audit(db, user["id"], "sessions_revoked", "ok")
+    -     response.delete_cookie(COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/")
+441 +     response.delete_cookie(
+442 +         COOKIE, secure=service.settings.secure, httponly=True, samesite="lax", path="/"
+443 +     )
+444 |     return {"message": "所有会话已退出。"}
+--------------------------------------------------------------------------------
+453 |         secret = base64.b32encode(secrets.token_bytes(20)).decode()
+    -         db.execute((
+    -             'UPDATE public.auth_users SET '
+    -             "totp_pending=%s,totp_pending_until=now()+interval '10 minutes' WHERE id=%s"
+    -         ), (service.store.crypto.encrypt(secret.encode()).decode(), user["id"]))
+    -     return {"secret": secret, "issuer": "AstroAgent", "period": 30, "digits": 6, "message": "将密钥加入验证器，输入6位验证码确认；密钥仅本次显示。"}
+454 +         db.execute(
+455 +             (
+456 +                 "UPDATE public.auth_users SET "
+457 +                 "totp_pending=%s,totp_pending_until=now()+interval '10 minutes' WHERE id=%s"
+458 +             ),
+459 +             (service.store.crypto.encrypt(secret.encode()).decode(), user["id"]),
+460 +         )
+461 +     return {
+462 +         "secret": secret,
+463 +         "issuer": "AstroAgent",
+464 +         "period": 30,
+465 +         "digits": 6,
+466 +         "message": "将密钥加入验证器，输入6位验证码确认；密钥仅本次显示。",
+467 +     }
+468 |
+--------------------------------------------------------------------------------
+474 |     with service.store.connect() as db:
+    -         current = db.execute("SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user["id"],)).fetchone()
+475 +         current = db.execute(
+476 +             "SELECT * FROM public.auth_users WHERE id=%s FOR UPDATE", (user["id"],)
+477 +         ).fetchone()
+478 |         if not current["totp_pending"] or current["totp_pending_until"] < datetime.now(UTC):
+--------------------------------------------------------------------------------
+483 |             raise ServiceError(422, "totp_invalid", "验证码不正确，请核对验证器时间。")
+    -         db.execute((
+    -             'UPDATE public.auth_users SET totp_secret=totp_pending,totp_pending=NULL,totp'
+    -             '_pending_until=NULL,totp_step=%s,generation=generation+1 WHERE id=%s'
+    -         ), (step, user["id"]))
+484 +         db.execute(
+485 +             (
+486 +                 "UPDATE public.auth_users SET totp_secret=totp_pending,totp_pending=NULL,totp"
+487 +                 "_pending_until=NULL,totp_step=%s,generation=generation+1 WHERE id=%s"
+488 +             ),
+489 +             (step, user["id"]),
+490 +         )
+491 |         db.execute("DELETE FROM public.auth_recovery WHERE user_id=%s", (user["id"],))
+492 |         codes = [secrets.token_hex(10) for _ in range(10)]
+493 |         for code in codes:
+    -             db.execute("INSERT INTO public.auth_recovery VALUES (%s,%s,NULL)", (digest(code), user["id"]))
+494 +             db.execute(
+495 +                 "INSERT INTO public.auth_recovery VALUES (%s,%s,NULL)", (digest(code), user["id"])
+496 +             )
+497 |         service.store.revoke(db, user["id"])
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\conversations.py:34:28
+   |
+33 |     if not principal or identity is None:
+   -         raise ServiceError(
+   -             401, "login_required", "请先登录。"
+   -         )
+34 +         raise ServiceError(401, "login_required", "请先登录。")
+35 |     return identity.tenants.for_user(principal)
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\setup.py:22:1
+   |
+21 |     from astroagent.api.conversations import get_service
+22 +
+23 |     service = get_service(request)
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\auth_access.py:15:7
+    |
+14  |     ("GET", "/api/v1/auth/session"),
+    -     *(('POST', f"/api/v1/auth/{path}") for path in (
+    -         "register", "resend", "forgot-password", "activate/confirm", "activate/complete", "reset-password", "login"
+    -     )),
+15  +     *(
+16  +         ("POST", f"/api/v1/auth/{path}")
+17  +         for path in (
+18  +             "register",
+19  +             "resend",
+20  +             "forgot-password",
+21  +             "activate/confirm",
+22  +             "activate/complete",
+23  +             "reset-password",
+24  +             "login",
+25  +         )
+26  +     ),
+27  | }
+--------------------------------------------------------------------------------
+32  |         raise ServiceError(403, "access_denied", "无权访问此功能。")
+    -     if recent and (not user.get("reauth_at") or user["reauth_at"] < datetime.now(UTC) - timedelta(minutes=5)):
+33  +     if recent and (
+34  +         not user.get("reauth_at") or user["reauth_at"] < datetime.now(UTC) - timedelta(minutes=5)
+35  +     ):
+36  |         raise ServiceError(403, "reauth_required", "请先重新认证，再执行管理操作。")
+--------------------------------------------------------------------------------
+53  |         async def fail(status, code, message):
+    -             response = JSONResponse({"error": {"code": code, "message": message, "retryable": False}}, status_code=status, headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"})
+54  +             response = JSONResponse(
+55  +                 {"error": {"code": code, "message": message, "retryable": False}},
+56  +                 status_code=status,
+57  +                 headers={
+58  +                     "Cache-Control": "no-store",
+59  +                     "Referrer-Policy": "no-referrer",
+60  +                     "X-Content-Type-Options": "nosniff",
+61  +                 },
+62  +             )
+63  |             return await response(scope, receive, send)
+--------------------------------------------------------------------------------
+82  |             if method not in {"GET", "HEAD"}:
+    -                 if headers.get("origin") != identity.settings.origin or headers.get("sec-fetch-site") == "cross-site":
+83  +                 if (
+84  +                     headers.get("origin") != identity.settings.origin
+85  +                     or headers.get("sec-fetch-site") == "cross-site"
+86  +                 ):
+87  |                     return await fail(403, "csrf_origin", "请从本站页面提交操作。")
+88  |                 secret = session if user else anonymous
+    -                 if not secret or len(secret) > 256 or not hmac.compare_digest(headers.get("x-csrf-token", ""), identity.csrf(secret)):
+89  +                 if (
+90  +                     not secret
+91  +                     or len(secret) > 256
+92  +                     or not hmac.compare_digest(
+93  +                         headers.get("x-csrf-token", ""), identity.csrf(secret)
+94  +                     )
+95  +                 ):
+96  |                     return await fail(403, "csrf_invalid", "页面验证已失效，请刷新后重试。")
+    -             if user and user["admin"] and (not user["totp_secret"] or not user["mfa_at"]) and not path.startswith("/api/v1/auth/"):
+97  +             if (
+98  +                 user
+99  +                 and user["admin"]
+100 +                 and (not user["totp_secret"] or not user["mfa_at"])
+101 +                 and not path.startswith("/api/v1/auth/")
+102 +             ):
+103 |                 return await fail(403, "mfa_required", "管理员须先完成双因素认证。")
+    -             if path in {"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect", "/api/v1/setup/status", "/api/v1/setup/initialize"} or path.startswith("/api/v1/admin/"):
+    -                 administrator(user, recent=path.startswith("/api/v1/admin/") and method not in {"GET", "HEAD"})
+104 +             if path in {
+105 +                 "/docs",
+106 +                 "/redoc",
+107 +                 "/openapi.json",
+108 +                 "/docs/oauth2-redirect",
+109 +                 "/api/v1/setup/status",
+110 +                 "/api/v1/setup/initialize",
+111 +             } or path.startswith("/api/v1/admin/"):
+112 +                 administrator(
+113 +                     user, recent=path.startswith("/api/v1/admin/") and method not in {"GET", "HEAD"}
+114 +                 )
+115 |             scope.setdefault("state", {})["principal"] = user
+--------------------------------------------------------------------------------
+138 |                         return await original_receive()
+139 +
+140 |                     receive = replay
+--------------------------------------------------------------------------------
+147 |         terminated = False
+148 +
+149 |         async def secured_send(message):
+150 |             nonlocal started, terminated
+151 |             if terminated:
+152 |                 return
+    -             if user and not path.startswith("/api/v1/auth/") and (message["type"] == "http.response.start" or (message["type"] == "http.response.body" and message.get("body"))):
+153 +             if (
+154 +                 user
+155 +                 and not path.startswith("/api/v1/auth/")
+156 +                 and (
+157 +                     message["type"] == "http.response.start"
+158 +                     or (message["type"] == "http.response.body" and message.get("body"))
+159 +                 )
+160 +             ):
+161 |                 # Revocation is checked again before reading results and each file chunk.
+--------------------------------------------------------------------------------
+175 |                 started = True
+    -                 message = {**message, "headers": [*message.get("headers", []), (b"cache-control", b"no-store"), (b"referrer-policy", b"no-referrer")]}
+176 +                 message = {
+177 +                     **message,
+178 +                     "headers": [
+179 +                         *message.get("headers", []),
+180 +                         (b"cache-control", b"no-store"),
+181 +                         (b"referrer-policy", b"no-referrer"),
+182 +                     ],
+183 +                 }
+184 |             await send(message)
+185 +
+186 |         await self.app(scope, receive, secured_send)
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\auth_config.py:11:39
+   |
+10 | class AuthSettings(BaseSettings):
+   -     model_config = SettingsConfigDict(env_prefix="ASTROAGENT_AUTH_", env_file=".env", extra="ignore")
+11 +     model_config = SettingsConfigDict(
+12 +         env_prefix="ASTROAGENT_AUTH_", env_file=".env", extra="ignore"
+13 +     )
+14 |     origin: str = "http://127.0.0.1:5173"
+--------------------------------------------------------------------------------
+30 |     password_blocklist: Path | None = Path(__file__).parent / "auth_data" / "common-passwords.txt"
+   -     password_blocklist_sha256: str = "1472aafa2561df5e3293aee252aee3ca660c12b399a283cf808bb01b39be388b"
+31 +     password_blocklist_sha256: str = (
+32 +         "1472aafa2561df5e3293aee252aee3ca660c12b399a283cf808bb01b39be388b"
+33 +     )
+34 |
+--------------------------------------------------------------------------------
+40 |     def mail_ready(self):
+   -         return all((self.smtp_host, self.smtp_user, self.smtp_password.get_secret_value(), self.smtp_from))
+41 +         return all(
+42 +             (self.smtp_host, self.smtp_user, self.smtp_password.get_secret_value(), self.smtp_from)
+43 +         )
+44 |
+45 |     @model_validator(mode="after")
+46 |     def boundary(self):
+47 |         parsed = urlsplit(self.origin)
+   -         if (parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username
+   -                 or parsed.password or parsed.path not in {"", "/"} or parsed.query or parsed.fragment):
+48 +         if (
+49 +             parsed.scheme not in {"http", "https"}
+50 +             or not parsed.hostname
+51 +             or parsed.username
+52 +             or parsed.password
+53 +             or parsed.path not in {"", "/"}
+54 +             or parsed.query
+55 +             or parsed.fragment
+56 +         ):
+57 |             raise ValueError("A fixed trusted site origin is required")
+--------------------------------------------------------------------------------
+68 |         port = parsed.port
+   -         suffix = f":{port}" if port and (parsed.scheme, port) not in {("http", 80), ("https", 443)} else ""
+69 +         suffix = (
+70 +             f":{port}"
+71 +             if port and (parsed.scheme, port) not in {("http", 80), ("https", 443)}
+72 +             else ""
+73 +         )
+74 |         self.origin = f"{parsed.scheme}://{host}{suffix}"
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\auth_mail.py:29:30
+    |
+28  |         with self.store.connect() as db:
+    -             row = db.execute((
+    -                 "SELECT * FROM public.auth_outbox WHERE ((state IN ('pending','failed') AND "
+    -                 "available_at<=now()) OR (state='sending' AND lease_until<now())) AND "
+    -                 'attempts<5 ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1'
+    -             )).fetchone()
+29  +             row = db.execute(
+30  +                 (
+31  +                     "SELECT * FROM public.auth_outbox WHERE ((state IN ('pending','failed') AND "
+32  +                     "available_at<=now()) OR (state='sending' AND lease_until<now())) AND "
+33  +                     "attempts<5 ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1"
+34  +                 )
+35  +             ).fetchone()
+36  |             if row:
+    -                 db.execute((
+    -                     'UPDATE public.auth_outbox SET '
+    -                     "state='sending',attempts=attempts+1,lease_until=now()+interval '2 minutes' "
+    -                     'WHERE id=%s'
+    -                 ), (row["id"],))
+37  +                 db.execute(
+38  +                     (
+39  +                         "UPDATE public.auth_outbox SET "
+40  +                         "state='sending',attempts=attempts+1,lease_until=now()+interval '2 minutes' "
+41  +                         "WHERE id=%s"
+42  +                     ),
+43  +                     (row["id"],),
+44  +                 )
+45  |             return row
+--------------------------------------------------------------------------------
+49  |         with self.store.connect() as db:
+    -             user = db.execute("SELECT active,disabled FROM public.auth_users WHERE id=%s", (row["user_id"],)).fetchone()
+50  +             user = db.execute(
+51  +                 "SELECT active,disabled FROM public.auth_users WHERE id=%s", (row["user_id"],)
+52  +             ).fetchone()
+53  |             valid = user and not user["disabled"]
+54  |             if payload["purpose"] != "security":
+55  |                 token = parse_qs(urlsplit(payload["url"]).fragment).get("token", [""])[0]
+    -                 valid = valid and db.execute((
+    -                     'SELECT 1 FROM public.auth_tokens WHERE hash=%s AND purpose=%s AND '
+    -                     'consumed_at IS NULL AND expires_at>now()'
+    -                 ), (digest(token), payload["purpose"])).fetchone()
+56  +                 valid = (
+57  +                     valid
+58  +                     and db.execute(
+59  +                         (
+60  +                             "SELECT 1 FROM public.auth_tokens WHERE hash=%s AND purpose=%s AND "
+61  +                             "consumed_at IS NULL AND expires_at>now()"
+62  +                         ),
+63  +                         (digest(token), payload["purpose"]),
+64  +                     ).fetchone()
+65  +                 )
+66  |             if not valid:
+    -                 db.execute((
+    -                     'UPDATE public.auth_outbox SET '
+    -                     "state='cancelled',payload='',error_class='expired_or_replaced' WHERE id=%s"
+    -                 ), (row["id"],))
+67  +                 db.execute(
+68  +                     (
+69  +                         "UPDATE public.auth_outbox SET "
+70  +                         "state='cancelled',payload='',error_class='expired_or_replaced' WHERE id=%s"
+71  +                     ),
+72  +                     (row["id"],),
+73  +                 )
+74  |                 return
+--------------------------------------------------------------------------------
+78  |         message["Message-ID"] = f"<{row['id']}@astroagent.invalid>"
+    -         message["Subject"] = "AstroAgent 安全通知" if payload["purpose"] == "security" else "AstroAgent 邮箱验证" if payload["purpose"] == "activate" else "AstroAgent 重置密码"
+    -         message.set_content("AstroAgent\n\n" + (payload["message"] if payload["purpose"] == "security" else f"请打开以下链接并主动确认。有效期{payload['minutes']}分钟。\n\n{payload['url']}\n\n如果不是您发起的操作，请忽略。"))
+79  +         message["Subject"] = (
+80  +             "AstroAgent 安全通知"
+81  +             if payload["purpose"] == "security"
+82  +             else "AstroAgent 邮箱验证"
+83  +             if payload["purpose"] == "activate"
+84  +             else "AstroAgent 重置密码"
+85  +         )
+86  +         message.set_content(
+87  +             "AstroAgent\n\n"
+88  +             + (
+89  +                 payload["message"]
+90  +                 if payload["purpose"] == "security"
+91  +                 else f"请打开以下链接并主动确认。有效期{payload['minutes']}分钟。\n\n{payload['url']}\n\n如果不是您发起的操作，请忽略。"
+92  +             )
+93  +         )
+94  |         context = ssl.create_default_context()
+95  |         factory = smtplib.SMTP_SSL if self.settings.smtp_mode == "tls" else smtplib.SMTP
+96  |         kwargs = {"context": context} if self.settings.smtp_mode == "tls" else {}
+    -         with factory(self.settings.smtp_host, self.settings.smtp_port, timeout=10, **kwargs) as smtp:
+97  +         with factory(
+98  +             self.settings.smtp_host, self.settings.smtp_port, timeout=10, **kwargs
+99  +         ) as smtp:
+100 |             if self.settings.smtp_mode == "starttls":
+    -                 smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
+101 +                 smtp.ehlo()
+102 +                 smtp.starttls(context=context)
+103 +                 smtp.ehlo()
+104 |             smtp.login(self.settings.smtp_user, self.settings.smtp_password.get_secret_value())
+105 |             smtp.send_message(message)
+106 |         with self.store.connect() as db:
+    -             db.execute((
+    -                 "UPDATE public.auth_outbox SET state='submitted',submitted_at=now(),payload='"
+    -                 "',lease_until=NULL,error_class=NULL WHERE id=%s"
+    -             ), (row["id"],))
+107 +             db.execute(
+108 +                 (
+109 +                     "UPDATE public.auth_outbox SET state='submitted',submitted_at=now(),payload='"
+110 +                     "',lease_until=NULL,error_class=NULL WHERE id=%s"
+111 +                 ),
+112 +                 (row["id"],),
+113 +             )
+114 |
+--------------------------------------------------------------------------------
+124 |                 with self.store.connect() as db:
+    -                     db.execute("DELETE FROM public.auth_tokens WHERE expires_at<now()-interval '1 day'")
+    -                     db.execute("DELETE FROM public.auth_sessions WHERE expires_at<now()-interval '1 day' OR (revoked AND last_seen<now()-interval '1 day')")
+    -                     db.execute("DELETE FROM public.auth_audit WHERE created_at<now()-(%s*interval '1 day')", (self.settings.audit_days,))
+    -                     db.execute((
+    -                         "UPDATE public.auth_outbox SET payload='' WHERE created_at<now()-interval '1 "
+    -                         "day'"
+    -                     ))
+    -                     db.execute((
+    -                         'UPDATE public.auth_outbox SET '
+    -                         "state='failed',error_class='retry_exhausted',lease_until=NULL WHERE "
+    -                         "state='sending' AND lease_until<now() AND attempts>=5"
+    -                     ))
+125 +                     db.execute(
+126 +                         "DELETE FROM public.auth_tokens WHERE expires_at<now()-interval '1 day'"
+127 +                     )
+128 +                     db.execute(
+129 +                         "DELETE FROM public.auth_sessions WHERE expires_at<now()-interval '1 day' OR (revoked AND last_seen<now()-interval '1 day')"
+130 +                     )
+131 +                     db.execute(
+132 +                         "DELETE FROM public.auth_audit WHERE created_at<now()-(%s*interval '1 day')",
+133 +                         (self.settings.audit_days,),
+134 +                     )
+135 +                     db.execute(
+136 +                         (
+137 +                             "UPDATE public.auth_outbox SET payload='' WHERE created_at<now()-interval '1 "
+138 +                             "day'"
+139 +                         )
+140 +                     )
+141 +                     db.execute(
+142 +                         (
+143 +                             "UPDATE public.auth_outbox SET "
+144 +                             "state='failed',error_class='retry_exhausted',lease_until=NULL WHERE "
+145 +                             "state='sending' AND lease_until<now() AND attempts>=5"
+146 +                         )
+147 +                     )
+148 |             except Exception as exc:
+149 |                 # Never log SMTP responses, addresses, payloads, URLs or credentials.
+150 |                 if row:
+    -                     category = "smtp_authentication" if isinstance(exc, smtplib.SMTPAuthenticationError) else "smtp_rejected" if isinstance(exc, smtplib.SMTPResponseException) else "temporary_failure"
+151 +                     category = (
+152 +                         "smtp_authentication"
+153 +                         if isinstance(exc, smtplib.SMTPAuthenticationError)
+154 +                         else "smtp_rejected"
+155 +                         if isinstance(exc, smtplib.SMTPResponseException)
+156 +                         else "temporary_failure"
+157 +                     )
+158 |                     try:
+159 |                         with self.store.connect() as db:
+    -                             db.execute((
+    -                                 'UPDATE public.auth_outbox SET '
+    -                                 "state='failed',error_class=%s,lease_until=NULL,available_at=now()+interval "
+    -                                 "'5 minutes' WHERE id=%s"
+    -                             ), (category, row["id"]))
+160 +                             db.execute(
+161 +                                 (
+162 +                                     "UPDATE public.auth_outbox SET "
+163 +                                     "state='failed',error_class=%s,lease_until=NULL,available_at=now()+interval "
+164 +                                     "'5 minutes' WHERE id=%s"
+165 +                                 ),
+166 +                                 (category, row["id"]),
+167 +                             )
+168 |                     except Exception:
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\auth_security.py:47:21
+    |
+46  | def keyed(settings, purpose, value):
+    -     return hmac.new(settings.secret.get_secret_value().encode(), f"{purpose}:{value}".encode(), hashlib.sha256).hexdigest()
+47  +     return hmac.new(
+48  +         settings.secret.get_secret_value().encode(), f"{purpose}:{value}".encode(), hashlib.sha256
+49  +     ).hexdigest()
+50  |
+--------------------------------------------------------------------------------
+57  |             raise ValueError("Invalid password blocklist")
+    -         values = frozenset(unicodedata.normalize("NFC", line).casefold() for line in raw.decode().splitlines())
+58  +         values = frozenset(
+59  +             unicodedata.normalize("NFC", line).casefold() for line in raw.decode().splitlines()
+60  +         )
+61  |         if len(values) < 9000:
+62  |             raise ValueError("Password blocklist is incomplete")
+63  |         return values
+64  |     except Exception as exc:
+    -         raise ServiceError(503, "password_policy_unavailable", "密码安全词表未配置，请联系管理员。") from exc
+65  +         raise ServiceError(
+66  +             503, "password_policy_unavailable", "密码安全词表未配置，请联系管理员。"
+67  +         ) from exc
+68  |
+--------------------------------------------------------------------------------
+72  |     if not 15 <= len(password) <= 128 or len(password.encode()) > 1024:
+    -         raise ServiceError(422, "password_policy", "密码需要15至128个字符，可使用空格和密码管理器。")
+73  +         raise ServiceError(
+74  +             422, "password_policy", "密码需要15至128个字符，可使用空格和密码管理器。"
+75  +         )
+76  |     if not settings.password_blocklist or not settings.password_blocklist_sha256:
+77  |         raise ServiceError(503, "password_policy_unavailable", "密码安全词表尚未配置。")
+    -     if password.casefold() in blocklist(settings.password_blocklist, settings.password_blocklist_sha256) or len(set(password)) == 1:
+78  +     if (
+79  +         password.casefold()
+80  +         in blocklist(settings.password_blocklist, settings.password_blocklist_sha256)
+81  +         or len(set(password)) == 1
+82  +     ):
+83  |         raise ServiceError(422, "password_common", "该密码过于常见，请换用独立的长密码。")
+--------------------------------------------------------------------------------
+101 |         position = mac[-1] & 15
+    -         value = (struct.unpack(">I", mac[position:position + 4])[0] & 0x7fffffff) % 1000000
+102 +         value = (struct.unpack(">I", mac[position : position + 4])[0] & 0x7FFFFFFF) % 1000000
+103 |         if step > last_step and hmac.compare_digest(f"{value:06d}", code):
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\auth_store.py:17:9
+    |
+16  |     (
+    -         'CREATE TABLE public.auth_users (id text PRIMARY KEY, email_key text UNIQUE '
+    -         'NOT NULL, email_display text NOT NULL, password_hash text, active boolean '
+    -         'NOT NULL DEFAULT false, disabled boolean NOT NULL DEFAULT false, admin '
+17  +         "CREATE TABLE public.auth_users (id text PRIMARY KEY, email_key text UNIQUE "
+18  +         "NOT NULL, email_display text NOT NULL, password_hash text, active boolean "
+19  +         "NOT NULL DEFAULT false, disabled boolean NOT NULL DEFAULT false, admin "
+20  |         "boolean NOT NULL DEFAULT false, namespace text UNIQUE NOT NULL "
+21  |         "CHECK(namespace ~ '^aa_[0-9a-f]{32}$'), generation "
+    -         'integer NOT NULL DEFAULT 0, created_at timestamptz NOT NULL DEFAULT now(), '
+    -         'last_login timestamptz, totp_secret text, totp_pending text, '
+    -         'totp_pending_until timestamptz, totp_step bigint NOT NULL DEFAULT -1)'
+22  +         "integer NOT NULL DEFAULT 0, created_at timestamptz NOT NULL DEFAULT now(), "
+23  +         "last_login timestamptz, totp_secret text, totp_pending text, "
+24  +         "totp_pending_until timestamptz, totp_step bigint NOT NULL DEFAULT -1)"
+25  |     ),
+26  |     (
+    -         'CREATE TABLE public.auth_tokens (hash text PRIMARY KEY, user_id text NOT '
+    -         'NULL REFERENCES public.auth_users(id), purpose text NOT NULL, expires_at '
+    -         'timestamptz NOT NULL, consumed_at timestamptz)'
+27  +         "CREATE TABLE public.auth_tokens (hash text PRIMARY KEY, user_id text NOT "
+28  +         "NULL REFERENCES public.auth_users(id), purpose text NOT NULL, expires_at "
+29  +         "timestamptz NOT NULL, consumed_at timestamptz)"
+30  |     ),
+31  |     (
+    -         'CREATE TABLE public.auth_sessions (hash text PRIMARY KEY, user_id text NOT '
+    -         'NULL REFERENCES public.auth_users(id), created_at timestamptz NOT NULL '
+    -         'DEFAULT now(), last_seen timestamptz NOT NULL DEFAULT now(), expires_at '
+    -         'timestamptz NOT NULL, revoked boolean NOT NULL DEFAULT false, mfa_at '
+    -         'timestamptz, reauth_at timestamptz)'
+32  +         "CREATE TABLE public.auth_sessions (hash text PRIMARY KEY, user_id text NOT "
+33  +         "NULL REFERENCES public.auth_users(id), created_at timestamptz NOT NULL "
+34  +         "DEFAULT now(), last_seen timestamptz NOT NULL DEFAULT now(), expires_at "
+35  +         "timestamptz NOT NULL, revoked boolean NOT NULL DEFAULT false, mfa_at "
+36  +         "timestamptz, reauth_at timestamptz)"
+37  |     ),
+38  |     "CREATE INDEX auth_session_user ON public.auth_sessions(user_id)",
+39  |     (
+    -         'CREATE TABLE public.auth_recovery (hash text PRIMARY KEY, user_id text NOT '
+    -         'NULL REFERENCES public.auth_users(id), consumed_at timestamptz)'
+40  +         "CREATE TABLE public.auth_recovery (hash text PRIMARY KEY, user_id text NOT "
+41  +         "NULL REFERENCES public.auth_users(id), consumed_at timestamptz)"
+42  |     ),
+43  |     (
+    -         'CREATE TABLE public.auth_outbox (id text PRIMARY KEY, user_id text NOT NULL '
+    -         'REFERENCES public.auth_users(id), request_id text UNIQUE NOT NULL, purpose '
+44  +         "CREATE TABLE public.auth_outbox (id text PRIMARY KEY, user_id text NOT NULL "
+45  +         "REFERENCES public.auth_users(id), request_id text UNIQUE NOT NULL, purpose "
+46  |         "text NOT NULL, payload text NOT NULL, state text NOT NULL DEFAULT 'pending',"
+    -         ' attempts integer NOT NULL DEFAULT 0, available_at timestamptz NOT NULL '
+    -         'DEFAULT now(), lease_until timestamptz, created_at timestamptz NOT NULL '
+    -         'DEFAULT now(), submitted_at timestamptz, error_class text)'
+47  +         " attempts integer NOT NULL DEFAULT 0, available_at timestamptz NOT NULL "
+48  +         "DEFAULT now(), lease_until timestamptz, created_at timestamptz NOT NULL "
+49  +         "DEFAULT now(), submitted_at timestamptz, error_class text)"
+50  |     ),
+51  |     (
+    -         'CREATE TABLE public.auth_rates (key text NOT NULL, bucket bigint NOT NULL, '
+    -         'hits integer NOT NULL, expires_at timestamptz NOT NULL, PRIMARY '
+    -         'KEY(key,bucket))'
+52  +         "CREATE TABLE public.auth_rates (key text NOT NULL, bucket bigint NOT NULL, "
+53  +         "hits integer NOT NULL, expires_at timestamptz NOT NULL, PRIMARY "
+54  +         "KEY(key,bucket))"
+55  |     ),
+56  |     (
+    -         'CREATE TABLE public.auth_attempts (key text PRIMARY KEY, failures integer '
+    -         'NOT NULL, blocked_until timestamptz NOT NULL, last_failure timestamptz NOT '
+    -         'NULL)'
+57  +         "CREATE TABLE public.auth_attempts (key text PRIMARY KEY, failures integer "
+58  +         "NOT NULL, blocked_until timestamptz NOT NULL, last_failure timestamptz NOT "
+59  +         "NULL)"
+60  |     ),
+61  |     (
+    -         'CREATE TABLE public.auth_audit (id bigint GENERATED ALWAYS AS IDENTITY '
+    -         'PRIMARY KEY, actor text, target text, event text NOT NULL, result text NOT '
+    -         'NULL, source text, reason text, created_at timestamptz NOT NULL DEFAULT '
+    -         'now())'
+62  +         "CREATE TABLE public.auth_audit (id bigint GENERATED ALWAYS AS IDENTITY "
+63  +         "PRIMARY KEY, actor text, target text, event text NOT NULL, result text NOT "
+64  +         "NULL, source text, reason text, created_at timestamptz NOT NULL DEFAULT "
+65  +         "now())"
+66  |     ),
+--------------------------------------------------------------------------------
+77  |         import psycopg
+78  +
+79  |         try:
+    -             db = psycopg.connect(self.local.database_url.get_secret_value(), row_factory=dict_row,
+    -                                  connect_timeout=5, options="-c search_path=pg_catalog -c statement_timeout=5000 -c lock_timeout=2000")
+80  +             db = psycopg.connect(
+81  +                 self.local.database_url.get_secret_value(),
+82  +                 row_factory=dict_row,
+83  +                 connect_timeout=5,
+84  +                 options="-c search_path=pg_catalog -c statement_timeout=5000 -c lock_timeout=2000",
+85  +             )
+86  |         except Exception as exc:
+    -             raise ServiceError(503, "identity_unavailable", "身份服务暂不可用，请稍后重试。") from exc
+87  +             raise ServiceError(
+88  +                 503, "identity_unavailable", "身份服务暂不可用，请稍后重试。"
+89  +             ) from exc
+90  |         try:
+--------------------------------------------------------------------------------
+100 |                 raise ServiceError(503, "identity_not_initialized", "身份服务等待本机初始化。")
+    -             key = db.execute("SELECT value FROM public.auth_meta WHERE key='key_identity'").fetchone()
+101 +             key = db.execute(
+102 +                 "SELECT value FROM public.auth_meta WHERE key='key_identity'"
+103 +             ).fetchone()
+104 |             if not key or key["value"] != keyed(self.settings, "key", "identity-v1"):
+    -                 raise ServiceError(503, "identity_key_mismatch", "身份服务密钥不匹配，请恢复原密钥。")
+105 +                 raise ServiceError(
+106 +                     503, "identity_key_mismatch", "身份服务密钥不匹配，请恢复原密钥。"
+107 +                 )
+108 |
+--------------------------------------------------------------------------------
+113 |                 raise ServiceError(409, "identity_exists", "身份表已存在，不会覆盖。")
+    -             extensions = db.execute((
+    -                 'SELECT e.extname,n.nspname FROM pg_extension e JOIN pg_namespace n ON '
+    -                 "n.oid=e.extnamespace WHERE e.extname IN ('vector','pg_trgm')"
+    -             )).fetchall()
+    -             if {(v["extname"], v["nspname"]) for v in extensions} != {("vector", "public"), ("pg_trgm", "public")}:
+    -                 raise ServiceError(503, "identity_extensions", "请先由本机运维在public安装vector及pg_trgm扩展。")
+114 +             extensions = db.execute(
+115 +                 (
+116 +                     "SELECT e.extname,n.nspname FROM pg_extension e JOIN pg_namespace n ON "
+117 +                     "n.oid=e.extnamespace WHERE e.extname IN ('vector','pg_trgm')"
+118 +                 )
+119 +             ).fetchall()
+120 +             if {(v["extname"], v["nspname"]) for v in extensions} != {
+121 +                 ("vector", "public"),
+122 +                 ("pg_trgm", "public"),
+123 +             }:
+124 +                 raise ServiceError(
+125 +                     503, "identity_extensions", "请先由本机运维在public安装vector及pg_trgm扩展。"
+126 +                 )
+127 |             for statement in DDL:
+128 |                 db.execute(statement)
+    -             db.execute("INSERT INTO public.auth_meta VALUES ('version','1'),('key_identity',%s)", (keyed(self.settings, "key", "identity-v1"),))
+129 +             db.execute(
+130 +                 "INSERT INTO public.auth_meta VALUES ('version','1'),('key_identity',%s)",
+131 +                 (keyed(self.settings, "key", "identity-v1"),),
+132 +             )
+133 |             self.audit(db, None, "identity_initialized", "ok")
+134 |
+135 |     def audit(self, db, actor, event, result, target=None, source=None, reason=None):
+    -         db.execute((
+    -             'INSERT INTO public.auth_audit(actor,target,event,result,source,reason) '
+    -             'VALUES (%s,%s,%s,%s,%s,%s)'
+    -         ), (actor, target, event, result, source, reason))
+136 +         db.execute(
+137 +             (
+138 +                 "INSERT INTO public.auth_audit(actor,target,event,result,source,reason) "
+139 +                 "VALUES (%s,%s,%s,%s,%s,%s)"
+140 +             ),
+141 +             (actor, target, event, result, source, reason),
+142 +         )
+143 |
+144 |     def rate(self, action, source, account="", limit=10, seconds=600):
+145 |         import time
+146 +
+147 |         bucket = int(time.time()) // seconds
+148 |         exceeded = False
+149 |         with self.connect() as db:
+    -             for value in {"source:" + source, "account:" + account if account else "source:" + source}:
+150 +             for value in {
+151 +                 "source:" + source,
+152 +                 "account:" + account if account else "source:" + source,
+153 +             }:
+154 |                 key = keyed(self.settings, "rate:" + action, value)
+    -                 row = db.execute((
+    -                     'INSERT INTO public.auth_rates VALUES (%s,%s,1,%s) ON CONFLICT(key,bucket) DO'
+    -                     ' UPDATE SET hits=auth_rates.hits+1 RETURNING hits'
+    -                 ), (key, bucket, datetime.now(UTC) + timedelta(seconds=seconds * 2))).fetchone()
+155 +                 row = db.execute(
+156 +                     (
+157 +                         "INSERT INTO public.auth_rates VALUES (%s,%s,1,%s) ON CONFLICT(key,bucket) DO"
+158 +                         " UPDATE SET hits=auth_rates.hits+1 RETURNING hits"
+159 +                     ),
+160 +                     (key, bucket, datetime.now(UTC) + timedelta(seconds=seconds * 2)),
+161 +                 ).fetchone()
+162 |                 exceeded |= row["hits"] > limit
+--------------------------------------------------------------------------------
+167 |     def token(self, db, user, purpose, request_id):
+    -         if db.execute("SELECT 1 FROM public.auth_outbox WHERE request_id=%s", (request_id,)).fetchone():
+168 +         if db.execute(
+169 +             "SELECT 1 FROM public.auth_outbox WHERE request_id=%s", (request_id,)
+170 +         ).fetchone():
+171 |             return
+    -         db.execute((
+    -             'UPDATE public.auth_tokens SET consumed_at=now() WHERE user_id=%s AND purpose'
+    -             ' IN (%s,%s) AND consumed_at IS NULL'
+    -         ), (user["id"], purpose, "activate_setup" if purpose == "activate" else purpose))
+    -         db.execute((
+    -             "UPDATE public.auth_outbox SET state='cancelled' WHERE user_id=%s AND "
+    -             "purpose=%s AND state IN ('pending','failed')"
+    -         ), (user["id"], purpose))
+172 +         db.execute(
+173 +             (
+174 +                 "UPDATE public.auth_tokens SET consumed_at=now() WHERE user_id=%s AND purpose"
+175 +                 " IN (%s,%s) AND consumed_at IS NULL"
+176 +             ),
+177 +             (user["id"], purpose, "activate_setup" if purpose == "activate" else purpose),
+178 +         )
+179 +         db.execute(
+180 +             (
+181 +                 "UPDATE public.auth_outbox SET state='cancelled' WHERE user_id=%s AND "
+182 +                 "purpose=%s AND state IN ('pending','failed')"
+183 +             ),
+184 +             (user["id"], purpose),
+185 +         )
+186 |         token = opaque()
+    -         db.execute("INSERT INTO public.auth_tokens VALUES (%s,%s,%s,%s,NULL)", (digest(token), user["id"], purpose, datetime.now(UTC) + timedelta(seconds=self.settings.token_seconds)))
+187 +         db.execute(
+188 +             "INSERT INTO public.auth_tokens VALUES (%s,%s,%s,%s,NULL)",
+189 +             (
+190 +                 digest(token),
+191 +                 user["id"],
+192 +                 purpose,
+193 +                 datetime.now(UTC) + timedelta(seconds=self.settings.token_seconds),
+194 +             ),
+195 +         )
+196 |         page = "activate" if purpose == "activate" else "reset-password"
+    -         payload = {"email": user["email_key"], "purpose": purpose, "url": f"{self.settings.origin}/{page}#token={token}", "minutes": self.settings.token_seconds // 60}
+    -         db.execute((
+    -             'INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES'
+    -             ' (%s,%s,%s,%s,%s)'
+    -         ), (str(uuid4()), user["id"], request_id, purpose, self.crypto.encrypt(json.dumps(payload).encode()).decode()))
+197 +         payload = {
+198 +             "email": user["email_key"],
+199 +             "purpose": purpose,
+200 +             "url": f"{self.settings.origin}/{page}#token={token}",
+201 +             "minutes": self.settings.token_seconds // 60,
+202 +         }
+203 +         db.execute(
+204 +             (
+205 +                 "INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES"
+206 +                 " (%s,%s,%s,%s,%s)"
+207 +             ),
+208 +             (
+209 +                 str(uuid4()),
+210 +                 user["id"],
+211 +                 request_id,
+212 +                 purpose,
+213 +                 self.crypto.encrypt(json.dumps(payload).encode()).decode(),
+214 +             ),
+215 +         )
+216 |
+--------------------------------------------------------------------------------
+222 |                 if failed:
+    -                     row = db.execute((
+    -                         "INSERT INTO public.auth_attempts VALUES (%s,1,now()+interval '2 "
+    -                         "seconds',now()) ON CONFLICT(key) DO UPDATE SET failures=CASE WHEN "
+    -                         "auth_attempts.last_failure<now()-interval '1 hour' THEN 1 ELSE "
+    -                         'auth_attempts.failures+1 END, blocked_until=now()+least(900,power(2,least(10'
+    -                         ",auth_attempts.failures+1)))*interval '1 second',last_failure=now() "
+    -                         'RETURNING failures'
+    -                     ), (key,)).fetchone()
+223 +                     row = db.execute(
+224 +                         (
+225 +                             "INSERT INTO public.auth_attempts VALUES (%s,1,now()+interval '2 "
+226 +                             "seconds',now()) ON CONFLICT(key) DO UPDATE SET failures=CASE WHEN "
+227 +                             "auth_attempts.last_failure<now()-interval '1 hour' THEN 1 ELSE "
+228 +                             "auth_attempts.failures+1 END, blocked_until=now()+least(900,power(2,least(10"
+229 +                             ",auth_attempts.failures+1)))*interval '1 second',last_failure=now() "
+230 +                             "RETURNING failures"
+231 +                         ),
+232 +                         (key,),
+233 +                     ).fetchone()
+234 |                     if row["failures"] in (5, 10, 20):
+    -                         self.audit(db, None, "repeated_login_failures", "throttled", source=key[:24])
+235 +                         self.audit(
+236 +                             db, None, "repeated_login_failures", "throttled", source=key[:24]
+237 +                         )
+238 |                 else:
+    -                     blocked |= bool(db.execute("SELECT 1 FROM public.auth_attempts WHERE key=%s AND blocked_until>now()", (key,)).fetchone())
+239 +                     blocked |= bool(
+240 +                         db.execute(
+241 +                             "SELECT 1 FROM public.auth_attempts WHERE key=%s AND blocked_until>now()",
+242 +                             (key,),
+243 +                         ).fetchone()
+244 +                     )
+245 |             db.execute("DELETE FROM public.auth_attempts WHERE last_failure<now()-interval '1 day'")
+--------------------------------------------------------------------------------
+250 |         with self.connect() as db:
+    -             db.execute("DELETE FROM public.auth_attempts WHERE key=%s", (keyed(self.settings, "login-backoff", "account:" + account),))
+251 +             db.execute(
+252 +                 "DELETE FROM public.auth_attempts WHERE key=%s",
+253 +                 (keyed(self.settings, "login-backoff", "account:" + account),),
+254 +             )
+255 |
+--------------------------------------------------------------------------------
+259 |         with self.connect() as db:
+    -             row = db.execute((
+    -                 'SELECT u.*,s.hash AS session_hash,s.mfa_at,s.reauth_at,s.created_at AS '
+    -                 'session_created FROM public.auth_sessions s JOIN public.auth_users u ON '
+    -                 'u.id=s.user_id WHERE s.hash=%s AND NOT s.revoked AND s.expires_at>now() AND '
+    -                 "s.last_seen>now()-(%s * interval '1 second') AND u.active AND NOT u.disabled"
+    -             ), (digest(token), self.settings.idle_seconds)).fetchone()
+260 +             row = db.execute(
+261 +                 (
+262 +                     "SELECT u.*,s.hash AS session_hash,s.mfa_at,s.reauth_at,s.created_at AS "
+263 +                     "session_created FROM public.auth_sessions s JOIN public.auth_users u ON "
+264 +                     "u.id=s.user_id WHERE s.hash=%s AND NOT s.revoked AND s.expires_at>now() AND "
+265 +                     "s.last_seen>now()-(%s * interval '1 second') AND u.active AND NOT u.disabled"
+266 +                 ),
+267 +                 (digest(token), self.settings.idle_seconds),
+268 +             ).fetchone()
+269 |             if row and touch:
+    -                 db.execute("UPDATE public.auth_sessions SET last_seen=now() WHERE hash=%s", (row["session_hash"],))
+270 +                 db.execute(
+271 +                     "UPDATE public.auth_sessions SET last_seen=now() WHERE hash=%s",
+272 +                     (row["session_hash"],),
+273 +                 )
+274 |             return row
+--------------------------------------------------------------------------------
+280 |         identifier = str(uuid4())
+    -         db.execute((
+    -             'INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES'
+    -             " (%s,%s,%s,'security',%s)"
+    -         ), (identifier, user["id"], identifier, self.crypto.encrypt(json.dumps(payload).encode()).decode()))
+281 +         db.execute(
+282 +             (
+283 +                 "INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES"
+284 +                 " (%s,%s,%s,'security',%s)"
+285 +             ),
+286 +             (
+287 +                 identifier,
+288 +                 user["id"],
+289 +                 identifier,
+290 +                 self.crypto.encrypt(json.dumps(payload).encode()).decode(),
+291 +             ),
+292 +         )
+293 |
+294 |     def active(self, user_id, generation):
+295 |         with self.connect() as db:
+    -             return bool(db.execute((
+    -                 'SELECT 1 FROM public.auth_users WHERE id=%s AND generation=%s AND active AND'
+    -                 ' NOT disabled'
+    -             ), (user_id, generation)).fetchone())
+296 +             return bool(
+297 +                 db.execute(
+298 +                     (
+299 +                         "SELECT 1 FROM public.auth_users WHERE id=%s AND generation=%s AND active AND"
+300 +                         " NOT disabled"
+301 +                     ),
+302 +                     (user_id, generation),
+303 +                 ).fetchone()
+304 +             )
+305 |
+306 |     def session(self, db, user_id, mfa=False):
+307 |         token = opaque()
+308 |         now = datetime.now(UTC)
+    -         db.execute((
+    -             'INSERT INTO public.auth_sessions(hash,user_id,expires_at,mfa_at,reauth_at) '
+    -             'VALUES (%s,%s,%s,%s,%s)'
+    -         ), (digest(token), user_id, now + timedelta(seconds=self.settings.absolute_seconds), now if mfa else None, now))
+309 +         db.execute(
+310 +             (
+311 +                 "INSERT INTO public.auth_sessions(hash,user_id,expires_at,mfa_at,reauth_at) "
+312 +                 "VALUES (%s,%s,%s,%s,%s)"
+313 +             ),
+314 +             (
+315 +                 digest(token),
+316 +                 user_id,
+317 +                 now + timedelta(seconds=self.settings.absolute_seconds),
+318 +                 now if mfa else None,
+319 +                 now,
+320 +             ),
+321 +         )
+322 |         return token
+--------------------------------------------------------------------------------
+328 |     def public_user(user):
+    -         return {"id": user["id"], "email": user["email_display"], "admin": user["admin"], "totp_enabled": bool(user["totp_secret"]), "mfa_verified": bool(user.get("mfa_at"))}
+329 +         return {
+330 +             "id": user["id"],
+331 +             "email": user["email_display"],
+332 +             "admin": user["admin"],
+333 +             "totp_enabled": bool(user["totp_secret"]),
+334 +             "mfa_verified": bool(user.get("mfa_at")),
+335 +         }
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\config.py:180:1
+    |
+179 |             from urllib.parse import urlsplit
+180 +
+181 |             try:
+182 |                 site = AuthSettings()
+    -                 trusted = {site.origin} if urlsplit(site.origin).scheme == "https" and not site.local_http else loopback_origins
+183 +                 trusted = (
+184 +                     {site.origin}
+185 +                     if urlsplit(site.origin).scheme == "https" and not site.local_http
+186 +                     else loopback_origins
+187 +                 )
+188 |             except Exception:
+189 |                 trusted = loopback_origins
+    -             if not set(self.allowed_origins) <= trusted or not set(self.allowed_hosts) <= {"127.0.0.1", "localhost", "[::1]"}:
+190 +             if not set(self.allowed_origins) <= trusted or not set(self.allowed_hosts) <= {
+191 +                 "127.0.0.1",
+192 +                 "localhost",
+193 +                 "[::1]",
+194 +             }:
+195 |                 raise ValueError("Container mode only permits the fixed local browser entry")
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\container_entrypoint.py:58:1
+   |
+57 |         from astroagent.auth_config import AuthSettings
+58 +
+59 |         names = {"ASTROAGENT_AUTH_" + name.upper() for name in AuthSettings.model_fields}
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\identity.py:41:46
+    |
+40  |                 raise ServiceError(503, "ownership_invalid", "数据归属配置无效，业务访问已关闭。")
+    -             settings = self.local.model_copy(update={"data_dir": self.local.data_dir / "accounts" / identifier})
+41  +             settings = self.local.model_copy(
+42  +                 update={"data_dir": self.local.data_dir / "accounts" / identifier}
+43  +             )
+44  |             with self.store.connect() as db:
+45  |                 db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+    -                 if not db.execute((
+    -                     'SELECT 1 FROM public.auth_users WHERE id=%s AND active AND NOT disabled AND '
+    -                     'namespace=%s'
+    -                 ), (identifier, namespace)).fetchone():
+46  +                 if not db.execute(
+47  +                     (
+48  +                         "SELECT 1 FROM public.auth_users WHERE id=%s AND active AND NOT disabled AND "
+49  +                         "namespace=%s"
+50  +                     ),
+51  +                     (identifier, namespace),
+52  +                 ).fetchone():
+53  |                     raise ServiceError(403, "account_unavailable", "账号暂不可用。")
+    -                 db.execute(sql.SQL("CREATE SCHEMA IF NOT EXISTS {} AUTHORIZATION CURRENT_USER").format(sql.Identifier(namespace)))
+    -                 db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+54  +                 db.execute(
+55  +                     sql.SQL("CREATE SCHEMA IF NOT EXISTS {} AUTHORIZATION CURRENT_USER").format(
+56  +                         sql.Identifier(namespace)
+57  +                     )
+58  +                 )
+59  +                 db.execute(
+60  +                     sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace))
+61  +                 )
+62  +
+63  |             def authorized():
+64  |                 self.control_guard()
+65  |                 return self.store.active(identifier, user["generation"])
+    -             repository = PostgresRepository(settings, namespace=namespace, identity_guard=authorized)
+66  +
+67  +             repository = PostgresRepository(
+68  +                 settings, namespace=namespace, identity_guard=authorized
+69  +             )
+70  |             try:
+71  |                 repository.initialize(create=True)
+72  |                 from astroagent.services import compose
+73  +
+74  |                 service = compose(repository, settings)
+--------------------------------------------------------------------------------
+110 |         self.guard = self.lock_connection.__enter__()
+    -         if not self.guard.execute("SELECT pg_try_advisory_lock(%s) AS ok", (AUTH_LOCK + 1,)).fetchone()["ok"]:
+111 +         if not self.guard.execute(
+112 +             "SELECT pg_try_advisory_lock(%s) AS ok", (AUTH_LOCK + 1,)
+113 +         ).fetchone()["ok"]:
+114 |             self.lock_connection.__exit__(None, None, None)
+--------------------------------------------------------------------------------
+128 |     def registration_ready(self):
+    -         if not self.settings.mail_ready or not self.settings.password_blocklist or not self.settings.password_blocklist_sha256:
+129 +         if (
+130 +             not self.settings.mail_ready
+131 +             or not self.settings.password_blocklist
+132 +             or not self.settings.password_blocklist_sha256
+133 +         ):
+134 |             return False
+135 |         try:
+    -             return bool(blocklist(self.settings.password_blocklist, self.settings.password_blocklist_sha256))
+136 +             return bool(
+137 +                 blocklist(self.settings.password_blocklist, self.settings.password_blocklist_sha256)
+138 +             )
+139 |         except ServiceError:
+--------------------------------------------------------------------------------
+152 |             except Exception as exc:
+    -                 raise ServiceError(503, "identity_lock_lost", "身份服务锁已失效，请重启服务；业务访问已关闭。") from exc
+153 +                 raise ServiceError(
+154 +                     503, "identity_lock_lost", "身份服务锁已失效，请重启服务；业务访问已关闭。"
+155 +                 ) from exc
+156 |
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\identity_cli.py:19:23
+    |
+18  | BUSINESS_TABLES = set(COLUMNS) | {
+    -     "astroagent_meta", "rag_indexes", "rag_active", "rag_vectors", "rag_previews", "rag_answers", "rag_answer_requests",
+    -     "plot_meta", "plot_datasets", "plot_operations", "plot_outputs", "local_assistant_meta", "local_assistant_tasks",
+19  +     "astroagent_meta",
+20  +     "rag_indexes",
+21  +     "rag_active",
+22  +     "rag_vectors",
+23  +     "rag_previews",
+24  +     "rag_answers",
+25  +     "rag_answer_requests",
+26  +     "plot_meta",
+27  +     "plot_datasets",
+28  +     "plot_operations",
+29  +     "plot_outputs",
+30  +     "local_assistant_meta",
+31  +     "local_assistant_tasks",
+32  | }
+--------------------------------------------------------------------------------
+36  | def inventory(db, namespace):
+    -     tables = {row["tablename"] for row in db.execute("SELECT tablename FROM pg_tables WHERE schemaname=%s", (namespace,)).fetchall()}
+37  +     tables = {
+38  +         row["tablename"]
+39  +         for row in db.execute(
+40  +             "SELECT tablename FROM pg_tables WHERE schemaname=%s", (namespace,)
+41  +         ).fetchall()
+42  +     }
+43  |     if namespace == "public":
+44  |         tables = {name for name in tables if not name.startswith("auth_")}
+45  |     if tables - BUSINESS_TABLES:
+    -         raise ServiceError(409, "migration_unknown_tables", "发现不属于迁移清单的表，请停止并人工核对。")
+46  +         raise ServiceError(
+47  +             409, "migration_unknown_tables", "发现不属于迁移清单的表，请停止并人工核对。"
+48  +         )
+49  |     counts = {}
+50  |     for table in sorted(tables):
+    -         counts[table] = db.execute(sql.SQL("SELECT count(*) AS n FROM {}.{}").format(sql.Identifier(namespace), sql.Identifier(table))).fetchone()["n"]
+51  +         counts[table] = db.execute(
+52  +             sql.SQL("SELECT count(*) AS n FROM {}.{}").format(
+53  +                 sql.Identifier(namespace), sql.Identifier(table)
+54  +             )
+55  +         ).fetchone()["n"]
+56  |     return counts
+57  |
+58  |
+59  | def confirm(user, action):
+    -     print(json.dumps({"action": action, "target_id": user["id"], "target_email": user["email_display"]}, ensure_ascii=False))
+60  +     print(
+61  +         json.dumps(
+62  +             {"action": action, "target_id": user["id"], "target_email": user["email_display"]},
+63  +             ensure_ascii=False,
+64  +         )
+65  +     )
+66  |     if input("请输入完整目标账号ID确认：").strip() != user["id"]:
+--------------------------------------------------------------------------------
+79  |         if name == "recover-admin-totp":
+    -             entry.add_argument("--reason", choices=["lost_authenticator", "administrator_recovery"], required=True)
+80  +             entry.add_argument(
+81  +                 "--reason", choices=["lost_authenticator", "administrator_recovery"], required=True
+82  +             )
+83  |         if name == "claim-legacy":
+--------------------------------------------------------------------------------
+88  |         from cryptography.fernet import Fernet
+89  +
+90  |         print(Fernet.generate_key().decode())
+--------------------------------------------------------------------------------
+105 |         key, _ = email_address(args.email)
+    -         user = db.execute("SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (key,)).fetchone()
+106 +         user = db.execute(
+107 +             "SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (key,)
+108 +         ).fetchone()
+109 |         if not user or not user["active"] or user["disabled"]:
+110 |             raise ValueError("An existing activated, enabled account is required")
+111 |         if args.action == "bootstrap-admin":
+112 |             if db.execute("SELECT 1 FROM public.auth_users WHERE admin LIMIT 1").fetchone():
+    -                 raise ValueError("Administrator already exists; use the authenticated administration flow")
+113 +                 raise ValueError(
+114 +                     "Administrator already exists; use the authenticated administration flow"
+115 +                 )
+116 |             if not args.apply:
+    -                 print(json.dumps({"target_id": user["id"], "email": user["email_display"], "status": "preview_only"}, ensure_ascii=False)); return
+117 +                 print(
+118 +                     json.dumps(
+119 +                         {
+120 +                             "target_id": user["id"],
+121 +                             "email": user["email_display"],
+122 +                             "status": "preview_only",
+123 +                         },
+124 +                         ensure_ascii=False,
+125 +                     )
+126 +                 )
+127 +                 return
+128 |             confirm(user, args.action)
+    -             db.execute("UPDATE public.auth_users SET admin=true,generation=generation+1 WHERE id=%s", (user["id"],))
+129 +             db.execute(
+130 +                 "UPDATE public.auth_users SET admin=true,generation=generation+1 WHERE id=%s",
+131 +                 (user["id"],),
+132 +             )
+133 |             store.revoke(db, user["id"])
+    -             store.audit(db, None, "admin_bootstrapped_offline", "ok", user["id"], reason="local_operator_confirmation")
+134 +             store.audit(
+135 +                 db,
+136 +                 None,
+137 +                 "admin_bootstrapped_offline",
+138 +                 "ok",
+139 +                 user["id"],
+140 +                 reason="local_operator_confirmation",
+141 +             )
+142 |         elif args.action == "recover-admin-totp":
+143 |             if not user["admin"]:
+144 |                 raise ValueError("Only an existing administrator can be recovered")
+145 |             if not args.apply:
+    -                 print(json.dumps({"target_id": user["id"], "status": "preview_only"})); return
+146 +                 print(json.dumps({"target_id": user["id"], "status": "preview_only"}))
+147 +                 return
+148 |             confirm(user, args.action)
+    -             db.execute((
+    -                 'UPDATE public.auth_users SET totp_secret=NULL,totp_pending=NULL,totp_pending'
+    -                 '_until=NULL,totp_step=-1,generation=generation+1 WHERE id=%s'
+    -             ), (user["id"],))
+149 +             db.execute(
+150 +                 (
+151 +                     "UPDATE public.auth_users SET totp_secret=NULL,totp_pending=NULL,totp_pending"
+152 +                     "_until=NULL,totp_step=-1,generation=generation+1 WHERE id=%s"
+153 +                 ),
+154 +                 (user["id"],),
+155 +             )
+156 |             db.execute("DELETE FROM public.auth_recovery WHERE user_id=%s", (user["id"],))
+157 |             store.revoke(db, user["id"])
+    -             store.audit(db, None, "admin_totp_recovered_offline", "ok", user["id"], reason=args.reason)
+158 +             store.audit(
+159 +                 db, None, "admin_totp_recovered_offline", "ok", user["id"], reason=args.reason
+160 +             )
+161 |         else:
+162 |             counts = inventory(db, "public")
+163 |             target_counts = inventory(db, user["namespace"])
+    -             print(json.dumps({"database": db.execute("SELECT current_database() AS name").fetchone()["name"], "target_id": user["id"], "email": user["email_display"], "legacy_counts": counts, "target_counts": target_counts}, ensure_ascii=False))
+164 +             print(
+165 +                 json.dumps(
+166 +                     {
+167 +                         "database": db.execute("SELECT current_database() AS name").fetchone()[
+168 +                             "name"
+169 +                         ],
+170 +                         "target_id": user["id"],
+171 +                         "email": user["email_display"],
+172 +                         "legacy_counts": counts,
+173 +                         "target_counts": target_counts,
+174 +                     },
+175 +                     ensure_ascii=False,
+176 +                 )
+177 +             )
+178 |             if not counts:
+179 |                 raise ValueError("No unclaimed legacy data was found")
+180 |             if any(n for table, n in target_counts.items() if table not in METADATA):
+    -                 raise ValueError("Target already has business data; no merge or overwrite is supported")
+181 +                 raise ValueError(
+182 +                     "Target already has business data; no merge or overwrite is supported"
+183 +                 )
+184 |             if not args.apply:
+--------------------------------------------------------------------------------
+197 |             namespace = "aa_" + uuid4().hex
+    -             db.execute(sql.SQL("CREATE SCHEMA {} AUTHORIZATION CURRENT_USER").format(sql.Identifier(namespace)))
+    -             db.execute(sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace)))
+198 +             db.execute(
+199 +                 sql.SQL("CREATE SCHEMA {} AUTHORIZATION CURRENT_USER").format(
+200 +                     sql.Identifier(namespace)
+201 +                 )
+202 +             )
+203 +             db.execute(
+204 +                 sql.SQL("REVOKE ALL ON SCHEMA {} FROM PUBLIC").format(sql.Identifier(namespace))
+205 +             )
+206 |             for table in counts:
+    -                 db.execute(sql.SQL("ALTER TABLE public.{} SET SCHEMA {}").format(sql.Identifier(table), sql.Identifier(namespace)))
+207 +                 db.execute(
+208 +                     sql.SQL("ALTER TABLE public.{} SET SCHEMA {}").format(
+209 +                         sql.Identifier(table), sql.Identifier(namespace)
+210 +                     )
+211 +                 )
+212 |             if inventory(db, namespace) != counts:
+213 |                 raise ValueError("Transferred row counts do not match; transaction will roll back")
+    -             db.execute("UPDATE public.auth_users SET namespace=%s,generation=generation+1 WHERE id=%s", (namespace, user["id"]))
+    -             db.execute("INSERT INTO public.auth_meta(key,value) VALUES ('legacy_claim',%s)", (json.dumps({"owner": user["id"], "namespace": namespace, "counts": counts, "backup_sha256": checksum}),))
+214 +             db.execute(
+215 +                 "UPDATE public.auth_users SET namespace=%s,generation=generation+1 WHERE id=%s",
+216 +                 (namespace, user["id"]),
+217 +             )
+218 +             db.execute(
+219 +                 "INSERT INTO public.auth_meta(key,value) VALUES ('legacy_claim',%s)",
+220 +                 (
+221 +                     json.dumps(
+222 +                         {
+223 +                             "owner": user["id"],
+224 +                             "namespace": namespace,
+225 +                             "counts": counts,
+226 +                             "backup_sha256": checksum,
+227 +                         }
+228 +                     ),
+229 +                 ),
+230 +             )
+231 |             store.revoke(db, user["id"])
+    -             store.audit(db, None, "legacy_claimed_offline", "ok", user["id"], reason="verified_backup_and_explicit_confirmation")
+232 +             store.audit(
+233 +                 db,
+234 +                 None,
+235 +                 "legacy_claimed_offline",
+236 +                 "ok",
+237 +                 user["id"],
+238 +                 reason="verified_backup_and_explicit_confirmation",
+239 +             )
+240 |         print("操作完成。保留原备份；请重启V1.6并安排隔离环境验收。")
+--------------------------------------------------------------------------------
+247 |         # Never echo parser input, credentials, database URLs or SQL parameters.
+    -         raise SystemExit("本机管理操作未完成；未提交的变更已回滚。请检查配置、服务停机状态与确认参数。") from None
+248 +         raise SystemExit(
+249 +             "本机管理操作未完成；未提交的变更已回滚。请检查配置、服务停机状态与确认参数。"
+250 +         ) from None
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\local_access.py:87:32
+   |
+86 |             if method not in {"GET", "POST", "PATCH", "PUT", "DELETE"} or not requested_headers <= {
+   -                 "content-type", "x-csrf-token"
+87 +                 "content-type",
+88 +                 "x-csrf-token",
+89 |             }:
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\main.py:44:1
+    |
+43  |         from astroagent.identity import IdentityRuntime
+44  +
+45  |         app.state.identity = IdentityRuntime(LocalSettings())
+--------------------------------------------------------------------------------
+58  |
+    - app = FastAPI(title="AstroAgent", version=__version__, lifespan=lifespan, docs_url=None, redoc_url=None)
+59  + app = FastAPI(
+60  +     title="AstroAgent", version=__version__, lifespan=lifespan, docs_url=None, redoc_url=None
+61  + )
+62  | app.include_router(health_router)
+--------------------------------------------------------------------------------
+124 |     if request.url.path.startswith(("/api/v1/auth/", "/api/v1/admin/")):
+    -         return JSONResponse(status_code=422, content={"error": {"code": "invalid_identity_request", "message": "身份请求参数无效，请核对输入。", "retryable": False}})
+125 +         return JSONResponse(
+126 +             status_code=422,
+127 +             content={
+128 +                 "error": {
+129 +                     "code": "invalid_identity_request",
+130 +                     "message": "身份请求参数无效，请核对输入。",
+131 +                     "retryable": False,
+132 +                 }
+133 +             },
+134 +         )
+135 |     if request.url.path.startswith(
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\postgres.py:236:43
+    |
+235 |         try:
+    -             locked = self.session.execute("SELECT pg_try_advisory_lock(%s)", (self.lock_id,)).fetchone()[
+    -                 0
+    -             ]
+236 +             locked = self.session.execute(
+237 +                 "SELECT pg_try_advisory_lock(%s)", (self.lock_id,)
+238 +             ).fetchone()[0]
+239 |             if not locked:
+--------------------------------------------------------------------------------
+244 |             with self.connection() as db:
+    -                 meta = db.execute("SELECT to_regclass(?)", (f"{self.namespace}.astroagent_meta",)).fetchone()[0]
+245 +                 meta = db.execute(
+246 +                     "SELECT to_regclass(?)", (f"{self.namespace}.astroagent_meta",)
+247 +                 ).fetchone()[0]
+248 |                 if not meta:
+    |
+
+17 files would be reformatted, 148 files already formatted

@@ -28,12 +28,11 @@ router = APIRouter(
 
 
 def get_service(request: Request):
-    service = getattr(request.app.state, "conversation_service", None)
-    if service is None:
-        raise ServiceError(
-            503, "conversation_storage_unavailable", "本地会话存储不可用，请检查服务端配置。"
-        )
-    return service
+    principal = getattr(request.state, "principal", None)
+    identity = getattr(request.app.state, "identity", None)
+    if not principal or identity is None:
+        raise ServiceError(401, "login_required", "请先登录。")
+    return identity.tenants.for_user(principal)
 
 
 Service = Annotated[object, Depends(get_service)]

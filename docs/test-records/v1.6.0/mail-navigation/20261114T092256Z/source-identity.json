@@ -1,0 +1,11 @@
+{
+  "base_commit": "ea1eeec029dbf6d0cb35e12ee7526b1d7724b68b",
+  "frontend_server_sha256": "be559c907b10f67a497e75ca0ef633050ba04805400597027fa50d0d2801b649",
+  "deployed_file_matches": true,
+  "source_files": {
+    "frontend/server.mjs": "be559c907b10f67a497e75ca0ef633050ba04805400597027fa50d0d2801b649",
+    "frontend/playwright.mail-navigation.ts": "0d04df09c227311e3c2df7634403a9d24e3c89ac5c200c51fa6f5e44cee5af0c",
+    "frontend/tests/mail-navigation/email-links.spec.ts": "1c10a93eeef65bdfe1abc2223ae2b7eca04c8484002c68d79244d4964ad10697",
+    ".github/workflows/test.yml": "581ad02df982d4dd3b3a7b25b1859af74169c3529f72a3d7e3ae5b02d1cc3901"
+  }
+}

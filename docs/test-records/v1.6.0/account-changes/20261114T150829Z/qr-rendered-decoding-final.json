@@ -1,0 +1,12 @@
+[
+  {
+    "browser_image": "chromium-synthetic-qr.png",
+    "decoded": true,
+    "expected_synthetic_secret": true
+  },
+  {
+    "browser_image": "edge-synthetic-qr.png",
+    "decoded": true,
+    "expected_synthetic_secret": true
+  }
+]

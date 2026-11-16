@@ -93,7 +93,7 @@ test('a rejected send preserves the question and only retries on explicit action
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('已有两轮正在处理')
   await expect(question).toHaveValue('合成Gaia查询，验证重试'); expect(calls).toBe(1)
-  await page.getByRole('button', { name: '重新执行（新一轮）' }).click()
+  await page.getByRole('button', { name: '重新发送', exact: true }).click()
   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible(); expect(calls).toBe(2)
 })
 

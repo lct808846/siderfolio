@@ -1,0 +1,24 @@
+Obtaining file:///D:/project/astroagent
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: astroagent
+  Building editable for astroagent (pyproject.toml): started
+  Building editable for astroagent (pyproject.toml): finished with status 'done'
+  Created wheel for astroagent: filename=astroagent-1.6.0.dev0-0.editable-py3-none-any.whl size=18291 sha256=c141a69777d37c6205d64567e52144f2d62fd3706ae3ce39b59bc39470c3a2d6
+  Stored in directory: C:\Users\lct\AppData\Local\Temp\pip-ephem-wheel-cache-39oa4x_r\wheels\fe\be\63\f37517591837473b857d7355756a86fd042baeb245869ce9ab
+Successfully built astroagent
+Installing collected packages: astroagent
+  Attempting uninstall: astroagent
+    Found existing installation: astroagent 0.8.0
+    Not uninstalling astroagent at e:\miniconda3\envs\agent\lib\site-packages, outside environment D:\astroagent-runtime\venv
+    Can't uninstall 'astroagent'. No files were found to uninstall.
+Successfully installed astroagent-1.6.0.dev0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: D:\astroagent-runtime\venv\Scripts\python.exe -m pip install --upgrade pip

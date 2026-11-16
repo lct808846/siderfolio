@@ -1,0 +1,75 @@
+E501 Line too long (149 > 100)
+   --> tests\test_model_providers.py:287:101
+    |
+286 | …
+287 | …[{"type": "message", "content": [{"type": "output_text", "text": "Synthetic answer"}]}]}),
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+288 | …"type": "text", "text": "Synthetic answer"}]}),
+289 | …ntent": {"parts": [{"thought": True, "text": "Private reasoning"}, {"text": "Synthetic answer"}]}}]}),
+    |
+
+E501 Line too long (106 > 100)
+   --> tests\test_model_providers.py:288:101
+    |
+286 | @pytest.mark.parametrize("protocol,payload", [
+287 |     ("openai_responses", {"status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "Syntheti…
+288 |     ("anthropic", {"stop_reason": "end_turn", "content": [{"type": "text", "text": "Synthetic answer"}]}),
+    |                                                                                                     ^^^^^^
+289 |     ("gemini", {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"thought": True, "text": "Private reasoning"}, {"text"…
+290 | ])
+    |
+
+E501 Line too long (161 > 100)
+   --> tests\test_model_providers.py:289:101
+    |
+287 | …e": "message", "content": [{"type": "output_text", "text": "Synthetic answer"}]}]}),
+288 | …: "text", "text": "Synthetic answer"}]}),
+289 | …: {"parts": [{"thought": True, "text": "Private reasoning"}, {"text": "Synthetic answer"}]}}]}),
+    |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+290 | …
+291 | …protocol, payload):
+    |
+
+E501 Line too long (107 > 100)
+   --> tests\test_model_providers.py:294:101
+    |
+292 |     response = {"value": payload}
+293 |     install_upstream(monkeypatch, lambda request: httpx.Response(200, json=response["value"]))
+294 |     model = chat_model(Settings(_env_file=None, model_protocol=protocol, deepseek_api_key="synthetic-key"))
+    |                                                                                                     ^^^^^^^
+295 |     answer = model.invoke([HumanMessage(content="Synthetic")])
+296 |     assert answer.content == "Synthetic answer"
+    |
+
+E501 Line too long (107 > 100)
+   --> tests\test_model_providers.py:313:101
+    |
+312 |     install_upstream(monkeypatch, handler)
+313 |     model = chat_model(Settings(_env_file=None, model_protocol=protocol, deepseek_api_key="synthetic-key"))
+    |                                                                                                     ^^^^^^^
+314 |     with pytest.raises(ServiceError) as error:
+315 |         model.invoke([HumanMessage(content="Synthetic")])
+    |
+
+E501 Line too long (251 > 100)
+   --> tests\test_model_providers.py:326:101
+    |
+324 | …
+325 | …
+326 | …c-model", "object": "chat.completion", "choices": [{"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": "Synthetic answer"}}]})
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+327 | …
+328 | …
+    |
+
+E501 Line too long (116 > 100)
+   --> tests\test_model_providers.py:329:101
+    |
+328 |     monkeypatch.setattr(httpx.HTTPTransport, "handle_request", handle)
+329 |     model = chat_model(Settings(_env_file=None, deepseek_api_key="synthetic-key", deepseek_model="synthetic-model"))
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+330 |     assert model.invoke([HumanMessage(content="Synthetic")]).content == "Synthetic answer"
+331 |     assert requests[0]["model"] == "synthetic-model"
+    |
+
+Found 7 errors.

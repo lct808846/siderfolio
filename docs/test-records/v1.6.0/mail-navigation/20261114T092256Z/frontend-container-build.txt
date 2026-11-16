@@ -1,0 +1,74 @@
+ Image astroagent-frontend:1.6.0-dev.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.52kB 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 563B 0.0s done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#3 DONE 3.2s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 682B done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#5 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 1.60MB 0.1s done
+#6 DONE 0.1s
+
+#7 [build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#7 CACHED
+
+#8 [build 2/6] WORKDIR /app
+#8 CACHED
+
+#9 [build 4/6] RUN npm ci
+#9 CACHED
+
+#10 [build 5/6] COPY frontend ./
+#10 DONE 0.1s
+
+#11 [build 6/6] RUN npm run build
+#11 0.732 
+#11 0.732 > astroagent-workbench@1.6.0-dev.0 build
+#11 0.732 > vue-tsc --noEmit && vite build
+#11 0.732 
+#11 6.142 vite v7.3.8 building client environment for production...
+#11 6.295 transforming...
+#11 8.978 ✓ 144 modules transformed.
+#11 9.242 rendering chunks...
+#11 9.252 computing gzip size...
+#11 9.267 dist/index.html                   0.44 kB │ gzip:   0.33 kB
+#11 9.267 dist/assets/index-C3XUcSdH.css  140.27 kB │ gzip:  27.14 kB
+#11 9.267 dist/assets/index-DC-_Uqph.js   494.41 kB │ gzip: 174.74 kB
+#11 9.267 ✓ built in 3.10s
+#11 DONE 9.4s
+
+#12 [runtime 3/4] COPY --from=build --chown=node:node /app/dist ./dist
+#12 CACHED
+
+#13 [runtime 4/4] COPY --chown=node:node frontend/server.mjs ./server.mjs
+#13 DONE 0.0s
+
+#14 exporting to image
+#14 exporting layers 0.1s done
+#14 exporting manifest sha256:05524a46db47f63a59305fa0c3ef6d462b82b19385c3c416f1a3bdd5d2bce1d0 0.0s done
+#14 exporting config sha256:7fbe7550d40eaa139a449f6a5d5af938ab9535d4ffad5ba5b3d96726f8fa27a7 0.0s done
+#14 exporting attestation manifest sha256:28adaf77357c639659942ae260dc29bf79b9011b793b2d692e68faf801dcec43 0.0s done
+#14 exporting manifest list sha256:921e5bc189e4c16231a41b8358c31bd8f1ffcdd8331224c507ae7155a0ab71e9 0.0s done
+#14 naming to docker.io/library/astroagent-frontend:1.6.0-dev.0 done
+#14 unpacking to docker.io/library/astroagent-frontend:1.6.0-dev.0 0.0s done
+#14 DONE 0.2s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ Image astroagent-frontend:1.6.0-dev.0 Built 

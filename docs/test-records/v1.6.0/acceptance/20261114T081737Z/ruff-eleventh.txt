@@ -1,0 +1,51 @@
+E501 Line too long (106 > 100)
+   --> tests\test_identity_postgres.py:548:101
+    |
+546 |     client = identity_client
+547 |     account(client, login=False)
+548 |     response = post(client, "auth/login", {"email": "observer@example.org", "password": "wrong password"})
+    |                                                                                                     ^^^^^^
+549 |     assert response.status_code == 401
+550 |     public_error = response.json()
+    |
+
+E501 Line too long (113 > 100)
+   --> tests\test_identity_postgres.py:551:101
+    |
+549 |     assert response.status_code == 401
+550 |     public_error = response.json()
+551 |     assert post(client, "auth/login", {"email": "observer@example.org", "password": PASSWORD}).status_code == 429
+    |                                                                                                     ^^^^^^^^^^^^^
+552 |     with client.store.connect() as db:
+553 |         db.execute("UPDATE public.auth_attempts SET blocked_until=now()-interval '1 second'")
+    |
+
+E501 Line too long (105 > 100)
+   --> tests\test_identity_postgres.py:554:101
+    |
+552 |     with client.store.connect() as db:
+553 |         db.execute("UPDATE public.auth_attempts SET blocked_until=now()-interval '1 second'")
+554 |     response = post(client, "auth/login", {"email": "unknown@example.org", "password": "wrong password"})
+    |                                                                                                     ^^^^^
+555 |     assert response.status_code == 401 and response.json() == public_error
+    |
+
+E501 Line too long (104 > 100)
+   --> tests\test_identity_security.py:141:101
+    |
+139 |         await send({"type": "http.response.body", "body": b"authorized chunk", "more_body": True})
+140 |         revoked = True
+141 |         await send({"type": "http.response.body", "body": b"must not be delivered", "more_body": False})
+    |                                                                                                     ^^^^
+142 |
+143 |     async def send(message):
+    |
+
+E501 Line too long (111 > 100)
+   --> tests\test_identity_security.py:147:101
+    |
+146 |     asyncio.run(IdentityAccess(application)(scope, None, send))
+147 |     assert [m.get("body") for m in messages if m["type"] == "http.response.body"] == [b"authorized chunk", b""]
+    |                                                                                                     ^^^^^^^^^^^
+
+Found 8 errors (3 fixed, 5 remaining).

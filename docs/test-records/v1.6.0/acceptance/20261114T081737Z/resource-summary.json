@@ -1,0 +1,7 @@
+{
+  "idle_container_memory_mib": 468.38,
+  "docker_desktop_wsl_host_overhead_not_included": true,
+  "drive_d_free_gib": 49.61,
+  "models_reused_no_weight_download": true,
+  "qa_stack_removed": true
+}

@@ -13,7 +13,7 @@ const route = useRoute(), router = useRouter()
 const overview = ref<Overview | null>(null), page = ref<LinkPage | null>(null), selected = ref<LinkDetail | null>(null)
 const references = ref<EvidenceRecord[]>([]), evidence = ref<EvidenceView | null>(null)
 const targetKey = ref(''), evidenceId = ref(''), note = ref(''), editNote = ref(''), filter = ref('')
-const busy = ref(false), reading = ref(false), error = ref(''), message = ref(''), panel = ref('results')
+const busy = ref(false), error = ref(''), message = ref(''), panel = ref('results')
 const dialog = ref<HTMLDialogElement | null>(null), action = ref<'create' | 'unlink' | ''>('')
 const pending = ref<{ project: string; request: LinkCreate } | null>(null)
 const confirmationRequest = ref<LinkCreate | null>(null), confirmationLink = ref<LinkDetail | null>(null)
@@ -53,11 +53,6 @@ async function refresh() {
   if (typeof route.query.evidence_id === 'string' && evidenceId.value !== route.query.evidence_id) evidenceId.value = route.query.evidence_id
   if (typeof route.query.link_id === 'string') await inspect(route.query.link_id, false)
 }
-async function refreshRead() {
-  if (reading.value) return
-  reading.value = true; error.value = ''
-  try { await refresh() } catch (e) { report(e) } finally { reading.value = false }
-}
 async function act(task: () => Promise<unknown>) {
   if (busy.value) return
   busy.value = true; error.value = ''; message.value = ''
@@ -84,7 +79,7 @@ async function loadPage(after?: string) {
 }
 async function confirm(kind: 'create' | 'unlink') {
   const project = overview.value?.project, target = chosen.value
-  if (!project || reading.value) return
+  if (!project) return
   confirmationRevision.value = project.revision; confirmationLink.value = selected.value; confirmationEvidence.value = evidence.value
   confirmationTarget.value = target?.label || ''; confirmationRequest.value = null
   if (kind === 'create') {
@@ -169,7 +164,7 @@ watch(() => route.params.projectId, () => {
     <main class="project-main overview-main">
       <WorkspacePaneHeader title="来源关联" :level="1" :subtitle="overview?.project.name" />
       <div class="workspace-pane-body">
-<p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在保存用户操作，不调用模型或外部数据源。</p><button :disabled="reading" @click="refreshRead">刷新总览（只读）</button><p v-if="overview" class="small muted overview-scope">{{ overview.warning }}</p>
+<p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在保存用户操作，不调用模型或外部数据源。</p><p v-if="overview" class="small muted overview-scope">{{ overview.warning }}</p>
       <div v-if="pending" class="notice"><p>创建请求尚待确认。下方使用原编号核对；如果原请求尚未接收，仍会按已确认的同一参数创建一次。</p><code>{{ pending.request.client_request_id }}</code><button :disabled="busy" @click="submitPending">使用原编号核对</button></div>
       <section class="overview-composer"><p class="eyebrow">USER REFERENCE</p><h2>关联结果与原文</h2><p class="small muted">手动关联仅表示你选择的引用关系。用户备注与文献原文分开保存，不表示科学证明、支持或反驳。</p><form class="project-form" @submit.prevent="confirm('create')"><label for="link-target">同项目结果</label><select id="link-target" v-model="targetKey" required><option value="">选择会话轮次、快照或流程</option><option v-for="target in allTargets" :key="key(target)" :value="key(target)" :disabled="!target.available">{{ targetKinds[target.type] }} · {{ target.label }} · {{ target.state }}</option></select><RouterLink :to="knowledgePath()">在本项目知识库检索并选择原文证据 →</RouterLink><label for="link-evidence">已保存证据编号</label><input id="link-evidence" v-model="evidenceId" list="project-evidence-ids" placeholder="选择最近证据或粘贴同项目证据UUID" required><datalist id="project-evidence-ids"><option v-for="item in references" :key="item.id" :value="item.id">{{ item.title || item.filename }} · {{ item.page ? `物理页${item.page}` : `行${item.line_start}` }}</option></datalist><p v-if="evidence" class="notice" :class="{danger:evidence.evidence.validity!=='available'}">{{ evidence.evidence.title || evidence.evidence.filename }} · {{ evidence.evidence.page ? `物理页${evidence.evidence.page}` : `原始行${evidence.evidence.line_start}—${evidence.evidence.line_end}` }}<br>{{ evidence.warning }}</p><details v-if="evidence?.text"><summary>待关联的固定原文版本</summary><pre>{{ evidence.text }}</pre><code>{{ evidence.evidence.version_id }}</code></details><label for="link-note">用户备注（可选，最多1000字）</label><textarea id="link-note" v-model="note" maxlength="1000" rows="3"></textarea><button class="button-primary" :disabled="busy || !canCreate">核对后建立关联</button></form></section>
       <section class="project-section"><h2>项目关联 · {{ overview?.link_count || 0 }}/1000</h2><label for="link-filter">目标类型</label><select id="link-filter" v-model="filter"><option value="">全部类型</option><option v-for="(title,kind) in targetKinds" :key="kind" :value="kind">{{ title }}</option></select><div class="project-actions"><button :disabled="busy" @click="loadPage()">读取首页</button><button :disabled="busy || !page?.next_cursor" @click="loadPage(page?.next_cursor || undefined)">下一页</button></div><p class="small muted">每页最多25条，按不可变关联ID排序；新记录请刷新首页。此筛选共{{ page?.total || 0 }}条。</p><article v-for="item in page?.items" :key="item.link.id" class="overview-link"><header><span class="tag" :class="{error:item.link.state!=='active'}">{{ states[item.link.state] }}</span><b>{{ targetKinds[item.link.target_type] }}</b></header><h3>{{ item.target.label }}</h3><p class="small">用户备注：{{ item.link.note || '未填写' }}</p><p class="small muted">UTC {{ item.link.created_at }} · r{{ item.link.revision }} · {{ item.link.provenance==='local' ? '本机用户关联' : '导入未认证' }}</p><button :disabled="busy" @click="inspect(item.link.id)">查看两端与来源 →</button></article><p v-if="page && !page.items.length" class="small muted">尚无符合条件的关联。</p></section>

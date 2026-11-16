@@ -1,0 +1,11 @@
+
+Running 2 tests using 1 worker
+
+(node:14876) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\identity-browser\admin.spec.ts:3:1 › synthetic administrator confirms account actions and sees only masked metadata (4.1s)
+(node:37724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [edge] › tests\identity-browser\admin.spec.ts:3:1 › synthetic administrator confirms account actions and sees only masked metadata (3.8s)
+
+  2 passed (10.5s)

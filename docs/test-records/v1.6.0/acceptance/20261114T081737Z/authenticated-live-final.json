@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "python_plot": true,
+    "gnuplot_plot": true,
+    "semantic_rag": true,
+    "simbad_authenticated": true,
+    "gaia_authenticated": true,
+    "ads_authenticated": true
+  },
+  "all_passed": true,
+  "personal_data_used": false,
+  "initial_report_corrections": "SIMBAD field name corrected; provider status must be success; missing container ADS setting fixed using existing credential."
+}

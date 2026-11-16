@@ -58,6 +58,7 @@ def model_config(model_id=None):
             "model": value.deepseek_model,
             "instruction": checksum(INSTRUCTION),
             "protocol": "rag-v1",
+            "api_protocol": value.model_protocol,
             "thinking_parameter": value.llm_thinking_parameter,
         }
     )
@@ -537,7 +538,7 @@ class RagService:
                 document_ids=request.document_ids,
                 version_ids=request.version_ids,
                 provider=provider,
-                model=config.deepseek_model,
+                model=config.selected_model_id or config.deepseek_model,
                 model_fingerprint=fingerprint,
                 created_at=now.isoformat(),
                 expires_at=(now + timedelta(minutes=10)).isoformat(),
@@ -810,7 +811,9 @@ class RagService:
                 self.projects._touch(db, project_id)
                 self.projects._budget(db)
             admitted_call = True
-            from openai import OpenAI
+            from langchain_core.messages import HumanMessage, SystemMessage
+
+            from astroagent.model_client import chat_model
 
             payload = {
                 "question": preview.question,
@@ -826,25 +829,18 @@ class RagService:
                     for item in preview.evidence
                 ],
             }
-            with OpenAI(
-                api_key=config.deepseek_api_key.get_secret_value(),
-                base_url=provider,
-                timeout=config.llm_timeout_seconds,
-                max_retries=0,
-            ) as client:
-                result = client.chat.completions.create(
-                    model=preview.model,
-                    messages=[
-                        {"role": "system", "content": INSTRUCTION},
-                        {"role": "user", "content": encode(payload)},
-                    ],
-                    temperature=0,
-                    max_tokens=2400,
-                    response_format={"type": "json_object"},
-                    extra_body=config.non_thinking_body(),
-                )
-            raw = result.choices[0].message.content or ""
-            if len(raw) > 16000 or result.choices[0].finish_reason != "stop":
+            result = chat_model(config, max_tokens=2400, json_mode=True).invoke(
+                [
+                    SystemMessage(content=INSTRUCTION),
+                    HumanMessage(content=encode(payload)),
+                ]
+            )
+            raw = result.content
+            if (
+                not isinstance(raw, str)
+                or len(raw) > 16000
+                or result.response_metadata.get("finish_reason") != "stop"
+            ):
                 raise ValueError("Model response exceeded limits")
             from astroagent.project_archives import strict_json
 
@@ -876,7 +872,9 @@ class RagService:
                     answer,
                     sorted(inline),
                 )
-            record.model_version = str(result.model)[:200] if result.model else None
+            record.model_version = str(
+                result.response_metadata.get("model_name") or config.deepseek_model
+            )[:200]
             with self.service.gate, self.repo.connection() as db, self.repo.transaction(db):
                 self.projects._project(db, project_id)
                 self.revalidate(db, preview.evidence, project_id)

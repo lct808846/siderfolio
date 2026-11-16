@@ -1,0 +1,15 @@
+
+D:\project\astroagent\frontend\src\identity-state.ts
+  14:88  error  Unexpected control character(s) in regular expression: \x00  no-control-regex
+
+D:\project\astroagent\frontend\src\views\AccountWorkspace.vue
+  33:49  warning  Expected 1 line break after opening tag (`<section>`), but no line breaks found  vue/multiline-html-element-content-newline
+
+D:\project\astroagent\frontend\src\views\AdminWorkspace.vue
+  51:49   warning  Expected 1 line break after opening tag (`<section>`), but no line breaks found  vue/multiline-html-element-content-newline
+  57:33   warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found      vue/multiline-html-element-content-newline
+  59:313  warning  Expected 1 line break before closing tag (`</div>`), but no line breaks found    vue/multiline-html-element-content-newline
+
+✖ 5 problems (1 error, 4 warnings)
+  0 errors and 4 warnings potentially fixable with the `--fix` option.
+

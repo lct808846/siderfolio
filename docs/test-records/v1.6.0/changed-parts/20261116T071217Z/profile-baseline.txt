@@ -1,0 +1,41 @@
+..........FF                                                             [100%]
+================================== FAILURES ===================================
+______________ test_avatar_enforces_declared_source_pixel_limit _______________
+
+    def test_avatar_enforces_declared_source_pixel_limit():
+        # A highly compressed image can be far below the byte limit while exceeding
+        # the intended decode budget. This is an actual image, not a forged header.
+>       with pytest.raises(ServiceError) as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ServiceError
+
+tests\test_profile.py:66: Failed
+_________ test_avatar_version_changes_for_updates_in_the_same_second __________
+
+    def test_avatar_version_changes_for_updates_in_the_same_second():
+        user = {
+            "id": "synthetic",
+            "email_display": "observer@example.org",
+            "username": "Observer",
+            "admin": False,
+            "totp_secret": None,
+            "mfa_at": None,
+            "avatar_updated_at": datetime(2026, 11, 16, tzinfo=UTC),
+        }
+        before = AuthStore.public_user(user)["avatar_url"]
+        user["avatar_updated_at"] += timedelta(microseconds=100)
+        after = AuthStore.public_user(user)["avatar_url"]
+>       assert before != after
+E       AssertionError: assert '/api/v1/auth/avatar?v=1794787200' != '/api/v1/auth/avatar?v=1794787200'
+
+tests\test_profile.py:84: AssertionError
+============================== warnings summary ===============================
+tests/test_profile.py::test_avatar_enforces_declared_source_pixel_limit
+  E:\miniconda3\envs\agent\Lib\site-packages\PIL\Image.py:3593: DecompressionBombWarning: Image size (16781312 pixels) exceeds limit of 16777216 pixels, could be decompression bomb DOS attack.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_profile.py::test_avatar_enforces_declared_source_pixel_limit
+FAILED tests/test_profile.py::test_avatar_version_changes_for_updates_in_the_same_second
+2 failed, 10 passed, 1 warning in 6.81s

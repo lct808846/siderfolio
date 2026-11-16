@@ -1,0 +1,28 @@
+Collecting argon2-cffi==25.1.0
+  Downloading argon2_cffi-25.1.0-py3-none-any.whl.metadata (4.1 kB)
+Collecting cryptography==46.0.3
+  Downloading cryptography-46.0.3-cp311-abi3-win_amd64.whl.metadata (5.7 kB)
+Collecting email-validator==2.3.0
+  Downloading email_validator-2.3.0-py3-none-any.whl.metadata (26 kB)
+Collecting argon2-cffi-bindings (from argon2-cffi==25.1.0)
+  Downloading argon2_cffi_bindings-26.2.0-cp310-abi3-win_amd64.whl.metadata (7.6 kB)
+Collecting cffi>=2.0.0 (from cryptography==46.0.3)
+  Downloading cffi-2.1.1-cp312-cp312-win_amd64.whl.metadata (2.6 kB)
+Collecting dnspython>=2.0.0 (from email-validator==2.3.0)
+  Downloading dnspython-2.9.2-py3-none-any.whl.metadata (5.8 kB)
+Requirement already satisfied: idna>=2.0.0 in e:\miniconda3\envs\agent\lib\site-packages (from email-validator==2.3.0) (3.19)
+Collecting pycparser (from cffi>=2.0.0->cryptography==46.0.3)
+  Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+Downloading argon2_cffi-25.1.0-py3-none-any.whl (14 kB)
+Downloading cryptography-46.0.3-cp311-abi3-win_amd64.whl (3.5 MB)
+   ---------------------------------------- 3.5/3.5 MB 5.1 MB/s eta 0:00:00
+Downloading email_validator-2.3.0-py3-none-any.whl (35 kB)
+Downloading cffi-2.1.1-cp312-cp312-win_amd64.whl (185 kB)
+Downloading dnspython-2.9.2-py3-none-any.whl (360 kB)
+Downloading argon2_cffi_bindings-26.2.0-cp310-abi3-win_amd64.whl (25 kB)
+Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+Installing collected packages: pycparser, dnspython, email-validator, cffi, cryptography, argon2-cffi-bindings, argon2-cffi
+Successfully installed argon2-cffi-25.1.0 argon2-cffi-bindings-26.2.0 cffi-2.1.1 cryptography-46.0.3 dnspython-2.9.2 email-validator-2.3.0 pycparser-3.12
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: D:\astroagent-runtime\venv\Scripts\python.exe -m pip install --upgrade pip

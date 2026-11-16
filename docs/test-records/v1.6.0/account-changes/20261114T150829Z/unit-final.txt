@@ -1,0 +1,9 @@
+
+ RUN  v4.1.12 D:/project/astroagent/frontend
+
+
+ Test Files  3 passed (3)
+      Tests  7 passed (7)
+   Start at  23:22:29
+   Duration  1.98s (transform 272ms, setup 0ms, import 703ms, tests 123ms, environment 3.04s)
+

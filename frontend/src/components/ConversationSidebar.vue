@@ -3,11 +3,26 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api'
 import { conversationExport, orderedConversations, readPinnedConversations, saveConversationExport, savePinnedConversations } from '../conversation-tools'
+import { identityUser, logout } from '../identity-state'
 import { useWorkbench } from '../stores/workbench'
 import type { Conversation } from '../types'
 
 const emit = defineEmits<{ create: []; removed: [ids: string[]] }>()
 const store = useWorkbench(), router = useRouter(), route = useRoute()
+const userMenuOpen = ref(false)
+const userMenuTrigger = ref<HTMLButtonElement | null>(null)
+const userMenuRef = ref<HTMLElement | null>(null)
+const displayName = computed(() => identityUser.value?.username?.trim() || identityUser.value?.email?.split('@')[0] || '科研用户')
+const avatarText = computed(() => {
+  const name = displayName.value.trim()
+  return (name.slice(0, 2) || 'AA').toUpperCase()
+})
+const failedAvatarUrl = ref('')
+const rawAvatarUrl = computed(() => identityUser.value?.avatar_url || '')
+const avatarUrl = computed(() => (
+  rawAvatarUrl.value && rawAvatarUrl.value !== failedAvatarUrl.value ? rawAvatarUrl.value : ''
+))
+const userRoleLabel = computed(() => identityUser.value?.admin ? '管理员' : '科研工作台')
 const pins = ref<string[]>(readPinnedConversations()), selecting = ref(false), selected = ref<string[]>([])
 const selectionToggle = ref<HTMLButtonElement | null>(null), selectionExit = ref<HTMLButtonElement | null>(null)
 const busy = ref(false), message = ref(''), error = ref('')
@@ -98,6 +113,7 @@ function menuKey(event: KeyboardEvent) {
 }
 function outside(event: PointerEvent) {
   if (event.target instanceof Node && !menu.value?.contains(event.target) && !menuTrigger?.contains(event.target)) closeMenu(false)
+  if (event.target instanceof Node && !userMenuRef.value?.contains(event.target) && !userMenuTrigger.value?.contains(event.target)) userMenuOpen.value = false
 }
 function dismissMenu(event: Event) {
   if (event.target instanceof Node && menu.value?.contains(event.target)) return
@@ -128,7 +144,7 @@ async function openDialog(kind: 'rename' | 'delete' | 'export', values?: Convers
   dialog.value?.showModal()
 }
 async function enterSelection(ids: string[] = []) {
-  selected.value = ids; selecting.value = true; closeMenu(false)
+  selected.value = ids; selecting.value = true; closeMenu(false); userMenuOpen.value = false
   await nextTick()
   selectionExit.value?.focus({ preventScroll: true })
 }
@@ -188,7 +204,7 @@ async function execute() {
   } catch (e) { error.value = e instanceof Error ? e.message : '操作未确认，请刷新核对。' }
   finally { busy.value = false }
 }
-watch(() => route.fullPath, () => { closeMenu(false); if (!busy.value) dialog.value?.close() })
+watch(() => route.fullPath, () => { closeMenu(false); userMenuOpen.value = false; if (!busy.value) dialog.value?.close() })
 watch(() => store.conversations, items => {
   selected.value = selected.value.filter(id => items.some(item => item.id === id))
   const remainingPins = pins.value.filter(id => items.some(item => item.id === id))
@@ -216,7 +232,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <aside class="history-panel" :class="{ 'is-selecting': selecting, 'is-scrolling': scrolling, 'is-dragging-scrollbar': draggingScrollbar }" aria-label="会话列表" @keydown.esc="selecting && stopSelection()">
+  <aside class="history-panel" :class="{ 'is-selecting': selecting, 'is-scrolling': scrolling, 'is-dragging-scrollbar': draggingScrollbar }" aria-label="会话列表" @keydown.esc="selecting ? stopSelection() : (userMenuOpen = false)">
     <div class="history-top">
       <Transition name="history-mode">
         <button v-if="!selecting" key="create" class="new-conversation" :inert="selecting" :disabled="locked || store.loading || store.running || !!store.disconnectedRequest" @click="emit('create')"><span aria-hidden="true">＋</span>{{ store.creating ? '正在准备…' : '新建会话' }}</button>
@@ -227,7 +243,7 @@ onBeforeUnmount(() => {
       <div ref="listScroller" class="history-scroll" tabindex="0" aria-label="滚动浏览会话" @scroll.passive="revealScrollbar">
         <div ref="listContent" class="history-scroll-content">
           <div class="history-list-heading">
-<p class="history-label">本地会话</p>
+            <p class="history-label">本地会话</p>
             <Transition name="history-control"><button v-if="store.conversations.length && !selecting" ref="selectionToggle" class="history-icon-button history-manage" :inert="selecting" :disabled="locked" aria-label="多选管理会话" data-tooltip="多选管理会话" @click="enterSelection()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="1.5" /><circle cx="5" cy="12" r="1.5" /><circle cx="5" cy="18" r="1.5" /><path d="M11 6h9M11 12h9M11 18h9" /></svg></button></Transition>
           </div>
           <p v-if="message" class="sidebar-feedback" role="status">{{ message }}</p>
@@ -235,10 +251,14 @@ onBeforeUnmount(() => {
           <nav class="conversation-list" aria-label="本地会话">
             <div v-for="conversation in conversations" :key="conversation.id" class="conversation-row" :class="{selected:selecting ? selected.includes(conversation.id) : store.current?.id===conversation.id}">
               <div class="conversation-choice-slot" :inert="!selecting" :aria-hidden="!selecting"><input v-model="selected" type="checkbox" :value="conversation.id" :aria-label="`选择会话 ${conversation.title}`" :disabled="locked || !selecting"></div>
-              <button class="conversation-item" :class="{selected:!selecting && store.current?.id===conversation.id}" :aria-current="!selecting && store.current?.id===conversation.id ? 'page' : undefined" :aria-pressed="selecting ? selected.includes(conversation.id) : undefined" :disabled="locked" @click="chooseConversation(conversation.id)">
-                <span><b>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
+              <button class="conversation-item" :class="{selected:!selecting && store.current?.id===conversation.id}" :aria-current="!selecting && store.current?.id===conversation.id ? 'page' : undefined" :aria-pressed="selecting ? selected.includes(conversation.id) : undefined" :disabled="locked" data-tooltip-truncated @click="chooseConversation(conversation.id)">
+                <span><b data-tooltip-source>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
               </button>
-              <div class="conversation-more-slot" :inert="selecting" :aria-hidden="selecting"><button class="conversation-more" data-tooltip="" :aria-label="`会话操作：${conversation.title}`" aria-haspopup="menu" :aria-expanded="menuId===conversation.id" :disabled="locked || selecting" @click="openMenu($event, conversation.id)">⋯</button></div>
+              <div class="conversation-more-slot" :inert="selecting" :aria-hidden="selecting">
+                <button class="conversation-more" data-tooltip="" :aria-label="`会话操作：${conversation.title}`" aria-haspopup="menu" :aria-expanded="menuId===conversation.id" :disabled="locked || selecting" @click="openMenu($event, conversation.id)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg>
+                </button>
+              </div>
             </div>
           </nav>
           <p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p>
@@ -247,14 +267,73 @@ onBeforeUnmount(() => {
       <div v-if="listScrollable" class="history-scrollbar" aria-hidden="true" @pointerdown="beginScrollDrag" @pointermove="moveScrollDrag" @pointerup="endScrollDrag" @pointercancel="endScrollDrag" @lostpointercapture="endScrollDrag"><span class="history-scroll-thumb" :style="{ height: `${thumbHeight}px`, transform: `translateY(${thumbTop}px)` }"></span></div>
     </div>
     <div class="history-bottom">
-<Transition name="history-mode">
-    <div v-if="selecting" key="actions" class="history-batch-actions" :inert="!selecting" aria-label="批量管理会话">
-      <button :disabled="locked || !selected.length" :data-tooltip="selectionPinned ? '取消所选会话的置顶' : '置顶所选会话'" @click="pinSelected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 3 7 7-4 1-4 5-2-2-6 6m6-6-3-3 5-4z" /></svg>{{ selectionPinned ? '取消置顶' : '置顶' }}</button>
-      <button class="selection-delete" :disabled="locked || !selected.length || store.running" aria-label="删除所选会话" data-tooltip="删除所选会话" @click="deleteSelected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" /></svg>删除</button>
+      <Transition name="history-mode">
+        <div v-if="selecting" key="actions" class="history-batch-actions" :inert="!selecting" aria-label="批量管理会话">
+          <button :disabled="locked || !selected.length" @click="pinSelected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 3 7 7-4 1-4 5-2-2-6 6m6-6-3-3 5-4z" /></svg>{{ selectionPinned ? '取消置顶' : '置顶' }}</button>
+          <button class="selection-delete" :disabled="locked || !selected.length || store.running" aria-label="删除所选会话" @click="deleteSelected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" /></svg>删除</button>
+        </div>
+        <div v-else key="footer" class="sidebar-user-wrap" :inert="selecting">
+          <Transition name="history-mode">
+            <div v-if="userMenuOpen" ref="userMenuRef" class="sidebar-user-menu" role="menu" aria-label="账号菜单">
+              <div class="sidebar-user-menu-header">
+                <span class="sidebar-user-avatar is-sm" aria-hidden="true">
+                  <img
+                    v-if="avatarUrl"
+                    :src="avatarUrl"
+                    alt=""
+                    class="sidebar-user-avatar-img"
+                    @error="failedAvatarUrl = avatarUrl"
+                  />
+                  <template v-else>{{ avatarText }}</template>
+                </span>
+                <div class="sidebar-user-menu-meta">
+                  <b>{{ displayName }}</b>
+                  <small>{{ identityUser?.email }}</small>
+                </div>
+              </div>
+              <div class="sidebar-user-menu-divider"></div>
+              <RouterLink role="menuitem" to="/profile" @click="userMenuOpen = false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="9.5" r="2.75" /><path d="M6.8 18.8a6 6 0 0 1 10.4 0" /></svg>
+                <span>个人资料</span>
+              </RouterLink>
+              <RouterLink role="menuitem" to="/settings" @click="userMenuOpen = false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
+                <span>设置</span>
+              </RouterLink>
+              <div class="sidebar-user-menu-divider"></div>
+              <button type="button" role="menuitem" class="danger" @click="userMenuOpen = false; logout()">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+                <span>退出登录</span>
+              </button>
+            </div>
+          </Transition>
+          <button
+            ref="userMenuTrigger"
+            type="button"
+            class="sidebar-user-card"
+            :aria-expanded="userMenuOpen"
+            aria-haspopup="menu"
+            data-tooltip-truncated
+            @click="userMenuOpen = !userMenuOpen"
+          >
+            <span class="sidebar-user-avatar" aria-hidden="true">
+              <img
+                v-if="avatarUrl"
+                :src="avatarUrl"
+                alt=""
+                class="sidebar-user-avatar-img"
+                @error="failedAvatarUrl = avatarUrl"
+              />
+              <template v-else>{{ avatarText }}</template>
+            </span>
+            <span class="sidebar-user-info">
+              <b class="sidebar-user-name" data-tooltip-source>{{ displayName }}</b>
+              <small class="sidebar-user-role">{{ userRoleLabel }}</small>
+            </span>
+          </button>
+        </div>
+      </Transition>
     </div>
-    <footer v-else key="footer" class="history-footer" :inert="selecting"><span>SIMBAD / ADS / Gaia</span><small>测量 · 文献 · 可追溯结果</small></footer>
-    </Transition>
-</div>
 
     <Teleport to="body">
       <div v-if="menuTarget" ref="menu" class="conversation-menu" role="menu" aria-label="会话操作" :style="menuPosition" @keydown="menuKey" @focusout="menuBlur">
@@ -282,36 +361,205 @@ onBeforeUnmount(() => {
 <style scoped>
 /* Only this middle region scrolls; fixed controls never share its scrollbar. */
 aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200ms; --selection-easing: cubic-bezier(.2, .7, .3, 1); }
-.history-top { display: grid; flex: none; height: 38px; }
+.history-top { display: grid; flex: none; height: 40px; }
 .history-top > * { grid-area: 1 / 1; min-width: 0; }
-.history-top .new-conversation { width: 100%; height: 38px; min-height: 38px; margin: 0; }
-.history-selection-heading { display: flex; min-height: 38px; align-items: center; justify-content: space-between; gap: 8px; color: var(--ink); font-size: 14px; }
+.history-top .new-conversation { width: 100%; height: 40px; min-height: 40px; margin: 0; }
+.history-selection-heading { display: flex; min-height: 40px; align-items: center; justify-content: space-between; gap: 8px; color: var(--ink); font-size: 14px; }
 .history-selection-heading small { margin-left: 6px; font-size: 11px; color: var(--muted); }
-.history-scroll-shell { position: relative; flex: 1 1 0; min-height: 0; margin-top: 16px; }
-.history-scroll { width: 100%; height: 100%; min-height: 0; overflow: auto; overscroll-behavior-y: contain; scrollbar-width: none; padding-right: 8px; }
+.history-scroll-shell { position: relative; flex: 1 1 0; min-height: 0; margin-top: 14px; }
+.history-scroll { width: 100%; height: 100%; min-height: 0; overflow: auto; overscroll-behavior-y: contain; scrollbar-width: none; padding-right: 6px; }
 .history-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
-.history-list-heading { min-height: 34px; margin-bottom: 8px; padding-inline: 6px 4px; }
-.history-list-heading .history-label { margin: 0; }
-.history-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; min-height: 28px; padding: 5px; margin: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); }
-.history-icon-button:hover:not(:disabled) { color: var(--accent); background: var(--accent-soft); }
+.history-list-heading { min-height: 30px; margin: 2px 0 6px; padding-inline: 8px 3px; }
+.history-list-heading .history-label { margin: 0; font-size: 11.5px; font-weight: 550; letter-spacing: 0.03em; color: #677d73; line-height: 1; }
+.history-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; min-height: 28px; padding: 5px; margin: 0; border: 0; border-radius: 7px; background: transparent; box-shadow: none; color: var(--muted); transform: none; }
+.history-icon-button:hover:not(:disabled), .history-icon-button:active:not(:disabled) { color: var(--accent); background: var(--accent-soft); border: 0; box-shadow: none; transform: none; }
 .history-icon-button svg, .history-batch-actions svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.conversation-item { padding-left: 9px; }
-.conversation-row { display: grid; grid-template-columns: 0px minmax(0, 1fr) 33px; transition: grid-template-columns var(--selection-duration) var(--selection-easing), background-color 160ms ease; }
-.is-selecting .conversation-row { grid-template-columns: 33px minmax(0, 1fr) 0px; }
-.conversation-choice-slot, .conversation-more-slot { min-width: 0; overflow: hidden; transition: opacity var(--selection-duration) ease, transform var(--selection-duration) var(--selection-easing); }
+.conversation-item { padding-left: 10px; }
+.conversation-row { display: grid; grid-template-columns: 0px minmax(0, 1fr) 34px; align-items: center; transition: grid-template-columns var(--selection-duration) var(--selection-easing), background-color 150ms ease, box-shadow 150ms ease; }
+.is-selecting .conversation-row { grid-template-columns: 34px minmax(0, 1fr) 0px; }
+.conversation-choice-slot, .conversation-more-slot { display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; transition: opacity var(--selection-duration) ease, transform var(--selection-duration) var(--selection-easing); }
 .conversation-choice-slot { opacity: 0; transform: translateX(-6px); pointer-events: none; }
 .is-selecting .conversation-choice-slot { opacity: 1; transform: translateX(0); pointer-events: auto; }
-.conversation-more-slot { opacity: 1; transform: translateX(0); }
+.conversation-more-slot { opacity: 1; transform: translateX(0); padding-right: 3px; }
 .is-selecting .conversation-more-slot { opacity: 0; transform: translateX(6px); pointer-events: none; }
 .conversation-choice-slot > input { display: block; appearance: none; width: 18px; height: 18px; margin: 0 0 0 6px; border: 1px solid var(--line-strong); border-radius: 50%; padding: 0; background: var(--paper); cursor: pointer; transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease; }
 .conversation-choice-slot > input:checked { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 4px var(--paper); }
-.history-bottom { display: grid; flex: none; height: 64px; margin-top: 10px; }
+.history-bottom { position: relative; display: grid; flex: none; min-height: 54px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgb(202 217 208 / 65%); }
 .history-bottom > * { grid-area: 1 / 1; min-width: 0; margin-top: 0; }
-.history-footer { flex: none; margin-top: 0; padding: 12px 8px 0; }
-.history-batch-actions { display: flex; flex: none; margin-top: 0; padding-top: 12px; border-top: 1px solid var(--line); }
-.history-batch-actions button { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 6px; min-width: 0; padding: 7px 4px; border: 0; background: transparent; font-size: 12px; color: var(--muted); }
+.history-batch-actions { display: flex; flex: none; margin-top: 0; padding-top: 4px; }
+.history-batch-actions button { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 34px; padding: 6px 4px; border: 0; border-radius: 7px; background: transparent; box-shadow: none; transform: none; font-size: 12px; color: var(--muted); }
+.history-batch-actions button:hover:not(:disabled), .history-batch-actions button:active:not(:disabled) { border: 0; background: rgb(255 255 255 / 72%); box-shadow: none; transform: none; color: var(--ink); }
 .history-batch-actions button + button { border-left: 1px solid var(--line); border-radius: 0; }
 .history-batch-actions .selection-delete:not(:disabled) { color: #983e38; }
+.sidebar-user-wrap { position: relative; display: flex; align-items: center; min-width: 0; }
+.sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 46px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.sidebar-user-card:hover:not(:disabled),
+.sidebar-user-card:active:not(:disabled),
+.sidebar-user-card[aria-expanded="true"] {
+  background: rgb(212 229 218 / 62%);
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+.sidebar-user-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2d6a56, #1d4a3b);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgb(24 58 45 / 16%), inset 0 1px rgb(255 255 255 / 20%);
+}
+.sidebar-user-avatar.is-sm {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  font-size: 11px;
+}
+.sidebar-user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.25;
+}
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-user-role {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-user-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 10px);
+  z-index: 40;
+  padding: 6px;
+  border: 1px solid #cfe0d4;
+  border-radius: 14px;
+  background: rgb(252 254 251 / 97%);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 14px 36px rgb(20 48 37 / 14%), 0 2px 6px rgb(20 48 37 / 5%);
+}
+.sidebar-user-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+.sidebar-user-menu-meta {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+.sidebar-user-menu-meta b {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-user-menu-meta small {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-user-menu-divider {
+  height: 1px;
+  margin: 4px 6px;
+  background: #e3ece6;
+}
+.sidebar-user-menu a,
+.sidebar-user-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 450;
+  text-align: left;
+  text-decoration: none;
+  transition: background-color 140ms ease;
+}
+.sidebar-user-menu a:hover,
+.sidebar-user-menu button:hover:not(:disabled),
+.sidebar-user-menu button:active:not(:disabled) {
+  background: #eaf3ec;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+.sidebar-user-menu svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: #486b5b;
+}
+.sidebar-user-menu button.danger {
+  color: #a13a34;
+}
+.sidebar-user-menu button.danger svg {
+  color: #a13a34;
+}
+.sidebar-user-menu button.danger:hover {
+  background: #fdf0ee;
+}
 .history-mode-enter-active, .history-mode-leave-active, .history-control-enter-active, .history-control-leave-active { transition: opacity var(--selection-duration) ease, transform var(--selection-duration) var(--selection-easing); }
 .history-mode-enter-from { opacity: 0; transform: translateY(6px); }
 .history-mode-leave-to { opacity: 0; transform: translateY(-6px); }

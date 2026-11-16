@@ -1,0 +1,44 @@
+F...........                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_all_business_routes_deny_anonymous_before_body _____________
+
+identity_client = <starlette.testclient.TestClient object at 0x000001D272257A70>
+
+    def test_all_business_routes_deny_anonymous_before_body(identity_client):
+        from astroagent.auth_access import PUBLIC
+        from astroagent.main import app
+    
+        client = identity_client
+        protected = 0
+        for path, operations in app.openapi()["paths"].items():
+            for verb in operations:
+                method = verb.upper()
+                if path == "/health" or (method, path) in PUBLIC:
+                    continue
+                response = client.request(method, path)
+                assert response.status_code == 401, (method, path, response.status_code)
+                protected += 1
+        assert protected > 75
+        for path in ("/api/v1/missing", "/api/v1/%2e%2e/admin", "/openapi.json", "/docs"):
+            assert client.get(path).status_code == 401
+>       with client.websocket_connect("/api/v1/events") as websocket:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_identity_postgres.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:115: in __enter__
+    self._raise_on_close(message)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.WebSocketTestSession object at 0x000001D273F74290>
+message = {'type': 'websocket.close', 'code': 4401}
+
+    def _raise_on_close(self, message: Message) -> None:
+        if message["type"] == "websocket.close":
+>           raise WebSocketDisconnect(code=message.get("code", 1000), reason=message.get("reason", ""))
+E           starlette.websockets.WebSocketDisconnect
+
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:144: WebSocketDisconnect
+=========================== short test summary info ===========================
+FAILED tests/test_identity_postgres.py::test_all_business_routes_deny_anonymous_before_body
+1 failed, 11 passed, 662 deselected in 19.15s

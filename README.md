@@ -1,6 +1,14 @@
 # AstroAgent
 
-当前版本：`1.5.0`。已接入本地千问 4B 助手、异步会话命名与显式文本操作；源码、D盘离线安装及启用步骤见 [V1.5 实施记录](docs/development/v1.5.0/IMPLEMENTATION.md)。已完成改动范围的自动验收；最终证据与限制见[验收记录](docs/test-records/v1.5.0/remaining/20261113T003239Z/README.md)。发布状态以 GitHub Release 为准。
+界面开发统一遵循 [UI 设计规范](docs/UI_DESIGN_SPEC.md)，其中规定视觉变量、布局、组件、交互状态、页面族例外及审查清单。
+
+当前候选源码：**V1.6.0 RC1**（Python `1.6.0rc1`，前端 `1.6.0-rc.1`）。邮箱激活、登录与用户隔离、MFA、个人资料及头像、模型服务商与四协议适配已接入；最新改动的[自动验收记录](docs/test-records/v1.6.0/changed-parts/20261116T071217Z/README.md)保留初始失败、修复复验与限制。源码发布入口见 [v1.6.0-rc.1](https://github.com/lct808846/astroagent/releases/tag/v1.6.0-rc.1)，范围见[候选版说明](docs/development/v1.6.0/RELEASE_RC1.md)。这是本机部署候选版，不代表公网生产安全认证或所有真实模型服务商可用。
+
+已准备私有 `deployment-v16.env` 的本机可使用 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/containers.ps1 -Action up` 启动V1.6；脚本自动选择身份部署覆盖文件，复用现有模型时不重新导入。首次安装先阅读[V1.6实施与限制](docs/development/v1.6.0/IMPLEMENTATION.md)、[部署/数据操作](docs/development/v1.6.0/OPERATIONS.md)和[验收状态](docs/development/v1.6.0/ACCEPTANCE.md)，不要用V1.6源码重新构建V1.5标签。
+
+以下保留V1.5及更早版本的使用和验收历史：
+
+V1.5 历史基线：`1.5.0`。已接入本地千问 4B 助手、异步会话命名与显式文本操作；源码、D盘离线安装及启用步骤见 [V1.5 实施记录](docs/development/v1.5.0/IMPLEMENTATION.md)。该版本的证据与限制见[验收记录](docs/test-records/v1.5.0/remaining/20261113T003239Z/README.md)。
 
 更新的V1.5范围还包括整套项目容器化：已写入Compose、前后端镜像、持久化、离线模型导入、独立绘图执行器与备份恢复脚本，见[容器操作稿](docs/development/v1.5.0/CONTAINER_IMPLEMENTATION.md)。容器仅开放本机网页入口；绘图使用不发布端口的 Docker Desktop 内部执行器，后端和绘图任务不挂载 Docker Socket；执行器本身对同一守护进程有高权限，风险详见容器操作稿。实际构建、启动和验收以[最新记录](docs/test-records/v1.5.0/container-acceptance/20261109T020000Z/README.md)为准。
 

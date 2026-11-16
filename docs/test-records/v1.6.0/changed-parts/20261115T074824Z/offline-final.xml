@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="199" time="30.814" timestamp="2026-11-15T15:59:08.650777+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[http://api.example.org]" time="0.021" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://localhost]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://127.0.0.1]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://10.0.0.1]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://[::1]]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://169.254.169.254]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://host.docker.internal]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://service.internal]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://a.local]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://user:pass@example.org]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://example.org?key=synthetic]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://example.org/#key]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_provider_rejects_private_or_credential_urls[https://example.org/white space]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[127.0.0.1]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[::1]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[10.1.2.3]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[169.254.169.254]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[::ffff:127.0.0.1]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[224.0.0.1]" time="0.004" /><testcase classname="tests.test_model_providers" name="test_directory_rejects_local_dns_even_in_local_deployment[0.0.0.0]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_proxy_dns_exception_is_explicit_and_limited" time="0.005" /><testcase classname="tests.test_model_providers" name="test_provider_secret_retention_requires_same_endpoint_and_protocol" time="0.014" /><testcase classname="tests.test_model_providers" name="test_catalog_hides_keys_and_resolves_selected_provider" time="0.005" /><testcase classname="tests.test_model_providers" name="test_protocol_text_tool_roundtrip_preserves_opaque_state[openai_responses]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_text_tool_roundtrip_preserves_opaque_state[anthropic]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_protocol_text_tool_roundtrip_preserves_opaque_state[gemini]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[401-model_authentication_failed-openai_responses]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[401-model_authentication_failed-anthropic]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[401-model_authentication_failed-gemini]" time="0.007" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[404-model_not_found-openai_responses]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[404-model_not_found-anthropic]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[404-model_not_found-gemini]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[429-model_rate_limited-openai_responses]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[429-model_rate_limited-anthropic]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[429-model_rate_limited-gemini]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[500-model_unavailable-openai_responses]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[500-model_unavailable-anthropic]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_protocol_upstream_errors_are_bounded_and_redacted[500-model_unavailable-gemini]" time="0.007" /><testcase classname="tests.test_model_providers" name="test_incomplete_answers_never_execute_partial_tools[openai_responses-payload0]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_incomplete_answers_never_execute_partial_tools[anthropic-payload1]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_incomplete_answers_never_execute_partial_tools[gemini-payload2]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_gemini_billing_error_is_specific_without_raw_upstream_text" time="0.006" /><testcase classname="tests.test_model_providers" name="test_complete_text_answers_and_invalid_payloads[openai_responses-payload0]" time="0.007" /><testcase classname="tests.test_model_providers" name="test_complete_text_answers_and_invalid_payloads[anthropic-payload1]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_complete_text_answers_and_invalid_payloads[gemini-payload2]" time="0.009" /><testcase classname="tests.test_model_providers" name="test_timeout_is_explicit_and_retries_are_not_implicit[openai_responses]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_timeout_is_explicit_and_retries_are_not_implicit[anthropic]" time="0.006" /><testcase classname="tests.test_model_providers" name="test_timeout_is_explicit_and_retries_are_not_implicit[gemini]" time="0.005" /><testcase classname="tests.test_model_providers" name="test_openai_chat_uses_actual_adapter_without_network" time="4.250"><failure message="langchain_openai.chat_models.base.OpenAIAuthenticationError: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid (request_id: e1e5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}">self = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.6.0', 'langchain': '1.3.16', 'langchain-openai': '1.6.0'}}, ...imeout=60.0, max_retries=0, max_tokens=1500, stream_chunk_timeout=120.0, extra_body={'thinking': {'type': 'disabled'}})
+messages = [HumanMessage(content='Synthetic', additional_kwargs={}, response_metadata={})]
+stop = None
+run_manager = &lt;langchain_core.callbacks.manager.CallbackManagerForLLMRun object at 0x0000025B0FED59D0&gt;
+kwargs = {}
+
+    def _generate(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        run_manager: CallbackManagerForLLMRun | None = None,
+        **kwargs: Any,
+    ) -&gt; ChatResult:
+        self._ensure_sync_client_available()
+        payload = self._get_request_payload(messages, stop=stop, **kwargs)
+        generation_info = None
+        raw_response = None
+        try:
+            if "response_format" in payload:
+                payload.pop("stream")
+                raw_response = (
+                    self.root_client.chat.completions.with_raw_response.parse(**payload)
+                )
+                response = raw_response.parse()
+            elif self._use_responses_api(payload):
+                original_schema_obj = kwargs.get("response_format")
+                if original_schema_obj and _is_pydantic_class(original_schema_obj):
+                    raw_response = self.root_client.responses.with_raw_response.parse(
+                        **payload
+                    )
+                else:
+                    raw_response = self.root_client.responses.with_raw_response.create(
+                        **payload
+                    )
+                response = raw_response.parse()
+                if self.include_response_headers:
+                    generation_info = {"headers": dict(raw_response.headers)}
+                generation_info = generation_info or {}
+                _add_gateway_metadata(generation_info, raw_response)
+                # Gateway metadata belongs on `generation_info`, not the message
+                # `response_metadata` that `metadata` populates.
+                gateway_metadata = generation_info.pop(
+                    GATEWAY_METADATA_RESPONSE_KEY, None
+                )
+                result = _construct_lc_result_from_responses_api(
+                    response,
+                    schema=original_schema_obj,
+                    metadata=generation_info,
+                    output_version=self.output_version,
+                )
+                if gateway_metadata is not None:
+                    for generation in result.generations:
+                        generation.generation_info = generation.generation_info or {}
+                        generation.generation_info[GATEWAY_METADATA_RESPONSE_KEY] = (
+                            gateway_metadata
+                        )
+                return result
+            else:
+&gt;               raw_response = self.client.with_raw_response.create(**payload)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_openai\chat_models\base.py:1880: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_legacy_response.py:369: in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_utils\_utils.py:298: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\openai\resources\chat\completions\completions.py:1296: in create
+    return self._post(
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_base_client.py:1381: in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;openai.OpenAI object at 0x0000025B0E4F0A70&gt;
+cast_to = &lt;class 'openai.types.chat.chat_completion.ChatCompletion'&gt;
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...l', 'max_completion_tokens': 1500, 'stream': False, 'temperature': 0.0}, extra_json={'thinking': {'type': 'disabled'}})
+stream = False
+stream_cls = openai.Stream[openai.types.chat.chat_completion_chunk.ChatCompletionChunk]
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -&gt; ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later &amp; we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx2.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            custom_auth = self._custom_auth(options.security)
+            if custom_auth is not None:
+                kwargs["auth"] = (
+                    normalize_httpx2_auth(custom_auth)
+                    if is_httpx2_sync_client(self._client)
+                    else normalize_legacy_httpx_auth(custom_auth)
+                )
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = self._send_request(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except timeout_exceptions() as err:
+                log.debug("Encountered a timeout exception", exc_info=True)
+    
+                if remaining_retries &gt; 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except OpenAIError as err:
+                # Propagate OpenAIErrors as-is, without retrying or wrapping in APIConnectionError
+                raise err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries &gt; 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+                raise APIConnectionError(request=request) from err
+    
+            log.debug(
+                'HTTP Response: %s %s "%i %s" %s',
+                request.method,
+                request.url,
+                response.status_code,
+                response.reason_phrase,
+                response.headers,
+            )
+            log.debug("request_id: %s", response.headers.get("x-request-id"))
+    
+            try:
+                response.raise_for_status()
+            except status_exceptions() as err:  # thrown on 4xx and 5xx status code
+                log.debug("Encountered an HTTP status error", exc_info=True)
+    
+                if remaining_retries &gt; 0 and self._should_retry(err.response):
+                    err.response.close()
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=response,
+                    )
+                    continue
+    
+                # If the response is streamed then we need to explicitly read the response
+                # to completion before attempting to access the response text.
+                if not err.response.is_closed:
+                    err.response.read()
+    
+                log.debug("Re-raising status error")
+&gt;               raise self._make_status_error_from_response(err.response) from None
+E               openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid (request_id: e1e5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}
+
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_base_client.py:1154: AuthenticationError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000025B0E4F1280&gt;
+
+    def test_openai_chat_uses_actual_adapter_without_network(monkeypatch):
+        requests = []
+    
+        def handle(transport, request):
+            requests.append(json.loads(request.content))
+            return httpx.Response(
+                200,
+                request=request,
+                json={
+                    "id": "synthetic",
+                    "model": "synthetic-model",
+                    "object": "chat.completion",
+                    "choices": [
+                        {
+                            "index": 0,
+                            "finish_reason": "stop",
+                            "message": {"role": "assistant", "content": "Synthetic answer"},
+                        }
+                    ],
+                },
+            )
+    
+        monkeypatch.setattr(httpx.HTTPTransport, "handle_request", handle)
+        model = chat_model(
+            Settings(_env_file=None, deepseek_api_key="synthetic-key", deepseek_model="synthetic-model")
+        )
+&gt;       assert model.invoke([HumanMessage(content="Synthetic")]).content == "Synthetic answer"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_model_providers.py:383: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:477: in invoke
+    self.generate_prompt(
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:1866: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:1673: in generate
+    self._generate_with_cache(
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:2011: in _generate_with_cache
+    result = self._generate(
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_openai\chat_models\base.py:1885: in _generate
+    _handle_openai_api_error(e)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+e = AuthenticationError("Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid ...5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}")
+
+    def _handle_openai_api_error(e: openai.APIError) -&gt; None:
+        error_message = str(e)
+        if "exceeds the context window" in error_message:
+            raise OpenAIAPIContextOverflowError(
+                message=e.message, request=e.request, body=e.body
+            ) from e
+        if isinstance(e, openai.AuthenticationError):
+&gt;           raise OpenAIAuthenticationError(
+                message=e.message, response=e.response, body=e.body
+            ) from e
+E           langchain_openai.chat_models.base.OpenAIAuthenticationError: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid (request_id: e1e5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}
+
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_openai\chat_models\base.py:654: OpenAIAuthenticationError</failure></testcase><testcase classname="tests.test_chat" name="test_tool_call_round_trip_and_provenance" time="0.163" /><testcase classname="tests.test_chat" name="test_concept_answer_does_not_query_database" time="0.143" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload0]" time="0.164" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload1]" time="0.144" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload2]" time="0.138" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload3]" time="0.113" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload4]" time="0.105" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload5]" time="0.108" /><testcase classname="tests.test_chat" name="test_invalid_request_rejected_before_model_creation[payload6]" time="0.110" /><testcase classname="tests.test_chat" name="test_missing_key_does_not_break_health" time="0.175" /><testcase classname="tests.test_chat" name="test_invalid_configuration_is_sanitized" time="0.185" /><testcase classname="tests.test_chat" name="test_model_failures_have_stable_safe_errors[exc0-504-model_timeout]" time="0.129" /><testcase classname="tests.test_chat" name="test_model_failures_have_stable_safe_errors[exc1-502-model_unavailable]" time="0.124" /><testcase classname="tests.test_chat" name="test_model_failures_have_stable_safe_errors[exc2-503-model_authentication_failed]" time="0.122" /><testcase classname="tests.test_chat" name="test_model_failures_have_stable_safe_errors[exc3-503-model_rate_limited]" time="0.119" /><testcase classname="tests.test_chat" name="test_model_failures_have_stable_safe_errors[exc4-502-model_invalid_response]" time="0.108" /><testcase classname="tests.test_chat" name="test_database_failure_is_visible_to_model_and_client" time="0.096" /><testcase classname="tests.test_chat" name="test_multiple_objects_partial_success" time="0.095" /><testcase classname="tests.test_chat" name="test_synthesis_timeout_keeps_database_results" time="0.112" /><testcase classname="tests.test_chat" name="test_unknown_tools_and_invalid_arguments_never_execute[call0]" time="0.108" /><testcase classname="tests.test_chat" name="test_unknown_tools_and_invalid_arguments_never_execute[call1]" time="0.109" /><testcase classname="tests.test_chat" name="test_unknown_tools_and_invalid_arguments_never_execute[call2]" time="0.115" /><testcase classname="tests.test_chat" name="test_unknown_tools_and_invalid_arguments_never_execute[call3]" time="0.108" /><testcase classname="tests.test_chat" name="test_call_limit_prevents_execution_of_oversized_batch" time="0.101" /><testcase classname="tests.test_chat" name="test_round_limit_stops_repeated_calls_and_preserves_results" time="0.118" /><testcase classname="tests.test_chat" name="test_empty_model_answer_is_reported" time="0.111" /><testcase classname="tests.test_chat" name="test_chat_is_documented" time="1.303" /><testcase classname="tests.test_config" name="test_dotenv_loads_without_overriding_environment" time="0.012" /><testcase classname="tests.test_config" name="test_model_has_timeout_no_retries_and_registered_tool" time="0.007" /><testcase classname="tests.test_conversations" name="test_first_question_names_default_conversation_once_and_survives_follow_up" time="0.269" /><testcase classname="tests.test_conversations" name="test_automatic_title_preserves_custom_title_and_explicit_default_rename" time="0.280" /><testcase classname="tests.test_conversations" name="test_crud_complete_data_and_idempotency" time="0.342" /><testcase classname="tests.test_conversations" name="test_history_context_does_not_copy_new_results" time="0.248" /><testcase classname="tests.test_conversations" name="test_context_whole_turn_window_and_bytes" time="0.028" /><testcase classname="tests.test_conversations" name="test_same_agent_loop_and_historical_data_not_tool_messages" time="0.025" /><testcase classname="tests.test_conversations" name="test_restart_persistence_and_running_interrupted" time="0.204" /><testcase classname="tests.test_conversations" name="test_unknown_schema_rejected_without_overwrite" time="0.065" /><testcase classname="tests.test_conversations" name="test_migration_failure_rolls_back" time="0.036" /><testcase classname="tests.test_conversations" name="test_duplicate_process_and_multiworker_not_enabled" time="0.139" /><testcase classname="tests.test_conversations" name="test_concurrency_idempotent_running_and_global_slots" time="0.253" /><testcase classname="tests.test_conversations" name="test_model_failure_saved_and_retries_not_charged" time="0.268" /><testcase classname="tests.test_conversations" name="test_limits_and_large_results_are_not_silently_truncated" time="0.254" /><testcase classname="tests.test_conversations" name="test_storage_budget_and_commit_fault" time="0.259" /><testcase classname="tests.test_conversations" name="test_artifact_preview_same_zip_cache_and_delete" time="2.169" /><testcase classname="tests.test_conversations" name="test_artifact_expiry_capacity_and_snapshot_limit" time="1.221" /><testcase classname="tests.test_conversations" name="test_new_input_contracts[body0]" time="0.124" /><testcase classname="tests.test_conversations" name="test_new_input_contracts[body1]" time="0.142" /><testcase classname="tests.test_conversations" name="test_new_input_contracts[body2]" time="0.139" /><testcase classname="tests.test_conversations" name="test_host_origin_cors_json_stream_and_ownership" time="0.304" /><testcase classname="tests.test_conversations" name="test_storage_unavailable_does_not_break_old_routes" time="0.072" /><testcase classname="tests.test_conversations" name="test_legacy_chat_shares_global_model_slots" time="0.200" /><testcase classname="tests.test_conversations" name="test_corrupted_preview_is_not_served_as_png" time="0.674" /><testcase classname="tests.test_conversations" name="test_invalid_local_settings_keep_health_and_refuse_network_directory" time="0.054" /><testcase classname="tests.test_conversations" name="test_rename_cannot_bypass_business_content_budget" time="0.182" /><testcase classname="tests.test_health" name="test_health_without_deepseek_key" time="0.116" /><testcase classname="tests.test_health" name="test_swagger_ui_is_disabled_in_v16" time="0.109" /><testcase classname="tests.test_health" name="test_health_is_documented_in_openapi" time="0.005" /><testcase classname="tests.test_identity_security" name="test_untrusted_origin_is_rejected[http://example.org]" time="0.005" /><testcase classname="tests.test_identity_security" name="test_untrusted_origin_is_rejected[https://user:pass@example.org]" time="0.006" /><testcase classname="tests.test_identity_security" name="test_untrusted_origin_is_rejected[https://example.org/path]" time="0.005" /><testcase classname="tests.test_identity_security" name="test_untrusted_origin_is_rejected[https://example.org?x=1]" time="0.006" /><testcase classname="tests.test_identity_security" name="test_untrusted_origin_is_rejected[https://example.org#token]" time="0.007" /><testcase classname="tests.test_identity_security" name="test_untrusted_origin_is_rejected[file:///tmp/site]" time="0.008" /><testcase classname="tests.test_identity_security" name="test_remote_origin_requires_secure_cookies_and_encrypted_smtp" time="0.012" /><testcase classname="tests.test_identity_security" name="test_password_length_common_and_repeated_rejected[short]" time="0.007" /><testcase classname="tests.test_identity_security" name="test_password_length_common_and_repeated_rejected[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]" time="0.007" /><testcase classname="tests.test_identity_security" name="test_password_length_common_and_repeated_rejected[xxxxxxxx]" time="0.052" /><testcase classname="tests.test_identity_security" name="test_password_length_common_and_repeated_rejected[passwordpassword]" time="0.008" /><testcase classname="tests.test_identity_security" name="test_unicode_password_normalization_and_bounds" time="0.367" /><testcase classname="tests.test_identity_security" name="test_blocklist_tamper_fails_closed" time="0.012" /><testcase classname="tests.test_identity_security" name="test_email_domain_normalized_without_merging_local_parts" time="0.017" /><testcase classname="tests.test_identity_security" name="test_totp_one_use_window_and_ascii" time="0.009" /><testcase classname="tests.test_identity_security" name="test_secure_session_cookie_flags" time="0.010" /><testcase classname="tests.test_identity_security" name="test_revocation_between_download_chunks_stops_delivery" time="0.010" /><testcase classname="tests.test_local_model_boundaries" name="test_duplicate_or_nonfinite_json_is_rejected[{&quot;title&quot;:&quot;a&quot;,&quot;title&quot;:&quot;b&quot;}]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_duplicate_or_nonfinite_json_is_rejected[{&quot;value&quot;:NaN}]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_numeric_comparison_is_safe_plain_text_but_html_still_rejected" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_long_identifier_cannot_be_truncated_by_title_decoding" time="0.011" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[null]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[radian]" time="0.005" /><testcase classname="tests.test_local_model_boundaries" name="test_units_are_constrained_before_generation_and_validation[arcseconds]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_comparison_is_grounded_in_its_own_value_not_another_field" time="0.012" /><testcase classname="tests.test_local_model_boundaries" name="test_unrecognized_relation_is_rejected_instead_of_silently_dropped" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_compact_transport_rebuilds_only_original_evidence_and_missing_fields" time="0.017" /><testcase classname="tests.test_local_model_boundaries" name="test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[object_name-M45]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[source_id-1]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_ambiguous_null_has_no_meaningful_comparison_or_unit" time="0.009" /><testcase classname="tests.test_local_model_boundaries" name="test_multiple_original_objects_are_allowed_but_duplicate_and_truncated_ids_are_not" time="0.010" /><testcase classname="tests.test_local_model_boundaries" name="test_arbitrary_native_model_target_is_rejected[https://example.invalid]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_arbitrary_native_model_target_is_rejected[http://evil.invalid]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_arbitrary_native_model_target_is_rejected[http://127.0.0.1:11434/path]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output0-extra0]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output1-extra1]" time="0.009" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output2-extra2]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output3-extra3]" time="0.009" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output4-extra4]" time="0.009" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output5-extra5]" time="0.009" /><testcase classname="tests.test_local_model_boundaries" name="test_invalid_titles_and_tool_bearing_responses_are_rejected[output6-extra6]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_missing_or_wrong_model_never_starts_generation[missing]" time="0.007" /><testcase classname="tests.test_local_model_boundaries" name="test_missing_or_wrong_model_never_starts_generation[wrong_digest]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_missing_or_wrong_model_never_starts_generation[cloud]" time="0.008" /><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[redirect]" time="0.018" /><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[encoding]" time="0.012" /><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[oversized]" time="0.525" /><testcase classname="tests.test_local_model_boundaries" name="test_local_transport_never_follows_redirects_or_inherits_proxy[plain]" time="0.519" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u53ea\u67e5 M67\uff0c\u4e0d\u8981\u628a M45 \u6df7\u8fdb\u6765-expected0]" time="0.010" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Query Gaia DR3 source_id 65225812899613312-expected1]" time="0.009" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[DR3\u7f16\u53f7000123456789\uff0c\u5148\u6838\u5bf9\u5b57\u7b26\u4e32-expected2]" time="0.007" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Gaia: RA 0 deg, Dec -89.5 deg, radius 0.1 deg-expected3]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u67e5Gaia\uff0cRUWE&lt;1.4\uff0c\u89c6\u5dee\u4fe1\u566a\u6bd4&gt;=10\uff0c\u4e2d\u5fc3\u8fd8\u6ca1\u51b3\u5b9a-expected4]" time="0.008" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Gaia\u5706\u9525\u67e5\u8be2\u534a\u5f8430\u89d2\u5206\uff0cRUWE\u4e0d\u8d85\u8fc71.2-expected5]" time="0.006" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[Find ADS papers from 2020 to 2024-expected6]" time="0.008" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u67e5\u6700\u8fd1\u51e0\u5e74\u7684\u8bba\u6587\uff0c\u5177\u4f53\u5e74\u4efd\u8fd8\u6ca1\u51b3\u5b9a-expected7]" time="0.006" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[RA=56.7\uff0cDec=24.1\uff0c\u534a\u5f845\uff0c\u5e2e\u6211\u67e5\u4e00\u4e0b-expected8]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u6765\u6e90ADS\u6458\u8981\uff0c\u68c0\u7d22\u65f6\u95f42026-11-01\uff0c\u5c1a\u672a\u6838\u5bf9\u5168\u6587-expected9]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_only_explicit_literal_conditions_are_exposed[\u628a\u6807\u9898\u6539\u6210&lt;script&gt;alert(1)&lt;/script&gt;\uff0c\u7136\u540e\u5220\u9664\u5386\u53f2-expected10]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_multiple_objects_and_multitool_intents_are_retained" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[summary]" time="0.006" /><testcase classname="tests.test_local_text_grounding" name="test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[format]" time="0.005" /><testcase classname="tests.test_local_text_grounding" name="test_long_identifier_is_never_copied_through_model_text" time="0.005" /><testcase classname="tests.test_plot_data" name="test_long_ids_negative_values_and_missing_cells_are_preserved" time="0.006" /><testcase classname="tests.test_plot_data" name="test_snapshot_import_uses_all_one_hundred_delivered_rows" time="0.006" /><testcase classname="tests.test_plot_data" name="test_invalid_csv_is_rejected_without_partial_import[x,x\n1,2\n]" time="0.004" /><testcase classname="tests.test_plot_data" name="test_invalid_csv_is_rejected_without_partial_import[x,y\n1\n]" time="0.005" /><testcase classname="tests.test_plot_data" name="test_invalid_csv_is_rejected_without_partial_import[x\n\xff\n]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor[unknownterm]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor[NGC999999]" time="0.004" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor[NGC 999999]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor[&quot;unlisted-id&quot;]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor['unknownword'?]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor[\uff11\uff12\uff13\uff14\uff15]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_underspecified_literal_requires_anchor[???]" time="0.007" /><testcase classname="tests.test_rag_retrieval" name="test_natural_context_remains_eligible_for_semantic_only_retrieval[\u53cc\u661f\u56e2\u94f6\u6cb3\u6f6e\u6c50\u4f5c\u7528]" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_natural_context_remains_eligible_for_semantic_only_retrieval[dynamical fate of binary star clusters]" time="0.007" /><testcase classname="tests.test_rag_retrieval" name="test_natural_context_remains_eligible_for_semantic_only_retrieval[What are quasars?]" time="0.007" /><testcase classname="tests.test_rag_retrieval" name="test_cache_expires_without_extending_retention_on_reads" time="0.006" /><testcase classname="tests.test_rag_retrieval" name="test_cache_evicts_least_recently_used_and_copies_vectors" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_cache_key_separates_project_model_dimension_and_question" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_cache_can_be_disabled" time="0.004" /><testcase classname="tests.test_rag_retrieval" name="test_cache_cannot_hide_missing_or_changed_model" time="0.005" /><testcase classname="tests.test_rag_retrieval" name="test_legacy_trace_does_not_claim_new_admission_or_cache" time="0.004" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_local_text_upload_preserves_content[sample.txt-\u4e2d\u6587\n\u7b2c\u4e8c\u884c]" time="0.120" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_local_text_upload_preserves_content[sample.md-# \u4e2d\u6587]" time="0.102" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_local_text_upload_preserves_content[sample.csv-name,value\nM45,3]" time="0.107" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_local_text_upload_preserves_content[sample.json-{&quot;sample&quot;: 3}]" time="0.109" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_docx_text_and_attachment_limits" time="0.182" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_pdf_attachment_extracts_text_with_page_marker" time="0.644" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_model_switch_attachment_persistence_and_idempotency" time="0.252" /><testcase classname="tests.test_v11_attachment_model_acceptance" name="test_model_allowlist_rejects_unknown" time="0.021" /></testsuite></testsuites>

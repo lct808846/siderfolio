@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="33" time="45.652" timestamp="2026-11-15T15:53:46.430462+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_identity_postgres" name="test_provider_admin_boundary_encryption_revision_and_secret_retention" time="2.295" /><testcase classname="tests.test_identity_postgres" name="test_provider_validation_redacts_key_and_blocks_internal_directory" time="1.605" /><testcase classname="tests.test_identity_postgres" name="test_password_precedes_mfa_challenge" time="1.415" /><testcase classname="tests.test_identity_postgres" name="test_session_revocation_is_owned_requires_proof_and_protects_current" time="1.251"><failure message="AssertionError: assert 422 == 404&#10; +  where 422 = &lt;Response [422 Unprocessable Entity]&gt;.status_code&#10; +    where &lt;Response [422 Unprocessable Entity]&gt; = post(&lt;starlette.testclient.TestClient object at 0x000001FE7DE390A0&gt;, 'auth/sessions/revoke', {'session_id': 'missing', 'password': 'Synthetic nebula entropy 2048'})">identity_client = &lt;starlette.testclient.TestClient object at 0x000001FE7DE390A0&gt;
+
+    def test_session_revocation_is_owned_requires_proof_and_protects_current(identity_client):
+        client = identity_client
+        account(client)
+        original = client.cookies.get("astroagent_session")
+        assert (
+            post(
+                client, "auth/login", {"email": "observer@example.org", "password": PASSWORD}
+            ).status_code
+            == 200
+        )
+        # A new login explicitly revokes an authenticated previous browser, so use an
+        # independent unauthenticated cookie jar for the second synthetic browser.
+        other = client.fresh()
+        assert (
+            post(
+                other, "auth/login", {"email": "observer@example.org", "password": PASSWORD}
+            ).status_code
+            == 200
+        )
+        sessions = client.get("/api/v1/auth/sessions").json()
+        current = next(s for s in sessions if s["current"])
+        target = next(s for s in sessions if not s["current"])
+        body = {"session_id": target["id"], "password": "wrong-password"}
+        assert post(client, "auth/sessions/revoke", body).status_code == 403
+        body["password"] = PASSWORD
+        assert (
+            post(client, "auth/sessions/revoke", {**body, "session_id": current["id"]}).status_code
+            == 409
+        )
+&gt;       assert (
+            post(client, "auth/sessions/revoke", {**body, "session_id": "missing"}).status_code == 404
+        )
+E       AssertionError: assert 422 == 404
+E        +  where 422 = &lt;Response [422 Unprocessable Entity]&gt;.status_code
+E        +    where &lt;Response [422 Unprocessable Entity]&gt; = post(&lt;starlette.testclient.TestClient object at 0x000001FE7DE390A0&gt;, 'auth/sessions/revoke', {'session_id': 'missing', 'password': 'Synthetic nebula entropy 2048'})
+
+tests\test_identity_postgres.py:265: AssertionError</failure></testcase><testcase classname="tests.test_identity_postgres" name="test_all_business_routes_deny_anonymous_before_body" time="1.307" /><testcase classname="tests.test_identity_postgres" name="test_registration_scanner_replay_and_cookie_policy" time="1.036" /><testcase classname="tests.test_identity_postgres" name="test_csrf_origin_body_limit_and_error_redaction" time="0.325" /><testcase classname="tests.test_identity_postgres" name="test_two_accounts_isolate_ids_and_missing_table_never_falls_back" time="3.952" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[anomalous_source]" time="0.735" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[absolute]" time="0.743" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[revoked]" time="0.737" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[disabled]" time="0.695" /><testcase classname="tests.test_identity_postgres" name="test_reset_revokes_all_sessions_and_tokens" time="1.668" /><testcase classname="tests.test_identity_postgres" name="test_wrong_key_and_lost_lock_fail_closed" time="0.917" /><testcase classname="tests.test_identity_postgres" name="test_encrypted_outbox_submission_and_expired_mail" time="0.681" /><testcase classname="tests.test_identity_postgres" name="test_disabled_generation_blocks_existing_worker_repository" time="1.750" /><testcase classname="tests.test_identity_postgres" name="test_generation_change_during_transaction_rolls_back" time="1.866" /><testcase classname="tests.test_identity_postgres" name="test_concurrent_email_confirmation_is_one_use" time="0.659" /><testcase classname="tests.test_identity_postgres" name="test_admin_requires_totp_recent_proof_and_one_use_recovery" time="1.837" /><testcase classname="tests.test_identity_postgres" name="test_offline_maintenance_refuses_running_backend" time="0.710" /><testcase classname="tests.test_identity_postgres" name="test_email_rate_limit_idempotency_and_expiry" time="0.783" /><testcase classname="tests.test_identity_postgres" name="test_tenant_document_vector_and_archive_roundtrip" time="4.765" /><testcase classname="tests.test_identity_postgres" name="test_smtp_rejection_does_not_activate_account" time="0.477" /><testcase classname="tests.test_identity_postgres" name="test_login_denials_are_generic_and_backoff_is_enforced" time="0.862" /><testcase classname="tests.test_identity_postgres" name="test_offline_admin_preview_confirmation_and_no_default_admin" time="0.912" /><testcase classname="tests.test_identity_postgres" name="test_expired_mail_lease_recovers_and_exhaustion_stops_retry" time="0.583" /><testcase classname="tests.test_identity_postgres" name="test_starttls_precedes_authentication_and_submission" time="0.457" /><testcase classname="tests.test_identity_postgres" name="test_profile_is_private_and_persists_in_session" time="1.528" /><testcase classname="tests.test_identity_postgres" name="test_existing_identity_schema_accepts_username_feature" time="0.818" /><testcase classname="tests.test_identity_postgres" name="test_current_persistent_session_renewal_preserves_revocation" time="0.754" /><testcase classname="tests.test_identity_postgres" name="test_source_change_revokes_session" time="0.746" /><testcase classname="tests.test_identity_postgres" name="test_enrollment_uri_roundtrip_matches_returned_secret" time="0.794" /><testcase classname="tests.test_identity_postgres" name="test_current_email_continue_flow_and_resend_cooldown" time="0.716" /></testsuite></testsuites>

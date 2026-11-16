@@ -32,11 +32,11 @@
 .history-close, .result-close { width: 30px; height: 30px; flex: 0 0 30px; padding: 0; border: 0; background: transparent; border-radius: 7px; font-size: 22px; color: #5d7669; line-height: 1; }
 .result-close { margin-left: auto; align-self: flex-start; }
 .conversation-layout .new-conversation { padding: 8px 12px; font-size: 13px; }
-.conversation-layout .history-list-heading .history-label { margin: 17px 6px 8px; }
-.conversation-layout .history-manage { margin-top: 5px; }
-.conversation-layout .conversation-row .conversation-item { padding-top: 9px; padding-bottom: 9px; gap: 7px; }
-.conversation-layout .conversation-item b { font-size: 12px; line-height: 1.65; }
-.conversation-layout .conversation-item small { margin-top: 3px; font-size: 10px; }
+.conversation-layout .history-list-heading .history-label { margin: 0; }
+.conversation-layout .history-manage { margin-top: 0; }
+.conversation-layout .conversation-row .conversation-item { padding-top: 8px; padding-bottom: 8px; gap: 6px; }
+.conversation-layout .conversation-item b { font-size: 12.5px; line-height: 1.55; }
+.conversation-layout .conversation-item small { margin-top: 3px; font-size: 11px; }
 .conversation-layout .history-footer { padding: 14px 6px 0; }
 .conversation-layout.workbench > .chat-panel,
 .archive-layout.project-workspace > .project-main {

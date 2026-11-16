@@ -9,13 +9,13 @@ import json
 import math
 import os
 from io import BytesIO
-from types import SimpleNamespace
 from urllib.parse import urlsplit, urlunsplit
 from uuid import uuid4
 from zipfile import ZipFile
 
 import pytest
 from fastapi.testclient import TestClient
+from langchain_core.messages import AIMessage
 
 pytestmark = pytest.mark.postgres
 
@@ -79,34 +79,30 @@ def pg_client(monkeypatch, tmp_path):
             client.model_payloads = []
 
             class Model:
-                def __init__(self, **kwargs):
-                    self.chat = SimpleNamespace(completions=self)
+                def __init__(self, settings, **kwargs):
+                    self.settings = settings
 
-                def __enter__(self):
-                    return self
-
-                def __exit__(self, *args):
-                    return False
-
-                def create(self, **kwargs):
-                    client.model_payloads.append(kwargs)
+                def invoke(self, messages):
+                    client.model_payloads.append(
+                        {
+                            "model": self.settings.deepseek_model,
+                            "messages": [{"content": message.content} for message in messages],
+                        }
+                    )
                     value = (
                         '{"answer":"Synthetic explanation [E1]","'
                         'citations":["E1"],"insufficient_evidence'
                         '":false}'
                     )
-                    return SimpleNamespace(
-                        model="synthetic-answer-v1",
-                        choices=[
-                            SimpleNamespace(
-                                finish_reason="stop", message=SimpleNamespace(content=value)
-                            )
-                        ],
+                    return AIMessage(
+                        content=value,
+                        response_metadata={
+                            "model_name": "synthetic-answer-v1",
+                            "finish_reason": "stop",
+                        },
                     )
 
-            import openai
-
-            monkeypatch.setattr(openai, "OpenAI", Model)
+            monkeypatch.setattr("astroagent.model_client.chat_model", Model)
             yield client
     finally:
         if created:

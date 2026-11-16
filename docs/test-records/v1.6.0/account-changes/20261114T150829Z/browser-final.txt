@@ -1,0 +1,19 @@
+[WebServer] INFO:     Started server process [45856]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8101 (Press CTRL+C to quit)
+[WebServer] (node:33240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:37680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout (1.6s)
+  ok 2 [chromium] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state (2.6s)
+(node:52764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [edge] › tests\browser\account-changes.spec.ts:26:1 › account QR enrollment, invalid code, recovery download and narrow layout (2.2s)
+  ok 4 [edge] › tests\browser\account-changes.spec.ts:59:1 › username propagates to sidebar, menu closes and logout clears private browser state (2.5s)
+
+  4 passed (19.4s)

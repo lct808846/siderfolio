@@ -15,7 +15,7 @@
 .composer-plot-return { color: var(--muted); border-left: 1px solid #c8d8cb; padding-left: 9px; margin-left: 2px; font-size: 11px; }
 .composer-plot-mode { border-color: #b5cdbb; }
 .workbench-plot-upload { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; min-height: 34px; padding: 0; margin-left: auto; border: 0; background: transparent; color: var(--muted); }
-.workbench-plot { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; min-width: 0; overflow: hidden; }
+.workbench-plot { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; min-width: 0; overflow: hidden; animation: surface-fade-in 180ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)); }
 .workbench-plot-context { display: flex; flex: none; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fafcfb; max-height: 35%; overflow: auto; }
 .workbench-plot-context > label { display: flex; flex-direction: column; gap: 5px; min-width: 130px; max-width: min(100%, 320px); color: var(--muted); font-size: 11px; }
 .workbench-plot-context select { min-height: 34px; max-width: 100%; padding: 6px 10px; font-size: 12px; }
@@ -64,4 +64,7 @@
   .composer-task-tools > .composer-task-button { padding-inline: 7px; gap: 5px; }
   .composer-plot-return { display: none; }
   .workbench-plot .plot-appearance { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workbench-plot { animation: none; }
 }

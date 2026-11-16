@@ -1,0 +1,29 @@
+........................................................................ [ 11%]
+.............................................F
+================================== FAILURES ===================================
+_ test_first_question_names_default_conversation_once_and_survives_follow_up __
+
+client = <starlette.testclient.TestClient object at 0x000002A1CFC1E270>
+
+    def test_first_question_names_default_conversation_once_and_survives_follow_up(client):
+>       conversation = create(client, "�»Ự")
+                       ^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_conversations.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <starlette.testclient.TestClient object at 0x000002A1CFC1E270>
+title = '�»Ự'
+
+    def create(client, title="�ϳɻỰ"):
+        response = client.post("/api/v1/conversations", json={"title": title})
+>       assert response.status_code == 201, response.text
+E       AssertionError: {"error":{"code":"invalid_conversation_request","message":"�Ự���������Ч��","retryable":false}}
+E       assert 422 == 201
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests\test_conversations.py:50: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_conversations.py::test_first_question_names_default_conversation_once_and_survives_follow_up
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 117 passed in 10.94s

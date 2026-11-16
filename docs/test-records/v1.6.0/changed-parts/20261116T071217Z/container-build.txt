@@ -1,0 +1,168 @@
+ Image astroagent-frontend:1.6.0-dev.0 Building 
+ Image astroagent-backend:1.6.0-dev.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.54kB 0.0s done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 563B 0.1s done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#2 DONE 0.1s
+
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.49kB 0.0s done
+#3 DONE 0.1s
+
+#4 [backend internal] load metadata for docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#4 DONE 4.4s
+
+#5 [frontend internal] load metadata for docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#5 DONE 4.4s
+
+#6 [backend internal] load .dockerignore
+#6 transferring context: 682B done
+#6 DONE 0.0s
+
+#7 [backend internal] load build context
+#7 DONE 0.0s
+
+#8 [frontend internal] load build context
+#8 ...
+
+#9 [frontend build 1/6] FROM docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#9 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.1s done
+#9 DONE 0.1s
+
+#10 [backend runtime 1/7] FROM docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#10 resolve docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2 0.1s done
+#10 DONE 0.1s
+
+#8 [frontend internal] load build context
+#8 transferring context: 1.82MB 0.3s done
+#8 DONE 0.4s
+
+#11 [frontend build 2/6] WORKDIR /app
+#11 CACHED
+
+#12 [frontend build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#12 CACHED
+
+#13 [frontend build 4/6] RUN npm ci
+#13 CACHED
+
+#7 [backend internal] load build context
+#7 transferring context: 1.76MB 0.5s done
+#7 DONE 0.5s
+
+#14 [frontend build 5/6] COPY frontend ./
+#14 DONE 0.2s
+
+#15 [backend runtime 2/7] WORKDIR /app
+#15 CACHED
+
+#16 [backend runtime 3/7] COPY containers/application/requirements-runtime.lock /tmp/requirements-runtime.lock
+#16 CACHED
+
+#17 [backend runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#17 CACHED
+
+#18 [backend runtime 5/7] COPY pyproject.toml README.md ./
+#18 CACHED
+
+#19 [backend runtime 6/7] COPY src ./src
+#19 DONE 0.2s
+
+#20 [frontend build 6/6] RUN npm run build
+#20 1.330 
+#20 1.330 > astroagent-workbench@1.6.0-dev.0 build
+#20 1.330 > vue-tsc --noEmit && vite build
+#20 1.330 
+#20 ...
+
+#21 [backend runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor     && chown 10001:10001 /var/lib/astroagent-executor
+#21 7.456 Processing /app
+#21 7.478   Preparing metadata (pyproject.toml): started
+#21 13.01   Preparing metadata (pyproject.toml): finished with status 'done'
+#21 13.06 Building wheels for collected packages: astroagent
+#21 13.08   Building wheel for astroagent (pyproject.toml): started
+#21 16.87   Building wheel for astroagent (pyproject.toml): finished with status 'done'
+#21 16.87   Created wheel for astroagent: filename=astroagent-1.6.0.dev0-py3-none-any.whl size=677478 sha256=053c4ce086f572ffd1c8cf5efaa4f059496cb05ef446e29544280faf684cfb15
+#21 16.87   Stored in directory: /tmp/pip-ephem-wheel-cache-0t4nmwjb/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+#21 16.91 Successfully built astroagent
+#21 16.91 Installing collected packages: astroagent
+#21 18.05 Successfully installed astroagent-1.6.0.dev0
+#21 18.07 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#21 20.31 
+#21 20.31 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#21 20.31 [notice] To update, run: pip install --upgrade pip
+#21 29.44 No broken requirements found.
+#21 DONE 30.6s
+
+#20 [frontend build 6/6] RUN npm run build
+#20 ...
+
+#22 [backend] exporting to image
+#22 exporting layers
+#22 exporting layers 3.4s done
+#22 exporting manifest sha256:a9464aec5dbc116f63467fd2b02d480f870f8739941a754c0422b6f4504f7837
+#22 exporting manifest sha256:a9464aec5dbc116f63467fd2b02d480f870f8739941a754c0422b6f4504f7837 0.2s done
+#22 exporting config sha256:d2ae05ae3d3407a156a5c73d8e7560f48e98f9f5359bffc780e0a46f4fc264ef
+#22 exporting config sha256:d2ae05ae3d3407a156a5c73d8e7560f48e98f9f5359bffc780e0a46f4fc264ef 0.5s done
+#22 exporting attestation manifest sha256:66322d339092a0ab487c3d9b11dbfcd8d66de8f0b5bf770bfc2fb74728d533b5 0.0s done
+#22 exporting manifest list sha256:543fe0e3f3cd3051ac02cb5c3b960d6d6739daf3f1324940b3e3b8eeadbe58aa 0.1s done
+#22 naming to docker.io/library/astroagent-backend:1.6.0-dev.0
+#22 naming to docker.io/library/astroagent-backend:1.6.0-dev.0 done
+#22 unpacking to docker.io/library/astroagent-backend:1.6.0-dev.0
+#22 unpacking to docker.io/library/astroagent-backend:1.6.0-dev.0 2.0s done
+#22 DONE 6.4s
+
+#20 [frontend build 6/6] RUN npm run build
+#20 ...
+
+#23 [backend] resolving provenance for metadata file
+#23 DONE 0.6s
+
+#20 [frontend build 6/6] RUN npm run build
+#20 41.35 vite v7.3.8 building client environment for production...
+#20 42.38 transforming...
+#20 57.80 ✓ 162 modules transformed.
+#20 58.61 rendering chunks...
+#20 58.65 computing gzip size...
+#20 58.70 dist/index.html                   0.44 kB │ gzip:   0.33 kB
+#20 58.70 dist/assets/index-DqZmnvX-.css  215.38 kB │ gzip:  40.66 kB
+#20 58.70 dist/assets/index-C6eILdmk.js   577.38 kB │ gzip: 200.25 kB
+#20 58.70 
+#20 58.70 (!) Some chunks are larger than 500 kB after minification. Consider:
+#20 58.70 - Using dynamic import() to code-split the application
+#20 58.70 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+#20 58.70 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+#20 58.70 ✓ built in 17.10s
+#20 DONE 58.9s
+
+#11 [frontend build 2/6] WORKDIR /app
+#11 CACHED
+
+#24 [frontend runtime 3/4] COPY --from=build --chown=node:node /app/dist ./dist
+#24 DONE 0.1s
+
+#25 [frontend runtime 4/4] COPY --chown=node:node frontend/server.mjs ./server.mjs
+#25 DONE 0.1s
+
+#26 [frontend] exporting to image
+#26 exporting layers
+#26 exporting layers 0.2s done
+#26 exporting manifest sha256:a08f6f06406013e88bac0d84fb9b91f20192cfc5bc304da94a33843c4b915a8c 0.0s done
+#26 exporting config sha256:dce7816493d4149aebea2a12cdcf1c19066b76758aa9386656268ad440c13c66 0.0s done
+#26 exporting attestation manifest sha256:6bc962ec4446ffb82dde4de191a50e824a8ad210cf4cc8ca8f67809d9833d32a 0.0s done
+#26 exporting manifest list sha256:87720188c71e4f206308ec0b84f6ea61e25ea13cb21fc4048e8fe3c5311771e8
+#26 exporting manifest list sha256:87720188c71e4f206308ec0b84f6ea61e25ea13cb21fc4048e8fe3c5311771e8 0.0s done
+#26 naming to docker.io/library/astroagent-frontend:1.6.0-dev.0 done
+#26 unpacking to docker.io/library/astroagent-frontend:1.6.0-dev.0 0.1s done
+#26 DONE 0.5s
+
+#27 [frontend] resolving provenance for metadata file
+#27 DONE 0.1s
+ Image astroagent-backend:1.6.0-dev.0 Built 
+ Image astroagent-frontend:1.6.0-dev.0 Built 

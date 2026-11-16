@@ -1,0 +1,43 @@
+E501 Line too long (127 > 100)
+   --> tests\test_model_providers.py:413:101
+    |
+411 |     service = registry()
+412 |     monkeypatch.setattr(service, "read", lambda: {"providers": []})
+413 |     monkeypatch.setattr(socket, "getaddrinfo", lambda *a, **k: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("8.8.8.8", 443))])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+414 |     seen = []
+415 |     status = {"code": 200}
+    |
+
+E501 Line too long (264 > 100)
+   --> tests\test_model_providers.py:421:101
+    |
+419 | …
+420 | …
+421 | …supportedGenerationMethods": ["generateContent"]}, {"name": "models/embedding", "supportedGenerationMethods": ["embedContent"]}], "nextPageToken": "synthetic-next-page"}
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+422 | …
+423 | …tic-model"}, None], "has_more": True}
+    |
+
+E501 Line too long (132 > 100)
+   --> tests\test_model_providers.py:423:101
+    |
+421 | …nthetic-model", "displayName": "Synthetic", "supportedGenerationMethods": ["generateContent"]}, {"name": "models/embedding", "suppor…
+422 | …
+423 | …el"}, {"id": "invalid model"}, {"id": "synthetic-model"}, None], "has_more": True}
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+424 | …=data)
+    |
+
+E501 Line too long (105 > 100)
+  --> tests\test_rag_postgres.py:97:101
+   |
+95 |                     return AIMessage(
+96 |                         content=value,
+97 |                         response_metadata={"model_name": "synthetic-answer-v1", "finish_reason": "stop"},
+   |                                                                                                     ^^^^^
+98 |                     )
+   |
+
+Found 4 errors.

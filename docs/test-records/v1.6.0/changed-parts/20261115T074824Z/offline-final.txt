@@ -1,0 +1,273 @@
+................................................F....................... [ 36%]
+........................................................................ [ 72%]
+.......................................................                  [100%]
+================================== FAILURES ===================================
+____________ test_openai_chat_uses_actual_adapter_without_network _____________
+
+self = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.6.0', 'langchain': '1.3.16', 'langchain-openai': '1.6.0'}}, ...imeout=60.0, max_retries=0, max_tokens=1500, stream_chunk_timeout=120.0, extra_body={'thinking': {'type': 'disabled'}})
+messages = [HumanMessage(content='Synthetic', additional_kwargs={}, response_metadata={})]
+stop = None
+run_manager = <langchain_core.callbacks.manager.CallbackManagerForLLMRun object at 0x0000025B0FED59D0>
+kwargs = {}
+
+    def _generate(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        run_manager: CallbackManagerForLLMRun | None = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        self._ensure_sync_client_available()
+        payload = self._get_request_payload(messages, stop=stop, **kwargs)
+        generation_info = None
+        raw_response = None
+        try:
+            if "response_format" in payload:
+                payload.pop("stream")
+                raw_response = (
+                    self.root_client.chat.completions.with_raw_response.parse(**payload)
+                )
+                response = raw_response.parse()
+            elif self._use_responses_api(payload):
+                original_schema_obj = kwargs.get("response_format")
+                if original_schema_obj and _is_pydantic_class(original_schema_obj):
+                    raw_response = self.root_client.responses.with_raw_response.parse(
+                        **payload
+                    )
+                else:
+                    raw_response = self.root_client.responses.with_raw_response.create(
+                        **payload
+                    )
+                response = raw_response.parse()
+                if self.include_response_headers:
+                    generation_info = {"headers": dict(raw_response.headers)}
+                generation_info = generation_info or {}
+                _add_gateway_metadata(generation_info, raw_response)
+                # Gateway metadata belongs on `generation_info`, not the message
+                # `response_metadata` that `metadata` populates.
+                gateway_metadata = generation_info.pop(
+                    GATEWAY_METADATA_RESPONSE_KEY, None
+                )
+                result = _construct_lc_result_from_responses_api(
+                    response,
+                    schema=original_schema_obj,
+                    metadata=generation_info,
+                    output_version=self.output_version,
+                )
+                if gateway_metadata is not None:
+                    for generation in result.generations:
+                        generation.generation_info = generation.generation_info or {}
+                        generation.generation_info[GATEWAY_METADATA_RESPONSE_KEY] = (
+                            gateway_metadata
+                        )
+                return result
+            else:
+>               raw_response = self.client.with_raw_response.create(**payload)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_openai\chat_models\base.py:1880: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_legacy_response.py:369: in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_utils\_utils.py:298: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\openai\resources\chat\completions\completions.py:1296: in create
+    return self._post(
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_base_client.py:1381: in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <openai.OpenAI object at 0x0000025B0E4F0A70>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...l', 'max_completion_tokens': 1500, 'stream': False, 'temperature': 0.0}, extra_json={'thinking': {'type': 'disabled'}})
+stream = False
+stream_cls = openai.Stream[openai.types.chat.chat_completion_chunk.ChatCompletionChunk]
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx2.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            custom_auth = self._custom_auth(options.security)
+            if custom_auth is not None:
+                kwargs["auth"] = (
+                    normalize_httpx2_auth(custom_auth)
+                    if is_httpx2_sync_client(self._client)
+                    else normalize_legacy_httpx_auth(custom_auth)
+                )
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = self._send_request(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except timeout_exceptions() as err:
+                log.debug("Encountered a timeout exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except OpenAIError as err:
+                # Propagate OpenAIErrors as-is, without retrying or wrapping in APIConnectionError
+                raise err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+                raise APIConnectionError(request=request) from err
+    
+            log.debug(
+                'HTTP Response: %s %s "%i %s" %s',
+                request.method,
+                request.url,
+                response.status_code,
+                response.reason_phrase,
+                response.headers,
+            )
+            log.debug("request_id: %s", response.headers.get("x-request-id"))
+    
+            try:
+                response.raise_for_status()
+            except status_exceptions() as err:  # thrown on 4xx and 5xx status code
+                log.debug("Encountered an HTTP status error", exc_info=True)
+    
+                if remaining_retries > 0 and self._should_retry(err.response):
+                    err.response.close()
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=response,
+                    )
+                    continue
+    
+                # If the response is streamed then we need to explicitly read the response
+                # to completion before attempting to access the response text.
+                if not err.response.is_closed:
+                    err.response.read()
+    
+                log.debug("Re-raising status error")
+>               raise self._make_status_error_from_response(err.response) from None
+E               openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid (request_id: e1e5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}
+
+E:\miniconda3\envs\agent\Lib\site-packages\openai\_base_client.py:1154: AuthenticationError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000025B0E4F1280>
+
+    def test_openai_chat_uses_actual_adapter_without_network(monkeypatch):
+        requests = []
+    
+        def handle(transport, request):
+            requests.append(json.loads(request.content))
+            return httpx.Response(
+                200,
+                request=request,
+                json={
+                    "id": "synthetic",
+                    "model": "synthetic-model",
+                    "object": "chat.completion",
+                    "choices": [
+                        {
+                            "index": 0,
+                            "finish_reason": "stop",
+                            "message": {"role": "assistant", "content": "Synthetic answer"},
+                        }
+                    ],
+                },
+            )
+    
+        monkeypatch.setattr(httpx.HTTPTransport, "handle_request", handle)
+        model = chat_model(
+            Settings(_env_file=None, deepseek_api_key="synthetic-key", deepseek_model="synthetic-model")
+        )
+>       assert model.invoke([HumanMessage(content="Synthetic")]).content == "Synthetic answer"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_model_providers.py:383: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:477: in invoke
+    self.generate_prompt(
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:1866: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:1673: in generate
+    self._generate_with_cache(
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_core\language_models\chat_models.py:2011: in _generate_with_cache
+    result = self._generate(
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_openai\chat_models\base.py:1885: in _generate
+    _handle_openai_api_error(e)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+e = AuthenticationError("Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid ...5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}")
+
+    def _handle_openai_api_error(e: openai.APIError) -> None:
+        error_message = str(e)
+        if "exceeds the context window" in error_message:
+            raise OpenAIAPIContextOverflowError(
+                message=e.message, request=e.request, body=e.body
+            ) from e
+        if isinstance(e, openai.AuthenticationError):
+>           raise OpenAIAuthenticationError(
+                message=e.message, response=e.response, body=e.body
+            ) from e
+E           langchain_openai.chat_models.base.OpenAIAuthenticationError: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****-key is invalid (request_id: e1e5cecf-32f3-4085-a659-7abdb170b3c6)', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}
+
+E:\miniconda3\envs\agent\Lib\site-packages\langchain_openai\chat_models\base.py:654: OpenAIAuthenticationError
+=========================== short test summary info ===========================
+FAILED tests/test_model_providers.py::test_openai_chat_uses_actual_adapter_without_network
+1 failed, 198 passed, 24 deselected in 30.84s

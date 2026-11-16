@@ -1,0 +1,309 @@
+{
+  "browser_passed_unique": 76,
+  "browser_cases": {
+    "account-changes.spec.ts::account QR enrollment, invalid code, recovery download and narrow layout::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::username propagates to sidebar, menu closes and logout clears private browser state::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::activity dialog only revokes the selected other browser after password confirmation::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::MFA switch waits for confirmation and disabling requires proof::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::account QR enrollment, invalid code, recovery download and narrow layout::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::username propagates to sidebar, menu closes and logout clears private browser state::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::activity dialog only revokes the selected other browser after password confirmation::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "account-changes.spec.ts::MFA switch waits for confirmation and disabling requires proof::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "current-changes.spec.ts::model selection and attachment preview do not send a message::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "current-changes.spec.ts::dragged attachment and edited question create separate preserved turns::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "current-changes.spec.ts::model selection and attachment preview do not send a message::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "current-changes.spec.ts::dragged attachment and edited question create separate preserved turns::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "knowledge.spec.ts::local documents can be uploaded, searched, cited and downloaded::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "knowledge.spec.ts::long Chinese filename remains usable on a narrow screen::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "knowledge.spec.ts::local documents can be uploaded, searched, cited and downloaded::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "knowledge.spec.ts::long Chinese filename remains usable on a narrow screen::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::provider editor, directory, default, key omission, conflict and removal::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::ordinary user settings expose only account controls and no admin link::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::RAG and local assistant failures remain readable without starting model jobs::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::administrator layout keeps masked metadata, tabs and current-account protection::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::provider editor, directory, default, key omission, conflict and removal::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::ordinary user settings expose only account controls and no admin link::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::RAG and local assistant failures remain readable without starting model jobs::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "model-settings.spec.ts::administrator layout keeps masked metadata, tabs and current-account protection::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "overview.spec.ts::project overview creates and removes an explicit evidence link::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "overview.spec.ts::project overview creates and removes an explicit evidence link::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "plot-acceptance.spec.ts::plot workflow requires confirmations before model and execution::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "plot-acceptance.spec.ts::plot workflow requires confirmations before model and execution::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "profile-changes.spec.ts::profile name editing, avatar change/removal and missing usage stay accurate::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "profile-changes.spec.ts::profile rejects oversized files before upload and displays read/upload errors::chromium": {
+      "passed": true,
+      "evidence": "profile-error-visual.json"
+    },
+    "profile-changes.spec.ts::profile navigation and responsive sidebar preserve the unsent question::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "profile-changes.spec.ts::profile name editing, avatar change/removal and missing usage stay accurate::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "profile-changes.spec.ts::profile rejects oversized files before upload and displays read/upload errors::edge": {
+      "passed": true,
+      "evidence": "profile-error-visual.json"
+    },
+    "profile-changes.spec.ts::profile navigation and responsive sidebar preserve the unsent question::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "projects.spec.ts::projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "projects.spec.ts::projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::clipboard preserves the question and reports a denied copy::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::pending response does not open results and manual close survives refresh::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::rename, pin and export a noncurrent conversation; cancel deletion::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::settings refresh failure clears the previous ready status::chromium": {
+      "passed": true,
+      "evidence": "settings-recheck.json"
+    },
+    "remaining-acceptance.spec.ts::bulk deletion preserves the failed item and returns after deleting the current item::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::project navigation survives direct load and refresh without sending requests::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::low-height compact layout keeps focused controls visible and input scrollable::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::reduced transparency disables large background blur::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::sidebar toggles across compact and desktop boundaries without losing draft::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::clipboard preserves the question and reports a denied copy::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::pending response does not open results and manual close survives refresh::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::rename, pin and export a noncurrent conversation; cancel deletion::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::settings refresh failure clears the previous ready status::edge": {
+      "passed": true,
+      "evidence": "settings-recheck.json"
+    },
+    "remaining-acceptance.spec.ts::bulk deletion preserves the failed item and returns after deleting the current item::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::project navigation survives direct load and refresh without sending requests::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::low-height compact layout keeps focused controls visible and input scrollable::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::reduced transparency disables large background blur::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "remaining-acceptance.spec.ts::sidebar toggles across compact and desktop boundaries without losing draft::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "v11-layout.spec.ts::responsive panels preserve drafts without sending::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "v11-layout.spec.ts::keyboard controls work with reduced motion and forced colors::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "v11-layout.spec.ts::responsive panels preserve drafts without sending::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "v11-layout.spec.ts::keyboard controls work with reduced motion and forced colors::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::production build: conversation, follow-up, complete table, preview, download and restore::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::IME composition, explicit examples, plain text literature, rename and delete::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::narrow viewport has usable panel navigation and no page overflow::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::backend connection error is explicit::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::a rejected send preserves the question and only retries on explicit action::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::a late initial list does not clear a send error after navigation::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::local static proxy keeps its API target and never returns SPA HTML for API errors::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::production build: conversation, follow-up, complete table, preview, download and restore::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::IME composition, explicit examples, plain text literature, rename and delete::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::narrow viewport has usable panel navigation and no page overflow::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::backend connection error is explicit::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::a rejected send preserves the question and only retries on explicit action::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::a late initial list does not clear a send error after navigation::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workbench.spec.ts::local static proxy keeps its API target and never returns SPA HTML for API errors::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workflows.spec.ts::fixed workflows create, confirm, execute, display outputs and restore after refresh::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workflows.spec.ts::failed workflow resumes only after confirmation and retains attempts::chromium": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workflows.spec.ts::fixed workflows create, confirm, execute, display outputs and restore after refresh::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    },
+    "workflows.spec.ts::failed workflow resumes only after confirmation and retains attempts::edge": {
+      "passed": true,
+      "evidence": "browser-final.json"
+    }
+  }
+}

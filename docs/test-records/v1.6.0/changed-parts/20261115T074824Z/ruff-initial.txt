@@ -1,0 +1,705 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\agent.py:3:1
+   |
+ 1 |   """使用 LangChain 消息和工具调用协议执行有界的单次科研查询。"""
+ 2 |
+ 3 | / import json
+ 4 | | from datetime import UTC, datetime
+ 5 | |
+ 6 | | from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+ 7 | | from openai import (
+ 8 | |     APIConnectionError,
+ 9 | |     APIError,
+10 | |     APITimeoutError,
+11 | |     AuthenticationError,
+12 | |     RateLimitError,
+13 | | )
+14 | | from pydantic import ValidationError
+15 | |
+16 | | from astroagent.ads import AdsService
+17 | | from astroagent.config import Settings
+18 | | from astroagent.model_client import chat_model
+19 | | from astroagent.errors import ServiceError
+20 | | from astroagent.gaia import GaiaService
+21 | | from astroagent.schemas import (
+22 | |     ChatResponse,
+23 | |     GaiaQuery,
+24 | |     GaiaQueryResult,
+25 | |     LiteratureQuery,
+26 | |     LiteratureSearchResult,
+27 | |     ObjectQuery,
+28 | |     QueryResult,
+29 | | )
+30 | | from astroagent.simbad import SimbadService
+   | |___________________________________________^
+31 |
+32 |   SYSTEM_PROMPT = """你是 AstroAgent，帮助用户进行可追溯的天文查询。默认用中文简洁回答。
+   |
+help: Organize imports
+   |
+17 | from astroagent.config import Settings
+   - from astroagent.model_client import chat_model
+18 | from astroagent.errors import ServiceError
+19 | from astroagent.gaia import GaiaService
+20 + from astroagent.model_client import chat_model
+21 | from astroagent.schemas import (
+   |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\api\auth.py:576:84
+    |
+574 |             raise ServiceError(404, "session_not_found", "该会话已退出或失效，请刷新列表。")
+575 |         if hmac.compare_digest(target, user["session_hash"]):
+576 |             raise ServiceError(409, "current_session_protected", "不能在活动会话列表中退出当前浏览器。")
+    |                                                                                                     ^^^^
+577 |         db.execute(
+578 |             "UPDATE public.auth_sessions SET revoked=true WHERE user_id=%s AND hash=%s",
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\api\model_providers.py:3:1
+   |
+ 1 |   """Administrator-only provider configuration; responses never include keys."""
+ 2 |
+ 3 | / from fastapi import APIRouter, Request
+ 4 | |
+ 5 | | from astroagent.api.admin import admin
+ 6 | | from astroagent.api.auth import runtime, source
+ 7 | | from astroagent.auth_store import AUTH_LOCK
+ 8 | | from astroagent.config import Settings
+ 9 | | from astroagent.errors import ServiceError
+10 | | from astroagent.model_providers import (
+11 | |     DefaultModelInput, ProviderInput, ProviderRegistry, ProviderRevision,
+12 | | )
+   | |_^
+13 |
+14 |   router = APIRouter(prefix="/api/v1/admin/model-providers", tags=["model providers"])
+   |
+help: Organize imports
+   |
+10 | from astroagent.model_providers import (
+   -     DefaultModelInput, ProviderInput, ProviderRegistry, ProviderRevision,
+11 +     DefaultModelInput,
+12 +     ProviderInput,
+13 +     ProviderRegistry,
+14 +     ProviderRevision,
+15 | )
+   |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\config.py:20:101
+   |
+18 |     deepseek_model: str = Field(default="deepseek-flash", min_length=1)
+19 |     selected_model_id: str = Field(default="", exclude=True, repr=False)
+20 |     model_protocol: Literal["openai_chat", "openai_responses", "anthropic", "gemini"] = "openai_chat"
+   |                                                                                                     ^
+21 |     deepseek_base_url: AnyHttpUrl = AnyHttpUrl("https://api.deepseek.com")
+22 |     chat_models: list[ChatModelOption] = Field(default_factory=list, max_length=16)
+   |
+
+E501 Line too long (112 > 100)
+  --> src\astroagent\conversation_service.py:56:101
+   |
+54 |             if turn.model is None:
+55 |                 config = getattr(agent, "settings", None)
+56 |                 turn.model = getattr(config, "selected_model_id", "") or getattr(config, "deepseek_model", None)
+   |                                                                                                     ^^^^^^^^^^^^
+57 |             turn.response = agent.converse(request.message, context)
+58 |             turn.execution_status = "completed"
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\main.py:3:1
+   |
+ 1 |   """FastAPI 应用入口。"""
+ 2 |
+ 3 | / from contextlib import asynccontextmanager
+ 4 | |
+ 5 | | from fastapi import FastAPI, Request
+ 6 | | from fastapi.exceptions import RequestValidationError
+ 7 | | from fastapi.openapi.utils import get_openapi
+ 8 | | from fastapi.responses import JSONResponse
+ 9 | |
+10 | | from astroagent import __version__
+11 | | from astroagent.api.admin import router as admin_router
+12 | | from astroagent.api.artifacts import router as artifacts_router
+13 | | from astroagent.api.attachments import router as attachments_router
+14 | | from astroagent.api.auth import router as auth_router
+15 | | from astroagent.api.chat import router as chat_router
+16 | | from astroagent.api.conversations import router as conversations_router
+17 | | from astroagent.api.exports import ExportBodyLimit
+18 | | from astroagent.api.exports import router as exports_router
+19 | | from astroagent.api.health import router as health_router
+20 | | from astroagent.api.knowledge import router as knowledge_router
+21 | | from astroagent.api.links import router as links_router
+22 | | from astroagent.api.local_assistant import router as local_assistant_router
+23 | | from astroagent.api.models import router as models_router
+24 | | from astroagent.api.model_providers import router as model_providers_router
+25 | | from astroagent.api.plotting import router as plotting_router
+26 | | from astroagent.api.projects import router as projects_router
+27 | | from astroagent.api.rag import router as rag_router
+28 | | from astroagent.api.setup import router as setup_router
+29 | | from astroagent.api.workflows import router as workflows_router
+30 | | from astroagent.auth_access import IdentityAccess
+31 | | from astroagent.config import LocalSettings
+32 | | from astroagent.errors import ServiceError
+33 | | from astroagent.export_schemas import ExportRequest
+34 | | from astroagent.knowledge_schemas import DocumentUpload
+35 | | from astroagent.local_access import LocalAccess
+   | |_______________________________________________^
+help: Organize imports
+   |
+22 | from astroagent.api.local_assistant import router as local_assistant_router
+23 + from astroagent.api.model_providers import router as model_providers_router
+24 | from astroagent.api.models import router as models_router
+   - from astroagent.api.model_providers import router as model_providers_router
+25 | from astroagent.api.plotting import router as plotting_router
+   |
+
+E501 Line too long (104 > 100)
+  --> src\astroagent\model_client.py:30:75
+   |
+28 |                 "当前 Gemini 项目的预付费余额已耗尽，请在 Google AI Studio 的项目结算中充值后重试。"
+29 |                 if "prepayment credits" in message and "depleted" in message
+30 |                 else "Gemini 服务需要处理余额或计费问题，请在 Google AI Studio 检查当前项目的结算状态。"
+   |                                                                                                      ^^^
+31 |             )
+32 |             failure = ServiceError(503, "gemini_billing_required", detail)
+   |
+
+E501 Line too long (125 > 100)
+  --> src\astroagent\model_client.py:34:85
+   |
+32 |             failure = ServiceError(503, "gemini_billing_required", detail)
+33 |         else:
+34 |             failure = ServiceError(503, "model_billing_required", "模型服务商返回计费错误，请检查此服务商的余额与结算状态。")
+   |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+35 |     elif status in (401, 403):
+36 |         failure = ServiceError(503, "model_authentication_failed", "模型服务拒绝访问，请检查密钥、项目权限及服务商访问限制。")
+   |
+
+E501 Line too long (126 > 100)
+  --> src\astroagent\model_client.py:36:85
+   |
+34 |             failure = ServiceError(503, "model_billing_required", "模型服务商返回计费错误，请检查此服务商的余额与结算状态。")
+35 |     elif status in (401, 403):
+36 |         failure = ServiceError(503, "model_authentication_failed", "模型服务拒绝访问，请检查密钥、项目权限及服务商访问限制。")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+37 |     elif status == 429:
+38 |         failure = ServiceError(503, "model_rate_limited", "模型额度或请求速率受限，请检查服务商限额后重试。", retryable=True)
+   |
+
+E501 Line too long (125 > 100)
+  --> src\astroagent\model_client.py:38:81
+   |
+36 |         failure = ServiceError(503, "model_authentication_failed", "模型服务拒绝访问，请检查密钥、项目权限及服务商访问限制。")
+37 |     elif status == 429:
+38 |         failure = ServiceError(503, "model_rate_limited", "模型额度或请求速率受限，请检查服务商限额后重试。", retryable=True)
+   |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+39 |     elif status == 404:
+40 |         failure = ServiceError(502, "model_not_found", "服务商未找到所选模型或请求端点，请核对模型 ID、协议及 API 根地址。")
+   |
+
+E501 Line too long (124 > 100)
+  --> src\astroagent\model_client.py:40:80
+   |
+38 |         failure = ServiceError(503, "model_rate_limited", "模型额度或请求速率受限，请检查服务商限额后重试。", retryable=True)
+39 |     elif status == 404:
+40 |         failure = ServiceError(502, "model_not_found", "服务商未找到所选模型或请求端点，请核对模型 ID、协议及 API 根地址。")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+41 |     elif status in (400, 422):
+42 |         failure = ServiceError(502, "model_request_invalid", "服务商拒绝请求参数，请核对所选模型支持的协议与工具调用能力。")
+   |
+
+E501 Line too long (124 > 100)
+  --> src\astroagent\model_client.py:42:82
+   |
+40 |         failure = ServiceError(502, "model_not_found", "服务商未找到所选模型或请求端点，请核对模型 ID、协议及 API 根地址。")
+41 |     elif status in (400, 422):
+42 |         failure = ServiceError(502, "model_request_invalid", "服务商拒绝请求参数，请核对所选模型支持的协议与工具调用能力。")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+43 |     else:
+44 |         failure = ServiceError(502, "model_unavailable", "模型服务暂时未能完成请求，请稍后重试。", retryable=status >= 500)
+   |
+
+E501 Line too long (123 > 100)
+  --> src\astroagent\model_client.py:44:82
+   |
+42 |         failure = ServiceError(502, "model_request_invalid", "服务商拒绝请求参数，请核对所选模型支持的协议与工具调用能力。")
+43 |     else:
+44 |         failure = ServiceError(502, "model_unavailable", "模型服务暂时未能完成请求，请稍后重试。", retryable=status >= 500)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+45 |     LOGGER.warning("Model request rejected: protocol=%s status=%d category=%s", protocol, status, failure.error.code)
+46 |     return failure
+   |
+
+E501 Line too long (117 > 100)
+  --> src\astroagent\model_client.py:45:101
+   |
+43 |     else:
+44 |         failure = ServiceError(502, "model_unavailable", "模型服务暂时未能完成请求，请稍后重试。", retryable=status >= 500)
+45 |     LOGGER.warning("Model request rejected: protocol=%s status=%d category=%s", protocol, status, failure.error.code)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^
+46 |     return failure
+   |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\model_client.py:111:101
+    |
+109 |                 with client.stream(
+110 |                     "POST", url, json=body,
+111 |                     headers=provider_headers(protocol, self.settings.deepseek_api_key.get_secret_value()),
+    |                                                                                                     ^^^^^^
+112 |                 ) as response:
+113 |                     content = bytearray()
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\model_client.py:127:88
+    |
+125 |             raise
+126 |         except httpx.TimeoutException as exc:
+127 |             raise ServiceError(504, "model_timeout", "模型响应超时，请稍后重试。", retryable=True) from exc
+    |                                                                                                     ^^^^^^^
+128 |         except httpx.RequestError as exc:
+129 |             raise ServiceError(502, "model_unavailable", "模型服务连接失败，请核对服务地址。", retryable=True) from exc
+    |
+
+E501 Line too long (119 > 100)
+   --> src\astroagent\model_client.py:129:84
+    |
+127 |             raise ServiceError(504, "model_timeout", "模型响应超时，请稍后重试。", retryable=True) from exc
+128 |         except httpx.RequestError as exc:
+129 |             raise ServiceError(502, "model_unavailable", "模型服务连接失败，请核对服务地址。", retryable=True) from exc
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+130 |         except Exception as exc:
+131 |             raise ServiceError(502, "model_invalid_response", "模型响应与所选协议不符，或返回了无效的工具参数。") from exc
+    |
+
+E501 Line too long (122 > 100)
+   --> src\astroagent\model_client.py:131:83
+    |
+129 |             raise ServiceError(502, "model_unavailable", "模型服务连接失败，请核对服务地址。", retryable=True) from exc
+130 |         except Exception as exc:
+131 |             raise ServiceError(502, "model_invalid_response", "模型响应与所选协议不符，或返回了无效的工具参数。") from exc
+    |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^
+132 |
+133 |     def openai_responses_request(self, messages):
+    |
+
+E501 Line too long (122 > 100)
+   --> src\astroagent\model_client.py:139:101
+    |
+137 |                 items.extend(message.additional_kwargs["protocol_blocks"])
+138 |             elif isinstance(message, ToolMessage):
+139 |                 items.append({"type": "function_call_output", "call_id": message.tool_call_id, "output": message.content})
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+140 |             else:
+141 |                 items.append({"role": "system" if isinstance(message, SystemMessage) else "user", "content": message.content})
+    |
+
+E501 Line too long (126 > 100)
+   --> src\astroagent\model_client.py:141:101
+    |
+139 |                 items.append({"type": "function_call_output", "call_id": message.tool_call_id, "output": message.content})
+140 |             else:
+141 |                 items.append({"role": "system" if isinstance(message, SystemMessage) else "user", "content": message.content})
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+142 |         body = {
+143 |             "model": self.settings.deepseek_model, "input": items, "store": False,
+    |
+
+E501 Line too long (136 > 100)
+   --> src\astroagent\model_client.py:147:101
+    |
+145 | …
+146 | …
+147 | …**tool, "strict": False} for tool in self.tools], parallel_tool_calls=self.parallel)
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+148 | …
+149 | …_object"}}
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\model_client.py:159:101
+    |
+157 |                 calls.append(tool_call(item["name"], item["arguments"], item["call_id"]))
+158 |             elif item["type"] == "message":
+159 |                 texts.extend(part["text"] for part in item["content"] if part["type"] == "output_text")
+    |                                                                                                     ^^^
+160 |         complete = data.get("status") == "completed"
+161 |         return self.message(texts, calls, blocks, data.get("usage", {}), data.get("model"), complete)
+    |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\model_client.py:161:101
+    |
+159 |                 texts.extend(part["text"] for part in item["content"] if part["type"] == "output_text")
+160 |         complete = data.get("status") == "completed"
+161 |         return self.message(texts, calls, blocks, data.get("usage", {}), data.get("model"), complete)
+    |                                                                                                     ^
+162 |
+163 |     def anthropic_request(self, messages):
+    |
+
+E501 Line too long (136 > 100)
+   --> src\astroagent\model_client.py:171:101
+    |
+169 | …ssage.additional_kwargs["protocol_blocks"])
+170 | …
+171 | …": "tool_result", "tool_use_id": message.tool_call_id, "content": message.content}])
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+172 | …
+173 | …": "text", "text": message.content}])
+    |
+
+E501 Line too long (155 > 100)
+   --> src\astroagent\model_client.py:179:101
+    |
+177 | …
+178 | …
+179 | …on": tool.get("description", ""), "input_schema": tool["parameters"]} for tool in self.tools]
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+180 | …rallel_tool_use": not self.parallel}
+181 | …
+    |
+
+E501 Line too long (117 > 100)
+   --> src\astroagent\model_client.py:186:101
+    |
+184 |         blocks = data["content"]
+185 |         texts = [part["text"] for part in blocks if part["type"] == "text"]
+186 |         calls = [tool_call(part["name"], part["input"], part["id"]) for part in blocks if part["type"] == "tool_use"]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+187 |         complete = data.get("stop_reason") in {"end_turn", "stop_sequence", "tool_use"}
+188 |         return self.message(texts, calls, blocks, data.get("usage", {}), data.get("model"), complete)
+    |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\model_client.py:188:101
+    |
+186 |         calls = [tool_call(part["name"], part["input"], part["id"]) for part in blocks if part["type"] == "tool_use"]
+187 |         complete = data.get("stop_reason") in {"end_turn", "stop_sequence", "tool_use"}
+188 |         return self.message(texts, calls, blocks, data.get("usage", {}), data.get("model"), complete)
+    |                                                                                                     ^
+189 |
+190 |     def gemini_request(self, messages):
+    |
+
+E501 Line too long (121 > 100)
+   --> src\astroagent\model_client.py:207:101
+    |
+205 |                 except ValueError:
+206 |                     result = {"result": message.content}
+207 |                 function = {"name": message.name, "response": result if isinstance(result, dict) else {"result": result}}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+208 |                 if call_ids.get(message.tool_call_id):
+209 |                     function["id"] = call_ids[message.tool_call_id]
+    |
+
+E501 Line too long (126 > 100)
+   --> src\astroagent\model_client.py:223:101
+    |
+221 |         if self.tools:
+222 |             body["tools"] = [{"functionDeclarations": [
+223 |                 {"name": tool["name"], "description": tool.get("description", ""), "parametersJsonSchema": tool["parameters"]}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+224 |                 for tool in self.tools
+225 |             ]}]
+    |
+
+E501 Line too long (197 > 100)
+   --> src\astroagent\model_client.py:235:101
+    |
+233 | …
+234 | …("thought")]
+235 | …args", {}), part["functionCall"].get("id") or "call_" + uuid4().hex) for part in blocks if "functionCall" in part]
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+236 | …
+237 | …ens": usage.get("candidatesTokenCount", 0) + usage.get("thoughtsTokenCount", 0)}
+    |
+
+E501 Line too long (163 > 100)
+   --> src\astroagent\model_client.py:237:101
+    |
+235 | …ctionCall"].get("args", {}), part["functionCall"].get("id") or "call_" + uuid4().hex) for part in blocks if "functionCall" in part]
+236 | …
+237 | …, 0), "output_tokens": usage.get("candidatesTokenCount", 0) + usage.get("thoughtsTokenCount", 0)}
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+238 | ….get("modelVersion"), candidate.get("finishReason") == "STOP")
+    |
+
+E501 Line too long (128 > 100)
+   --> src\astroagent\model_client.py:238:101
+    |
+236 |         usage = data.get("usageMetadata", {})
+237 |         normalized = {"input_tokens": usage.get("promptTokenCount", 0), "output_tokens": usage.get("candidatesTokenCount", 0) + usage…
+238 |         return self.message(texts, calls, blocks, normalized, data.get("modelVersion"), candidate.get("finishReason") == "STOP")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+239 |
+240 |     def message(self, texts, calls, blocks, usage, model, complete):
+    |
+
+E501 Line too long (126 > 100)
+   --> src\astroagent\model_client.py:243:84
+    |
+241 |         if not complete:
+242 |             # Never execute partial tools or publish a token-limited/safety-blocked answer.
+243 |             raise ServiceError(502, "model_incomplete_response", "模型回答未完整生成或被服务商中止；未执行不完整的工具调用。")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+244 |         if len(calls) > 32:
+245 |             raise ValueError("Too many tool calls")
+    |
+
+E501 Line too long (136 > 100)
+   --> src\astroagent\model_client.py:250:101
+    |
+248 | …ls,
+249 | …ocks},
+250 | …r self.settings.deepseek_model, "finish_reason": "tool_calls" if calls else "stop"},
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+251 | …kens, "output_tokens": output_tokens, "total_tokens": input_tokens + output_tokens},
+252 | …
+    |
+
+E501 Line too long (136 > 100)
+   --> src\astroagent\model_client.py:251:101
+    |
+249 | …ocks},
+250 | …r self.settings.deepseek_model, "finish_reason": "tool_calls" if calls else "stop"},
+251 | …kens, "output_tokens": output_tokens, "total_tokens": input_tokens + output_tokens},
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+252 | …
+    |
+
+E501 Line too long (102 > 100)
+  --> src\astroagent\model_providers.py:27:101
+   |
+25 |     if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped:
+26 |         address = address.ipv4_mapped
+27 |     if address.is_multicast or address.is_unspecified or address.is_loopback or address.is_link_local:
+   |                                                                                                     ^^
+28 |         return False
+29 |     if address.is_global:
+   |
+
+E501 Line too long (101 > 100)
+  --> src\astroagent\model_providers.py:86:101
+   |
+84 |         if len({model.id for model in self.models}) != len(self.models):
+85 |             raise ValueError("模型 ID 不能重复。")
+86 |         if self.api_key and any(c.isspace() or ord(c) < 32 for c in self.api_key.get_secret_value()):
+   |                                                                                                     ^
+87 |             raise ValueError("API 密钥不能含空白或控制字符。")
+88 |         return self
+   |
+
+E501 Line too long (109 > 100)
+   --> src\astroagent\model_providers.py:118:95
+    |
+116 |             "default_model": value.deepseek_model,
+117 |             "providers": [{
+118 |                 "id": "system", "name": "现有模型服务", "base_url": str(value.deepseek_base_url).rstrip("/"),
+    |                                                                                                     ^^^^^^^^^
+119 |                 "protocol": value.model_protocol, "api_key": value.deepseek_api_key.get_secret_value(),
+120 |                 "enabled": True, "thinking_parameter": value.llm_thinking_parameter,
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\model_providers.py:119:101
+    |
+117 |             "providers": [{
+118 |                 "id": "system", "name": "现有模型服务", "base_url": str(value.deepseek_base_url).rstrip("/"),
+119 |                 "protocol": value.model_protocol, "api_key": value.deepseek_api_key.get_secret_value(),
+    |                                                                                                     ^^^
+120 |                 "enabled": True, "thinking_parameter": value.llm_thinking_parameter,
+121 |                 "models": [{"id": m.id, "label": m.label} for m in value.available_models],
+    |
+
+E501 Line too long (118 > 100)
+   --> src\astroagent\model_providers.py:138:87
+    |
+136 |             return value
+137 |         except Exception as exc:
+138 |             raise ServiceError(503, "provider_configuration_invalid", "模型服务配置无法读取，请联系管理员。") from exc
+    |                                                                                                      ^^^^^^^^^^^^^^^^^
+139 |
+140 |     def catalog(self, value=None):
+    |
+
+E501 Line too long (107 > 100)
+   --> src\astroagent\model_providers.py:143:101
+    |
+141 |         value = value if value is not None else self.read()
+142 |         options = [
+143 |             ChatModelOption(id=model_key(provider, model), label=model["label"], provider=provider["name"])
+    |                                                                                                     ^^^^^^^
+144 |             for provider in value["providers"] if provider["enabled"] and provider["api_key"]
+145 |             for model in provider["models"]
+    |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\model_providers.py:173:101
+    |
+171 |         value["default_model"] = self.catalog(value).default_model
+172 |         value["revision"] += 1
+173 |         encrypted = self.store.crypto.encrypt(json.dumps(value, ensure_ascii=False).encode()).decode()
+    |                                                                                                     ^^
+174 |         db.execute(
+175 |             "INSERT INTO public.auth_meta(key,value) VALUES (%s,%s) "
+    |
+
+E501 Line too long (105 > 100)
+   --> src\astroagent\model_providers.py:185:87
+    |
+183 |         if not key and existing:
+184 |             if body.base_url != existing["base_url"] or body.protocol != existing["protocol"]:
+185 |                 raise ServiceError(422, "provider_key_required", "更改 API 地址或协议时请重新填写密钥。")
+    |                                                                                                      ^^^^
+186 |             key = existing["api_key"]
+187 |         if not key:
+    |
+
+E501 Line too long (113 > 100)
+   --> src\astroagent\model_providers.py:195:82
+    |
+193 |         catalog = self.catalog(value)
+194 |         if not catalog.configured:
+195 |             raise ServiceError(503, "model_not_configured", "尚未配置可用模型，请由管理员添加服务商并启用模型。")
+    |                                                                                                      ^^^^^^^^^^^^
+196 |         selected = model_id if model_id is not None else catalog.default_model
+197 |         for provider in value["providers"]:
+    |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\model_providers.py:218:101
+    |
+216 |         parsed = urlsplit(provider["base_url"])
+217 |         try:
+218 |             addresses = socket.getaddrinfo(parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM)
+    |                                                                                                     ^^^^
+219 |             local_proxy = self.store.settings.local_http
+220 |             if not addresses or any(
+    |
+
+E501 Line too long (108 > 100)
+   --> src\astroagent\model_providers.py:233:90
+    |
+231 |                 }) as response:
+232 |                     if response.status_code in (401, 403):
+233 |                         raise ServiceError(422, "provider_auth_failed", "服务商拒绝访问，请核对 API 密钥。")
+    |                                                                                                     ^^^^^^^^
+234 |                     if response.status_code != 200:
+235 |                         raise ServiceError(502, "provider_discovery_failed", "未能读取模型目录，可手动添加模型 ID。")
+    |
+
+E501 Line too long (117 > 100)
+   --> src\astroagent\model_providers.py:235:90
+    |
+233 |                         raise ServiceError(422, "provider_auth_failed", "服务商拒绝访问，请核对 API 密钥。")
+234 |                     if response.status_code != 200:
+235 |                         raise ServiceError(502, "provider_discovery_failed", "未能读取模型目录，可手动添加模型 ID。")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+236 |                     content = bytearray()
+237 |                     for chunk in response.iter_bytes():
+    |
+
+E501 Line too long (115 > 100)
+   --> src\astroagent\model_providers.py:240:93
+    |
+238 |                         content.extend(chunk)
+239 |                         if len(content) > 1024 * 1024:
+240 |                             raise ServiceError(502, "provider_catalog_too_large", "模型目录过大，请手动添加模型。")
+    |                                                                                                      ^^^^^^^^^^^^^^
+241 |             data = json.loads(content)
+242 |             result = {}
+    |
+
+E501 Line too long (108 > 100)
+   --> src\astroagent\model_providers.py:251:101
+    |
+249 |                     if "generateContent" not in item.get("supportedGenerationMethods", []):
+250 |                         continue
+251 |                     identifier = identifier.removeprefix("models/") if isinstance(identifier, str) else None
+    |                                                                                                     ^^^^^^^^
+252 |                 if isinstance(identifier, str):
+253 |                     try:
+    |
+
+E501 Line too long (130 > 100)
+   --> src\astroagent\model_providers.py:269:84
+    |
+267 |             raise
+268 |         except Exception as exc:
+269 |             raise ServiceError(502, "provider_discovery_failed", "无法读取服务商模型目录，请核对地址或手动添加模型 ID。") from exc
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> src\astroagent\model_providers.py:273:5
+    |
+272 |   def configured_registry(environment):
+273 | /     from pydantic import ValidationError
+274 | |     from astroagent.auth_config import AuthSettings
+275 | |     from astroagent.auth_store import AuthStore
+276 | |     from astroagent.config import LocalSettings
+277 | |     import os
+    | |_____________^
+278 |       try:
+279 |           auth = AuthSettings()
+    |
+help: Organize imports
+    |
+272 | def configured_registry(environment):
+273 +     import os
+274 +
+275 |     from pydantic import ValidationError
+276 +
+277 |     from astroagent.auth_config import AuthSettings
+278 |     from astroagent.auth_store import AuthStore
+279 |     from astroagent.config import LocalSettings
+    -     import os
+280 |     try:
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> src\astroagent\rag_service.py:814:13
+    |
+812 |                   self.projects._budget(db)
+813 |               admitted_call = True
+814 | /             from langchain_core.messages import HumanMessage, SystemMessage
+815 | |             from astroagent.model_client import chat_model
+    | |__________________________________________________________^
+816 |
+817 |               payload = {
+    |
+help: Organize imports
+    |
+814 |             from langchain_core.messages import HumanMessage, SystemMessage
+815 +
+816 |             from astroagent.model_client import chat_model
+    |
+
+E501 Line too long (119 > 100)
+   --> src\astroagent\rag_service.py:835:101
+    |
+833 |             ])
+834 |             raw = result.content
+835 |             if not isinstance(raw, str) or len(raw) > 16000 or result.response_metadata.get("finish_reason") != "stop":
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+836 |                 raise ValueError("Model response exceeded limits")
+837 |             from astroagent.project_archives import strict_json
+    |
+
+E501 Line too long (113 > 100)
+   --> src\astroagent\rag_service.py:867:101
+    |
+865 |                     sorted(inline),
+866 |                 )
+867 |             record.model_version = str(result.response_metadata.get("model_name") or config.deepseek_model)[:200]
+    |                                                                                                     ^^^^^^^^^^^^^
+868 |             with self.service.gate, self.repo.connection() as db, self.repo.transaction(db):
+869 |                 self.projects._project(db, project_id)
+    |
+
+Found 54 errors.
+[*] 5 fixable with `--fix`.

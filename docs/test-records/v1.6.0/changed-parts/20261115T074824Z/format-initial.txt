@@ -1,0 +1,594 @@
+unformatted: File would be reformatted
+   --> src\astroagent\api\auth.py:576:32
+    |
+575 |         if hmac.compare_digest(target, user["session_hash"]):
+    -             raise ServiceError(409, "current_session_protected", "不能在活动会话列表中退出当前浏览器。")
+576 +             raise ServiceError(
+577 +                 409, "current_session_protected", "不能在活动会话列表中退出当前浏览器。"
+578 +             )
+579 |         db.execute(
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\model_providers.py:11:23
+   |
+10 | from astroagent.model_providers import (
+   -     DefaultModelInput, ProviderInput, ProviderRegistry, ProviderRevision,
+11 +     DefaultModelInput,
+12 +     ProviderInput,
+13 +     ProviderRegistry,
+14 +     ProviderRevision,
+15 | )
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\models.py:22:1
+   |
+21 |     from astroagent.model_providers import ProviderRegistry
+22 +
+23 |     identity = getattr(request.app.state, "identity", None)
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\api\setup.py:25:1
+   |
+24 |     from astroagent.model_providers import ProviderRegistry
+25 +
+26 |     registry = ProviderRegistry(request.app.state.identity.store, model)
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\auth_security.py:89:28
+   |
+88 |     if not 8 <= len(password) <= 128 or len(password.encode()) > 1024:
+   -         raise ServiceError(
+   -             422, "password_policy", "密码至少需要 8 个字符"
+   -         )
+89 +         raise ServiceError(422, "password_policy", "密码至少需要 8 个字符")
+90 |     if not settings.password_blocklist or not settings.password_blocklist_sha256:
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\config.py:20:89
+   |
+19 |     selected_model_id: str = Field(default="", exclude=True, repr=False)
+   -     model_protocol: Literal["openai_chat", "openai_responses", "anthropic", "gemini"] = "openai_chat"
+20 +     model_protocol: Literal["openai_chat", "openai_responses", "anthropic", "gemini"] = (
+21 +         "openai_chat"
+22 +     )
+23 |     deepseek_base_url: AnyHttpUrl = AnyHttpUrl("https://api.deepseek.com")
+   |
+
+unformatted: File would be reformatted
+  --> src\astroagent\conversation_service.py:56:82
+   |
+55 |                 config = getattr(agent, "settings", None)
+   -                 turn.model = getattr(config, "selected_model_id", "") or getattr(config, "deepseek_model", None)
+56 +                 turn.model = getattr(config, "selected_model_id", "") or getattr(
+57 +                     config, "deepseek_model", None
+58 +                 )
+59 |             turn.response = agent.converse(request.message, context)
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\main.py:129:22
+    |
+128 |             status_code=422,
+    -             content={"error": {
+    -                 "code": "invalid_provider_request",
+    -                 "message": "模型服务参数无效，请核对地址、密钥格式及模型 ID。",
+    -                 "retryable": False,
+    -             }},
+129 +             content={
+130 +                 "error": {
+131 +                     "code": "invalid_provider_request",
+132 +                     "message": "模型服务参数无效，请核对地址、密钥格式及模型 ID。",
+133 +                     "retryable": False,
+134 +                 }
+135 +             },
+136 |         )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\model_client.py:34:36
+    |
+33  |         else:
+    -             failure = ServiceError(503, "model_billing_required", "模型服务商返回计费错误，请检查此服务商的余额与结算状态。")
+34  +             failure = ServiceError(
+35  +                 503,
+36  +                 "model_billing_required",
+37  +                 "模型服务商返回计费错误，请检查此服务商的余额与结算状态。",
+38  +             )
+39  |     elif status in (401, 403):
+    -         failure = ServiceError(503, "model_authentication_failed", "模型服务拒绝访问，请检查密钥、项目权限及服务商访问限制。")
+40  +         failure = ServiceError(
+41  +             503,
+42  +             "model_authentication_failed",
+43  +             "模型服务拒绝访问，请检查密钥、项目权限及服务商访问限制。",
+44  +         )
+45  |     elif status == 429:
+    -         failure = ServiceError(503, "model_rate_limited", "模型额度或请求速率受限，请检查服务商限额后重试。", retryable=True)
+46  +         failure = ServiceError(
+47  +             503,
+48  +             "model_rate_limited",
+49  +             "模型额度或请求速率受限，请检查服务商限额后重试。",
+50  +             retryable=True,
+51  +         )
+52  |     elif status == 404:
+    -         failure = ServiceError(502, "model_not_found", "服务商未找到所选模型或请求端点，请核对模型 ID、协议及 API 根地址。")
+53  +         failure = ServiceError(
+54  +             502,
+55  +             "model_not_found",
+56  +             "服务商未找到所选模型或请求端点，请核对模型 ID、协议及 API 根地址。",
+57  +         )
+58  |     elif status in (400, 422):
+    -         failure = ServiceError(502, "model_request_invalid", "服务商拒绝请求参数，请核对所选模型支持的协议与工具调用能力。")
+59  +         failure = ServiceError(
+60  +             502,
+61  +             "model_request_invalid",
+62  +             "服务商拒绝请求参数，请核对所选模型支持的协议与工具调用能力。",
+63  +         )
+64  |     else:
+    -         failure = ServiceError(502, "model_unavailable", "模型服务暂时未能完成请求，请稍后重试。", retryable=status >= 500)
+    -     LOGGER.warning("Model request rejected: protocol=%s status=%d category=%s", protocol, status, failure.error.code)
+65  +         failure = ServiceError(
+66  +             502,
+67  +             "model_unavailable",
+68  +             "模型服务暂时未能完成请求，请稍后重试。",
+69  +             retryable=status >= 500,
+70  +         )
+71  +     LOGGER.warning(
+72  +         "Model request rejected: protocol=%s status=%d category=%s",
+73  +         protocol,
+74  +         status,
+75  +         failure.error.code,
+76  +     )
+77  |     return failure
+--------------------------------------------------------------------------------
+140 |                 with client.stream(
+    -                     "POST", url, json=body,
+    -                     headers=provider_headers(protocol, self.settings.deepseek_api_key.get_secret_value()),
+141 +                     "POST",
+142 +                     url,
+143 +                     json=body,
+144 +                     headers=provider_headers(
+145 +                         protocol, self.settings.deepseek_api_key.get_secret_value()
+146 +                     ),
+147 |                 ) as response:
+--------------------------------------------------------------------------------
+161 |         except httpx.TimeoutException as exc:
+    -             raise ServiceError(504, "model_timeout", "模型响应超时，请稍后重试。", retryable=True) from exc
+162 +             raise ServiceError(
+163 +                 504, "model_timeout", "模型响应超时，请稍后重试。", retryable=True
+164 +             ) from exc
+165 |         except httpx.RequestError as exc:
+    -             raise ServiceError(502, "model_unavailable", "模型服务连接失败，请核对服务地址。", retryable=True) from exc
+166 +             raise ServiceError(
+167 +                 502, "model_unavailable", "模型服务连接失败，请核对服务地址。", retryable=True
+168 +             ) from exc
+169 |         except Exception as exc:
+    -             raise ServiceError(502, "model_invalid_response", "模型响应与所选协议不符，或返回了无效的工具参数。") from exc
+170 +             raise ServiceError(
+171 +                 502, "model_invalid_response", "模型响应与所选协议不符，或返回了无效的工具参数。"
+172 +             ) from exc
+173 |
+--------------------------------------------------------------------------------
+179 |             elif isinstance(message, ToolMessage):
+    -                 items.append({"type": "function_call_output", "call_id": message.tool_call_id, "output": message.content})
+180 +                 items.append(
+181 +                     {
+182 +                         "type": "function_call_output",
+183 +                         "call_id": message.tool_call_id,
+184 +                         "output": message.content,
+185 +                     }
+186 +                 )
+187 |             else:
+    -                 items.append({"role": "system" if isinstance(message, SystemMessage) else "user", "content": message.content})
+188 +                 items.append(
+189 +                     {
+190 +                         "role": "system" if isinstance(message, SystemMessage) else "user",
+191 +                         "content": message.content,
+192 +                     }
+193 +                 )
+194 |         body = {
+    -             "model": self.settings.deepseek_model, "input": items, "store": False,
+    -             "max_output_tokens": self.max_tokens, "include": ["reasoning.encrypted_content"],
+195 +             "model": self.settings.deepseek_model,
+196 +             "input": items,
+197 +             "store": False,
+198 +             "max_output_tokens": self.max_tokens,
+199 +             "include": ["reasoning.encrypted_content"],
+200 |         }
+201 |         if self.tools:
+    -             body.update(tools=[{"type": "function", **tool, "strict": False} for tool in self.tools], parallel_tool_calls=self.parallel)
+202 +             body.update(
+203 +                 tools=[{"type": "function", **tool, "strict": False} for tool in self.tools],
+204 +                 parallel_tool_calls=self.parallel,
+205 +             )
+206 |         if self.json_mode:
+--------------------------------------------------------------------------------
+216 |             elif item["type"] == "message":
+    -                 texts.extend(part["text"] for part in item["content"] if part["type"] == "output_text")
+217 +                 texts.extend(
+218 +                     part["text"] for part in item["content"] if part["type"] == "output_text"
+219 +                 )
+220 |         complete = data.get("status") == "completed"
+    -         return self.message(texts, calls, blocks, data.get("usage", {}), data.get("model"), complete)
+221 +         return self.message(
+222 +             texts, calls, blocks, data.get("usage", {}), data.get("model"), complete
+223 +         )
+224 |
+--------------------------------------------------------------------------------
+232 |             elif isinstance(message, ToolMessage):
+    -                 append_blocks(items, "user", [{"type": "tool_result", "tool_use_id": message.tool_call_id, "content": message.content}])
+233 +                 append_blocks(
+234 +                     items,
+235 +                     "user",
+236 +                     [
+237 +                         {
+238 +                             "type": "tool_result",
+239 +                             "tool_use_id": message.tool_call_id,
+240 +                             "content": message.content,
+241 +                         }
+242 +                     ],
+243 +                 )
+244 |             else:
+245 |                 append_blocks(items, "user", [{"type": "text", "text": message.content}])
+246 |         body = {
+    -             "model": self.settings.deepseek_model, "system": "\n\n".join(system),
+    -             "messages": items, "max_tokens": self.max_tokens,
+247 +             "model": self.settings.deepseek_model,
+248 +             "system": "\n\n".join(system),
+249 +             "messages": items,
+250 +             "max_tokens": self.max_tokens,
+251 |         }
+252 |         if self.tools:
+    -             body["tools"] = [{"name": tool["name"], "description": tool.get("description", ""), "input_schema": tool["parameters"]} for tool in self.tools]
+253 +             body["tools"] = [
+254 +                 {
+255 +                     "name": tool["name"],
+256 +                     "description": tool.get("description", ""),
+257 +                     "input_schema": tool["parameters"],
+258 +                 }
+259 +                 for tool in self.tools
+260 +             ]
+261 |             body["tool_choice"] = {"type": "auto", "disable_parallel_tool_use": not self.parallel}
+--------------------------------------------------------------------------------
+266 |         texts = [part["text"] for part in blocks if part["type"] == "text"]
+    -         calls = [tool_call(part["name"], part["input"], part["id"]) for part in blocks if part["type"] == "tool_use"]
+267 +         calls = [
+268 +             tool_call(part["name"], part["input"], part["id"])
+269 +             for part in blocks
+270 +             if part["type"] == "tool_use"
+271 +         ]
+272 |         complete = data.get("stop_reason") in {"end_turn", "stop_sequence", "tool_use"}
+    -         return self.message(texts, calls, blocks, data.get("usage", {}), data.get("model"), complete)
+273 +         return self.message(
+274 +             texts, calls, blocks, data.get("usage", {}), data.get("model"), complete
+275 +         )
+276 |
+--------------------------------------------------------------------------------
+293 |                     result = {"result": message.content}
+    -                 function = {"name": message.name, "response": result if isinstance(result, dict) else {"result": result}}
+294 +                 function = {
+295 +                     "name": message.name,
+296 +                     "response": result if isinstance(result, dict) else {"result": result},
+297 +                 }
+298 |                 if call_ids.get(message.tool_call_id):
+--------------------------------------------------------------------------------
+307 |         body = {
+    -             "contents": items, "systemInstruction": {"parts": [{"text": "\n\n".join(system)}]},
+308 +             "contents": items,
+309 +             "systemInstruction": {"parts": [{"text": "\n\n".join(system)}]},
+310 |             "generationConfig": {"maxOutputTokens": self.max_tokens},
+311 |         }
+312 |         if self.tools:
+    -             body["tools"] = [{"functionDeclarations": [
+    -                 {"name": tool["name"], "description": tool.get("description", ""), "parametersJsonSchema": tool["parameters"]}
+    -                 for tool in self.tools
+    -             ]}]
+313 +             body["tools"] = [
+314 +                 {
+315 +                     "functionDeclarations": [
+316 +                         {
+317 +                             "name": tool["name"],
+318 +                             "description": tool.get("description", ""),
+319 +                             "parametersJsonSchema": tool["parameters"],
+320 +                         }
+321 +                         for tool in self.tools
+322 +                     ]
+323 +                 }
+324 +             ]
+325 |         if self.json_mode:
+--------------------------------------------------------------------------------
+333 |         texts = [part["text"] for part in blocks if "text" in part and not part.get("thought")]
+    -         calls = [tool_call(part["functionCall"]["name"], part["functionCall"].get("args", {}), part["functionCall"].get("id") or "call_" + uuid4().hex) for part in blocks if "functionCall" in part]
+334 +         calls = [
+335 +             tool_call(
+336 +                 part["functionCall"]["name"],
+337 +                 part["functionCall"].get("args", {}),
+338 +                 part["functionCall"].get("id") or "call_" + uuid4().hex,
+339 +             )
+340 +             for part in blocks
+341 +             if "functionCall" in part
+342 +         ]
+343 |         usage = data.get("usageMetadata", {})
+    -         normalized = {"input_tokens": usage.get("promptTokenCount", 0), "output_tokens": usage.get("candidatesTokenCount", 0) + usage.get("thoughtsTokenCount", 0)}
+    -         return self.message(texts, calls, blocks, normalized, data.get("modelVersion"), candidate.get("finishReason") == "STOP")
+344 +         normalized = {
+345 +             "input_tokens": usage.get("promptTokenCount", 0),
+346 +             "output_tokens": usage.get("candidatesTokenCount", 0)
+347 +             + usage.get("thoughtsTokenCount", 0),
+348 +         }
+349 +         return self.message(
+350 +             texts,
+351 +             calls,
+352 +             blocks,
+353 +             normalized,
+354 +             data.get("modelVersion"),
+355 +             candidate.get("finishReason") == "STOP",
+356 +         )
+357 |
+358 |     def message(self, texts, calls, blocks, usage, model, complete):
+359 |         if not complete:
+360 |             # Never execute partial tools or publish a token-limited/safety-blocked answer.
+    -             raise ServiceError(502, "model_incomplete_response", "模型回答未完整生成或被服务商中止；未执行不完整的工具调用。")
+361 +             raise ServiceError(
+362 +                 502,
+363 +                 "model_incomplete_response",
+364 +                 "模型回答未完整生成或被服务商中止；未执行不完整的工具调用。",
+365 +             )
+366 |         if len(calls) > 32:
+367 |             raise ValueError("Too many tool calls")
+368 |         input_tokens, output_tokens = usage.get("input_tokens", 0), usage.get("output_tokens", 0)
+369 |         return AIMessage(
+    -             content="\n".join(texts), tool_calls=calls,
+370 +             content="\n".join(texts),
+371 +             tool_calls=calls,
+372 |             additional_kwargs={"protocol_blocks": blocks},
+    -             response_metadata={"model_name": model or self.settings.deepseek_model, "finish_reason": "tool_calls" if calls else "stop"},
+    -             usage_metadata={"input_tokens": input_tokens, "output_tokens": output_tokens, "total_tokens": input_tokens + output_tokens},
+373 +             response_metadata={
+374 +                 "model_name": model or self.settings.deepseek_model,
+375 +                 "finish_reason": "tool_calls" if calls else "stop",
+376 +             },
+377 +             usage_metadata={
+378 +                 "input_tokens": input_tokens,
+379 +                 "output_tokens": output_tokens,
+380 +                 "total_tokens": input_tokens + output_tokens,
+381 +             },
+382 |         )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\model_providers.py:27:8
+    |
+26  |         address = address.ipv4_mapped
+    -     if address.is_multicast or address.is_unspecified or address.is_loopback or address.is_link_local:
+27  +     if (
+28  +         address.is_multicast
+29  +         or address.is_unspecified
+30  +         or address.is_loopback
+31  +         or address.is_link_local
+32  +     ):
+33  |         return False
+--------------------------------------------------------------------------------
+49  |     if (
+    -         parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password
+    -         or parsed.query or parsed.fragment or any(c.isspace() for c in value)
+    -         or "\\" in value or len(value) > 500
+50  +         parsed.scheme != "https"
+51  +         or not parsed.hostname
+52  +         or parsed.username
+53  +         or parsed.password
+54  +         or parsed.query
+55  +         or parsed.fragment
+56  +         or any(c.isspace() for c in value)
+57  +         or "\\" in value
+58  +         or len(value) > 500
+59  |         or parsed.hostname.lower() in {"localhost", "host.docker.internal"}
+--------------------------------------------------------------------------------
+96  |             raise ValueError("模型 ID 不能重复。")
+    -         if self.api_key and any(c.isspace() or ord(c) < 32 for c in self.api_key.get_secret_value()):
+97  +         if self.api_key and any(
+98  +             c.isspace() or ord(c) < 32 for c in self.api_key.get_secret_value()
+99  +         ):
+100 |             raise ValueError("API 密钥不能含空白或控制字符。")
+--------------------------------------------------------------------------------
+129 |             "default_model": value.deepseek_model,
+    -             "providers": [{
+    -                 "id": "system", "name": "现有模型服务", "base_url": str(value.deepseek_base_url).rstrip("/"),
+    -                 "protocol": value.model_protocol, "api_key": value.deepseek_api_key.get_secret_value(),
+    -                 "enabled": True, "thinking_parameter": value.llm_thinking_parameter,
+    -                 "models": [{"id": m.id, "label": m.label} for m in value.available_models],
+    -             }],
+130 +             "providers": [
+131 +                 {
+132 +                     "id": "system",
+133 +                     "name": "现有模型服务",
+134 +                     "base_url": str(value.deepseek_base_url).rstrip("/"),
+135 +                     "protocol": value.model_protocol,
+136 +                     "api_key": value.deepseek_api_key.get_secret_value(),
+137 +                     "enabled": True,
+138 +                     "thinking_parameter": value.llm_thinking_parameter,
+139 +                     "models": [{"id": m.id, "label": m.label} for m in value.available_models],
+140 +                 }
+141 +             ],
+142 |         }
+--------------------------------------------------------------------------------
+156 |         except Exception as exc:
+    -             raise ServiceError(503, "provider_configuration_invalid", "模型服务配置无法读取，请联系管理员。") from exc
+157 +             raise ServiceError(
+158 +                 503, "provider_configuration_invalid", "模型服务配置无法读取，请联系管理员。"
+159 +             ) from exc
+160 |
+161 |     def catalog(self, value=None):
+162 |         value = value if value is not None else self.read()
+163 |         options = [
+    -             ChatModelOption(id=model_key(provider, model), label=model["label"], provider=provider["name"])
+    -             for provider in value["providers"] if provider["enabled"] and provider["api_key"]
+164 +             ChatModelOption(
+165 +                 id=model_key(provider, model), label=model["label"], provider=provider["name"]
+166 +             )
+167 +             for provider in value["providers"]
+168 +             if provider["enabled"] and provider["api_key"]
+169 |             for model in provider["models"]
+--------------------------------------------------------------------------------
+182 |             "providers": [
+    -                 {**{k: v for k, v in p.items() if k != "api_key"},
+    -                  "key_configured": bool(p["api_key"]),
+    -                  "models": [{**m, "selection_id": model_key(p, m)} for m in p["models"]]}
+183 +                 {
+184 +                     **{k: v for k, v in p.items() if k != "api_key"},
+185 +                     "key_configured": bool(p["api_key"]),
+186 +                     "models": [{**m, "selection_id": model_key(p, m)} for m in p["models"]],
+187 +                 }
+188 |                 for p in value["providers"]
+--------------------------------------------------------------------------------
+198 |         value["revision"] += 1
+    -         encrypted = self.store.crypto.encrypt(json.dumps(value, ensure_ascii=False).encode()).decode()
+199 +         encrypted = self.store.crypto.encrypt(
+200 +             json.dumps(value, ensure_ascii=False).encode()
+201 +         ).decode()
+202 |         db.execute(
+203 |             "INSERT INTO public.auth_meta(key,value) VALUES (%s,%s) "
+    -             "ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value", (KEY, encrypted),
+204 +             "ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value",
+205 +             (KEY, encrypted),
+206 |         )
+--------------------------------------------------------------------------------
+213 |             if body.base_url != existing["base_url"] or body.protocol != existing["protocol"]:
+    -                 raise ServiceError(422, "provider_key_required", "更改 API 地址或协议时请重新填写密钥。")
+214 +                 raise ServiceError(
+215 +                     422, "provider_key_required", "更改 API 地址或协议时请重新填写密钥。"
+216 +                 )
+217 |             key = existing["api_key"]
+--------------------------------------------------------------------------------
+225 |         if not catalog.configured:
+    -             raise ServiceError(503, "model_not_configured", "尚未配置可用模型，请由管理员添加服务商并启用模型。")
+226 +             raise ServiceError(
+227 +                 503, "model_not_configured", "尚未配置可用模型，请由管理员添加服务商并启用模型。"
+228 +             )
+229 |         selected = model_id if model_id is not None else catalog.default_model
+--------------------------------------------------------------------------------
+234 |                 if model_key(provider, model) == selected:
+    -                     return self.environment.model_copy(update={
+    -                         "deepseek_model": model["id"], "selected_model_id": selected,
+    -                         "deepseek_api_key": SecretStr(provider["api_key"]),
+    -                         "deepseek_base_url": provider["base_url"],
+    -                         "model_protocol": provider["protocol"],
+    -                         "llm_thinking_parameter": provider["thinking_parameter"]
+    -                         if provider["protocol"] == "openai_chat" else "none",
+    -                     })
+235 +                     return self.environment.model_copy(
+236 +                         update={
+237 +                             "deepseek_model": model["id"],
+238 +                             "selected_model_id": selected,
+239 +                             "deepseek_api_key": SecretStr(provider["api_key"]),
+240 +                             "deepseek_base_url": provider["base_url"],
+241 +                             "model_protocol": provider["protocol"],
+242 +                             "llm_thinking_parameter": provider["thinking_parameter"]
+243 +                             if provider["protocol"] == "openai_chat"
+244 +                             else "none",
+245 +                         }
+246 +                     )
+247 |         raise ServiceError(422, "model_not_enabled", "所选模型未启用，请刷新模型列表。")
+--------------------------------------------------------------------------------
+254 |         try:
+    -             addresses = socket.getaddrinfo(parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM)
+255 +             addresses = socket.getaddrinfo(
+256 +                 parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM
+257 +             )
+258 |             local_proxy = self.store.settings.local_http
+--------------------------------------------------------------------------------
+263 |                 raise ServiceError(
+    -                     422, "provider_address_invalid",
+264 +                     422,
+265 +                     "provider_address_invalid",
+266 |                     "服务域名解析到了本机、内网或受限地址，请检查 DNS／代理设置。",
+267 |                 )
+268 |             with httpx.Client(timeout=20, follow_redirects=False, trust_env=False) as client:
+    -                 with client.stream("GET", provider["base_url"] + "/models", headers={
+    -                     **provider_headers(provider["protocol"], provider["api_key"]),
+    -                 }) as response:
+269 +                 with client.stream(
+270 +                     "GET",
+271 +                     provider["base_url"] + "/models",
+272 +                     headers={
+273 +                         **provider_headers(provider["protocol"], provider["api_key"]),
+274 +                     },
+275 +                 ) as response:
+276 |                     if response.status_code in (401, 403):
+    -                         raise ServiceError(422, "provider_auth_failed", "服务商拒绝访问，请核对 API 密钥。")
+277 +                         raise ServiceError(
+278 +                             422, "provider_auth_failed", "服务商拒绝访问，请核对 API 密钥。"
+279 +                         )
+280 |                     if response.status_code != 200:
+    -                         raise ServiceError(502, "provider_discovery_failed", "未能读取模型目录，可手动添加模型 ID。")
+281 +                         raise ServiceError(
+282 +                             502,
+283 +                             "provider_discovery_failed",
+284 +                             "未能读取模型目录，可手动添加模型 ID。",
+285 +                         )
+286 |                     content = bytearray()
+287 |                     for chunk in response.iter_bytes():
+288 |                         content.extend(chunk)
+289 |                         if len(content) > 1024 * 1024:
+    -                             raise ServiceError(502, "provider_catalog_too_large", "模型目录过大，请手动添加模型。")
+290 +                             raise ServiceError(
+291 +                                 502, "provider_catalog_too_large", "模型目录过大，请手动添加模型。"
+292 +                             )
+293 |             data = json.loads(content)
+--------------------------------------------------------------------------------
+302 |                         continue
+    -                     identifier = identifier.removeprefix("models/") if isinstance(identifier, str) else None
+303 +                     identifier = (
+304 +                         identifier.removeprefix("models/") if isinstance(identifier, str) else None
+305 +                     )
+306 |                 if isinstance(identifier, str):
+--------------------------------------------------------------------------------
+322 |         except Exception as exc:
+    -             raise ServiceError(502, "provider_discovery_failed", "无法读取服务商模型目录，请核对地址或手动添加模型 ID。") from exc
+323 +             raise ServiceError(
+324 +                 502,
+325 +                 "provider_discovery_failed",
+326 +                 "无法读取服务商模型目录，请核对地址或手动添加模型 ID。",
+327 +             ) from exc
+328 |
+--------------------------------------------------------------------------------
+335 |     import os
+336 +
+337 |     try:
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\rag_service.py:831:81
+    |
+830 |             }
+    -             result = chat_model(config, max_tokens=2400, json_mode=True).invoke([
+    -                 SystemMessage(content=INSTRUCTION), HumanMessage(content=encode(payload)),
+    -             ])
+831 +             result = chat_model(config, max_tokens=2400, json_mode=True).invoke(
+832 +                 [
+833 +                     SystemMessage(content=INSTRUCTION),
+834 +                     HumanMessage(content=encode(payload)),
+835 +                 ]
+836 +             )
+837 |             raw = result.content
+    -             if not isinstance(raw, str) or len(raw) > 16000 or result.response_metadata.get("finish_reason") != "stop":
+838 +             if (
+839 +                 not isinstance(raw, str)
+840 +                 or len(raw) > 16000
+841 +                 or result.response_metadata.get("finish_reason") != "stop"
+842 +             ):
+843 |                 raise ValueError("Model response exceeded limits")
+--------------------------------------------------------------------------------
+873 |                 )
+    -             record.model_version = str(result.response_metadata.get("model_name") or config.deepseek_model)[:200]
+874 +             record.model_version = str(
+875 +                 result.response_metadata.get("model_name") or config.deepseek_model
+876 +             )[:200]
+877 |             with self.service.gate, self.repo.connection() as db, self.repo.transaction(db):
+    |
+
+11 files would be reformatted, 160 files already formatted

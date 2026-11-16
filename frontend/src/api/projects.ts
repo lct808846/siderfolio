@@ -1,3 +1,4 @@
+import { sessionFetch } from '../session-http'
 import { ApiError, apiUrl, assertApiConfiguration, request } from './index'
 import type { Comparison, ImportResult, Project, ProjectDetail, Rerun, RerunRequest, Snapshot } from '../types'
 
@@ -21,7 +22,7 @@ export const projectsApi = {
 async function binaryRequest(path: string, body: BodyInit, media: string): Promise<Response> {
   assertApiConfiguration()
   let response: Response
-  try { response = await fetch(apiUrl(path), { method: 'POST', headers: { 'Content-Type': media }, body, cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl(path), { method: 'POST', headers: { 'Content-Type': media }, body, cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '连接已断开。先刷新项目列表核对状态，操作不会自动重试。') }
   if (!response.ok) {
     let message = `项目归档操作失败（${response.status}）`, code = 'project_archive_failed'

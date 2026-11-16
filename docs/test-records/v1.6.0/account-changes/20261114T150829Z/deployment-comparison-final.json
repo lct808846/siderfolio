@@ -1,0 +1,702 @@
+[
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/ads.py",
+    "local_sha256": "a5936badb93dde534376768e469ba2a8d2b4f4b3a989db941bd4c065b6600bd4",
+    "container_sha256": "a5936badb93dde534376768e469ba2a8d2b4f4b3a989db941bd4c065b6600bd4",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/agent.py",
+    "local_sha256": "7df1ca59ab23af585125a5a3c073106bc553a634b3d99b26773190a89bbffa41",
+    "container_sha256": "7df1ca59ab23af585125a5a3c073106bc553a634b3d99b26773190a89bbffa41",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/analysis.py",
+    "local_sha256": "e0c702db9d797f0e169e6051b176f841d25ad018604a4480471b5a02b55f6b10",
+    "container_sha256": "e0c702db9d797f0e169e6051b176f841d25ad018604a4480471b5a02b55f6b10",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/artifacts.py",
+    "local_sha256": "76d61865164d67891d6e650c0ee7d4e3193d6324e23ffdbaa0d40d94ff2eb1fd",
+    "container_sha256": "76d61865164d67891d6e650c0ee7d4e3193d6324e23ffdbaa0d40d94ff2eb1fd",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/attachments.py",
+    "local_sha256": "9dbe1e4f9180bf7c3b999a81efb449787b30d9e7104ca05f72f3c32d451b0dde",
+    "container_sha256": "9dbe1e4f9180bf7c3b999a81efb449787b30d9e7104ca05f72f3c32d451b0dde",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/attachment_schemas.py",
+    "local_sha256": "b681cb59d6b4e744de3855ce700a6c411df7483806f2d762729d01e2a2491023",
+    "container_sha256": "b681cb59d6b4e744de3855ce700a6c411df7483806f2d762729d01e2a2491023",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/auth_access.py",
+    "local_sha256": "1f95e5867c567c45204c58e7b1b50e751538cd9546597fab84ec114d7555bc96",
+    "container_sha256": "1f95e5867c567c45204c58e7b1b50e751538cd9546597fab84ec114d7555bc96",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/auth_config.py",
+    "local_sha256": "6f1d739f241e49284f872a800455f7a25ab0f281eada3a9f53c8b3007bc096c5",
+    "container_sha256": "6f1d739f241e49284f872a800455f7a25ab0f281eada3a9f53c8b3007bc096c5",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/auth_mail.py",
+    "local_sha256": "8a3dab1573b27c95b65360e2536a9a2c2e92b66750edca9445317b4446b33812",
+    "container_sha256": "8a3dab1573b27c95b65360e2536a9a2c2e92b66750edca9445317b4446b33812",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/auth_security.py",
+    "local_sha256": "adf8a5333b9f20c6e2a014587d5a3e22c9e5b00ba6140f7a46dcba95e70ada1e",
+    "container_sha256": "adf8a5333b9f20c6e2a014587d5a3e22c9e5b00ba6140f7a46dcba95e70ada1e",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/auth_store.py",
+    "local_sha256": "264a3e19afb84f0001fb8590f9dac2a9a89f65ab354e7f4a4007da4c3a4970f0",
+    "container_sha256": "264a3e19afb84f0001fb8590f9dac2a9a89f65ab354e7f4a4007da4c3a4970f0",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/config.py",
+    "local_sha256": "77bc38dc0019dc396c80e7bb47fd5b5dc03e2606dbdc73b7dd9bb46457ea8120",
+    "container_sha256": "77bc38dc0019dc396c80e7bb47fd5b5dc03e2606dbdc73b7dd9bb46457ea8120",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/container_entrypoint.py",
+    "local_sha256": "403830c570cca1ce4c9686f1970e795ac7f3b055aabbe409e8d45dffe6eda113",
+    "container_sha256": "403830c570cca1ce4c9686f1970e795ac7f3b055aabbe409e8d45dffe6eda113",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/context.py",
+    "local_sha256": "257bdd61f4af6ed4a4fe87ff03595e48b8b912e2098f9132ca18bccac0fd2254",
+    "container_sha256": "257bdd61f4af6ed4a4fe87ff03595e48b8b912e2098f9132ca18bccac0fd2254",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/conversations.py",
+    "local_sha256": "09415216562a49ef7f24ce69cbd4aa569a58b237c45fa9e04b84f2195525d4b1",
+    "container_sha256": "09415216562a49ef7f24ce69cbd4aa569a58b237c45fa9e04b84f2195525d4b1",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/conversation_schemas.py",
+    "local_sha256": "324974f3906175feb496485edfd67f9961404a0633c72431077acedcad4af1d3",
+    "container_sha256": "324974f3906175feb496485edfd67f9961404a0633c72431077acedcad4af1d3",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/conversation_service.py",
+    "local_sha256": "9e0819b09ffcdeaf1c36f8b6210986f04232a2bd5ff52ebb0bacd9c66ffbb179",
+    "container_sha256": "9e0819b09ffcdeaf1c36f8b6210986f04232a2bd5ff52ebb0bacd9c66ffbb179",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/conversation_titles.py",
+    "local_sha256": "0305a776ca884f238ebc94e885a99967092aad669ee7d0cd258232081f0bab5f",
+    "container_sha256": "0305a776ca884f238ebc94e885a99967092aad669ee7d0cd258232081f0bab5f",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/embeddings.py",
+    "local_sha256": "2b79f9344487401b9d973aaaad38df708e3c7abb3117afafdcb6616f42f22a31",
+    "container_sha256": "2b79f9344487401b9d973aaaad38df708e3c7abb3117afafdcb6616f42f22a31",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/embedding_worker.py",
+    "local_sha256": "c7643cb51daeb17e2c21872cbb646588d0885b3f1d79b99f4df1fcedb92bec41",
+    "container_sha256": "c7643cb51daeb17e2c21872cbb646588d0885b3f1d79b99f4df1fcedb92bec41",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/errors.py",
+    "local_sha256": "6f7966af2c4d471bac111f695fd9ce7cbe4e4c1e2caf911758c16a3789c1ddde",
+    "container_sha256": "6f7966af2c4d471bac111f695fd9ce7cbe4e4c1e2caf911758c16a3789c1ddde",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/execution.py",
+    "local_sha256": "037ebb385e741ac27024a2e91e211fe4be47d8e4c8ae9aa27c94799b209abd08",
+    "container_sha256": "037ebb385e741ac27024a2e91e211fe4be47d8e4c8ae9aa27c94799b209abd08",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/exports.py",
+    "local_sha256": "dfa49e8f22adbf5be5eadf07bea24f4f8db95de289979b4d5a7feb44a09dbc5a",
+    "container_sha256": "dfa49e8f22adbf5be5eadf07bea24f4f8db95de289979b4d5a7feb44a09dbc5a",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/export_schemas.py",
+    "local_sha256": "3410c579c610b42a41e4c3fe3c328fbfcb540bba933348d06549d9ab1d7a34d6",
+    "container_sha256": "3410c579c610b42a41e4c3fe3c328fbfcb540bba933348d06549d9ab1d7a34d6",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/gaia.py",
+    "local_sha256": "91f3be08051ed23b23993c8035f4476d788e310fe33499c0b2a83ba3e5d3842f",
+    "container_sha256": "91f3be08051ed23b23993c8035f4476d788e310fe33499c0b2a83ba3e5d3842f",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/identity.py",
+    "local_sha256": "32f96f3074004dab262c0b0062dac3ac5cec7259210e1cf28ae6a523c095d52c",
+    "container_sha256": "32f96f3074004dab262c0b0062dac3ac5cec7259210e1cf28ae6a523c095d52c",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/identity_cli.py",
+    "local_sha256": "91d3aef35dd170154817caed202b88cfb1c67211ef784336c21cb95c660af70d",
+    "container_sha256": "91d3aef35dd170154817caed202b88cfb1c67211ef784336c21cb95c660af70d",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge.py",
+    "local_sha256": "ae90d997b098d1821b5a999b550024ac665d2b23fe05696c88e205763c632bc6",
+    "container_sha256": "ae90d997b098d1821b5a999b550024ac665d2b23fe05696c88e205763c632bc6",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge_archives.py",
+    "local_sha256": "b5072185caf15c56ff6345308742fd3fb0ed54f56537bd6ed6eb95604ce86642",
+    "container_sha256": "b5072185caf15c56ff6345308742fd3fb0ed54f56537bd6ed6eb95604ce86642",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge_parser.py",
+    "local_sha256": "f5827c8938b61dc318fc938c5ef5835119cc9d72672d0a13dbdef2b5cffc0d15",
+    "container_sha256": "f5827c8938b61dc318fc938c5ef5835119cc9d72672d0a13dbdef2b5cffc0d15",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge_schemas.py",
+    "local_sha256": "fe13f66a7be93742d89e429e7a37c1ca3a6dd629d5ef887c40abd405d13a4d37",
+    "container_sha256": "fe13f66a7be93742d89e429e7a37c1ca3a6dd629d5ef887c40abd405d13a4d37",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge_service.py",
+    "local_sha256": "4418339d589ed6c795e2e1b01b18436512765105fe21797e82dce8bf269b78d4",
+    "container_sha256": "4418339d589ed6c795e2e1b01b18436512765105fe21797e82dce8bf269b78d4",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge_text.py",
+    "local_sha256": "72322dd86ea874bb2346adb0ff520d740833ddd958eb01e5ffc8371739f9c201",
+    "container_sha256": "72322dd86ea874bb2346adb0ff520d740833ddd958eb01e5ffc8371739f9c201",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/knowledge_worker.py",
+    "local_sha256": "c738ba20d68df9f497c0c3cc147b054bc79400a7782272aa41768d6dc528e4aa",
+    "container_sha256": "c738ba20d68df9f497c0c3cc147b054bc79400a7782272aa41768d6dc528e4aa",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/link_archives.py",
+    "local_sha256": "f5ca312072fbb9616525701a71e727558d55442225c396f90c1a42d7fe820f8d",
+    "container_sha256": "f5ca312072fbb9616525701a71e727558d55442225c396f90c1a42d7fe820f8d",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/link_schemas.py",
+    "local_sha256": "91286dbff9511ae705c31b30e67f434c116b6c5139624f803515ed7b218b094f",
+    "container_sha256": "91286dbff9511ae705c31b30e67f434c116b6c5139624f803515ed7b218b094f",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/local_access.py",
+    "local_sha256": "865ea0caf046ce6631f696ea89b315fc30c04eaf124914424eabcb29f91c4863",
+    "container_sha256": "865ea0caf046ce6631f696ea89b315fc30c04eaf124914424eabcb29f91c4863",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/local_model_client.py",
+    "local_sha256": "fb6befac3e317603152f2c69829392ec467f0997d436c92126271185bc2e1e72",
+    "container_sha256": "fb6befac3e317603152f2c69829392ec467f0997d436c92126271185bc2e1e72",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/local_model_schemas.py",
+    "local_sha256": "fbddd2859e1a99a82de626bb690eebf7fdb9e4f02395fecc4aa80ddb3be0da90",
+    "container_sha256": "fbddd2859e1a99a82de626bb690eebf7fdb9e4f02395fecc4aa80ddb3be0da90",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/local_model_service.py",
+    "local_sha256": "bbaa9e99de9d113f2b1590aea35ed0bd8329bf525a0bd905ff6042c126ccebfc",
+    "container_sha256": "bbaa9e99de9d113f2b1590aea35ed0bd8329bf525a0bd905ff6042c126ccebfc",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/local_model_store.py",
+    "local_sha256": "cae9b1419578abb9ca975ea3494bf6a5a50e3c9df51a6912f04959e832ac71eb",
+    "container_sha256": "cae9b1419578abb9ca975ea3494bf6a5a50e3c9df51a6912f04959e832ac71eb",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/local_text_grounding.py",
+    "local_sha256": "54af2381e7377a656cc6529bda4675a721ef1681d0e4585641d53c07eaa20aed",
+    "container_sha256": "54af2381e7377a656cc6529bda4675a721ef1681d0e4585641d53c07eaa20aed",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/main.py",
+    "local_sha256": "b2cde4b0c090a49c90d3eec70848c9b3382cb1174400ccc9172d6766eedefbf7",
+    "container_sha256": "b2cde4b0c090a49c90d3eec70848c9b3382cb1174400ccc9172d6766eedefbf7",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/model_schemas.py",
+    "local_sha256": "508579abab358e1840b977f4a8e34d837e6dfda2c3ceceac8440127a14a50a00",
+    "container_sha256": "508579abab358e1840b977f4a8e34d837e6dfda2c3ceceac8440127a14a50a00",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plots.py",
+    "local_sha256": "f663c65c4c3b7ef6df47afd2d22d10e0507ea73d851e1fe9a21a37e5e99875c4",
+    "container_sha256": "f663c65c4c3b7ef6df47afd2d22d10e0507ea73d851e1fe9a21a37e5e99875c4",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_archives.py",
+    "local_sha256": "8d68c031e1a5860ae988a43516d51812633b807bfb9d656d657cdc372ef62bd2",
+    "container_sha256": "8d68c031e1a5860ae988a43516d51812633b807bfb9d656d657cdc372ef62bd2",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_data.py",
+    "local_sha256": "464160e4e94cfecd1edbb75ff08206feb108eb10325645d25f551b3b515b6239",
+    "container_sha256": "464160e4e94cfecd1edbb75ff08206feb108eb10325645d25f551b3b515b6239",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_executor_client.py",
+    "local_sha256": "35d75f4b472765bd8a3f33f569761ab694e4935c7a80526594ee8337969da733",
+    "container_sha256": "35d75f4b472765bd8a3f33f569761ab694e4935c7a80526594ee8337969da733",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_executor_daemon.py",
+    "local_sha256": "43f87c8e60e5ac26fdb1538a612005a044a2418a55c4b2264694cc4845d151e9",
+    "container_sha256": "43f87c8e60e5ac26fdb1538a612005a044a2418a55c4b2264694cc4845d151e9",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_executor_server.py",
+    "local_sha256": "48af6351aa62d5123f03ddb167788a179804090ac63c08566727e3fc5c0ebcd4",
+    "container_sha256": "48af6351aa62d5123f03ddb167788a179804090ac63c08566727e3fc5c0ebcd4",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_planner.py",
+    "local_sha256": "f4242089847b8b7cffc819eb753cf80d6dab47d2efdedd5a94a4bab730fa9411",
+    "container_sha256": "f4242089847b8b7cffc819eb753cf80d6dab47d2efdedd5a94a4bab730fa9411",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_sandbox.py",
+    "local_sha256": "9d53d6ab93eea0fdc902db1ee854401daab77141145c850e3b95fbe17df1cd55",
+    "container_sha256": "9d53d6ab93eea0fdc902db1ee854401daab77141145c850e3b95fbe17df1cd55",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_schemas.py",
+    "local_sha256": "89e2620a0c57bfd159d59f2037a92fb92688ce66bb20e14dfb24633e317a86f5",
+    "container_sha256": "89e2620a0c57bfd159d59f2037a92fb92688ce66bb20e14dfb24633e317a86f5",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_service.py",
+    "local_sha256": "a63c8e9e663b2b995893a3822c182280cca2ad19d5fc84dc842dd0fa366934f7",
+    "container_sha256": "a63c8e9e663b2b995893a3822c182280cca2ad19d5fc84dc842dd0fa366934f7",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/plot_store.py",
+    "local_sha256": "34ae46c7bfbe0e5d21e8720524a254a057bf887a1ea4f5a5b59f7b4fdde17091",
+    "container_sha256": "34ae46c7bfbe0e5d21e8720524a254a057bf887a1ea4f5a5b59f7b4fdde17091",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/postgres.py",
+    "local_sha256": "500216e7422fb44d02b829b900a39be7d98586108076710d167931d4faef8471",
+    "container_sha256": "500216e7422fb44d02b829b900a39be7d98586108076710d167931d4faef8471",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/postgres_knowledge.py",
+    "local_sha256": "77079108251f0f29307ae577cef1a8f7fb47009b9947ad5669878fdf7e4c745c",
+    "container_sha256": "77079108251f0f29307ae577cef1a8f7fb47009b9947ad5669878fdf7e4c745c",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/projects.py",
+    "local_sha256": "e95737deb8935b87af2627ba94fd37b2eecc3a236b1ec09c342d29dacbb1c041",
+    "container_sha256": "e95737deb8935b87af2627ba94fd37b2eecc3a236b1ec09c342d29dacbb1c041",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/project_archives.py",
+    "local_sha256": "ceab507d5f0932071b09b1c525e3d5457bc9e8fa7e22c6579c3f0994b07de6a0",
+    "container_sha256": "ceab507d5f0932071b09b1c525e3d5457bc9e8fa7e22c6579c3f0994b07de6a0",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/project_links.py",
+    "local_sha256": "b99314b103f306868ce60f2598bedd59f5648726c62ebe94445ba25abbb01b98",
+    "container_sha256": "b99314b103f306868ce60f2598bedd59f5648726c62ebe94445ba25abbb01b98",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/project_schemas.py",
+    "local_sha256": "bdd738d929db54dc2ea0cc281e5860446364d638bf64136422d457ebf5453d6d",
+    "container_sha256": "bdd738d929db54dc2ea0cc281e5860446364d638bf64136422d457ebf5453d6d",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/project_service.py",
+    "local_sha256": "6a038166ec495ef4be7d1d5966f43528d9719e00de9b542a7bb6e20ce30e049e",
+    "container_sha256": "6a038166ec495ef4be7d1d5966f43528d9719e00de9b542a7bb6e20ce30e049e",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/rag_archives.py",
+    "local_sha256": "ece67392e13e41aca7f699362540431ce8971734dc8907633ce68b191ae3aa15",
+    "container_sha256": "ece67392e13e41aca7f699362540431ce8971734dc8907633ce68b191ae3aa15",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/rag_retrieval.py",
+    "local_sha256": "2531ac1826437257a66e62f699f438bb00dba7752daf660f13daadfa3af9c376",
+    "container_sha256": "2531ac1826437257a66e62f699f438bb00dba7752daf660f13daadfa3af9c376",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/rag_schemas.py",
+    "local_sha256": "ccf97f28fbcca9f74f0d836b779faf97d74959ce8796a89786197111eb446d74",
+    "container_sha256": "ccf97f28fbcca9f74f0d836b779faf97d74959ce8796a89786197111eb446d74",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/rag_service.py",
+    "local_sha256": "481701a6039bff3e3d3e21144fc01e4af017fd2532bc2a471265f3207de1112e",
+    "container_sha256": "481701a6039bff3e3d3e21144fc01e4af017fd2532bc2a471265f3207de1112e",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/rag_store.py",
+    "local_sha256": "fbfba99a63ce3295fba537ec07eeb625b7b6875b3914bab608d2e0f795c586bd",
+    "container_sha256": "fbfba99a63ce3295fba537ec07eeb625b7b6875b3914bab608d2e0f795c586bd",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/schemas.py",
+    "local_sha256": "b6669df16f1b75e00330dc01fd9e6d605dd45f95aad7c3a7b37946f6f9ba1e6a",
+    "container_sha256": "b6669df16f1b75e00330dc01fd9e6d605dd45f95aad7c3a7b37946f6f9ba1e6a",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/services.py",
+    "local_sha256": "ba113ec5335d78ccbe54eacf767d36e5c5c940f32d8bce1371ff7a5a063a91f2",
+    "container_sha256": "ba113ec5335d78ccbe54eacf767d36e5c5c940f32d8bce1371ff7a5a063a91f2",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/simbad.py",
+    "local_sha256": "3296c5ef7d8bcf54eb50266ec1e110cb15c07da9db717ebcac35ce90501745d2",
+    "container_sha256": "3296c5ef7d8bcf54eb50266ec1e110cb15c07da9db717ebcac35ce90501745d2",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/workflows.py",
+    "local_sha256": "abb088399851c320f7aa9210c0eb578dce1194fb1481d92dadb4ed5c6d94f57c",
+    "container_sha256": "abb088399851c320f7aa9210c0eb578dce1194fb1481d92dadb4ed5c6d94f57c",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/workflow_archives.py",
+    "local_sha256": "ace2e0d239b8adf3b6123765b55594e1f25a9d4e39bf66574c1e4ca3b368a8c5",
+    "container_sha256": "ace2e0d239b8adf3b6123765b55594e1f25a9d4e39bf66574c1e4ca3b368a8c5",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/workflow_io.py",
+    "local_sha256": "ade9544d57437cfde98c504360f54e8481be3139d44111761ac0819daf413f13",
+    "container_sha256": "ade9544d57437cfde98c504360f54e8481be3139d44111761ac0819daf413f13",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/workflow_schemas.py",
+    "local_sha256": "eab1f465d6d302f6dfaa4bc2843c7a21162a484f39fa835972959b312b4072fc",
+    "container_sha256": "eab1f465d6d302f6dfaa4bc2843c7a21162a484f39fa835972959b312b4072fc",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/workflow_service.py",
+    "local_sha256": "54f23f42256492ebb49bf911d04d462fc1ffdd17428e331696eed1a72f82e629",
+    "container_sha256": "54f23f42256492ebb49bf911d04d462fc1ffdd17428e331696eed1a72f82e629",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/workflow_templates.py",
+    "local_sha256": "5f3c5764e9b47aeb9d17cfc2a3e2722af4220310e32b98c95a7e7482e6e6e3c6",
+    "container_sha256": "5f3c5764e9b47aeb9d17cfc2a3e2722af4220310e32b98c95a7e7482e6e6e3c6",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/__init__.py",
+    "local_sha256": "4574000ae862e378b162fc3f11bfa8f7c6579efb3fab67e4ac03618d9cb32e6c",
+    "container_sha256": "4574000ae862e378b162fc3f11bfa8f7c6579efb3fab67e4ac03618d9cb32e6c",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/admin.py",
+    "local_sha256": "4c188a9732269861a7ffd29efddcbf6244893cd032c3380bf8c6cd007123f399",
+    "container_sha256": "4c188a9732269861a7ffd29efddcbf6244893cd032c3380bf8c6cd007123f399",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/artifacts.py",
+    "local_sha256": "eefa2d5fd4e877e6e03eb921de16c366eaab905966bf9dda9d2e7088e1695efd",
+    "container_sha256": "eefa2d5fd4e877e6e03eb921de16c366eaab905966bf9dda9d2e7088e1695efd",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/attachments.py",
+    "local_sha256": "13f51b15a39fc7fbcf60115ac9cc87ab0860f53807d13710fe8eeb30ac19e79d",
+    "container_sha256": "13f51b15a39fc7fbcf60115ac9cc87ab0860f53807d13710fe8eeb30ac19e79d",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/auth.py",
+    "local_sha256": "c77219cd014e729d70f55f27866998e5c411e91a9069bf5ecc66edb3458c7328",
+    "container_sha256": "c77219cd014e729d70f55f27866998e5c411e91a9069bf5ecc66edb3458c7328",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/chat.py",
+    "local_sha256": "8c36d316fd94ef076f245b4d7e8ba92f35e1a1d66eff561847e4a7cfb811d982",
+    "container_sha256": "8c36d316fd94ef076f245b4d7e8ba92f35e1a1d66eff561847e4a7cfb811d982",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/conversations.py",
+    "local_sha256": "88b9e0b607091c9c0a1868f793f4ebffa8c03c201b467d082048fab92ff96ef2",
+    "container_sha256": "88b9e0b607091c9c0a1868f793f4ebffa8c03c201b467d082048fab92ff96ef2",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/exports.py",
+    "local_sha256": "96b439967c629cf1d203b46cfee07991449bb10e301f61fd3256ce8ec0dc18a0",
+    "container_sha256": "96b439967c629cf1d203b46cfee07991449bb10e301f61fd3256ce8ec0dc18a0",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/health.py",
+    "local_sha256": "cecd358e5925a82508c2f00197e5485453ba1614e82ee4bd380986f9eab3ce91",
+    "container_sha256": "cecd358e5925a82508c2f00197e5485453ba1614e82ee4bd380986f9eab3ce91",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/knowledge.py",
+    "local_sha256": "333053aa4701121873dbe3da840573e77a2d42c84f4fd7b1bab029572e230de3",
+    "container_sha256": "333053aa4701121873dbe3da840573e77a2d42c84f4fd7b1bab029572e230de3",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/links.py",
+    "local_sha256": "00e6dba77889514d4e49e01e71093424c05cd1365cfd7eea6c7c7bf298f6fb5c",
+    "container_sha256": "00e6dba77889514d4e49e01e71093424c05cd1365cfd7eea6c7c7bf298f6fb5c",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/local_assistant.py",
+    "local_sha256": "0c1c1a43037da5405cae2e8e5d4fe295bce13790353deda081594aa41e0a943d",
+    "container_sha256": "0c1c1a43037da5405cae2e8e5d4fe295bce13790353deda081594aa41e0a943d",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/models.py",
+    "local_sha256": "2c0a2b67b3287036a8681881a72b1bfb8a0d165cb0134741522dfd0a34b4427c",
+    "container_sha256": "2c0a2b67b3287036a8681881a72b1bfb8a0d165cb0134741522dfd0a34b4427c",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/plotting.py",
+    "local_sha256": "22aa96b4bb14f62b31058ed78e82095e6b6b3fb853c86e69f829cbe6792fbc83",
+    "container_sha256": "22aa96b4bb14f62b31058ed78e82095e6b6b3fb853c86e69f829cbe6792fbc83",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/projects.py",
+    "local_sha256": "8b171f66396150f8b14dab1f8142c398c8faf2285282c8adca8e774dcbddfff7",
+    "container_sha256": "8b171f66396150f8b14dab1f8142c398c8faf2285282c8adca8e774dcbddfff7",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/rag.py",
+    "local_sha256": "a83aaa45dff840952330ee57b595bbb599f534e89eebad856e835385597badb6",
+    "container_sha256": "a83aaa45dff840952330ee57b595bbb599f534e89eebad856e835385597badb6",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/setup.py",
+    "local_sha256": "cfed8a48d1cfecd410c60c9dfb204df2fca117671b2b97fef2a4e68c0935ab2d",
+    "container_sha256": "cfed8a48d1cfecd410c60c9dfb204df2fca117671b2b97fef2a4e68c0935ab2d",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/workflows.py",
+    "local_sha256": "c956d24e6d8ffe7a4fe0792bd98c3f4bf81b2e256437d75d56ac59c9824ccdb0",
+    "container_sha256": "c956d24e6d8ffe7a4fe0792bd98c3f4bf81b2e256437d75d56ac59c9824ccdb0",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-backend-1",
+    "file": "src/astroagent/api/__init__.py",
+    "local_sha256": "d6669e783fe6a0c3a063f1a8da02dce3f071b1f929575696bc43e2bb1a5012f2",
+    "container_sha256": "d6669e783fe6a0c3a063f1a8da02dce3f071b1f929575696bc43e2bb1a5012f2",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-frontend-1",
+    "file": "frontend/dist/index.html",
+    "local_sha256": "2f13e9643d6481b139944c5e4b168f7241625ea2d7bd81ac05fd3d40e22b1559",
+    "container_sha256": "2f13e9643d6481b139944c5e4b168f7241625ea2d7bd81ac05fd3d40e22b1559",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-frontend-1",
+    "file": "frontend/dist/assets/index-Cfs3aSz-.js",
+    "local_sha256": "119066a888c40745aa84411c5f3fe9948171e7f17ea2a4d9f4340f3fe78805d4",
+    "container_sha256": "119066a888c40745aa84411c5f3fe9948171e7f17ea2a4d9f4340f3fe78805d4",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-frontend-1",
+    "file": "frontend/dist/assets/index-CsTtaSVD.css",
+    "local_sha256": "de3fdca37dec33e9418e95b826e9339dd5adfa918bbd12907e704354a4285540",
+    "container_sha256": "de3fdca37dec33e9418e95b826e9339dd5adfa918bbd12907e704354a4285540",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-frontend-1",
+    "file": "frontend/server.mjs",
+    "local_sha256": "26b2f3d8b755f64baf8d95fd67ba5dbbcd3001c73c1e838cc3f2d2033dd775f0",
+    "container_sha256": "26b2f3d8b755f64baf8d95fd67ba5dbbcd3001c73c1e838cc3f2d2033dd775f0",
+    "deployed_matches": true
+  },
+  {
+    "container": "astroagent-v16-ingress-1",
+    "file": "containers/frontend/ingress.mjs",
+    "local_sha256": "ee00d6bb2c571cb671b56220eedf83ca3b060e879ae8027bb750a2dbb01197e0",
+    "container_sha256": "ee00d6bb2c571cb671b56220eedf83ca3b060e879ae8027bb750a2dbb01197e0",
+    "deployed_matches": true
+  }
+]

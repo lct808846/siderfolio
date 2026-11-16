@@ -1,0 +1,12 @@
+[
+  {
+    "browser": "chromium",
+    "synthetic_qr_decoded": true,
+    "format": "QR Code"
+  },
+  {
+    "browser": "edge",
+    "synthetic_qr_decoded": true,
+    "format": "QR Code"
+  }
+]

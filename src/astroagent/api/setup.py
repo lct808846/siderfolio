@@ -1,16 +1,13 @@
 """Secret-free setup state. Credentials remain in server environment variables."""
 
-import threading
-
 from fastapi import APIRouter, Request
 
 from astroagent.config import LocalSettings, Settings
 from astroagent.errors import ServiceError
-from astroagent.postgres import SCHEMA_VERSION, PostgresRepository
+from astroagent.postgres import SCHEMA_VERSION
 from astroagent.rag_schemas import Confirm, SetupStatus
 
 router = APIRouter(prefix="/api/v1/setup", tags=["setup"])
-LOCK = threading.Lock()
 
 
 @router.get("/status", response_model=SetupStatus)
@@ -21,7 +18,14 @@ def status(request: Request):
         raise ServiceError(
             503, "setup_configuration_invalid", "服务端配置无效；错误详情不会向浏览器暴露凭据。"
         ) from exc
-    service = getattr(request.app.state, "conversation_service", None)
+    from astroagent.api.conversations import get_service
+
+    service = get_service(request)
+    from astroagent.model_providers import ProviderRegistry
+
+    registry = ProviderRegistry(request.app.state.identity.store, model)
+    catalog = registry.catalog()
+    resolved = registry.resolve(catalog.default_model) if catalog.configured else None
     value = {
         "deployment_mode": local.deployment_mode,
         "configured": bool(local.database_url.get_secret_value()),
@@ -37,9 +41,9 @@ def status(request: Request):
         "embedding_configured": local.rag_model_path is not None and bool(local.rag_model_sha256),
         "embedding_model": local.rag_model_name,
         "embedding_dimension": local.rag_dimension,
-        "answering_configured": bool(model.deepseek_api_key.get_secret_value()),
-        "answering_provider": str(model.deepseek_base_url).split("@").pop().split("?")[0],
-        "answering_model": model.deepseek_model,
+        "answering_configured": catalog.configured,
+        "answering_provider": str(resolved.deepseek_base_url) if resolved else "",
+        "answering_model": catalog.default_model,
     }
     if service:
         with service.repository.connection() as db:
@@ -47,7 +51,7 @@ def status(request: Request):
                 database_schema=SCHEMA_VERSION,
                 database_version=db.execute("SHOW server_version").fetchone()[0],
                 vector_version=db.execute(
-                    "SELECT extversion FROM pg_extension WHERE extname='vector'"
+                    "SELECT extversion FROM pg_extension WHERE extname=?", ("vector",)
                 ).fetchone()[0],
                 database_used_bytes=service.repository._used(db),
             )
@@ -56,28 +60,8 @@ def status(request: Request):
 
 @router.post("/initialize", response_model=SetupStatus)
 def initialize(request: Request, body: Confirm):
+    # Global identity/legacy initialization is deliberately offline in V1.6.
+    # This request only reports this authenticated user's already scoped service.
     if not body.confirmed:
-        raise ServiceError(
-            422, "setup_confirmation_required", "请确认在已配置的空数据库创建业务表与扩展。"
-        )
-    if not LOCK.acquire(blocking=False):
-        raise ServiceError(409, "setup_busy", "初始化正在进行，请读取状态。")
-    repository = None
-    try:
-        if getattr(request.app.state, "conversation_service", None) is None:
-            from astroagent.services import compose
-
-            settings = LocalSettings()
-            repository = PostgresRepository(settings)
-            repository.initialize(create=True)
-            request.app.state.conversation_service = compose(repository, settings)
-            request.app.state.repository = repository
-        return status(request)
-    except BaseException:
-        if repository:
-            repository.close()
-            request.app.state.conversation_service = None
-            request.app.state.repository = None
-        raise
-    finally:
-        LOCK.release()
+        raise ServiceError(422, "setup_confirmation_required", "请确认初始化操作。")
+    return status(request)

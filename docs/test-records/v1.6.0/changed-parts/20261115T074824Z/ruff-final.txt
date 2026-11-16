@@ -1,0 +1,12 @@
+E501 Line too long (104 > 100)
+  --> src\astroagent\model_client.py:30:75
+   |
+28 |                 "当前 Gemini 项目的预付费余额已耗尽，请在 Google AI Studio 的项目结算中充值后重试。"
+29 |                 if "prepayment credits" in message and "depleted" in message
+30 |                 else "Gemini 服务需要处理余额或计费问题，请在 Google AI Studio 检查当前项目的结算状态。"
+   |                                                                                                      ^^^
+31 |             )
+32 |             failure = ServiceError(503, "gemini_billing_required", detail)
+   |
+
+Found 1 error.

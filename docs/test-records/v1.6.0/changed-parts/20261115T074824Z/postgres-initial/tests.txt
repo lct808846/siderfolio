@@ -1,0 +1,46 @@
+...F.............................                                        [100%]
+================================== FAILURES ===================================
+____ test_session_revocation_is_owned_requires_proof_and_protects_current _____
+
+identity_client = <starlette.testclient.TestClient object at 0x000001FE7DE390A0>
+
+    def test_session_revocation_is_owned_requires_proof_and_protects_current(identity_client):
+        client = identity_client
+        account(client)
+        original = client.cookies.get("astroagent_session")
+        assert (
+            post(
+                client, "auth/login", {"email": "observer@example.org", "password": PASSWORD}
+            ).status_code
+            == 200
+        )
+        # A new login explicitly revokes an authenticated previous browser, so use an
+        # independent unauthenticated cookie jar for the second synthetic browser.
+        other = client.fresh()
+        assert (
+            post(
+                other, "auth/login", {"email": "observer@example.org", "password": PASSWORD}
+            ).status_code
+            == 200
+        )
+        sessions = client.get("/api/v1/auth/sessions").json()
+        current = next(s for s in sessions if s["current"])
+        target = next(s for s in sessions if not s["current"])
+        body = {"session_id": target["id"], "password": "wrong-password"}
+        assert post(client, "auth/sessions/revoke", body).status_code == 403
+        body["password"] = PASSWORD
+        assert (
+            post(client, "auth/sessions/revoke", {**body, "session_id": current["id"]}).status_code
+            == 409
+        )
+>       assert (
+            post(client, "auth/sessions/revoke", {**body, "session_id": "missing"}).status_code == 404
+        )
+E       AssertionError: assert 422 == 404
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E        +    where <Response [422 Unprocessable Entity]> = post(<starlette.testclient.TestClient object at 0x000001FE7DE390A0>, 'auth/sessions/revoke', {'session_id': 'missing', 'password': 'Synthetic nebula entropy 2048'})
+
+tests\test_identity_postgres.py:265: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_identity_postgres.py::test_session_revocation_is_owned_requires_proof_and_protects_current
+1 failed, 32 passed, 706 deselected in 45.66s

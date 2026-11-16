@@ -1,0 +1,38 @@
+[
+  {
+    "Image": "astroagent-frontend:1.6.0-dev.0",
+    "Names": "astroagent-v16-frontend-1",
+    "Ports": "",
+    "Status": "Up 6 minutes (healthy)"
+  },
+  {
+    "Image": "astroagent-backend:1.6.0-dev.0",
+    "Names": "astroagent-v16-backend-1",
+    "Ports": "",
+    "Status": "Up 6 minutes (healthy)"
+  },
+  {
+    "Image": "5f0c5e8e95c5",
+    "Names": "astroagent-v16-plot-executor-1",
+    "Ports": "",
+    "Status": "Up 24 minutes (healthy)"
+  },
+  {
+    "Image": "ef0f592a8b1b",
+    "Names": "astroagent-v16-ingress-1",
+    "Ports": "127.0.0.1:5173->5173/tcp",
+    "Status": "Up 24 minutes (healthy)"
+  },
+  {
+    "Image": "0e59999e0e8f",
+    "Names": "astroagent-v16-ollama-1",
+    "Ports": "11434/tcp",
+    "Status": "Up 24 minutes (healthy)"
+  },
+  {
+    "Image": "0dd3149a06e4",
+    "Names": "astroagent-v16-postgres-1",
+    "Ports": "5432/tcp",
+    "Status": "Up 24 minutes (healthy)"
+  }
+]

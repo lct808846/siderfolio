@@ -12,13 +12,13 @@ const menuRow = ref<HTMLButtonElement | null>(null), choices = ref<HTMLElement |
 const choicesOpen = ref(false), query = ref(''), searchInput = ref<HTMLInputElement | null>(null)
 const open = ref(false), active = ref(0), left = ref(12), top = ref(12), maxHeight = ref(420), placement = ref('above')
 const locked = computed(() => props.disabled || models.loading || !models.configured || !models.options.length)
-const currentLabel = computed(() => models.loading && !models.options.length ? '读取模型…' : props.modelValue || '选择模型')
+const currentLabel = computed(() => models.loading && !models.options.length ? '读取模型…' : props.modelValue ? models.labelFor(props.modelValue) : '选择模型')
 const groups = computed(() => {
   const result = new Map<string, typeof models.options>()
   const term = query.value.trim().toLowerCase()
   for (const model of models.options) {
-    if (term && !`${model.id} ${model.label}`.toLowerCase().includes(term)) continue
-    const name = model.id.toLowerCase().includes('qwen') ? 'Qwen' : model.id.toLowerCase().includes('deepseek') ? 'DeepSeek' : '其他模型'
+    if (term && !`${model.id} ${model.label} ${model.provider || ''}`.toLowerCase().includes(term)) continue
+    const name = model.provider || (model.id.toLowerCase().includes('qwen') ? 'Qwen' : model.id.toLowerCase().includes('deepseek') ? 'DeepSeek' : '其他模型')
     result.set(name, [...(result.get(name) || []), model])
   }
   return [...result].map(([name, items]) => ({ name, items }))
@@ -170,7 +170,7 @@ onBeforeUnmount(() => {
               <div v-for="(group, groupIndex) in groups" :key="group.name" class="model-picker-group" role="group" :aria-labelledby="`${listId}-group-${groupIndex}`">
                 <div :id="`${listId}-group-${groupIndex}`" class="model-picker-group-label">{{ group.name }}</div>
                 <button v-for="model in group.items" :key="model.id" class="model-picker-option" type="button" role="option" tabindex="-1" :aria-selected="model.id === modelValue" data-tooltip="" @focus="active = filtered.findIndex(item => item.id === model.id)" @click="choose(model.id)">
-                  <span class="model-picker-label">{{ model.id }}</span>
+                  <span class="model-picker-label">{{ models.labelFor(model.id) }}</span>
                   <svg v-if="model.id === modelValue" class="model-picker-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
                 </button>
               </div>

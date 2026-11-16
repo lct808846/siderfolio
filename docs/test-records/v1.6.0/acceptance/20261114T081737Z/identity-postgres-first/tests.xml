@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="12" time="22.824" timestamp="2026-11-14T16:29:30.673882+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_identity_postgres" name="test_all_business_routes_deny_anonymous_before_body" time="0.461"><failure message="assert 2 &gt; 75">identity_client = &lt;starlette.testclient.TestClient object at 0x000001191D626D80&gt;
+
+    def test_all_business_routes_deny_anonymous_before_body(identity_client):
+        from astroagent.auth_access import PUBLIC
+        from astroagent.main import app
+    
+        client = identity_client
+        protected = 0
+        for route in app.routes:
+            for method in getattr(route, "methods", set()) - {"OPTIONS"}:
+                path = route.path
+                if path == "/health" or (method, path) in PUBLIC:
+                    continue
+                response = client.request(method, path)
+                assert response.status_code == 401, (method, path, response.status_code)
+                protected += 1
+&gt;       assert protected &gt; 75
+E       assert 2 &gt; 75
+
+tests\test_identity_postgres.py:127: AssertionError</failure></testcase><testcase classname="tests.test_identity_postgres" name="test_registration_scanner_replay_and_cookie_policy" time="1.670" /><testcase classname="tests.test_identity_postgres" name="test_csrf_origin_body_limit_and_error_redaction" time="0.395" /><testcase classname="tests.test_identity_postgres" name="test_two_accounts_isolate_ids_and_missing_table_never_falls_back" time="3.842" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[idle]" time="1.065" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[absolute]" time="1.153" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[revoked]" time="1.153" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[disabled]" time="1.046" /><testcase classname="tests.test_identity_postgres" name="test_reset_revokes_all_sessions_and_tokens" time="1.548" /><testcase classname="tests.test_identity_postgres" name="test_wrong_key_and_lost_lock_fail_closed" time="1.167" /><testcase classname="tests.test_identity_postgres" name="test_encrypted_outbox_submission_and_expired_mail" time="0.868" /><testcase classname="tests.test_identity_postgres" name="test_disabled_generation_blocks_existing_worker_repository" time="2.529" /></testsuite></testsuites>

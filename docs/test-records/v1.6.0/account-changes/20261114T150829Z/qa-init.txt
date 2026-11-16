@@ -1,0 +1,11 @@
+ Network astroagent-v16-qa_web Creating 
+ Network astroagent-v16-qa_outbound Creating 
+ Network astroagent-v16-qa_outbound Creating 
+ Network astroagent-v16-qa_web Creating 
+ Network astroagent-v16-qa_outbound Created 
+ Network astroagent-v16-qa_outbound Created 
+ Network astroagent-v16-qa_web Created 
+ Network astroagent-v16-qa_web Created 
+ Container astroagent-v16-qa-backend-run-c072bb7136af Creating 
+ Container astroagent-v16-qa-backend-run-c072bb7136af Created 
+身份表已初始化；旧业务表仍隔离，未自动认领。

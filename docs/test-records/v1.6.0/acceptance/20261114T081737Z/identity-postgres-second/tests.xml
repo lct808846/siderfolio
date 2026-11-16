@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="12" time="19.146" timestamp="2026-11-14T16:32:16.262569+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_identity_postgres" name="test_all_business_routes_deny_anonymous_before_body" time="1.728"><failure message="starlette.websockets.WebSocketDisconnect">identity_client = &lt;starlette.testclient.TestClient object at 0x000001D272257A70&gt;
+
+    def test_all_business_routes_deny_anonymous_before_body(identity_client):
+        from astroagent.auth_access import PUBLIC
+        from astroagent.main import app
+    
+        client = identity_client
+        protected = 0
+        for path, operations in app.openapi()["paths"].items():
+            for verb in operations:
+                method = verb.upper()
+                if path == "/health" or (method, path) in PUBLIC:
+                    continue
+                response = client.request(method, path)
+                assert response.status_code == 401, (method, path, response.status_code)
+                protected += 1
+        assert protected &gt; 75
+        for path in ("/api/v1/missing", "/api/v1/%2e%2e/admin", "/openapi.json", "/docs"):
+            assert client.get(path).status_code == 401
+&gt;       with client.websocket_connect("/api/v1/events") as websocket:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_identity_postgres.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:115: in __enter__
+    self._raise_on_close(message)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;starlette.testclient.WebSocketTestSession object at 0x000001D273F74290&gt;
+message = {'type': 'websocket.close', 'code': 4401}
+
+    def _raise_on_close(self, message: Message) -&gt; None:
+        if message["type"] == "websocket.close":
+&gt;           raise WebSocketDisconnect(code=message.get("code", 1000), reason=message.get("reason", ""))
+E           starlette.websockets.WebSocketDisconnect
+
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:144: WebSocketDisconnect</failure></testcase><testcase classname="tests.test_identity_postgres" name="test_registration_scanner_replay_and_cookie_policy" time="1.142" /><testcase classname="tests.test_identity_postgres" name="test_csrf_origin_body_limit_and_error_redaction" time="0.410" /><testcase classname="tests.test_identity_postgres" name="test_two_accounts_isolate_ids_and_missing_table_never_falls_back" time="3.479" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[idle]" time="0.679" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[absolute]" time="0.664" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[revoked]" time="0.720" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[disabled]" time="0.681" /><testcase classname="tests.test_identity_postgres" name="test_reset_revokes_all_sessions_and_tokens" time="1.138" /><testcase classname="tests.test_identity_postgres" name="test_wrong_key_and_lost_lock_fail_closed" time="0.681" /><testcase classname="tests.test_identity_postgres" name="test_encrypted_outbox_submission_and_expired_mail" time="0.608" /><testcase classname="tests.test_identity_postgres" name="test_disabled_generation_blocks_existing_worker_repository" time="1.591" /></testsuite></testsuites>

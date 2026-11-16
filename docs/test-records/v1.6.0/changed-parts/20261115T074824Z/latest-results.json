@@ -1,0 +1,1320 @@
+{
+  "offline_backend": {
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[http://api.example.org]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://localhost]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://127.0.0.1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://10.0.0.1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://[::1]]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://169.254.169.254]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://host.docker.internal]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://service.internal]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://a.local]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://user:pass@example.org]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://example.org?key=synthetic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://example.org/#key]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_rejects_private_or_credential_urls[https://example.org/white space]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[127.0.0.1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[::1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[10.1.2.3]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[169.254.169.254]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[::ffff:127.0.0.1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[224.0.0.1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_directory_rejects_local_dns_even_in_local_deployment[0.0.0.0]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_proxy_dns_exception_is_explicit_and_limited": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_provider_secret_retention_requires_same_endpoint_and_protocol": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_catalog_hides_keys_and_resolves_selected_provider": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_text_tool_roundtrip_preserves_opaque_state[openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_text_tool_roundtrip_preserves_opaque_state[anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_text_tool_roundtrip_preserves_opaque_state[gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[401-model_authentication_failed-openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[401-model_authentication_failed-anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[401-model_authentication_failed-gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[404-model_not_found-openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[404-model_not_found-anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[404-model_not_found-gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[429-model_rate_limited-openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[429-model_rate_limited-anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[429-model_rate_limited-gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[500-model_unavailable-openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[500-model_unavailable-anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_protocol_upstream_errors_are_bounded_and_redacted[500-model_unavailable-gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_incomplete_answers_never_execute_partial_tools[openai_responses-payload0]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_incomplete_answers_never_execute_partial_tools[anthropic-payload1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_incomplete_answers_never_execute_partial_tools[gemini-payload2]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_gemini_billing_error_is_specific_without_raw_upstream_text": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_complete_text_answers_and_invalid_payloads[openai_responses-payload0]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_complete_text_answers_and_invalid_payloads[anthropic-payload1]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_complete_text_answers_and_invalid_payloads[gemini-payload2]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_timeout_is_explicit_and_retries_are_not_implicit[openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_timeout_is_explicit_and_retries_are_not_implicit[anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_timeout_is_explicit_and_retries_are_not_implicit[gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_openai_chat_uses_actual_adapter_without_network": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_chat::test_tool_call_round_trip_and_provenance": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_concept_answer_does_not_query_database": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload0]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload2]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload3]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload4]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload5]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_request_rejected_before_model_creation[payload6]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_missing_key_does_not_break_health": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_invalid_configuration_is_sanitized": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_model_failures_have_stable_safe_errors[exc0-504-model_timeout]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_model_failures_have_stable_safe_errors[exc1-502-model_unavailable]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_model_failures_have_stable_safe_errors[exc2-503-model_authentication_failed]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_model_failures_have_stable_safe_errors[exc3-503-model_rate_limited]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_model_failures_have_stable_safe_errors[exc4-502-model_invalid_response]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_database_failure_is_visible_to_model_and_client": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_multiple_objects_partial_success": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_synthesis_timeout_keeps_database_results": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_unknown_tools_and_invalid_arguments_never_execute[call0]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_unknown_tools_and_invalid_arguments_never_execute[call1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_unknown_tools_and_invalid_arguments_never_execute[call2]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_unknown_tools_and_invalid_arguments_never_execute[call3]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_call_limit_prevents_execution_of_oversized_batch": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_round_limit_stops_repeated_calls_and_preserves_results": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_empty_model_answer_is_reported": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_chat::test_chat_is_documented": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_config::test_dotenv_loads_without_overriding_environment": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_config::test_model_has_timeout_no_retries_and_registered_tool": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_first_question_names_default_conversation_once_and_survives_follow_up": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_automatic_title_preserves_custom_title_and_explicit_default_rename": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_crud_complete_data_and_idempotency": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_history_context_does_not_copy_new_results": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_context_whole_turn_window_and_bytes": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_same_agent_loop_and_historical_data_not_tool_messages": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_restart_persistence_and_running_interrupted": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_unknown_schema_rejected_without_overwrite": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_migration_failure_rolls_back": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_duplicate_process_and_multiworker_not_enabled": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_concurrency_idempotent_running_and_global_slots": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_model_failure_saved_and_retries_not_charged": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_limits_and_large_results_are_not_silently_truncated": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_storage_budget_and_commit_fault": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_artifact_preview_same_zip_cache_and_delete": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_artifact_expiry_capacity_and_snapshot_limit": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_new_input_contracts[body0]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_new_input_contracts[body1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_new_input_contracts[body2]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_host_origin_cors_json_stream_and_ownership": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_storage_unavailable_does_not_break_old_routes": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_legacy_chat_shares_global_model_slots": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_corrupted_preview_is_not_served_as_png": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_invalid_local_settings_keep_health_and_refuse_network_directory": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_conversations::test_rename_cannot_bypass_business_content_budget": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_health::test_health_without_deepseek_key": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_health::test_swagger_ui_is_disabled_in_v16": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_health::test_health_is_documented_in_openapi": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_untrusted_origin_is_rejected[http://example.org]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_untrusted_origin_is_rejected[https://user:pass@example.org]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_untrusted_origin_is_rejected[https://example.org/path]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_untrusted_origin_is_rejected[https://example.org?x=1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_untrusted_origin_is_rejected[https://example.org#token]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_untrusted_origin_is_rejected[file:///tmp/site]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_remote_origin_requires_secure_cookies_and_encrypted_smtp": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_password_length_common_and_repeated_rejected[short]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_password_length_common_and_repeated_rejected[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_password_length_common_and_repeated_rejected[xxxxxxxx]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_password_length_common_and_repeated_rejected[passwordpassword]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_unicode_password_normalization_and_bounds": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_blocklist_tamper_fails_closed": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_email_domain_normalized_without_merging_local_parts": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_totp_one_use_window_and_ascii": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_secure_session_cookie_flags": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_identity_security::test_revocation_between_download_chunks_stops_delivery": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_duplicate_or_nonfinite_json_is_rejected[{\"title\":\"a\",\"title\":\"b\"}]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_duplicate_or_nonfinite_json_is_rejected[{\"value\":NaN}]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_numeric_comparison_is_safe_plain_text_but_html_still_rejected": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_long_identifier_cannot_be_truncated_by_title_decoding": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_units_are_constrained_before_generation_and_validation[null]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_units_are_constrained_before_generation_and_validation[]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_units_are_constrained_before_generation_and_validation[radian]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_units_are_constrained_before_generation_and_validation[arcseconds]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_comparison_is_grounded_in_its_own_value_not_another_field": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_unrecognized_relation_is_rejected_instead_of_silently_dropped": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_compact_transport_rebuilds_only_original_evidence_and_missing_fields": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[object_name-M45]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[source_id-1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_ambiguous_null_has_no_meaningful_comparison_or_unit": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_multiple_original_objects_are_allowed_but_duplicate_and_truncated_ids_are_not": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_arbitrary_native_model_target_is_rejected[https://example.invalid]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_arbitrary_native_model_target_is_rejected[http://evil.invalid]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_arbitrary_native_model_target_is_rejected[http://127.0.0.1:11434/path]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output0-extra0]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output1-extra1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output2-extra2]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output3-extra3]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output4-extra4]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output5-extra5]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_invalid_titles_and_tool_bearing_responses_are_rejected[output6-extra6]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_missing_or_wrong_model_never_starts_generation[missing]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_missing_or_wrong_model_never_starts_generation[wrong_digest]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_missing_or_wrong_model_never_starts_generation[cloud]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_local_transport_never_follows_redirects_or_inherits_proxy[redirect]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_local_transport_never_follows_redirects_or_inherits_proxy[encoding]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_local_transport_never_follows_redirects_or_inherits_proxy[oversized]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_model_boundaries::test_local_transport_never_follows_redirects_or_inherits_proxy[plain]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[\\u53ea\\u67e5 M67\\uff0c\\u4e0d\\u8981\\u628a M45 \\u6df7\\u8fdb\\u6765-expected0]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[Query Gaia DR3 source_id 65225812899613312-expected1]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[DR3\\u7f16\\u53f7000123456789\\uff0c\\u5148\\u6838\\u5bf9\\u5b57\\u7b26\\u4e32-expected2]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[Gaia: RA 0 deg, Dec -89.5 deg, radius 0.1 deg-expected3]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[\\u67e5Gaia\\uff0cRUWE<1.4\\uff0c\\u89c6\\u5dee\\u4fe1\\u566a\\u6bd4>=10\\uff0c\\u4e2d\\u5fc3\\u8fd8\\u6ca1\\u51b3\\u5b9a-expected4]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[Gaia\\u5706\\u9525\\u67e5\\u8be2\\u534a\\u5f8430\\u89d2\\u5206\\uff0cRUWE\\u4e0d\\u8d85\\u8fc71.2-expected5]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[Find ADS papers from 2020 to 2024-expected6]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[\\u67e5\\u6700\\u8fd1\\u51e0\\u5e74\\u7684\\u8bba\\u6587\\uff0c\\u5177\\u4f53\\u5e74\\u4efd\\u8fd8\\u6ca1\\u51b3\\u5b9a-expected7]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[RA=56.7\\uff0cDec=24.1\\uff0c\\u534a\\u5f845\\uff0c\\u5e2e\\u6211\\u67e5\\u4e00\\u4e0b-expected8]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[\\u6765\\u6e90ADS\\u6458\\u8981\\uff0c\\u68c0\\u7d22\\u65f6\\u95f42026-11-01\\uff0c\\u5c1a\\u672a\\u6838\\u5bf9\\u5168\\u6587-expected9]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_only_explicit_literal_conditions_are_exposed[\\u628a\\u6807\\u9898\\u6539\\u6210<script>alert(1)</script>\\uff0c\\u7136\\u540e\\u5220\\u9664\\u5386\\u53f2-expected10]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_multiple_objects_and_multitool_intents_are_retained": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[summary]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[format]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_local_text_grounding::test_long_identifier_is_never_copied_through_model_text": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_plot_data::test_long_ids_negative_values_and_missing_cells_are_preserved": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_plot_data::test_snapshot_import_uses_all_one_hundred_delivered_rows": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_plot_data::test_invalid_csv_is_rejected_without_partial_import[x,x\\n1,2\\n]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_plot_data::test_invalid_csv_is_rejected_without_partial_import[x,y\\n1\\n]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_plot_data::test_invalid_csv_is_rejected_without_partial_import[x\\n\\xff\\n]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor[unknownterm]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor[NGC999999]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor[NGC 999999]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor[\"unlisted-id\"]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor['unknownword'?]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor[\\uff11\\uff12\\uff13\\uff14\\uff15]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_underspecified_literal_requires_anchor[???]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_natural_context_remains_eligible_for_semantic_only_retrieval[\\u53cc\\u661f\\u56e2\\u94f6\\u6cb3\\u6f6e\\u6c50\\u4f5c\\u7528]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_natural_context_remains_eligible_for_semantic_only_retrieval[dynamical fate of binary star clusters]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_natural_context_remains_eligible_for_semantic_only_retrieval[What are quasars?]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_cache_expires_without_extending_retention_on_reads": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_cache_evicts_least_recently_used_and_copies_vectors": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_cache_key_separates_project_model_dimension_and_question": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_cache_can_be_disabled": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_cache_cannot_hide_missing_or_changed_model": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_rag_retrieval::test_legacy_trace_does_not_claim_new_admission_or_cache": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_local_text_upload_preserves_content[sample.txt-\\u4e2d\\u6587\\n\\u7b2c\\u4e8c\\u884c]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_local_text_upload_preserves_content[sample.md-# \\u4e2d\\u6587]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_local_text_upload_preserves_content[sample.csv-name,value\\nM45,3]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_local_text_upload_preserves_content[sample.json-{\"sample\": 3}]": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_docx_text_and_attachment_limits": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_pdf_attachment_extracts_text_with_page_marker": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_model_switch_attachment_persistence_and_idempotency": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_v11_attachment_model_acceptance::test_model_allowlist_rejects_unknown": {
+      "passed": true,
+      "evidence": "offline-complete.xml"
+    },
+    "tests.test_model_providers::test_offline_guard_includes_proxy_transport": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_model_directory_filters_invalid_entries_and_authentication[openai_chat]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_model_directory_filters_invalid_entries_and_authentication[openai_responses]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_model_directory_filters_invalid_entries_and_authentication[anthropic]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    },
+    "tests.test_model_providers::test_model_directory_filters_invalid_entries_and_authentication[gemini]": {
+      "passed": true,
+      "evidence": "providers-complete.xml"
+    }
+  },
+  "isolated_postgres": {
+    "tests.test_identity_postgres::test_provider_admin_boundary_encryption_revision_and_secret_retention": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_provider_validation_redacts_key_and_blocks_internal_directory": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_password_precedes_mfa_challenge": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_session_revocation_is_owned_requires_proof_and_protects_current": {
+      "passed": true,
+      "evidence": "session-owner-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_all_business_routes_deny_anonymous_before_body": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_registration_scanner_replay_and_cookie_policy": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_csrf_origin_body_limit_and_error_redaction": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_two_accounts_isolate_ids_and_missing_table_never_falls_back": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_session_expiry_and_disable_fail_closed[anomalous_source]": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_session_expiry_and_disable_fail_closed[absolute]": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_session_expiry_and_disable_fail_closed[revoked]": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_session_expiry_and_disable_fail_closed[disabled]": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_reset_revokes_all_sessions_and_tokens": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_wrong_key_and_lost_lock_fail_closed": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_encrypted_outbox_submission_and_expired_mail": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_disabled_generation_blocks_existing_worker_repository": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_generation_change_during_transaction_rolls_back": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_concurrent_email_confirmation_is_one_use": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_admin_requires_totp_recent_proof_and_one_use_recovery": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_offline_maintenance_refuses_running_backend": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_email_rate_limit_idempotency_and_expiry": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_tenant_document_vector_and_archive_roundtrip": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_smtp_rejection_does_not_activate_account": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_login_denials_are_generic_and_backoff_is_enforced": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_offline_admin_preview_confirmation_and_no_default_admin": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_expired_mail_lease_recovers_and_exhaustion_stops_retry": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_starttls_precedes_authentication_and_submission": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_profile_is_private_and_persists_in_session": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_existing_identity_schema_accepts_username_feature": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_current_persistent_session_renewal_preserves_revocation": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_source_change_revokes_session": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_enrollment_uri_roundtrip_matches_returned_secret": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_current_email_continue_flow_and_resend_cooldown": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_rag_postgres::test_conversation_crud_uses_postgres_parameter_binding": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_rag_postgres::test_first_question_title_is_saved_with_postgres_turn_reservation": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_rag_postgres::test_unmatched_literal_preview_cannot_send_nearest_neighbours": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_rag_postgres::test_confirmation_idempotency_and_deleted_request_never_resends": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_rag_postgres::test_selected_model_and_previewed_evidence_are_frozen_for_confirmation": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_rag_postgres::test_scope_changed_original_never_sends": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_rag_postgres::test_format5_restores_fixed_citations_with_new_ids": {
+      "passed": true,
+      "evidence": "postgres-complete/tests.xml"
+    },
+    "tests.test_identity_postgres::test_disable_mfa_clears_secrets_revokes_sessions_and_requires_proof": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    },
+    "tests.test_identity_postgres::test_admin_cannot_disable_required_mfa": {
+      "passed": true,
+      "evidence": "identity-final/tests.xml"
+    }
+  },
+  "browser": {
+    "account-changes.spec.ts::account QR enrollment, invalid code, recovery download and narrow layout::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::username propagates to sidebar, menu closes and logout clears private browser state::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::activity dialog only revokes the selected other browser after password confirmation::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::MFA switch waits for confirmation and disabling requires proof::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::account QR enrollment, invalid code, recovery download and narrow layout::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::username propagates to sidebar, menu closes and logout clears private browser state::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::activity dialog only revokes the selected other browser after password confirmation::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "account-changes.spec.ts::MFA switch waits for confirmation and disabling requires proof::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "current-changes.spec.ts::model selection and attachment preview do not send a message::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "current-changes.spec.ts::dragged attachment and edited question create separate preserved turns::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "current-changes.spec.ts::model selection and attachment preview do not send a message::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "current-changes.spec.ts::dragged attachment and edited question create separate preserved turns::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "knowledge.spec.ts::local documents can be uploaded, searched, cited and downloaded::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "knowledge.spec.ts::long Chinese filename remains usable on a narrow screen::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "knowledge.spec.ts::local documents can be uploaded, searched, cited and downloaded::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "knowledge.spec.ts::long Chinese filename remains usable on a narrow screen::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::provider editor, directory, default, key omission, conflict and removal::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::ordinary user settings expose only account controls and no admin link::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::RAG and local assistant failures remain readable without starting model jobs::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::provider editor, directory, default, key omission, conflict and removal::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::ordinary user settings expose only account controls and no admin link::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::RAG and local assistant failures remain readable without starting model jobs::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "overview.spec.ts::project overview creates and removes an explicit evidence link::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "overview.spec.ts::project overview creates and removes an explicit evidence link::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "plot-acceptance.spec.ts::plot workflow requires confirmations before model and execution::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "plot-acceptance.spec.ts::plot workflow requires confirmations before model and execution::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "projects.spec.ts::projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations::chromium": {
+      "passed": true,
+      "evidence": "project-visual-recheck.json"
+    },
+    "projects.spec.ts::projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations::edge": {
+      "passed": true,
+      "evidence": "project-visual-recheck.json"
+    },
+    "remaining-acceptance.spec.ts::clipboard preserves the question and reports a denied copy::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::pending response does not open results and manual close survives refresh::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::rename, pin and export a noncurrent conversation; cancel deletion::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::settings refresh failure clears the previous ready status::chromium": {
+      "passed": true,
+      "evidence": "settings-recheck.json"
+    },
+    "remaining-acceptance.spec.ts::bulk deletion preserves the failed item and returns after deleting the current item::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::project navigation survives direct load and refresh without sending requests::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::low-height compact layout keeps focused controls visible and input scrollable::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::reduced transparency disables large background blur::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::sidebar toggles across compact and desktop boundaries without losing draft::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::clipboard preserves the question and reports a denied copy::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::pending response does not open results and manual close survives refresh::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::rename, pin and export a noncurrent conversation; cancel deletion::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::settings refresh failure clears the previous ready status::edge": {
+      "passed": true,
+      "evidence": "settings-recheck.json"
+    },
+    "remaining-acceptance.spec.ts::bulk deletion preserves the failed item and returns after deleting the current item::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::project navigation survives direct load and refresh without sending requests::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::low-height compact layout keeps focused controls visible and input scrollable::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::reduced transparency disables large background blur::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "remaining-acceptance.spec.ts::sidebar toggles across compact and desktop boundaries without losing draft::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "v11-layout.spec.ts::responsive panels preserve drafts without sending::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "v11-layout.spec.ts::keyboard controls work with reduced motion and forced colors::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "v11-layout.spec.ts::responsive panels preserve drafts without sending::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "v11-layout.spec.ts::keyboard controls work with reduced motion and forced colors::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::production build: conversation, follow-up, complete table, preview, download and restore::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::IME composition, explicit examples, plain text literature, rename and delete::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::narrow viewport has usable panel navigation and no page overflow::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::backend connection error is explicit::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::a rejected send preserves the question and only retries on explicit action::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::a late initial list does not clear a send error after navigation::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::local static proxy keeps its API target and never returns SPA HTML for API errors::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::production build: conversation, follow-up, complete table, preview, download and restore::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::IME composition, explicit examples, plain text literature, rename and delete::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::narrow viewport has usable panel navigation and no page overflow::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::backend connection error is explicit::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::a rejected send preserves the question and only retries on explicit action::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::a late initial list does not clear a send error after navigation::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workbench.spec.ts::local static proxy keeps its API target and never returns SPA HTML for API errors::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workflows.spec.ts::fixed workflows create, confirm, execute, display outputs and restore after refresh::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workflows.spec.ts::failed workflow resumes only after confirmation and retains attempts::chromium": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workflows.spec.ts::fixed workflows create, confirm, execute, display outputs and restore after refresh::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "workflows.spec.ts::failed workflow resumes only after confirmation and retains attempts::edge": {
+      "passed": true,
+      "evidence": "browser-complete.json"
+    },
+    "model-settings.spec.ts::administrator layout keeps masked metadata, tabs and current-account protection::chromium": {
+      "passed": true,
+      "evidence": "admin-browser.json"
+    },
+    "model-settings.spec.ts::administrator layout keeps masked metadata, tabs and current-account protection::edge": {
+      "passed": true,
+      "evidence": "admin-browser.json"
+    },
+    "email-links.spec.ts::real email navigation loads activation without consuming the link until confirmation::chromium": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::real email navigation opens reset page without changing a password::chromium": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::cross-site APIs, writes, embeds and private pages stay rejected::chromium": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::current two-step email flow opens password and optional verification step::chromium": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::new email continuation displays activation notice and resend cooldown::chromium": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::activation username and password confirmation notify the waiting login tab::chromium": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::real email navigation loads activation without consuming the link until confirmation::edge": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::real email navigation opens reset page without changing a password::edge": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::cross-site APIs, writes, embeds and private pages stay rejected::edge": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::current two-step email flow opens password and optional verification step::edge": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::new email continuation displays activation notice and resend cooldown::edge": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    },
+    "email-links.spec.ts::activation username and password confirmation notify the waiting login tab::edge": {
+      "passed": true,
+      "evidence": "mail-browser-final.json"
+    }
+  }
+}

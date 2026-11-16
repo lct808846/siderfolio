@@ -1,0 +1,11 @@
+
+Running 2 tests using 1 worker
+
+(node:28028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\identity-browser\session-source.spec.ts:13:1 › real container source consistency, profile and TOTP binding survive page navigation (2.9s)
+(node:53372) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [edge] › tests\identity-browser\session-source.spec.ts:13:1 › real container source consistency, profile and TOTP binding survive page navigation (3.3s)
+
+  2 passed (8.7s)

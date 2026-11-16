@@ -4,11 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "astroagent"
-version = "1.5.0"
+version = "1.6.0rc1"
 description = "基于 DeepSeek、SIMBAD、ADS 与 Gaia DR3 的天文查询与基础分析服务"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "argon2-cffi==25.1.0",
+    "cryptography==46.0.3",
+    "email-validator==2.3.0",
     "fastapi>=0.115,<1.0",
     "uvicorn>=0.30,<1.0",
     "langchain-core>=1.0,<2",
@@ -39,9 +42,12 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+astroagent = ["auth_data/*.txt", "auth_data/*.md"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["live: opt-in tests using real external services (may incur model charges)", "postgres: opt-in isolated PostgreSQL/pgvector integration; synthetic model"]
+markers = ["live: opt-in tests using real external services (may incur model charges)", "postgres: opt-in isolated PostgreSQL/pgvector integration; synthetic model", "identity: V1.6 production identity boundary, no legacy fixture bypass"]
 
 [tool.ruff]
 target-version = "py312"

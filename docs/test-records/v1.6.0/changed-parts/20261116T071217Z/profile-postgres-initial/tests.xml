@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="14.582" timestamp="2026-11-16T15:19:56.656381+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_profile_postgres" name="test_avatar_upload_sanitization_replacement_and_account_isolation" time="8.786" /><testcase classname="tests.test_profile_postgres" name="test_avatar_stream_size_and_anonymous_boundary" time="1.271" /><testcase classname="tests.test_profile_postgres" name="test_existing_identity_schema_adds_avatar_storage_without_losing_accounts" time="1.155" /><testcase classname="tests.test_profile_postgres" name="test_profile_summary_counts_private_assets_and_known_model_usage" time="2.458"><failure message="assert 8 == 4">identity_client = &lt;starlette.testclient.TestClient object at 0x000001F64AE55B80&gt;
+
+    def test_profile_summary_counts_private_assets_and_known_model_usage(identity_client):
+        client = identity_client
+        account(client)
+        conversation = post(client, "conversations", {"title": "Synthetic profile counts"}).json()
+        project = post(client, "projects", {"name": "Synthetic private assets"}).json()
+        user = client.store.authenticate(client.cookies.get("astroagent_session"))
+        service = client.identity.tenants.for_user(user)
+        with service.repository.connection() as db, service.repository.transaction(db):
+            for index, state in enumerate(["completed", "failed", "running"]):
+                record = {
+                    "model": "synthetic-chat",
+                    "execution_status": state,
+                    "received_at": "2026-11-16T00:00:00Z",
+                    "response": {
+                        "results": [{}] if state == "completed" else [],
+                        "literature_results": [],
+                        "gaia_results": [],
+                    },
+                }
+                db.execute(
+                    "INSERT INTO turns(id,conversation_id,ordinal,request_id,request_hash,state,record,size_bytes,reserved_bytes) VALUES (?,?,?,?,?,?,?,?,?)",
+                    (
+                        str(uuid4()),
+                        conversation["id"],
+                        index + 1,
+                        str(uuid4()),
+                        "synthetic",
+                        state,
+                        json.dumps(record),
+                        0,
+                        0,
+                    ),
+                )
+            for state in ["completed", "queued"]:
+                record = {
+                    "state": state,
+                    "created_at": "2026-11-16T01:00:00Z",
+                    "request": {"model_id": "synthetic-plot"},
+                    "model_usage": {"input_tokens": 10, "output_tokens": 5},
+                }
+                db.execute(
+                    "INSERT INTO plot_operations(id,project_id,kind,state,record) VALUES (?,?,?,?,?)",
+                    (str(uuid4()), project["id"], "plan", state, json.dumps(record)),
+                )
+            for state in ["completed", "skipped", "queued"]:
+                record = {
+                    "state": state,
+                    "model": "synthetic-local",
+                    "created_at": "2026-11-16T02:00:00Z",
+                    "usage": {"prompt_eval_count": 3, "eval_count": 2} if state == "completed" else {},
+                }
+                db.execute(
+                    "INSERT INTO local_assistant_tasks(id,kind,state,record) VALUES (?,?,?,?)",
+                    (str(uuid4()), "manual", state, json.dumps(record)),
+                )
+        response = client.get("/api/v1/profile/summary")
+        assert response.status_code == 200, response.text
+        value = response.json()
+        assert value["workspace"]["conversations_count"] == 1
+        assert value["workspace"]["projects_count"] == 1
+        assert value["workspace"]["turns_count"] == 3
+        assert value["workspace"]["completed_turns"] == 1
+        assert value["workspace"]["failed_turns"] == 1
+        assert value["workspace"]["simbad_queries"] == 1
+&gt;       assert value["total_model_calls"] == 4
+E       assert 8 == 4
+
+tests\test_profile_postgres.py:161: AssertionError</failure></testcase></testsuite></testsuites>

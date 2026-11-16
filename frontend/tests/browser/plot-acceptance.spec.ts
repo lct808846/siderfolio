@@ -9,6 +9,7 @@ test('plot workflow requires confirmations before model and execution', async ({
   await page.route('**/api/v1/**', async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname
     const json = (body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) })
+    if (path.startsWith('/api/v1/auth/')) return route.continue()
     if (path === '/api/v1/conversations') return json([])
     if (path === '/api/v1/projects') return json([{ id: projectId, name: '合成项目', revision: 0 }])
     if (path === '/api/v1/projects/memberships') return json({})

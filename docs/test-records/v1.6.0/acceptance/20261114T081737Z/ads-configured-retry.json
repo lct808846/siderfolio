@@ -1,0 +1,13 @@
+{
+  "http_status": 200,
+  "execution_status": "completed",
+  "result_statuses": [
+    "success"
+  ],
+  "error_codes": [
+    null
+  ],
+  "paper_count": 1,
+  "seconds": 7.27,
+  "passed": true
+}

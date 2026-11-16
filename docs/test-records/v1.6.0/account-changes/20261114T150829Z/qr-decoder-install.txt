@@ -1,0 +1,9 @@
+Collecting zxing-cpp
+  Downloading zxing_cpp-3.1.1-cp312-abi3-win_amd64.whl.metadata (2.3 kB)
+Downloading zxing_cpp-3.1.1-cp312-abi3-win_amd64.whl (1.0 MB)
+   ---------------------------------------- 1.0/1.0 MB 5.3 MB/s eta 0:00:00
+Installing collected packages: zxing-cpp
+Successfully installed zxing-cpp-3.1.1
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: D:\astroagent-runtime\venv\Scripts\python.exe -m pip install --upgrade pip

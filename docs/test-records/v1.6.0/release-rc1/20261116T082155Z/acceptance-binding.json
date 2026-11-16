@@ -1,0 +1,12 @@
+{
+  "accepted_snapshot": "docs/test-records/v1.6.0/changed-parts/20261116T071217Z/source-verified.json",
+  "changed_from_accepted_snapshot": [
+    "frontend/src/components/WorkspaceHeader.vue",
+    "frontend/src/types/generated.ts",
+    "src/astroagent/__init__.py"
+  ],
+  "functional_code_changes_after_acceptance": [],
+  "python_version": "1.6.0rc1",
+  "frontend_version": "1.6.0-rc.1",
+  "tag": "v1.6.0-rc.1"
+}

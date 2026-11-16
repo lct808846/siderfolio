@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="12" time="6.763" timestamp="2026-11-16T15:16:02.841357+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_profile" name="test_avatar_is_normalized_raster_without_appended_payload[PNG]" time="4.468" /><testcase classname="tests.test_profile" name="test_avatar_is_normalized_raster_without_appended_payload[JPEG]" time="0.008" /><testcase classname="tests.test_profile" name="test_avatar_is_normalized_raster_without_appended_payload[WEBP]" time="0.060" /><testcase classname="tests.test_profile" name="test_avatar_is_normalized_raster_without_appended_payload[GIF]" time="0.009" /><testcase classname="tests.test_profile" name="test_avatar_rejects_invalid_or_oversized_input[empty]" time="0.007" /><testcase classname="tests.test_profile" name="test_avatar_rejects_invalid_or_oversized_input[invalid]" time="0.008" /><testcase classname="tests.test_profile" name="test_avatar_rejects_invalid_or_oversized_input[svg]" time="0.008" /><testcase classname="tests.test_profile" name="test_avatar_rejects_invalid_or_oversized_input[oversize]" time="0.008" /><testcase classname="tests.test_profile" name="test_avatar_rejects_unsupported_valid_image" time="0.007" /><testcase classname="tests.test_profile" name="test_avatar_strips_private_exif_and_applies_orientation" time="0.022" /><testcase classname="tests.test_profile" name="test_avatar_enforces_declared_source_pixel_limit" time="0.422"><failure message="Failed: DID NOT RAISE ServiceError">def test_avatar_enforces_declared_source_pixel_limit():
+        # A highly compressed image can be far below the byte limit while exceeding
+        # the intended decode budget. This is an actual image, not a forged header.
+&gt;       with pytest.raises(ServiceError) as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ServiceError
+
+tests\test_profile.py:66: Failed</failure></testcase><testcase classname="tests.test_profile" name="test_avatar_version_changes_for_updates_in_the_same_second" time="0.007"><failure message="AssertionError: assert '/api/v1/auth/avatar?v=1794787200' != '/api/v1/auth/avatar?v=1794787200'">def test_avatar_version_changes_for_updates_in_the_same_second():
+        user = {
+            "id": "synthetic",
+            "email_display": "observer@example.org",
+            "username": "Observer",
+            "admin": False,
+            "totp_secret": None,
+            "mfa_at": None,
+            "avatar_updated_at": datetime(2026, 11, 16, tzinfo=UTC),
+        }
+        before = AuthStore.public_user(user)["avatar_url"]
+        user["avatar_updated_at"] += timedelta(microseconds=100)
+        after = AuthStore.public_user(user)["avatar_url"]
+&gt;       assert before != after
+E       AssertionError: assert '/api/v1/auth/avatar?v=1794787200' != '/api/v1/auth/avatar?v=1794787200'
+
+tests\test_profile.py:84: AssertionError</failure></testcase></testsuite></testsuites>

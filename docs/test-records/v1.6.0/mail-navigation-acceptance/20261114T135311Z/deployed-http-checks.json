@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "case": "public document /activate",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "public document /reset-password",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "public document /login",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "cross-site denied /api/v1/auth/csrf",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "case": "cross-site denied /api/v1/conversations",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "case": "cross-site denied /projects",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "case": "cross-site denied /admin",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "case": "cross-site confirmation rejected before backend",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "case": "normal same-site /api/v1/auth/csrf",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "normal same-site /api/v1/conversations",
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "personal_tokens_used": false
+}

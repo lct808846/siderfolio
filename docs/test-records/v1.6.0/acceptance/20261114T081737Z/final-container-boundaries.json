@@ -1,0 +1,135 @@
+{
+  "ingress": {
+    "image_id": "sha256:2c31bfaa70bccc8664ef24bc01600d94712fdd8d98fa4d6aa458136bfd2dcc1c",
+    "image_tag": "astroagent-ingress:1.6.0-dev.0",
+    "health": "healthy",
+    "mounts": [],
+    "published_ports": {
+      "5173/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "5173"
+        }
+      ]
+    }
+  },
+  "frontend": {
+    "image_id": "sha256:52d02fc3958fccc174e8fd0bbbcd7c95497ba396537b2d34a8a895608772f3db",
+    "image_tag": "astroagent-frontend:1.6.0-dev.0",
+    "health": "healthy",
+    "mounts": [
+      {
+        "type": "bind",
+        "target": "/run/secrets/proxy_token",
+        "readonly": true
+      }
+    ],
+    "published_ports": {}
+  },
+  "backend": {
+    "image_id": "sha256:89bd83130f0c1bc2c7f4e760ec14de7ba6bbc1dee306c0ce82eaf75d43e79340",
+    "image_tag": "astroagent-backend:1.6.0-dev.0",
+    "health": "healthy",
+    "mounts": [
+      {
+        "type": "bind",
+        "target": "/models/embedding",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/auth_settings",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/backend_settings",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/database_password",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/executor_token",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/proxy_token",
+        "readonly": true
+      }
+    ],
+    "published_ports": {}
+  },
+  "postgres": {
+    "image_id": "sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f",
+    "image_tag": "pgvector/pgvector@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f",
+    "health": "healthy",
+    "mounts": [
+      {
+        "type": "bind",
+        "target": "/docker-entrypoint-initdb.d/10-application.sh",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/database_password",
+        "readonly": true
+      },
+      {
+        "type": "bind",
+        "target": "/run/secrets/postgres_admin_password",
+        "readonly": true
+      },
+      {
+        "type": "volume",
+        "target": "/var/lib/postgresql/data",
+        "readonly": false
+      }
+    ],
+    "published_ports": {
+      "5432/tcp": null
+    }
+  },
+  "ollama": {
+    "image_id": "sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+    "image_tag": "ollama/ollama@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+    "health": "healthy",
+    "mounts": [
+      {
+        "type": "volume",
+        "target": "/models",
+        "readonly": false
+      }
+    ],
+    "published_ports": {
+      "11434/tcp": null
+    }
+  },
+  "plot-executor": {
+    "image_id": "sha256:754ce5cda74abacc97d55b9936c1c5054b0eb509df96bfc46e0f547574e82cd9",
+    "image_tag": "astroagent-plot-executor:1.6.0-dev.0",
+    "health": "healthy",
+    "mounts": [
+      {
+        "type": "bind",
+        "target": "/run/secrets/executor_token",
+        "readonly": true
+      },
+      {
+        "type": "volume",
+        "target": "/var/lib/astroagent-executor",
+        "readonly": false
+      },
+      {
+        "type": "bind",
+        "target": "/var/run/docker.sock",
+        "readonly": true
+      }
+    ],
+    "published_ports": {}
+  }
+}

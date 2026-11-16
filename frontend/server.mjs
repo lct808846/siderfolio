@@ -3,6 +3,8 @@ import http from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { lookup } from 'node:dns/promises'
+import { isIP } from 'node:net'
 
 const root = path.resolve(fileURLToPath(new URL('./dist/', import.meta.url)))
 const port = Number(process.env.FRONTEND_PORT || 5173)
@@ -10,18 +12,50 @@ const backend = new URL(process.env.ASTROAGENT_API_TARGET || 'http://127.0.0.1:8
 const containerMode = process.env.ASTROAGENT_DEPLOYMENT_MODE === 'container'
 if (backend.protocol !== 'http:' || backend.username || backend.password || backend.pathname !== '/' || backend.search || backend.hash || (containerMode ? backend.origin !== 'http://backend:8000' : !['127.0.0.1', 'localhost', '[::1]'].includes(backend.hostname))) throw new Error('Unsupported fixed API origin')
 const proxyToken = containerMode ? (await readFile('/run/secrets/proxy_token', 'utf8')).trim() : ''
+const site = new URL(process.env.ASTROAGENT_SITE_ORIGIN || 'http://127.0.0.1:5173')
+if (site.protocol !== 'https:' && !['127.0.0.1', 'localhost'].includes(site.hostname)) throw new Error('Remote site requires HTTPS')
+const publicPages = new Set(['/login', '/register', '/activate', '/resend', '/forgot-password', '/reset-password'])
+async function clientAddress(req) {
+  const address = (req.socket.remoteAddress || '').replace(/^::ffff:/, '')
+  if (containerMode) {
+    try {
+      const ingress = await lookup('ingress', { all: true })
+      const claimed = req.headers['x-astroagent-edge-client']
+      if (ingress.some(item => item.address === address) && typeof claimed === 'string' && isIP(claimed)) return claimed.replace(/^::ffff:/, '')
+    } catch { /* Unknown proxies never get to select an authentication source. */ }
+  }
+  return address
+}
+async function signedIn(req) {
+  const address = containerMode ? await clientAddress(req) : ''
+  return new Promise(resolve => {
+    const check = http.request(new URL('/api/v1/auth/session', backend), { headers: { host: '127.0.0.1:8000', cookie: req.headers.cookie || '', ...(containerMode ? { 'x-astroagent-proxy': proxyToken, 'x-astroagent-client-address': address } : {}) } }, reply => { reply.resume(); resolve(reply.statusCode || 503) })
+    check.setTimeout(5000, () => check.destroy())
+    check.on('error', () => resolve(503)); check.end()
+  })
+}
 if (containerMode && !/^[0-9a-f]{64}$/.test(proxyToken)) throw new Error('Proxy credential is missing')
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json' }
 const server = http.createServer(async (req, res) => {
   const host = req.headers.host?.split(':')[0]
-  if (!['127.0.0.1', 'localhost'].includes(host)) { res.writeHead(400); return res.end('Invalid local host') }
-  if (req.headers['sec-fetch-site'] === 'cross-site') { res.writeHead(403); return res.end('Unsupported request origin') }
+  if (!['127.0.0.1', 'localhost', site.hostname].includes(host)) { res.writeHead(400); return res.end('Invalid trusted host') }
   let url
   try { url = new URL(req.url || '/', 'http://127.0.0.1') } catch { res.writeHead(400); return res.end() }
+  // Email links are cross-site document navigations. Loading their public page
+  // must not activate/reset anything; writes still require same-origin CSRF.
+  const publicNavigation = ['GET', 'HEAD'].includes(req.method) && publicPages.has(url.pathname)
+    && req.headers['sec-fetch-mode'] === 'navigate' && req.headers['sec-fetch-dest'] === 'document'
+  if (req.headers['sec-fetch-site'] === 'cross-site' && !publicNavigation) { res.writeHead(403); return res.end('Unsupported request origin') }
+  if (url.pathname === '/__internal/health') {
+    const local = ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress || '')
+    res.writeHead(local ? 200 : 404); return res.end(local ? 'ok' : '')
+  }
+  if (url.pathname === '/health') { res.writeHead(404); return res.end() }
   if (url.pathname.startsWith('/api/') || ['/health', '/docs', '/redoc', '/openapi.json', '/docs/oauth2-redirect'].includes(url.pathname)) {
     const headers = { ...req.headers, host: '127.0.0.1:8000' }
-    for (const name of ['x-astroagent-proxy', 'forwarded', 'x-forwarded-host', 'x-forwarded-for', 'x-forwarded-proto', 'proxy-authorization', 'connection', 'upgrade']) delete headers[name]
+    for (const name of ['x-astroagent-proxy', 'x-astroagent-client-address', 'x-astroagent-edge-client', 'forwarded', 'x-forwarded-host', 'x-forwarded-for', 'x-forwarded-proto', 'proxy-authorization', 'connection', 'upgrade']) delete headers[name]
     if (containerMode) headers['x-astroagent-proxy'] = proxyToken
+    if (containerMode) headers['x-astroagent-client-address'] = await clientAddress(req)
     const upstream = http.request(new URL(url.pathname + url.search, backend), { method: req.method, headers }, reply => {
       res.writeHead(reply.statusCode || 502, reply.headers); reply.pipe(res)
     })
@@ -37,9 +71,14 @@ const server = http.createServer(async (req, res) => {
     let file = path.resolve(root, '.' + pathname)
     if (file !== root && !file.startsWith(root + path.sep)) { res.writeHead(404); return res.end() }
     if (!path.extname(pathname)) file = path.join(root, 'index.html')
+    if (file === path.join(root, 'index.html') && !publicPages.has(pathname)) {
+      const status = await signedIn(req)
+      if (status === 401) { res.writeHead(302, { Location: '/login?next=' + encodeURIComponent(url.pathname + url.search), 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' }); return res.end() }
+      if (status !== 200) { res.writeHead(503, { 'Cache-Control': 'no-store' }); return res.end('Identity service unavailable') }
+    }
     if (!(await stat(file)).isFile()) { res.writeHead(404); return res.end() }
     const bytes = await readFile(file)
-    res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; img-src 'self' blob: data: http://127.0.0.1:* http://localhost:*; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:* http://localhost:*; script-src 'self'; object-src 'none'; frame-ancestors 'none'" })
+    res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; connect-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" })
     res.end(req.method === 'HEAD' ? undefined : bytes)
   } catch { res.writeHead(404); res.end('Not found') }
 })

@@ -1,7 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
-import App from './views/App.vue'
+import IdentityRoot from './views/IdentityRoot.vue'
+import { identityGuard } from './identity-state'
 import './style.css'
 import './observation-log.css'
 import './glass-surfaces.css'
@@ -18,6 +19,7 @@ import './local-assistant.css'
 import './research-flow.css'
 import './workspace-theme.css'
 import './workbench-plot.css'
+import './identity.css'
 
 function plottingRedirect(to: Pick<RouteLocationNormalized, 'query' | 'params'>) {
   const conversation = typeof to.query.conversation === 'string' ? to.query.conversation : ''
@@ -32,6 +34,9 @@ function plottingRedirect(to: Pick<RouteLocationNormalized, 'query' | 'params'>)
   } }
 }
 
-const router = createRouter({ history: createWebHistory(), routes: [{ path: '/local-assistant', component: { render: () => null } }, { path: '/projects/:projectId/plotting', redirect: plottingRedirect }, { path: '/settings', component: { render: () => null } }, { path: '/projects/:projectId/rag', component: { render: () => null } }, { path: '/', component: { render: () => null } }, { path: '/conversations/:id', component: { render: () => null } }, { path: '/projects/:projectId?', component: { render: () => null } }, { path: '/projects/:projectId/overview', component: { render: () => null } }, { path: '/projects/:projectId/knowledge/:documentId?', component: { render: () => null } }, { path: '/projects/:projectId/workflows/:runId?', component: { render: () => null } }] })
+const router = createRouter({ history: createWebHistory(), routes: [{ path: '/local-assistant', component: { render: () => null } }, { path: '/projects/:projectId/plotting', redirect: plottingRedirect }, { path: '/settings', component: { render: () => null } }, { path: '/profile', component: { render: () => null } }, { path: '/projects/:projectId/rag', component: { render: () => null } }, { path: '/', component: { render: () => null } }, { path: '/conversations/:id', component: { render: () => null } }, { path: '/projects/:projectId?', component: { render: () => null } }, { path: '/projects/:projectId/overview', component: { render: () => null } }, { path: '/projects/:projectId/knowledge/:documentId?', component: { render: () => null } }, { path: '/projects/:projectId/workflows/:runId?', component: { render: () => null } }] })
 router.addRoute({ path: '/plotting', redirect: plottingRedirect })
-createApp(App).use(createPinia()).use(router).mount('#app')
+router.addRoute({ path: '/account', redirect: { path: '/settings', query: { section: 'account' } } })
+for (const path of ['/login', '/register', '/activate', '/resend', '/forgot-password', '/reset-password', '/admin']) router.addRoute({ path, component: { render: () => null } })
+router.beforeEach(identityGuard)
+createApp(IdentityRoot).use(createPinia()).use(router).mount('#app')

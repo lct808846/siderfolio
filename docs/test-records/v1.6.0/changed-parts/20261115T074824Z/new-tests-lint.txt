@@ -1,0 +1,243 @@
+E501 Line too long (109 > 100)
+   --> tests\test_identity_postgres.py:159:101
+    |
+157 |     assert saved["revision"] == value["revision"] + 1
+158 |     with client.store.connect() as db:
+159 |         encrypted = db.execute("SELECT value FROM public.auth_meta WHERE key=%s", (KEY,)).fetchone()["value"]
+    |                                                                                                     ^^^^^^^^^
+160 |         assert "synthetic-qa-private-key" not in encrypted
+161 |         assert "synthetic-qa-private-key" in client.store.crypto.decrypt(encrypted.encode()).decode()
+    |
+
+E501 Line too long (101 > 100)
+   --> tests\test_identity_postgres.py:161:101
+    |
+159 |         encrypted = db.execute("SELECT value FROM public.auth_meta WHERE key=%s", (KEY,)).fetchone()["value"]
+160 |         assert "synthetic-qa-private-key" not in encrypted
+161 |         assert "synthetic-qa-private-key" in client.store.crypto.decrypt(encrypted.encode()).decode()
+    |                                                                                                     ^
+162 |     assert post(client, path, body, "PUT").status_code == 409
+163 |     body.pop("api_key")
+    |
+
+E501 Line too long (101 > 100)
+   --> tests\test_identity_postgres.py:182:101
+    |
+182 | def test_provider_validation_redacts_key_and_blocks_internal_directory(identity_client, monkeypatch):
+    |                                                                                                     ^
+183 |     import socket
+    |
+
+E501 Line too long (137 > 100)
+   --> tests\test_identity_postgres.py:187:101
+    |
+185 | …
+186 | …
+187 | … "Synthetic", "base_url": "http://127.0.0.1", "api_key": "synthetic-qa-private-key"}
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+188 | …body, "PUT")
+189 | …-qa-private-key" not in response.text
+    |
+
+E501 Line too long (129 > 100)
+   --> tests\test_identity_postgres.py:191:101
+    |
+189 |     assert response.status_code == 422 and "synthetic-qa-private-key" not in response.text
+190 |     body["base_url"] = "https://models.example.org/v1"
+191 |     monkeypatch.setattr(socket, "getaddrinfo", lambda *a, **k: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 443))])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+192 |     response = post(client, "admin/model-providers/discover", body)
+193 |     assert response.status_code == 422, response.text
+    |
+
+E501 Line too long (113 > 100)
+   --> tests\test_identity_postgres.py:220:101
+    |
+218 |     account(client)
+219 |     original = client.cookies.get("astroagent_session")
+220 |     assert post(client, "auth/login", {"email": "observer@example.org", "password": PASSWORD}).status_code == 200
+    |                                                                                                     ^^^^^^^^^^^^^
+221 |     # A new login explicitly revokes an authenticated previous browser, so use an
+222 |     # independent unauthenticated cookie jar for the second synthetic browser.
+    |
+
+E501 Line too long (112 > 100)
+   --> tests\test_identity_postgres.py:224:101
+    |
+222 |     # independent unauthenticated cookie jar for the second synthetic browser.
+223 |     other = client.fresh()
+224 |     assert post(other, "auth/login", {"email": "observer@example.org", "password": PASSWORD}).status_code == 200
+    |                                                                                                     ^^^^^^^^^^^^
+225 |     sessions = client.get("/api/v1/auth/sessions").json()
+226 |     current = next(s for s in sessions if s["current"])
+    |
+
+E501 Line too long (105 > 100)
+   --> tests\test_identity_postgres.py:231:101
+    |
+229 |     assert post(client, "auth/sessions/revoke", body).status_code == 403
+230 |     body["password"] = PASSWORD
+231 |     assert post(client, "auth/sessions/revoke", {**body, "session_id": current["id"]}).status_code == 409
+    |                                                                                                     ^^^^^
+232 |     assert post(client, "auth/sessions/revoke", {**body, "session_id": "missing"}).status_code == 404
+233 |     assert post(client, "auth/sessions/revoke", body).status_code == 200
+    |
+
+E501 Line too long (101 > 100)
+   --> tests\test_identity_postgres.py:232:101
+    |
+230 |     body["password"] = PASSWORD
+231 |     assert post(client, "auth/sessions/revoke", {**body, "session_id": current["id"]}).status_code == 409
+232 |     assert post(client, "auth/sessions/revoke", {**body, "session_id": "missing"}).status_code == 404
+    |                                                                                                     ^
+233 |     assert post(client, "auth/sessions/revoke", body).status_code == 200
+234 |     assert other.get("/api/v1/auth/session").status_code == 401
+    |
+
+E501 Line too long (132 > 100)
+  --> tests\test_model_providers.py:58:101
+   |
+58 | @pytest.mark.parametrize("address", ["127.0.0.1", "::1", "10.1.2.3", "169.254.169.254", "::ffff:127.0.0.1", "224.0.0.1", "0.0.0.0"])
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+59 | def test_directory_rejects_local_dns_even_in_local_deployment(address):
+60 |     assert not directory_address_allowed(address, local_proxy=True)
+   |
+
+E501 Line too long (133 > 100)
+  --> tests\test_model_providers.py:87:101
+   |
+85 | def test_catalog_hides_keys_and_resolves_selected_provider(monkeypatch):
+86 |     service = registry()
+87 |     value = {"revision": 2, "default_model": "missing", "providers": [service.provider(draft(protocol="gemini"), {"providers": []})]}
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+88 |     public = service.public(value)
+89 |     assert "synthetic-not-a-credential" not in json.dumps(public)
+   |
+
+E501 Line too long (140 > 100)
+   --> tests\test_model_providers.py:108:101
+    |
+106 | …
+107 | …
+108 | ….Client", lambda **kwargs: original(transport=httpx.MockTransport(handler), **kwargs))
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (196 > 100)
+   --> tests\test_model_providers.py:121:101
+    |
+119 | …
+120 | …
+121 | …son": "tool_use", "content": [{"type": "tool_use", "id": "call-1", "name": "lookup", "input": {"name": "Vega"}}]})
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+122 | …
+123 | …
+    |
+
+E501 Line too long (231 > 100)
+   --> tests\test_model_providers.py:124:101
+    |
+122 | …
+123 | …
+124 | … {"parts": [{"thoughtSignature": "synthetic-opaque", "functionCall": {"id": "call-1", "name": "lookup", "args": {"name": "Vega"}}}]}}]})
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+125 | …
+126 | …, "encrypted_content": "synthetic-opaque"}, {"type": "function_call", "call_id": "call-1", "name": "lookup", "arguments": '{"name":"Vega"}'}]…
+    |
+
+E501 Line too long (238 > 100)
+   --> tests\test_model_providers.py:126:101
+    |
+124 | … {"parts": [{"thoughtSignature": "synthetic-opaque", "functionCall": {"id": "call-1", "name": "lookup", "args": {"name": "Vega"}}}]}}]})
+125 | …
+126 | …, "encrypted_content": "synthetic-opaque"}, {"type": "function_call", "call_id": "call-1", "name": "lookup", "arguments": '{"name":"Vega"}'}]})
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+127 | …
+128 | …
+    |
+
+E501 Line too long (218 > 100)
+   --> tests\test_model_providers.py:129:101
+    |
+128 | …
+129 | …"synthetic-key", deepseek_model="synthetic-model", deepseek_base_url="https://models.example.org/v1"), [], 1500, False, True)
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+130 | …
+131 | …
+    |
+
+E501 Line too long (153 > 100)
+   --> tests\test_model_providers.py:134:101
+    |
+132 | …
+133 | …
+134 | …es, answer, ToolMessage(content='{"found":true}', tool_call_id="call-1", name="lookup")])[1]
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+135 | …
+136 | …
+    |
+
+E501 Line too long (162 > 100)
+   --> tests\test_model_providers.py:142:101
+    |
+141 | …pic", "gemini"])
+142 | …ion_failed"), (404, "model_not_found"), (429, "model_rate_limited"), (500, "model_unavailable")])
+    |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+143 | …patch, protocol, status, code):
+144 | …status, json={"error": {"message": "synthetic-private-key upstream trace"}}))
+    |
+
+E501 Line too long (142 > 100)
+   --> tests\test_model_providers.py:144:101
+    |
+142 | …uthentication_failed"), (404, "model_not_found"), (429, "model_rate_limited"), (500, "model_unavailable")])
+143 | …ted(monkeypatch, protocol, status, code):
+144 | ….Response(status, json={"error": {"message": "synthetic-private-key upstream trace"}}))
+    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+145 | …rotocol=protocol, deepseek_api_key="synthetic-key"))
+146 | …
+    |
+
+E501 Line too long (107 > 100)
+   --> tests\test_model_providers.py:145:101
+    |
+143 | def test_protocol_upstream_errors_are_bounded_and_redacted(monkeypatch, protocol, status, code):
+144 |     install_upstream(monkeypatch, lambda request: httpx.Response(status, json={"error": {"message": "synthetic-private-key upstream t…
+145 |     model = chat_model(Settings(_env_file=None, model_protocol=protocol, deepseek_api_key="synthetic-key"))
+    |                                                                                                     ^^^^^^^
+146 |     with pytest.raises(ServiceError) as error:
+147 |         model.invoke([HumanMessage(content="Synthetic")])
+    |
+
+E501 Line too long (107 > 100)
+   --> tests\test_model_providers.py:159:101
+    |
+157 | def test_incomplete_answers_never_execute_partial_tools(monkeypatch, protocol, payload):
+158 |     install_upstream(monkeypatch, lambda request: httpx.Response(200, json=payload))
+159 |     model = chat_model(Settings(_env_file=None, model_protocol=protocol, deepseek_api_key="synthetic-key"))
+    |                                                                                                     ^^^^^^^
+160 |     with pytest.raises(ServiceError) as error:
+161 |         model.invoke([HumanMessage(content="Synthetic")])
+    |
+
+E501 Line too long (152 > 100)
+   --> tests\test_model_providers.py:166:101
+    |
+165 | …am_text(monkeypatch):
+166 | …onse(402, json={"error": {"message": "Prepayment credits depleted synthetic-private-key"}}))
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+167 | …
+168 | …gemini", deepseek_api_key="synthetic-key")).invoke([HumanMessage(content="Synthetic")])
+    |
+
+E501 Line too long (147 > 100)
+   --> tests\test_model_providers.py:168:101
+    |
+166 | …sponse(402, json={"error": {"message": "Prepayment credits depleted synthetic-private-key"}}))
+167 | …
+168 | …="gemini", deepseek_api_key="synthetic-key")).invoke([HumanMessage(content="Synthetic")])
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+169 | …red"
+170 | …
+    |
+
+Found 23 errors.

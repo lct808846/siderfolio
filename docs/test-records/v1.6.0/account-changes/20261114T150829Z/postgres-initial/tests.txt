@@ -1,0 +1,172 @@
+........................FF..                                             [100%]
+================================== FAILURES ===================================
+___________ test_existing_identity_schema_accepts_username_feature ____________
+
+identity_client = <starlette.testclient.TestClient object at 0x00000208F43F3800>
+
+    def test_existing_identity_schema_accepts_username_feature(identity_client):
+        client = identity_client
+        account(client)
+        with client.store.connect() as db:
+            db.execute("ALTER TABLE public.auth_users DROP COLUMN username")
+        client.store.check()
+>       response = post(client, "auth/profile", {"username": "Upgraded Observer"})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_identity_postgres.py:670: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_identity_postgres.py:81: in post
+    return client.request(
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+E:\miniconda3\envs\agent\Lib\site-packages\anyio\from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+src\astroagent\auth_access.py:197: in __call__
+    await self.app(scope, receive, secured_send)
+src\astroagent\local_access.py:264: in __call__
+    return await self.app(scope, receive, with_headers)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\astroagent\api\exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:1780: in handle
+    await self.original_router.handle(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:2789: in handle
+    await included_router._handle_selected(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:1800: in _handle_selected
+    await original_route.handle(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:1279: in handle
+    await app(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+E:\miniconda3\envs\agent\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py:2641: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+E:\miniconda3\envs\agent\Lib\site-packages\anyio\_backends\_asyncio.py:1033: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+src\astroagent\api\auth.py:370: in update_profile
+    db.execute("UPDATE public.auth_users SET username=%s WHERE id=%s", (uname, user["id"]))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <psycopg.Connection [BAD] at 0x208f4173590>
+query = 'UPDATE public.auth_users SET username=%s WHERE id=%s'
+params = ('Upgraded Observer', '44dd9775-346c-4736-a276-b179ae4a2e39')
+prepare = None, binary = False
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool = False,
+    ) -> Cursor[Row]:
+        """Execute a query and return a cursor to read its results."""
+        try:
+            cur = self.cursor()
+            if binary:
+                cur.format = BINARY
+    
+            if isinstance(query, Template):
+                if params is not None:
+                    raise TypeError(
+                        "'execute()' with string template query doesn't support parameters"
+                    )
+                return cur.execute(query, prepare=prepare)
+            else:
+                return cur.execute(query, params, prepare=prepare)
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.UndefinedColumn: column "username" of relation "auth_users" does not exist
+E           LINE 1: UPDATE public.auth_users SET username=$1 WHERE id=$2
+E                                                ^
+
+E:\miniconda3\envs\agent\Lib\site-packages\psycopg\connection.py:304: UndefinedColumn
+____________ test_reads_and_startup_do_not_extend_absolute_expiry _____________
+
+identity_client = <starlette.testclient.TestClient object at 0x00000208F4060C20>
+
+    def test_reads_and_startup_do_not_extend_absolute_expiry(identity_client):
+        client = identity_client
+        account(client)
+        cookie = client.cookies.get("astroagent_session")
+        with client.store.connect() as db:
+            db.execute("UPDATE public.auth_sessions SET expires_at=now()+interval '20 minutes'")
+            before = db.execute("SELECT expires_at FROM public.auth_sessions").fetchone()["expires_at"]
+        client.store.authenticate(cookie)
+        client.store.check()
+        with client.store.connect() as db:
+            after = db.execute("SELECT expires_at FROM public.auth_sessions").fetchone()["expires_at"]
+>       assert after == before, "Reading sessions or restarting must not renew absolute lifetime"
+E       AssertionError: Reading sessions or restarting must not renew absolute lifetime
+E       assert datetime.datetime(2036, 11, 11, 15, 13, 44, 96603, tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')) == datetime.datetime(2026, 11, 14, 15, 33, 44, 66960, tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC'))
+
+tests\test_identity_postgres.py:685: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_identity_postgres.py::test_existing_identity_schema_accepts_username_feature
+FAILED tests/test_identity_postgres.py::test_reads_and_startup_do_not_extend_absolute_expiry
+2 failed, 26 passed, 664 deselected in 39.80s

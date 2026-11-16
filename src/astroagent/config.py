@@ -16,6 +16,10 @@ class Settings(BaseSettings):
 
     deepseek_api_key: SecretStr = SecretStr("")
     deepseek_model: str = Field(default="deepseek-flash", min_length=1)
+    selected_model_id: str = Field(default="", exclude=True, repr=False)
+    model_protocol: Literal["openai_chat", "openai_responses", "anthropic", "gemini"] = (
+        "openai_chat"
+    )
     deepseek_base_url: AnyHttpUrl = AnyHttpUrl("https://api.deepseek.com")
     chat_models: list[ChatModelOption] = Field(default_factory=list, max_length=16)
     llm_thinking_parameter: Literal["thinking", "enable_thinking", "none"] = "thinking"
@@ -42,11 +46,16 @@ class Settings(BaseSettings):
 
     def for_model(self, model_id=None):
         from astroagent.errors import ServiceError
+        from astroagent.model_providers import configured_registry
+
+        registry = configured_registry(self)
+        if registry is not None:
+            return registry.resolve(model_id)
 
         selected = model_id if model_id is not None else self.deepseek_model
         if selected not in {model.id for model in self.available_models}:
             raise ServiceError(422, "model_not_enabled", "所选模型未启用，请刷新模型列表。")
-        return self.model_copy(update={"deepseek_model": selected})
+        return self.model_copy(update={"deepseek_model": selected, "selected_model_id": selected})
 
     def non_thinking_body(self):
         if self.llm_thinking_parameter == "enable_thinking":
@@ -171,10 +180,25 @@ class LocalSettings(BaseSettings):
         if self.deployment_mode == "container":
             if not re.fullmatch("[0-9a-f]{64}", self.proxy_token.get_secret_value()):
                 raise ValueError("Container mode requires an independent proxy credential")
-            if not set(self.allowed_origins) <= {
+            loopback_origins = {
                 "http://127.0.0.1:5173",
                 "http://localhost:5173",
-            } or not set(self.allowed_hosts) <= {"127.0.0.1", "localhost", "[::1]"}:
+            }
+
+            from astroagent.auth_config import AuthSettings
+
+            try:
+                site = AuthSettings()
+                # AuthSettings already validates HTTPS or explicitly enabled local
+                # HTTP. Honor its exact port so isolated deployments can coexist.
+                trusted = {site.origin}
+            except Exception:
+                trusted = loopback_origins
+            if not set(self.allowed_origins) <= trusted or not set(self.allowed_hosts) <= {
+                "127.0.0.1",
+                "localhost",
+                "[::1]",
+            }:
                 raise ValueError("Container mode only permits the fixed local browser entry")
         return self
 

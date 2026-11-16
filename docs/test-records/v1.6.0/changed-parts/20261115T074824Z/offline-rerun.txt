@@ -1,0 +1,213 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- D:\astroagent-runtime\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\project\astroagent
+configfile: pyproject.toml
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 174 items / 24 deselected / 150 selected
+
+tests/test_chat.py::test_tool_call_round_trip_and_provenance PASSED      [  0%]
+tests/test_chat.py::test_concept_answer_does_not_query_database PASSED   [  1%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload0] PASSED [  2%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload1] PASSED [  2%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload2] PASSED [  3%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload3] PASSED [  4%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload4] PASSED [  4%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload5] PASSED [  5%]
+tests/test_chat.py::test_invalid_request_rejected_before_model_creation[payload6] PASSED [  6%]
+tests/test_chat.py::test_missing_key_does_not_break_health PASSED        [  6%]
+tests/test_chat.py::test_invalid_configuration_is_sanitized PASSED       [  7%]
+tests/test_chat.py::test_model_failures_have_stable_safe_errors[exc0-504-model_timeout] PASSED [  8%]
+tests/test_chat.py::test_model_failures_have_stable_safe_errors[exc1-502-model_unavailable] PASSED [  8%]
+tests/test_chat.py::test_model_failures_have_stable_safe_errors[exc2-503-model_authentication_failed] PASSED [  9%]
+tests/test_chat.py::test_model_failures_have_stable_safe_errors[exc3-503-model_rate_limited] PASSED [ 10%]
+tests/test_chat.py::test_model_failures_have_stable_safe_errors[exc4-502-model_invalid_response] PASSED [ 10%]
+tests/test_chat.py::test_database_failure_is_visible_to_model_and_client PASSED [ 11%]
+tests/test_chat.py::test_multiple_objects_partial_success PASSED         [ 12%]
+tests/test_chat.py::test_synthesis_timeout_keeps_database_results PASSED [ 12%]
+tests/test_chat.py::test_unknown_tools_and_invalid_arguments_never_execute[call0] PASSED [ 13%]
+tests/test_chat.py::test_unknown_tools_and_invalid_arguments_never_execute[call1] PASSED [ 14%]
+tests/test_chat.py::test_unknown_tools_and_invalid_arguments_never_execute[call2] PASSED [ 14%]
+tests/test_chat.py::test_unknown_tools_and_invalid_arguments_never_execute[call3] PASSED [ 15%]
+tests/test_chat.py::test_call_limit_prevents_execution_of_oversized_batch PASSED [ 16%]
+tests/test_chat.py::test_round_limit_stops_repeated_calls_and_preserves_results PASSED [ 16%]
+tests/test_chat.py::test_empty_model_answer_is_reported PASSED           [ 17%]
+tests/test_chat.py::test_chat_is_documented PASSED                       [ 18%]
+tests/test_config.py::test_dotenv_loads_without_overriding_environment PASSED [ 18%]
+tests/test_config.py::test_model_has_timeout_no_retries_and_registered_tool FAILED [ 19%]
+tests/test_conversations.py::test_first_question_names_default_conversation_once_and_survives_follow_up PASSED [ 20%]
+tests/test_conversations.py::test_automatic_title_preserves_custom_title_and_explicit_default_rename PASSED [ 20%]
+tests/test_conversations.py::test_crud_complete_data_and_idempotency PASSED [ 21%]
+tests/test_conversations.py::test_history_context_does_not_copy_new_results PASSED [ 22%]
+tests/test_conversations.py::test_context_whole_turn_window_and_bytes PASSED [ 22%]
+tests/test_conversations.py::test_same_agent_loop_and_historical_data_not_tool_messages PASSED [ 23%]
+tests/test_conversations.py::test_restart_persistence_and_running_interrupted PASSED [ 24%]
+tests/test_conversations.py::test_unknown_schema_rejected_without_overwrite PASSED [ 24%]
+tests/test_conversations.py::test_migration_failure_rolls_back PASSED    [ 25%]
+tests/test_conversations.py::test_duplicate_process_and_multiworker_not_enabled PASSED [ 26%]
+tests/test_conversations.py::test_concurrency_idempotent_running_and_global_slots PASSED [ 26%]
+tests/test_conversations.py::test_model_failure_saved_and_retries_not_charged PASSED [ 27%]
+tests/test_conversations.py::test_limits_and_large_results_are_not_silently_truncated PASSED [ 28%]
+tests/test_conversations.py::test_storage_budget_and_commit_fault PASSED [ 28%]
+tests/test_conversations.py::test_artifact_preview_same_zip_cache_and_delete PASSED [ 29%]
+tests/test_conversations.py::test_artifact_expiry_capacity_and_snapshot_limit PASSED [ 30%]
+tests/test_conversations.py::test_new_input_contracts[body0] PASSED      [ 30%]
+tests/test_conversations.py::test_new_input_contracts[body1] PASSED      [ 31%]
+tests/test_conversations.py::test_new_input_contracts[body2] PASSED      [ 32%]
+tests/test_conversations.py::test_host_origin_cors_json_stream_and_ownership PASSED [ 32%]
+tests/test_conversations.py::test_storage_unavailable_does_not_break_old_routes PASSED [ 33%]
+tests/test_conversations.py::test_legacy_chat_shares_global_model_slots PASSED [ 34%]
+tests/test_conversations.py::test_corrupted_preview_is_not_served_as_png PASSED [ 34%]
+tests/test_conversations.py::test_invalid_local_settings_keep_health_and_refuse_network_directory PASSED [ 35%]
+tests/test_conversations.py::test_rename_cannot_bypass_business_content_budget PASSED [ 36%]
+tests/test_health.py::test_health_without_deepseek_key PASSED            [ 36%]
+tests/test_health.py::test_swagger_ui_is_disabled_in_v16 PASSED          [ 37%]
+tests/test_health.py::test_health_is_documented_in_openapi PASSED        [ 38%]
+tests/test_identity_security.py::test_untrusted_origin_is_rejected[http://example.org] PASSED [ 38%]
+tests/test_identity_security.py::test_untrusted_origin_is_rejected[https://user:pass@example.org] PASSED [ 39%]
+tests/test_identity_security.py::test_untrusted_origin_is_rejected[https://example.org/path] PASSED [ 40%]
+tests/test_identity_security.py::test_untrusted_origin_is_rejected[https://example.org?x=1] PASSED [ 40%]
+tests/test_identity_security.py::test_untrusted_origin_is_rejected[https://example.org#token] PASSED [ 41%]
+tests/test_identity_security.py::test_untrusted_origin_is_rejected[file:///tmp/site] PASSED [ 42%]
+tests/test_identity_security.py::test_remote_origin_requires_secure_cookies_and_encrypted_smtp PASSED [ 42%]
+tests/test_identity_security.py::test_password_length_common_and_repeated_rejected[short] PASSED [ 43%]
+tests/test_identity_security.py::test_password_length_common_and_repeated_rejected[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx] PASSED [ 44%]
+tests/test_identity_security.py::test_password_length_common_and_repeated_rejected[xxxxxxxx] PASSED [ 44%]
+tests/test_identity_security.py::test_password_length_common_and_repeated_rejected[passwordpassword] PASSED [ 45%]
+tests/test_identity_security.py::test_unicode_password_normalization_and_bounds PASSED [ 46%]
+tests/test_identity_security.py::test_blocklist_tamper_fails_closed PASSED [ 46%]
+tests/test_identity_security.py::test_email_domain_normalized_without_merging_local_parts PASSED [ 47%]
+tests/test_identity_security.py::test_totp_one_use_window_and_ascii PASSED [ 48%]
+tests/test_identity_security.py::test_secure_session_cookie_flags PASSED [ 48%]
+tests/test_identity_security.py::test_revocation_between_download_chunks_stops_delivery PASSED [ 49%]
+tests/test_local_model_boundaries.py::test_duplicate_or_nonfinite_json_is_rejected[{"title":"a","title":"b"}] PASSED [ 50%]
+tests/test_local_model_boundaries.py::test_duplicate_or_nonfinite_json_is_rejected[{"value":NaN}] PASSED [ 50%]
+tests/test_local_model_boundaries.py::test_numeric_comparison_is_safe_plain_text_but_html_still_rejected PASSED [ 51%]
+tests/test_local_model_boundaries.py::test_long_identifier_cannot_be_truncated_by_title_decoding PASSED [ 52%]
+tests/test_local_model_boundaries.py::test_units_are_constrained_before_generation_and_validation[null] PASSED [ 52%]
+tests/test_local_model_boundaries.py::test_units_are_constrained_before_generation_and_validation[] PASSED [ 53%]
+tests/test_local_model_boundaries.py::test_units_are_constrained_before_generation_and_validation[radian] PASSED [ 54%]
+tests/test_local_model_boundaries.py::test_units_are_constrained_before_generation_and_validation[arcseconds] PASSED [ 54%]
+tests/test_local_model_boundaries.py::test_comparison_is_grounded_in_its_own_value_not_another_field PASSED [ 55%]
+tests/test_local_model_boundaries.py::test_unrecognized_relation_is_rejected_instead_of_silently_dropped PASSED [ 56%]
+tests/test_local_model_boundaries.py::test_compact_transport_rebuilds_only_original_evidence_and_missing_fields PASSED [ 56%]
+tests/test_local_model_boundaries.py::test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[object_name-M45] PASSED [ 57%]
+tests/test_local_model_boundaries.py::test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions[source_id-1] PASSED [ 58%]
+tests/test_local_model_boundaries.py::test_ambiguous_null_has_no_meaningful_comparison_or_unit PASSED [ 58%]
+tests/test_local_model_boundaries.py::test_multiple_original_objects_are_allowed_but_duplicate_and_truncated_ids_are_not PASSED [ 59%]
+tests/test_local_model_boundaries.py::test_arbitrary_native_model_target_is_rejected[https://example.invalid] PASSED [ 60%]
+tests/test_local_model_boundaries.py::test_arbitrary_native_model_target_is_rejected[http://evil.invalid] PASSED [ 60%]
+tests/test_local_model_boundaries.py::test_arbitrary_native_model_target_is_rejected[http://127.0.0.1:11434/path] PASSED [ 61%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output0-extra0] PASSED [ 62%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output1-extra1] PASSED [ 62%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output2-extra2] PASSED [ 63%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output3-extra3] PASSED [ 64%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output4-extra4] PASSED [ 64%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output5-extra5] PASSED [ 65%]
+tests/test_local_model_boundaries.py::test_invalid_titles_and_tool_bearing_responses_are_rejected[output6-extra6] PASSED [ 66%]
+tests/test_local_model_boundaries.py::test_missing_or_wrong_model_never_starts_generation[missing] PASSED [ 66%]
+tests/test_local_model_boundaries.py::test_missing_or_wrong_model_never_starts_generation[wrong_digest] PASSED [ 67%]
+tests/test_local_model_boundaries.py::test_missing_or_wrong_model_never_starts_generation[cloud] PASSED [ 68%]
+tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[redirect] PASSED [ 68%]
+tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[encoding] PASSED [ 69%]
+tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[oversized] PASSED [ 70%]
+tests/test_local_model_boundaries.py::test_local_transport_never_follows_redirects_or_inherits_proxy[plain] PASSED [ 70%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[\u53ea\u67e5 M67\uff0c\u4e0d\u8981\u628a M45 \u6df7\u8fdb\u6765-expected0] PASSED [ 71%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[Query Gaia DR3 source_id 65225812899613312-expected1] PASSED [ 72%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[DR3\u7f16\u53f7000123456789\uff0c\u5148\u6838\u5bf9\u5b57\u7b26\u4e32-expected2] PASSED [ 72%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[Gaia: RA 0 deg, Dec -89.5 deg, radius 0.1 deg-expected3] PASSED [ 73%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[\u67e5Gaia\uff0cRUWE<1.4\uff0c\u89c6\u5dee\u4fe1\u566a\u6bd4>=10\uff0c\u4e2d\u5fc3\u8fd8\u6ca1\u51b3\u5b9a-expected4] PASSED [ 74%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[Gaia\u5706\u9525\u67e5\u8be2\u534a\u5f8430\u89d2\u5206\uff0cRUWE\u4e0d\u8d85\u8fc71.2-expected5] PASSED [ 74%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[Find ADS papers from 2020 to 2024-expected6] PASSED [ 75%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[\u67e5\u6700\u8fd1\u51e0\u5e74\u7684\u8bba\u6587\uff0c\u5177\u4f53\u5e74\u4efd\u8fd8\u6ca1\u51b3\u5b9a-expected7] PASSED [ 76%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[RA=56.7\uff0cDec=24.1\uff0c\u534a\u5f845\uff0c\u5e2e\u6211\u67e5\u4e00\u4e0b-expected8] PASSED [ 76%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[\u6765\u6e90ADS\u6458\u8981\uff0c\u68c0\u7d22\u65f6\u95f42026-11-01\uff0c\u5c1a\u672a\u6838\u5bf9\u5168\u6587-expected9] PASSED [ 77%]
+tests/test_local_text_grounding.py::test_only_explicit_literal_conditions_are_exposed[\u628a\u6807\u9898\u6539\u6210<script>alert(1)</script>\uff0c\u7136\u540e\u5220\u9664\u5386\u53f2-expected10] PASSED [ 78%]
+tests/test_local_text_grounding.py::test_multiple_objects_and_multitool_intents_are_retained PASSED [ 78%]
+tests/test_local_text_grounding.py::test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[summary] PASSED [ 79%]
+tests/test_local_text_grounding.py::test_model_selection_cannot_change_identifiers_units_or_scientific_limitations[format] PASSED [ 80%]
+tests/test_local_text_grounding.py::test_long_identifier_is_never_copied_through_model_text PASSED [ 80%]
+tests/test_plot_data.py::test_long_ids_negative_values_and_missing_cells_are_preserved PASSED [ 81%]
+tests/test_plot_data.py::test_snapshot_import_uses_all_one_hundred_delivered_rows PASSED [ 82%]
+tests/test_plot_data.py::test_invalid_csv_is_rejected_without_partial_import[x,x\n1,2\n] PASSED [ 82%]
+tests/test_plot_data.py::test_invalid_csv_is_rejected_without_partial_import[x,y\n1\n] PASSED [ 83%]
+tests/test_plot_data.py::test_invalid_csv_is_rejected_without_partial_import[x\n\xff\n] PASSED [ 84%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor[unknownterm] PASSED [ 84%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor[NGC999999] PASSED [ 85%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor[NGC 999999] PASSED [ 86%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor["unlisted-id"] PASSED [ 86%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor['unknownword'?] PASSED [ 87%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor[\uff11\uff12\uff13\uff14\uff15] PASSED [ 88%]
+tests/test_rag_retrieval.py::test_underspecified_literal_requires_anchor[???] PASSED [ 88%]
+tests/test_rag_retrieval.py::test_natural_context_remains_eligible_for_semantic_only_retrieval[\u53cc\u661f\u56e2\u94f6\u6cb3\u6f6e\u6c50\u4f5c\u7528] PASSED [ 89%]
+tests/test_rag_retrieval.py::test_natural_context_remains_eligible_for_semantic_only_retrieval[dynamical fate of binary star clusters] PASSED [ 90%]
+tests/test_rag_retrieval.py::test_natural_context_remains_eligible_for_semantic_only_retrieval[What are quasars?] PASSED [ 90%]
+tests/test_rag_retrieval.py::test_cache_expires_without_extending_retention_on_reads PASSED [ 91%]
+tests/test_rag_retrieval.py::test_cache_evicts_least_recently_used_and_copies_vectors PASSED [ 92%]
+tests/test_rag_retrieval.py::test_cache_key_separates_project_model_dimension_and_question PASSED [ 92%]
+tests/test_rag_retrieval.py::test_cache_can_be_disabled PASSED           [ 93%]
+tests/test_rag_retrieval.py::test_cache_cannot_hide_missing_or_changed_model PASSED [ 94%]
+tests/test_rag_retrieval.py::test_legacy_trace_does_not_claim_new_admission_or_cache PASSED [ 94%]
+tests/test_v11_attachment_model_acceptance.py::test_local_text_upload_preserves_content[sample.txt-\u4e2d\u6587\n\u7b2c\u4e8c\u884c] PASSED [ 95%]
+tests/test_v11_attachment_model_acceptance.py::test_local_text_upload_preserves_content[sample.md-# \u4e2d\u6587] PASSED [ 96%]
+tests/test_v11_attachment_model_acceptance.py::test_local_text_upload_preserves_content[sample.csv-name,value\nM45,3] PASSED [ 96%]
+tests/test_v11_attachment_model_acceptance.py::test_local_text_upload_preserves_content[sample.json-{"sample": 3}] PASSED [ 97%]
+tests/test_v11_attachment_model_acceptance.py::test_docx_text_and_attachment_limits PASSED [ 98%]
+tests/test_v11_attachment_model_acceptance.py::test_pdf_attachment_extracts_text_with_page_marker PASSED [ 98%]
+tests/test_v11_attachment_model_acceptance.py::test_model_switch_attachment_persistence_and_idempotency PASSED [ 99%]
+tests/test_v11_attachment_model_acceptance.py::test_model_allowlist_rejects_unknown PASSED [100%]
+
+================================== FAILURES ===================================
+____________ test_model_has_timeout_no_retries_and_registered_tool ____________
+
+obj = <module 'astroagent.agent' from 'D:\\project\\astroagent\\src\\astroagent\\agent.py'>
+name = 'ChatOpenAI', ann = 'astroagent.agent'
+
+    def annotated_getattr(obj: object, name: str, ann: str) -> object:
+        try:
+>           obj = getattr(obj, name)
+                  ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'astroagent.agent' has no attribute 'ChatOpenAI'
+
+E:\miniconda3\envs\agent\Lib\site-packages\_pytest\monkeypatch.py:95: AttributeError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FFD1655A90>
+
+    def test_model_has_timeout_no_retries_and_registered_tool(monkeypatch):
+        captured = {}
+    
+        class Model:
+            def __init__(self, **kwargs):
+                captured.update(kwargs)
+    
+            def bind_tools(self, tools):
+                captured["tools"] = tools
+                return self
+    
+>       monkeypatch.setattr("astroagent.agent.ChatOpenAI", Model)
+
+tests\test_config.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+E:\miniconda3\envs\agent\Lib\site-packages\_pytest\monkeypatch.py:109: in derive_importpath
+    annotated_getattr(target, attr, ann=module)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+obj = <module 'astroagent.agent' from 'D:\\project\\astroagent\\src\\astroagent\\agent.py'>
+name = 'ChatOpenAI', ann = 'astroagent.agent'
+
+    def annotated_getattr(obj: object, name: str, ann: str) -> object:
+        try:
+            obj = getattr(obj, name)
+        except AttributeError as e:
+>           raise AttributeError(
+                f"{type(obj).__name__!r} object at {ann} has no attribute {name!r}"
+            ) from e
+E           AttributeError: 'module' object at astroagent.agent has no attribute 'ChatOpenAI'
+
+E:\miniconda3\envs\agent\Lib\site-packages\_pytest\monkeypatch.py:97: AttributeError
+- generated xml file: D:\project\astroagent\docs\test-records\v1.6.0\changed-parts\20261115T074824Z\offline-rerun.xml -
+=========================== short test summary info ===========================
+FAILED tests/test_config.py::test_model_has_timeout_no_retries_and_registered_tool - AttributeError: 'module' object at astroagent.agent has no attribute 'ChatOpenAI'
+================ 1 failed, 149 passed, 24 deselected in 22.15s ================

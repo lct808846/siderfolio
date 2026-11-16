@@ -6,7 +6,7 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
   info.annotations.push({ type: 'browser_version', description: browser.version() })
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message))
   const ownedProjects = new Set<string>(), ownedConversations = new Set<string>()
-  const screenshot = async (name: string) => { if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-project-${name}.png`) }) } }
+  const screenshot = async (name: string) => { if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ animations: 'disabled', path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-project-${name}.png`) }) } }
   try {
     const created = await request.post('/api/v1/conversations', { data: { title: '项目验收100行' } }); const c = await created.json(); ownedConversations.add(c.id)
     const turn = await request.post(`/api/v1/conversations/${c.id}/turns`, { data: { message: '合成Gaia100行验收，不是实际观测。', expected_revision: 0, client_request_id: crypto.randomUUID() } })

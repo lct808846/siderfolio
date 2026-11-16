@@ -1,0 +1,6 @@
+{
+  "lint": 0,
+  "build": 0,
+  "unit": 1,
+  "typecheck": 0
+}

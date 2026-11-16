@@ -1,0 +1,27 @@
+F...........                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_all_business_routes_deny_anonymous_before_body _____________
+
+identity_client = <starlette.testclient.TestClient object at 0x000001191D626D80>
+
+    def test_all_business_routes_deny_anonymous_before_body(identity_client):
+        from astroagent.auth_access import PUBLIC
+        from astroagent.main import app
+    
+        client = identity_client
+        protected = 0
+        for route in app.routes:
+            for method in getattr(route, "methods", set()) - {"OPTIONS"}:
+                path = route.path
+                if path == "/health" or (method, path) in PUBLIC:
+                    continue
+                response = client.request(method, path)
+                assert response.status_code == 401, (method, path, response.status_code)
+                protected += 1
+>       assert protected > 75
+E       assert 2 > 75
+
+tests\test_identity_postgres.py:127: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_identity_postgres.py::test_all_business_routes_deny_anonymous_before_body
+1 failed, 11 passed, 662 deselected in 22.83s

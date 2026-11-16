@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from urllib.parse import quote
 
@@ -52,6 +53,18 @@ def main():
             ),
             ASTROAGENT_PROXY_TOKEN=proxy,
         )
+        identity = json.loads(secret("auth_settings"))
+        from astroagent.auth_config import AuthSettings
+
+        names = {"ASTROAGENT_AUTH_" + name.upper() for name in AuthSettings.model_fields}
+        if not isinstance(identity, dict) or set(identity) - names:
+            raise ValueError("Unexpected identity settings")
+        for key, value in identity.items():
+            if not isinstance(value, str) or "\x00" in value:
+                raise ValueError("Invalid identity setting")
+            os.environ[key] = value
+        auth = AuthSettings()
+        os.environ["ASTROAGENT_ALLOWED_ORIGINS"] = json.dumps([auth.origin])
         if Path("/run/secrets/executor_token").is_file():
             token = secret("executor_token")
             if not re.fullmatch(r"[0-9a-f]{64}", token):
@@ -66,6 +79,10 @@ def main():
         raise SystemExit(
             "Container configuration is invalid; check mounted settings without printing secrets."
         ) from None
+    if sys.argv[1:2] == ["identity"]:
+        os.execvp("python", ["python", "-m", "astroagent.identity_cli", *sys.argv[2:]])
+    if sys.argv[1:] not in ([], ["serve"]):
+        raise SystemExit("Unsupported container command")
     os.execvp(
         "python",
         [

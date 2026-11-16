@@ -1,0 +1,6 @@
+{"name":"astroagent-v16-backend-1","image":"astroagent-backend:1.6.0-dev.0","state":"running","health":"healthy","ports":""}
+{"name":"astroagent-v16-frontend-1","image":"0c7f5f3c2683","state":"running","health":"healthy","ports":""}
+{"name":"astroagent-v16-plot-executor-1","image":"astroagent-plot-executor:1.6.0-dev.0","state":"running","health":"healthy","ports":""}
+{"name":"astroagent-v16-ingress-1","image":"ef0f592a8b1b","state":"running","health":"healthy","ports":"127.0.0.1:5173->5173/tcp"}
+{"name":"astroagent-v16-ollama-1","image":"0e59999e0e8f","state":"running","health":"healthy","ports":"11434/tcp"}
+{"name":"astroagent-v16-postgres-1","image":"0dd3149a06e4","state":"running","health":"healthy","ports":"5432/tcp"}

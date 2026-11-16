@@ -1,0 +1,84 @@
+"""Real authenticated V1.6 QA stack; all files/questions are synthetic or public."""
+import hashlib,json,time
+from pathlib import Path
+from uuid import uuid4
+import httpx
+
+origin='http://127.0.0.1:5174'
+root=Path(__file__).resolve().parents[1]
+record=root/(root/'.astroagent/v16-acceptance-path.txt').read_text().strip()
+result={'qa_origin':origin,'personal_data_used':False,'checks':{}}
+client=httpx.Client(base_url=origin,timeout=180,follow_redirects=False)
+def request(method,path,**kwargs):
+ response=client.request(method,path,**kwargs)
+ if not response.is_success:
+  try:code=response.json().get('error',{}).get('code','http_error')
+  except Exception:code='non_json_error'
+  raise RuntimeError(f'{method} {path.split("/")[-1]}: {response.status_code} {code}')
+ return response
+def check(name,fn):
+ start=time.monotonic()
+ try:
+  detail=fn();result['checks'][name]={'passed':True,'seconds':round(time.monotonic()-start,2),'detail':detail}
+ except Exception as e:
+  result['checks'][name]={'passed':False,'seconds':round(time.monotonic()-start,2),'error':str(e)[:220]}
+ (record/'authenticated-live-first.json').write_text(json.dumps(result,indent=2),encoding='utf8')
+ print(name,result['checks'][name]['passed'],flush=True)
+
+csrf=request('GET','/api/v1/auth/csrf').json()['csrf_token']
+client.headers.update({'Origin':origin,'X-CSRF-Token':csrf})
+request('POST','/api/v1/auth/login',json={'email':'first@example.org','password':'Synthetic nebula entropy 2048'})
+client.headers['X-CSRF-Token']=request('GET','/api/v1/auth/csrf').json()['csrf_token']
+models=request('GET','/api/v1/models').json()
+model=models['default_model']
+project=request('POST','/api/v1/projects',json={'name':'V1.6 authenticated synthetic acceptance'}).json()
+base='/api/v1/projects/'+project['id']
+dataset=str(uuid4())
+request('PUT',base+'/plotting/datasets/'+dataset+'/upload',files={'file':('synthetic.csv',b'x,y\n1,2\n2,4\n3,3\n','text/csv')})
+
+def plotting(engine):
+ status=request('GET','/api/v1/setup/plotting').json()
+ assert status['storage_ready'] and status['execution_configured'], 'Executor unavailable'
+ plan,run=str(uuid4()),str(uuid4())
+ p=request('PUT',base+'/plotting/plans/'+plan,json={'dataset_id':dataset,'model_id':model,'engine':engine,'question':'Plot a scatter of x versus y from the synthetic dataset; no scientific inference.','confirm_external_data':True}).json()
+ assert p['state']=='completed', 'Plan failed'
+ value=request('PUT',base+'/plotting/runs/'+run,json={'plan_id':plan,'confirm_execute':True}).json()
+ assert value['state']=='completed', 'Sandbox execution did not complete'
+ figure=request('GET',base+'/plotting/runs/'+run+'/files/figure.png').content
+ assert figure.startswith(b'\x89PNG\r\n\x1a\n')
+ return {'png_sha256':hashlib.sha256(figure).hexdigest(),'real_internal_executor':True,'engine':engine}
+
+check('python_plot',lambda:plotting('python'))
+check('gnuplot_plot',lambda:plotting('gnuplot'))
+
+def rag():
+ revision=request('GET',base).json()['revision']
+ body=b'# Synthetic acceptance only\nBinary cluster environmental effects are examined by comparing a pair evolving in an external gravitational field with an isolated synthetic control. This fabricated test passage contains no real observational measurements.\n'
+ d=request('POST',base+'/documents',files={'file':('synthetic.md',body,'text/markdown')},data={'options':json.dumps({'expected_revision':revision,'client_request_id':str(uuid4())})}).json()['document']
+ revision=request('GET',base).json()['revision']
+ index=request('POST',base+'/rag/indexes',json={'expected_revision':revision,'client_request_id':str(uuid4()),'confirmed':True}).json()
+ assert index['state']=='ready', 'Index not ready'
+ p=request('POST',base+'/rag/previews',json={'question':'binary cluster environmental effects','document_ids':[],'version_ids':[],'history_ids':[]}).json()
+ assert p['semantic_status']=='ready' and p['evidence'], 'Semantic retrieval unavailable'
+ answer=request('POST',base+'/rag/answers',json={'preview_id':p['id'],'confirmation_token':p['confirmation_token'],'client_request_id':str(uuid4()),'confirmed':True}).json()
+ assert answer['record']['state']=='completed', 'RAG answer did not complete'
+ original=request('GET',base+'/documents/'+d['id']+'/versions/'+d['current_version_id']+'/content').content
+ assert original==body,'Original bytes differ'
+ return {'semantic_status':p['semantic_status'],'original_sha256':hashlib.sha256(original).hexdigest(),'external_answer_returned':True}
+
+check('semantic_rag',rag)
+
+def chat(family,message):
+ conversation=request('POST','/api/v1/conversations',json={'title':'Public '+family+' acceptance'}).json()
+ value=request('POST','/api/v1/conversations/'+conversation['id']+'/turns',json={'message':message,'client_request_id':str(uuid4()),'expected_revision':0,'model':model}).json()
+ if value.get('execution_status')!='completed':raise RuntimeError('Turn failed: '+str((value.get('error') or {}).get('code','unknown')))
+ response=value.get('response') or {}
+ results=response.get({'simbad':'simbad_results','ads':'literature_results','gaia':'gaia_results'}[family],[])
+ if not results:
+  raise RuntimeError('No successful '+family+' result; error codes: '+str([v.get('code') for v in response.get('errors',[])]))
+ return {'completed':True,'result_count':len(results)}
+
+check('simbad_authenticated',lambda:chat('simbad','Use SIMBAD to query M45. Return the catalog information and its limitations.'))
+check('ads_authenticated',lambda:chat('ads','Use ADS to find one astronomy paper with query title:"binary cluster". Return the bibliographic source.'))
+check('gaia_authenticated',lambda:chat('gaia','Query Gaia DR3 in a cone at RA 56.75 degrees, Dec 24.12 degrees, radius 1 arcmin, limit 1. Preserve source_id as a string.'))
+client.close()

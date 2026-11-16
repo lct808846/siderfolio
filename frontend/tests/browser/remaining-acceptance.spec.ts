@@ -90,9 +90,11 @@ test('settings refresh failure clears the previous ready status', async ({ page 
     if (calls === 1) await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ configured: true, ready: true, message: '合成数据库已就绪', code: 'ready', database_version: 'test', database_schema: 6, vector_version: 'test' }) })
     else await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'database_unavailable', message: '合成读取失败', retryable: true } }) })
   })
-  await page.goto('/settings')
+  await page.goto('/settings?section=general')
   await expect(page.getByText('业务数据库已就绪')).toBeVisible()
-  await page.getByRole('button', { name: '刷新本机状态' }).click()
+  // The redesigned settings page reads status on entry; browser refresh is the
+  // available retry trigger after the separate status-refresh control was removed.
+  await page.reload()
   await expect(page.getByRole('alert')).toContainText('合成读取失败')
   await expect(page.getByText('本机状态未确认', { exact: true })).toBeVisible()
   await expect(page.getByText('业务数据库已就绪')).toHaveCount(0)

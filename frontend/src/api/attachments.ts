@@ -1,3 +1,4 @@
+import { sessionFetch } from '../session-http'
 import { apiUrl, ApiError, assertApiConfiguration } from './index'
 import type { ChatAttachment } from '../types'
 
@@ -9,7 +10,7 @@ export async function parseAttachment(file: File, signal?: AbortSignal): Promise
   const body = new FormData()
   body.set('file', file)
   let response: Response
-  try { response = await fetch(apiUrl('/api/v1/chat/attachments'), { method: 'POST', body, signal, cache: 'no-store' }) }
+  try { response = await sessionFetch(apiUrl('/api/v1/chat/attachments'), { method: 'POST', body, signal, cache: 'no-store' }) }
   catch (error) {
     if (signal?.aborted) throw error
     throw new ApiError('attachment_connection_lost', '附件读取连接断开，请重新选择文件。')

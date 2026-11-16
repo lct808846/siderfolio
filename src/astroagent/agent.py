@@ -4,7 +4,6 @@ import json
 from datetime import UTC, datetime
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
-from langchain_openai import ChatOpenAI
 from openai import (
     APIConnectionError,
     APIError,
@@ -18,6 +17,7 @@ from astroagent.ads import AdsService
 from astroagent.config import Settings
 from astroagent.errors import ServiceError
 from astroagent.gaia import GaiaService
+from astroagent.model_client import chat_model
 from astroagent.schemas import (
     ChatResponse,
     GaiaQuery,
@@ -141,16 +141,7 @@ def create_model(settings: Settings):
         raise ServiceError(
             503, "model_not_configured", "请配置 DEEPSEEK_API_KEY 后再使用聊天接口。"
         )
-    return ChatOpenAI(
-        model=settings.deepseek_model,
-        api_key=settings.deepseek_api_key.get_secret_value(),
-        base_url=str(settings.deepseek_base_url),
-        temperature=0,
-        timeout=settings.llm_timeout_seconds,
-        max_retries=0,
-        max_tokens=1500,
-        extra_body=settings.non_thinking_body(),
-    ).bind_tools([SIMBAD_TOOL, ADS_TOOL, GAIA_TOOL])
+    return chat_model(settings, tools=[SIMBAD_TOOL, ADS_TOOL, GAIA_TOOL])
 
 
 class AstroAgent:
@@ -175,6 +166,8 @@ class AstroAgent:
     def _invoke(self, messages):
         try:
             response = self.model.invoke(messages)
+        except ServiceError:
+            raise
         except (APITimeoutError, TimeoutError) as exc:
             raise ServiceError(
                 504, "model_timeout", "模型响应超时，请稍后重试。", retryable=True

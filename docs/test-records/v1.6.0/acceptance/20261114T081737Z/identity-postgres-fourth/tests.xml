@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="19" time="26.449" timestamp="2026-11-14T16:39:07.900617+08:00" hostname="LAPTOP-9MS1V0KF"><testcase classname="tests.test_identity_postgres" name="test_all_business_routes_deny_anonymous_before_body" time="1.633" /><testcase classname="tests.test_identity_postgres" name="test_registration_scanner_replay_and_cookie_policy" time="1.063" /><testcase classname="tests.test_identity_postgres" name="test_csrf_origin_body_limit_and_error_redaction" time="0.334" /><testcase classname="tests.test_identity_postgres" name="test_two_accounts_isolate_ids_and_missing_table_never_falls_back" time="3.428" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[idle]" time="0.676" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[absolute]" time="0.634" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[revoked]" time="0.681" /><testcase classname="tests.test_identity_postgres" name="test_session_expiry_and_disable_fail_closed[disabled]" time="0.709" /><testcase classname="tests.test_identity_postgres" name="test_reset_revokes_all_sessions_and_tokens" time="1.135" /><testcase classname="tests.test_identity_postgres" name="test_wrong_key_and_lost_lock_fail_closed" time="0.748" /><testcase classname="tests.test_identity_postgres" name="test_encrypted_outbox_submission_and_expired_mail" time="0.595" /><testcase classname="tests.test_identity_postgres" name="test_disabled_generation_blocks_existing_worker_repository" time="1.527" /><testcase classname="tests.test_identity_postgres" name="test_generation_change_during_transaction_rolls_back" time="1.514" /><testcase classname="tests.test_identity_postgres" name="test_concurrent_email_confirmation_is_one_use" time="0.438" /><testcase classname="tests.test_identity_postgres" name="test_admin_requires_totp_recent_proof_and_one_use_recovery" time="1.498" /><testcase classname="tests.test_identity_postgres" name="test_offline_maintenance_refuses_running_backend" time="0.690" /><testcase classname="tests.test_identity_postgres" name="test_email_rate_limit_idempotency_and_expiry" time="0.722" /><testcase classname="tests.test_identity_postgres" name="test_tenant_document_vector_and_archive_roundtrip" time="2.353"><failure message="AssertionError: assert ([{'label': 'E1', 'view': {'evidence': {'id': 'aff289d1-c88d-448a-a0fd-a6a0330662df', 'project_id': '3708039b-2350-4dd5....\n', 'heading_path': ['Reference'], 'historical_version': False, ...}, 'lexical_rank': 1, 'semantic_rank': None, ...}] and 'ready' == 'stale'&#10;  &#10;  - stale&#10;  + ready)">identity_client = &lt;starlette.testclient.TestClient object at 0x00000218DA9D8E90&gt;
+
+    def test_tenant_document_vector_and_archive_roundtrip(identity_client):
+        from test_rag_postgres import build, preview, project_with_document
+    
+        client = identity_client
+        account(client)
+        csrf = client.get("/api/v1/auth/csrf").json()["csrf_token"]
+        client.headers.update({"Origin": ORIGIN, "X-CSRF-Token": csrf})
+        root, document = project_with_document(client)
+        user = client.store.authenticate(client.cookies.get("astroagent_session"))
+        service = client.identity.tenants.for_user(user)
+    
+        class Embedder:
+            def identity(self):
+                return "f" * 64
+    
+            def encode(self, texts):
+                return [[1 / math.sqrt(384)] * 384 for _ in texts]
+    
+        service.rag.embedder = Embedder()
+        build(client, root)
+&gt;       evidence = preview(client, root)
+                   ^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_identity_postgres.py:484: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = &lt;starlette.testclient.TestClient object at 0x00000218DA9D8E90&gt;
+root = '/api/v1/projects/3708039b-2350-4dd5-b68a-855e68f50057'
+
+    def preview(client, root):
+        response = client.post(
+            root + "/rag/previews",
+            json={
+                "question": "binary cluster",
+                "document_ids": [],
+                "version_ids": [],
+                "history_ids": [],
+            },
+        )
+        assert response.status_code == 200
+        value = response.json()
+&gt;       assert value["evidence"] and value["lexical_status"] == value["semantic_status"] == "ready"
+E       AssertionError: assert ([{'label': 'E1', 'view': {'evidence': {'id': 'aff289d1-c88d-448a-a0fd-a6a0330662df', 'project_id': '3708039b-2350-4dd5....\n', 'heading_path': ['Reference'], 'historical_version': False, ...}, 'lexical_rank': 1, 'semantic_rank': None, ...}] and 'ready' == 'stale'
+E         
+E         - stale
+E         + ready)
+
+tests\test_rag_postgres.py:241: AssertionError</failure></testcase><testcase classname="tests.test_identity_postgres" name="test_smtp_rejection_does_not_activate_account" time="0.482" /></testsuite></testsuites>

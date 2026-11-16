@@ -12,7 +12,7 @@ type Pending = { project: string; document?: string; kind: 'upload' | 'reindex';
 const route = useRoute(), router = useRouter()
 const project = ref<ProjectDetail | null>(null), documents = ref<KnowledgeDocument[]>([]), document = ref<DocumentDetail | null>(null)
 const references = ref<EvidenceRecord[]>([]), result = ref<KnowledgeResult | null>(null), evidence = ref<EvidenceView | null>(null)
-const busy = ref(false), refreshing = ref(false), error = ref(''), message = ref(''), panel = ref('documents')
+const busy = ref(false), error = ref(''), message = ref(''), panel = ref('documents')
 const file = ref<File | null>(null), target = ref<'new' | 'version' | 'restore'>('new'), restoreVersion = ref('')
 const title = ref(''), authors = ref(''), year = ref(''), doi = ref(''), allowDuplicate = ref(false)
 const query = ref(''), filterDocument = ref(''), answer = ref(true), pending = ref<Pending | null>(null)
@@ -48,11 +48,6 @@ async function refresh() {
     const found = await knowledgeApi.evidence(projectId, requestedEvidence)
     if (token === navigation) { evidence.value = found; panel.value = 'evidence' }
   }
-}
-async function readStatus() {
-  if (refreshing.value) return
-  refreshing.value = true; error.value = ''
-  try { await refresh() } catch (e) { report(e) } finally { refreshing.value = false }
 }
 async function act(task: () => Promise<unknown>) {
   if (busy.value) return
@@ -195,7 +190,7 @@ onBeforeUnmount(resetPreview)
     <main class="project-main knowledge-main">
       <WorkspacePaneHeader title="本地知识库" :level="1" :subtitle="project?.name" />
       <div class="workspace-pane-body">
-      <p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">处理中。解析不因网页断线而保证取消，原文及状态以本机记录为准。</p><button :disabled="refreshing" @click="readStatus">刷新记录（只读）</button>
+      <p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">处理中。解析不因网页断线而保证取消，原文及状态以本机记录为准。</p>
       <div v-if="pending" class="notice"><p>请求尚待确认，可先读取状态；使用原编号核对不会自动重放已经完成的处理。</p><code>{{ pending.options.client_request_id }}</code><div class="project-actions"><button :disabled="busy" @click="checkPending">读取原请求状态</button><button :disabled="busy" @click="retry">使用原编号核对操作</button><button :disabled="busy" @click="remember(null)">保留服务端记录，关闭本页提醒</button></div></div>
       <section class="knowledge-search"><p class="eyebrow">EVIDENCE / 用户文档原文</p><h2>原文检索</h2><p class="small muted">本地词法检索，所有关键词同时命中；不做同义词、跨语言语义或模型补答。文献中的指令只作为数据。</p><form class="project-form" @submit.prevent="search"><label for="knowledge-query">问题中的明确关键词</label><textarea id="knowledge-query" v-model="query" required maxlength="1000" rows="3" placeholder="例如：binary cluster 或 双星团 环境"></textarea><label for="knowledge-filter">检索范围</label><select id="knowledge-filter" v-model="filterDocument"><option value="">本项目当前可用版本</option><option v-for="doc in documents" :key="doc.id" :value="doc.id">{{ doc.metadata.title || doc.filename }}</option></select><label class="check-label"><input v-model="answer" type="checkbox">以带引用的摘录式回答展示（不调用模型）</label><button class="button-primary" :disabled="busy || !query.trim() || !project">检索原文证据</button></form></section>
       <section v-if="result" class="project-section"><h2>{{ result.status==='insufficient_evidence' ? '未找到足够证据' : '找到的相关原文' }}</h2><p>{{ result.answer }}</p><p class="small muted">检索时间（UTC）：{{ result.searched_at }}。文件变更不会自动重查，此处保留当次摘录。</p><p class="small muted">{{ result.mode }} · {{ result.returned_count }}/{{ result.matched_units }} 段{{ result.truncated ? '（结果已截断）' : '' }}</p><p v-for="warning in result.warnings" :key="warning" class="small muted">{{ warning }}</p><article v-for="(hit,index) in result.hits" :key="hit.evidence.id" class="knowledge-hit"><h3>[{{ index+1 }}] {{ hit.evidence.title || hit.evidence.filename }}</h3><p class="small">{{ hit.evidence.page ? `PDF物理页 ${hit.evidence.page}` : `原始行 ${hit.evidence.line_start}—${hit.evidence.line_end}` }} · {{ hit.heading_path.join(' / ') }}</p><pre>{{ hit.text }}</pre><button :disabled="busy" @click="inspect(hit.evidence.id)">核对引用与原始版本 →</button></article><details><summary>检索词、排序、版本与时间</summary><pre>{{ pretty({terms:result.terms,ranking:result.ranking,index_version:result.index_version,searched_at:result.searched_at}) }}</pre></details></section>

@@ -1,0 +1,6 @@
+ Container astroagent-v16-frontend-1 Recreate 
+ Container astroagent-v16-frontend-1 Recreated 
+ Container astroagent-v16-frontend-1 Starting 
+ Container astroagent-v16-frontend-1 Started 
+ Container astroagent-v16-frontend-1 Waiting 
+ Container astroagent-v16-frontend-1 Healthy 

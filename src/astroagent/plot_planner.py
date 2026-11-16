@@ -5,12 +5,12 @@ import io
 import json
 
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from openai import APITimeoutError, AuthenticationError, RateLimitError
 
 from astroagent.config import Settings
 from astroagent.errors import ServiceError
 from astroagent.execution import MODEL_TASK_SLOTS
+from astroagent.model_client import chat_model
 from astroagent.plot_schemas import PlotProposal
 
 SYSTEM = """你是科研绘图助手。只能调用一次 plot_python 或 plot_gnuplot 返回绘图方案，不能运行代码。
@@ -63,16 +63,7 @@ def generate(request, info, data):
             }
             for engine in ("python", "gnuplot")
         ]
-        model = ChatOpenAI(
-            model=settings.deepseek_model,
-            api_key=settings.deepseek_api_key.get_secret_value(),
-            base_url=str(settings.deepseek_base_url),
-            temperature=0,
-            timeout=settings.llm_timeout_seconds,
-            max_retries=0,
-            max_tokens=7000,
-            extra_body=settings.non_thinking_body(),
-        ).bind_tools(tools, parallel_tool_calls=False)
+        model = chat_model(settings, tools=tools, max_tokens=7000, parallel=False)
         answer = model.invoke(
             [
                 SystemMessage(content=SYSTEM),
