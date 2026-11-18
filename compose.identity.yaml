@@ -2,22 +2,22 @@
 name: astroagent-v16
 services:
   backend:
-    image: astroagent-backend:1.6.0-rc.1
+    image: astroagent-backend:1.6.0
     secrets: [auth_settings]
   frontend:
-    image: astroagent-frontend:1.6.0-rc.1
+    image: astroagent-frontend:1.6.0
     environment:
       ASTROAGENT_SITE_ORIGIN: "${AUTH_SITE_ORIGIN:-http://127.0.0.1:5173}"
     healthcheck:
       test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/__internal/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
   ingress:
-    image: astroagent-ingress:1.6.0-rc.1
+    image: astroagent-ingress:1.6.0
     environment:
       ASTROAGENT_SITE_ORIGIN: "${AUTH_SITE_ORIGIN:-http://127.0.0.1:5173}"
     healthcheck:
       test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/__internal/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
   plot-executor:
-    image: astroagent-plot-executor:1.6.0-rc.1
+    image: astroagent-plot-executor:1.6.0
 secrets:
   backend_settings:
     file: "${V16_BACKEND_SETTINGS_FILE:-./.astroagent/container/secrets/backend-settings.json}"

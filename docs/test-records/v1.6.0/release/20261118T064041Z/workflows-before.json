@@ -1,0 +1,794 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\lct\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\bbc9141fe9f920ac\\bin\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      "playwright.v160-local.ts",
+      "tests/browser/workflows.spec.ts",
+      "--repeat-each=3"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.v160-local.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/frontend/test-results/v160-release",
+        "repeatEach": 3,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/project/astroagent/frontend/test-results/v160-release",
+        "repeatEach": 3,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\frontend\\test-results\\v160-release",
+        "repeatEach": 3,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:18262",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\frontend\\test-results\\v160-release",
+        "repeatEach": 3,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:18262",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/v160-workflows.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "workflows.spec.ts",
+      "file": "workflows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8886,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "核对并下载 Gaia 归档",
+                      "duration": 235
+                    },
+                    {
+                      "title": "核对并下载 ADS 证据表",
+                      "duration": 255
+                    }
+                  ],
+                  "startTime": "2026-11-18T06:41:41.598Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-d825ce04b4ceccf16d00",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4132,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-18T06:41:55.544Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-0b1bdb59a60b0050c4d2",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7401,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "核对并下载 Gaia 归档",
+                      "duration": 364
+                    },
+                    {
+                      "title": "核对并下载 ADS 证据表",
+                      "duration": 158
+                    }
+                  ],
+                  "startTime": "2026-11-18T06:42:00.785Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-4cac76b8aac2bd0cc308",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6493,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                      "column": 63,
+                      "line": 79
+                    },
+                    "snippet": "  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                        "column": 63,
+                        "line": 79
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n\n  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-18T06:42:08.681Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium-repeat1\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium-repeat1\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium-repeat1\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                    "column": 63,
+                    "line": 79
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-5a401ad1f67db9b6b2e3",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5594,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "核对并下载 Gaia 归档",
+                      "duration": 257
+                    },
+                    {
+                      "title": "核对并下载 ADS 证据表",
+                      "duration": 101
+                    }
+                  ],
+                  "startTime": "2026-11-18T06:42:16.086Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-260bdf197efc342426ae",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6317,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                      "column": 63,
+                      "line": 79
+                    },
+                    "snippet": "  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                        "column": 63,
+                        "line": 79
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n\n  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-18T06:42:22.113Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium-repeat2\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium-repeat2\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-chromium-repeat2\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                    "column": 63,
+                    "line": 79
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-e23af55791792c82a790",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7546,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "核对并下载 Gaia 归档",
+                      "duration": 409
+                    },
+                    {
+                      "title": "核对并下载 ADS 证据表",
+                      "duration": 204
+                    }
+                  ],
+                  "startTime": "2026-11-18T06:42:29.167Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-bd5e789dfd84d94ef68c",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3923,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-18T06:42:38.434Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-912c8c964519ff25178b",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7089,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "核对并下载 Gaia 归档",
+                      "duration": 415
+                    },
+                    {
+                      "title": "核对并下载 ADS 证据表",
+                      "duration": 222
+                    }
+                  ],
+                  "startTime": "2026-11-18T06:42:43.990Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-22fbc8ba832a0a6d50f9",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7174,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                      "column": 63,
+                      "line": 79
+                    },
+                    "snippet": "  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                        "column": 63,
+                        "line": 79
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n\n  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-18T06:42:51.870Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge-repeat1\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge-repeat1\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge-repeat1\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                    "column": 63,
+                    "line": 79
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-518d7b7f6bea316894be",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6399,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "核对并下载 Gaia 归档",
+                      "duration": 371
+                    },
+                    {
+                      "title": "核对并下载 ADS 证据表",
+                      "duration": 181
+                    }
+                  ],
+                  "startTime": "2026-11-18T06:43:00.594Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-0d664467610566a4db5a",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6969,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                      "column": 63,
+                      "line": 79
+                    },
+                    "snippet": "  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                        "column": 63,
+                        "line": 79
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并继续' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并继续' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并继续' })\u001b[22m\n\n\n  77 |     await page.getByRole('button', { name: '核对并启动' }).click()\n  78 |     await page.getByRole('button', { name: '确认执行' }).click()\n> 79 |     await expect(page.getByRole('button', { name: '核对并继续' })).toBeVisible()\n     |                                                               ^\n  80 |     await expect(page.getByText('gaia_timeout', { exact: true }).first()).toBeVisible()\n  81 |     await page.reload()\n  82 |     await page.getByRole('button', { name: '核对并继续' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:79:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-18T06:43:07.637Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge-repeat2\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge-repeat2\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\frontend\\test-results\\v160-release\\workflows-failed-workflow--ce733-mation-and-retains-attempts-edge-repeat2\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                    "column": 63,
+                    "line": 79
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-93cbb3418b7cd6113de3",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-18T06:41:34.593Z",
+    "duration": 101754.437,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

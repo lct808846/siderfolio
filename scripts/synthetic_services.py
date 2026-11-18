@@ -11,15 +11,17 @@ from scripts.export_samples import synthetic_request
 
 class SyntheticGaia:
     # Reserved coordinates exercise persisted failure/retry in the browser fixture only.
-    failed_once = set()
+    failed_once: set[tuple[float, float | None]] = set()
 
     def query(self, arguments):
         query = GaiaQuery.model_validate(arguments.effective_parameters())
-        if query.ra_deg in (12.34567, 12.34568) and query.ra_deg not in self.failed_once:
-            self.failed_once.add(query.ra_deg)
-            raise ServiceError(
-                504, "gaia_timeout", "合成服务首次超时，用于验证显式继续。", retryable=True
-            )
+        if query.ra_deg in (12.34567, 12.34568):
+            coordinate = (query.ra_deg, query.dec_deg)
+            if coordinate not in self.failed_once:
+                self.failed_once.add(coordinate)
+                raise ServiceError(
+                    504, "gaia_timeout", "合成服务首次超时，用于验证显式继续。", retryable=True
+                )
         template = synthetic_request()["snapshot"]["gaia_results"][0]
         rows = GaiaQueryResult.model_validate(template).data
         for i, row in enumerate(rows):

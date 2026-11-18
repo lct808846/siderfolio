@@ -2,7 +2,7 @@
 
 界面开发统一遵循 [UI 设计规范](docs/UI_DESIGN_SPEC.md)，其中规定视觉变量、布局、组件、交互状态、页面族例外及审查清单。
 
-当前候选源码：**V1.6.0 RC1**（Python `1.6.0rc1`，前端 `1.6.0-rc.1`）。邮箱激活、登录与用户隔离、MFA、个人资料及头像、模型服务商与四协议适配已接入；最新改动的[自动验收记录](docs/test-records/v1.6.0/changed-parts/20261116T071217Z/README.md)保留初始失败、修复复验与限制。源码发布入口见 [v1.6.0-rc.1](https://github.com/lct808846/astroagent/releases/tag/v1.6.0-rc.1)，范围见[候选版说明](docs/development/v1.6.0/RELEASE_RC1.md)。这是本机部署候选版，不代表公网生产安全认证或所有真实模型服务商可用。
+当前正式源码版本为 **V1.6.0**，包含邮箱激活、登录与用户隔离、MFA、个人资料及头像、模型服务商与四协议适配。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.6.0)、[发布说明](docs/development/v1.6.0/RELEASE.md)及[自动验收记录](docs/test-records/v1.6.0/changed-parts/20261116T071217Z/README.md)。
 
 已准备私有 `deployment-v16.env` 的本机可使用 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/containers.ps1 -Action up` 启动V1.6；脚本自动选择身份部署覆盖文件，复用现有模型时不重新导入。首次安装先阅读[V1.6实施与限制](docs/development/v1.6.0/IMPLEMENTATION.md)、[部署/数据操作](docs/development/v1.6.0/OPERATIONS.md)和[验收状态](docs/development/v1.6.0/ACCEPTANCE.md)，不要用V1.6源码重新构建V1.5标签。
 

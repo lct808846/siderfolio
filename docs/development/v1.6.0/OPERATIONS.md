@@ -35,7 +35,7 @@ python -m astroagent.identity_cli generate-key
 docker compose --env-file <V1.6私有env> -f compose.yaml -f compose.plotting.yaml -f compose.identity.yaml <操作>
 ```
 
-在Windows使用已安装D盘Docker CLI，并显式选择本机engine。此组合项目名为 `astroagent-v16`，当前候选镜像为 `1.6.0-rc.1`，不会覆盖V1.5标签；**新项目的默认卷为空，不会自动复用或迁移V1.5卷**。已有V1.6部署继续保留同名卷与私有配置，候选版更新不清空数据。5173端口与旧实例冲突，隔离环境须另配端口与完全匹配的origin，或在安排部署时先停旧入口。
+在 Windows 使用已安装在 D 盘的 Docker CLI，并显式选择本机 Docker 引擎。此组合项目名为 `astroagent-v16`，应用镜像标签为 `1.6.0`。**新项目的默认卷为空，不会自动复用或迁移 V1.5 卷**。已有 V1.6 部署升级时沿用同名卷与私有配置。5173 端口与旧实例冲突，隔离环境须另配端口与完全匹配的 origin，或在安排部署时先停旧入口。
 
 1. 用户安排后构建 backend/frontend/ingress/plot-executor；不在镜像中生成秘密或创建数据库。
 2. 先启动PostgreSQL及必要内部依赖；新空数据库按既有容器入口安装public中的vector/pg_trgm扩展。

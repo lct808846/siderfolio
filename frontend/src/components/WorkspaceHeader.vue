@@ -36,7 +36,7 @@ function current(path: string, descendants = false) {
           </svg>
         </span>
         <b>AstroAgent</b>
-        <span class="version">1.6 RC1</span>
+        <span class="version">1.6</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">

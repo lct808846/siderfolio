@@ -2,6 +2,7 @@
 
 from fastapi.testclient import TestClient
 
+from astroagent import __version__
 from astroagent.main import app
 
 
@@ -27,4 +28,5 @@ def test_swagger_ui_is_disabled_in_v16():
 def test_health_is_documented_in_openapi():
     schema = app.openapi()
     assert schema["info"]["title"] == "AstroAgent"
+    assert schema["info"]["version"] == __version__
     assert "200" in schema["paths"]["/health"]["get"]["responses"]

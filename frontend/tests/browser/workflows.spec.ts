@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test'
 import path from 'node:path'
 
+async function expectOutputDownload(page: import('@playwright/test').Page, filename: string) {
+  const card = page.locator('article.workflow-output').filter({
+    has: page.getByText(filename, { exact: true }),
+  })
+  const [response, download] = await Promise.all([
+    page.waitForResponse(response => /\/workflows\/[^/]+\/outputs\/[^/]+$/.test(new URL(response.url()).pathname) &&
+      response.request().resourceType() === 'fetch', { timeout: 10000 }),
+    page.waitForEvent('download', { timeout: 15000 }),
+    card.getByRole('button', { name: '核对哈希并下载' }).click(),
+  ])
+  expect(response.ok()).toBe(true)
+  expect(download.suggestedFilename()).toBe(filename)
+  expect(await download.failure()).toBeNull()
+}
+
 test('fixed workflows create, confirm, execute, display outputs and restore after refresh', async ({ page, request }, info) => {
   const project = await (await request.post('/api/v1/projects', { data: { name: '合成流程验收' } })).json()
   try {
@@ -20,9 +35,7 @@ test('fixed workflows create, confirm, execute, display outputs and restore afte
     await page.getByRole('button', { name: '确认执行' }).click()
     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible({ timeout: 30000 })
     await expect(page.getByText('4/4 步已完成或跳过')).toBeVisible()
-    const download = page.waitForEvent('download')
-    await page.locator('article').filter({ hasText: 'workflow-results.zip' }).getByRole('button', { name: '核对哈希并下载' }).click()
-    expect((await download).suggestedFilename()).toBe('workflow-results.zip')
+    await test.step('核对并下载 Gaia 归档', () => expectOutputDownload(page, 'workflow-results.zip'))
     await page.reload()
     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible()
     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-workflow-desktop.png`) })
@@ -41,9 +54,7 @@ test('fixed workflows create, confirm, execute, display outputs and restore afte
     await page.getByRole('button', { name: '确认执行' }).click()
     await expect(page.getByText('ads-evidence.csv', { exact: true })).toBeVisible({ timeout: 30000 })
     await expect(page.getByText('ads-evidence.json', { exact: true })).toBeVisible()
-    const csv = page.waitForEvent('download')
-    await page.locator('article').filter({ hasText: 'ads-evidence.csv' }).getByRole('button', { name: '核对哈希并下载' }).click()
-    expect((await csv).suggestedFilename()).toBe('ads-evidence.csv')
+    await test.step('核对并下载 ADS 证据表', () => expectOutputDownload(page, 'ads-evidence.csv'))
     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-workflow-ads.png`) })
   } finally {
     const detail = await (await request.get(`/api/v1/projects/${project.id}`)).json()
@@ -57,7 +68,8 @@ test('failed workflow resumes only after confirmation and retains attempts', asy
     await page.goto(`/projects/${project.id}/workflows`)
     await page.getByLabel('运行名称').fill('合成超时后继续')
     await page.getByLabel('ICRS赤经 / 度 [0,360)').fill(info.project.name === 'edge' ? '12.34568' : '12.34567')
-    await page.getByLabel('ICRS赤纬 / 度 [-90,90]').fill('24.12')
+    // Each repeat or retry gets a new worker and its own first-failure sample.
+    await page.getByLabel('ICRS赤纬 / 度 [-90,90]').fill((24.12 + info.workerIndex / 1000).toFixed(3))
     await page.getByLabel('圆锥半径 / 角分 (0,30]').fill('5')
     await page.getByLabel('交付行上限 / 1—100').fill('10')
     await page.getByRole('button', { name: '创建待执行记录' }).click()
