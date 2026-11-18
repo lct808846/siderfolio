@@ -9,4 +9,6 @@ V1.6.0 是 AstroAgent 的正式源码版本。Python 包、前端包和应用容
 
 本轮从 RC1 升级时，修复了科研流程测试连续运行会共用合成超时记录的问题，补充了 Gaia 归档和 ADS 证据表的 HTTP 与下载核验。身份、个人资料、模型服务商及布局的既有验收范围见[增量记录](../../test-records/v1.6.0/changed-parts/20261116T071217Z/README.md)和[验收清单](ACCEPTANCE.md)。
 
+生产依赖审计结果为 0 项。经批准，V1.6.0 对仅出现在前端开发工具链中的 [picomatch 公告](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)作一次版本例外。完整审计继续记录该发现，其他高危或严重记录仍会阻断检查。生产前端镜像不安装这套开发依赖。见[正式版验收记录](../../test-records/v1.6.0/release/20261118T064041Z/README.md)。
+
 [操作说明](OPERATIONS.md)包含部署、认证密钥和数据卷说明。GitHub Release 提供源码包。本次未重复测试真实 SMTP、第三方模型额度、外部天文服务或公网多用户部署。
