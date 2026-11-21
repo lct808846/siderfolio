@@ -1,0 +1,7 @@
+cancel_live_native_child_and_release_slot {"passed": true, "detail": {"state": "cancelled", "elapsed_seconds": 4.647, "native_child_seen": true, "remaining_attempt_directories": 0, "next_job": "succeeded"}, "seconds": 10.618}
+real_120_second_timeout_and_release_slot {"passed": false, "error": "AssertionError: GET projects/a7961ce9-f4ab-45ad-92e1-ed2fd6734fc4/compute-tasks/85030390-b079-4515-a661-b41230178d45 returned 502 ; expected 200", "seconds": 71.022}
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Stopping 
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Stopped 
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Starting 
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Started 
+worker_unavailable_preserves_draft {"passed": false, "error": "AssertionError: GET projects/a7961ce9-f4ab-45ad-92e1-ed2fd6734fc4/compute-tasks returned 502 ; expected 200", "seconds": 1.981}

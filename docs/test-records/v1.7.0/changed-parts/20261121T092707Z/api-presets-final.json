@@ -1,0 +1,51 @@
+{
+  "project": "astroagent-petar-qa-20261121t092707z",
+  "orbit_tolerance": 1e-06,
+  "checks": {
+    "default_hierarchical_triple_petar": {
+      "passed": true,
+      "detail": {
+        "engine": "petar",
+        "particles": 3,
+        "duration_yr": 12,
+        "max_relative_energy_drift": 2.268289744660503e-08,
+        "warnings": [],
+        "integration_seconds": 30.372137803999067,
+        "archive_members": 6,
+        "rows": 387
+      },
+      "seconds": 34.07
+    },
+    "default_plummer_petar": {
+      "passed": true,
+      "detail": {
+        "engine": "petar",
+        "particles": 12,
+        "duration_yr": 204.1,
+        "max_relative_energy_drift": 1.4952254434115238e-05,
+        "warnings": [
+          "最大相对能量偏差超过 10⁻⁶，请核对时间跨度与近接情况。"
+        ],
+        "integration_seconds": 2.53672407099657,
+        "archive_members": 6,
+        "rows": 1548
+      },
+      "seconds": 7.552
+    },
+    "default_plummer_rebound": {
+      "passed": true,
+      "detail": {
+        "engine": "rebound",
+        "particles": 12,
+        "duration_yr": 204.1,
+        "max_relative_energy_drift": 9.247145167450976e-15,
+        "warnings": [],
+        "integration_seconds": 0.08098348999919835,
+        "archive_members": 6,
+        "rows": 1548
+      },
+      "seconds": 3.808
+    }
+  },
+  "image": "sha256:e21540c937530a69c2f09a340bc52f25525510b3ba0ea8e7348b4d5803ef9506"
+}

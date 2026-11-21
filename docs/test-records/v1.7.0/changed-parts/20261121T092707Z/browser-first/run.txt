@@ -1,0 +1,138 @@
+
+Running 4 tests using 1 worker
+
+(node:10636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\compute-browser\compute.spec.ts:32:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (9.7s)
+(node:26740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\compute-browser\compute.spec.ts:112:1 › presets, Kepler elements, CSV import and center-of-mass reset (8.8s)
+(node:34140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [edge] › tests\compute-browser\compute.spec.ts:32:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (7.7s)
+(node:35028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 [edge] › tests\compute-browser\compute.spec.ts:112:1 › presets, Kepler elements, CSV import and center-of-mass reset (8.9s)
+
+
+  1) [chromium] › tests\compute-browser\compute.spec.ts:32:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: '核对并运行' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: '核对并运行' }) with timeout 5000ms
+      - waiting for getByRole('button', { name: '核对并运行' })
+
+
+      50 |   await page.getByLabel('采样点数').fill('100')
+      51 |   await page.getByRole('button', { name: '保存草稿' }).click()
+    > 52 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()
+         |                                                             ^
+      53 |   const originalUrl = page.url()
+      54 |   const originalId = new URL(originalUrl).pathname.split('/').at(-1)!
+      55 |   await page.getByRole('button', { name: '核对并运行' }).click()
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:52:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\error-context.md
+
+  2) [chromium] › tests\compute-browser\compute.spec.ts:112:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: '核对并运行' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: '核对并运行' }) with timeout 5000ms
+      - waiting for getByRole('button', { name: '核对并运行' })
+
+
+      153 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })
+      154 |   await page.getByRole('button', { name: '保存草稿' }).click()
+    > 155 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()
+          |                                                             ^
+      156 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)
+      157 |   expect(task.status()).toBe(200)
+      158 |   const params = (await task.json()).parameters
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:155:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-chromium\error-context.md
+
+  3) [edge] › tests\compute-browser\compute.spec.ts:32:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: '核对并运行' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: '核对并运行' }) with timeout 5000ms
+      - waiting for getByRole('button', { name: '核对并运行' })
+
+
+      50 |   await page.getByLabel('采样点数').fill('100')
+      51 |   await page.getByRole('button', { name: '保存草稿' }).click()
+    > 52 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()
+         |                                                             ^
+      53 |   const originalUrl = page.url()
+      54 |   const originalId = new URL(originalUrl).pathname.split('/').at(-1)!
+      55 |   await page.getByRole('button', { name: '核对并运行' }).click()
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:52:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\error-context.md
+
+  4) [edge] › tests\compute-browser\compute.spec.ts:112:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: '核对并运行' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: '核对并运行' }) with timeout 5000ms
+      - waiting for getByRole('button', { name: '核对并运行' })
+
+
+      153 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })
+      154 |   await page.getByRole('button', { name: '保存草稿' }).click()
+    > 155 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()
+          |                                                             ^
+      156 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)
+      157 |   expect(task.status()).toBe(200)
+      158 |   const params = (await task.json()).parameters
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:155:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-first\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\error-context.md
+
+  4 failed
+    [chromium] › tests\compute-browser\compute.spec.ts:32:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+    [chromium] › tests\compute-browser\compute.spec.ts:112:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+    [edge] › tests\compute-browser\compute.spec.ts:32:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+    [edge] › tests\compute-browser\compute.spec.ts:112:1 › presets, Kepler elements, CSV import and center-of-mass reset 

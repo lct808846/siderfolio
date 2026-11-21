@@ -1,0 +1,20 @@
+ Container astroagent-v17-qa-20261118t112200z-backend-run-c326ebc51d74 Creating 
+ Container astroagent-v17-qa-20261118t112200z-backend-run-c326ebc51d74 Created 
+Traceback (most recent call last):
+  File "<string>", line 13, in <module>
+  File "/usr/local/lib/python3.12/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.ForeignKeyViolation: update or delete on table "auth_users" violates foreign key constraint "auth_sessions_user_id_fkey" on table "auth_sessions"
+DETAIL:  Key (id)=(08dec4c6954f41a996d194f076a1c0b9) is still referenced from table "auth_sessions".
+
+Traceback (most recent call last):
+  File "D:\project\astroagent\.astroagent\v17-qa-setup.py", line 122, in <module>
+    {'prepare': prepare, 'database': database, 'seed': seed_accounts, 'up': up}[action]()
+  File "D:\project\astroagent\.astroagent\v17-qa-setup.py", line 108, in seed_accounts
+    compose('run', '--rm', '--no-deps', '-T', '--entrypoint', 'python',
+  File "D:\project\astroagent\.astroagent\v17-qa-setup.py", line 30, in compose
+    return subprocess.run([*COMPOSE, *args], cwd=ROOT, text=True, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['D:\\Program Files\\Docker\\resources\\bin\\docker.exe', '--host', 'npipe:////./pipe/docker_engine', 'compose', '--project-name', 'astroagent-v17-qa-20261118t112200z', '--env-file', 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\v17-20261118t112200z\\deployment.env', '-f', 'compose.yaml', '-f', 'compose.identity.yaml', '-f', 'compose.compute.yaml', '-f', 'D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\v17-20261118t112200z\\compose.qa.yaml', '--profile', 'compute', 'run', '--rm', '--no-deps', '-T', '--entrypoint', 'python', '-v', 'D:/project/astroagent/scripts/compute_schema.sql:/tmp/compute-schema.sql:ro', 'backend', '-c', "\nfrom pathlib import Path\nfrom uuid import uuid4\nimport psycopg\nfrom astroagent.auth_security import PASSWORDS\npassword = Path('/run/secrets/database_password').read_text().strip()\nschema = Path('/tmp/compute-schema.sql').read_text()\nwith psycopg.connect(host='postgres', user='astroagent', password=password, dbname='astroagent', autocommit=True) as db:\n    db.execute(schema)\n    for first in ['first', 'second']:\n        identifier = uuid4()\n        email = f'{first}@example.org'\n        db.execute('DELETE FROM public.auth_users WHERE email_key=%s AND length(id)=32', (email,))\n        db.execute('INSERT INTO public.auth_users(id,email_key,email_display,namespace,username,active,password_hash) VALUES (%s,%s,%s,%s,%s,true,%s) ON CONFLICT (email_key) DO NOTHING', (str(identifier),email,email,'aa_'+identifier.hex,first,PASSWORDS.hash('Synthetic nebula entropy 2048')))\nprint('Test-only compute schema and two synthetic accounts ready')\n"]' returned non-zero exit status 1.

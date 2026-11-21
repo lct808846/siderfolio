@@ -19,6 +19,7 @@ const requestedQuery = computed(() => props.embedded ? props.queryNumber ?? 0 : 
 const project = ref<ProjectDetail | null>(null), page = ref<PlotPage>({ datasets: [], operations: [] }), status = ref<PlotStatus | null>(null)
 const datasetId = ref(''), preview = ref<DatasetPreview | null>(null), selected = ref<PlotOperation | null>(null)
 const question = ref(''), engine = ref<'auto' | 'python' | 'gnuplot'>('auto'), consent = ref(false), reviewed = ref(false)
+const refineOpen = ref(false), refineNote = ref(''), refineConsent = ref(false)
 const appearance = ref({ width: 1600, font_size: 12, labels: 'none' as 'none' | 'row_number', x_label: '', y_label: '' })
 const axisNames: Record<string, string> = { x: '横轴', y: '纵轴', color: '颜色', legend: '图例' }
 const busy = ref(false), error = ref(''), message = ref(''), image = ref(''), resultsOpen = ref(false), sidebarOpen = ref(!props.embedded)
@@ -30,8 +31,20 @@ let navigation = 0, imageNavigation = 0, previewNavigation = 0, sourceNavigation
 const dataset = computed(() => page.value.datasets.find(d => d.id === datasetId.value))
 const currentModel = computed(() => models.modelFor(`plot:${projectId.value}`))
 const active = computed(() => page.value.operations.some(op => op.state === 'running'))
-const canPrepare = computed(() => !!dataset.value && preview.value?.dataset_id === dataset.value.id && consent.value && !pending.value && !busy.value && !active.value && !!currentModel.value && !!status.value?.storage_ready && models.configured)
+const canPrepare = computed(() => !!dataset.value && !selected.value && preview.value?.dataset_id === dataset.value.id && consent.value && !pending.value && !busy.value && !active.value && !!currentModel.value && !!status.value?.storage_ready && models.configured)
 const canUpload = computed(() => !busy.value && !!status.value?.storage_ready)
+const readinessHint = computed(() => {
+  if (busy.value) return '正在处理绘图请求，请稍候…'
+  if (!status.value?.storage_ready) return '请先点击上方「准备绘图数据库」完成初始化'
+  if (active.value) return '当前项目有正在执行的绘图任务，请稍候'
+  if (pending.value) return '存在未确认的保留请求，请先核对上方提示'
+  if (!models.configured || !currentModel.value) return '请先在设置中配置绘图规划模型'
+  if (!dataset.value) return '请先导入 CSV / TSV 或从上方选择会话查询数据'
+  if (selected.value) return '可点击上方「微调样式并重新生成方案」或「返回数据与新方案」继续绘图'
+  if (preview.value?.dataset_id !== dataset.value.id) return '正在读取数据列与样例，请稍候…'
+  if (!consent.value) return '请先勾选上方「数据外发确认」再生成绘图方案'
+  return ''
+})
 const labels = { running: '处理中', completed: '已完成', failed: '失败', interrupted: '已中断' }
 const key = (id: string) => `astroagent.plot.pending.${id}`
 function keep(value: Pending | null, id = projectId.value) {
@@ -76,7 +89,17 @@ async function selectDataset(id: string) {
   if (project === projectId.value && token === previewNavigation && id === datasetId.value) preview.value = value
 }
 async function selectOperation(op: PlotOperation) {
-  selected.value = op; datasetId.value = op.dataset_id; reviewed.value = false; exportNames.value = [...(op.files ?? [])]
+  selected.value = op; datasetId.value = op.dataset_id; reviewed.value = false; refineOpen.value = false; refineNote.value = ''; refineConsent.value = false
+  exportNames.value = [...(op.files ?? [])]
+  const req = op.request as Record<string, unknown> | undefined
+  const prevApp = req?.appearance as Record<string, unknown> | undefined
+  if (prevApp) {
+    if (typeof prevApp.width === 'number') appearance.value.width = prevApp.width
+    if (typeof prevApp.font_size === 'number') appearance.value.font_size = prevApp.font_size
+    if (prevApp.labels === 'none' || prevApp.labels === 'row_number') appearance.value.labels = prevApp.labels
+    if (typeof prevApp.x_label === 'string') appearance.value.x_label = prevApp.x_label
+    if (typeof prevApp.y_label === 'string') appearance.value.y_label = prevApp.y_label
+  }
   const project = projectId.value, token = ++imageNavigation
   if (image.value) URL.revokeObjectURL(image.value)
   image.value = ''
@@ -139,7 +162,32 @@ async function submitQuestion(value: string) {
   await plan()
   return !error.value && selected.value?.kind === 'plan' && selected.value.state === 'completed'
 }
-defineExpose({ submitQuestion, canPrepare, busy, canUpload, chooseFile: () => fileInput.value?.click() })
+async function refinePlan() {
+  const op = selected.value
+  if (!op || !refineConsent.value || busy.value || pending.value || active.value || !currentModel.value || !status.value?.storage_ready || !models.configured) return
+  const req = op.request as Record<string, unknown> | undefined
+  const baseQuestion = typeof req?.question === 'string' && req.question.trim()
+    ? req.question.trim()
+    : (op.proposal?.title ? `基于先前图形「${op.proposal.title}」重新绘制` : '重新绘制当前数据集图形')
+  const note = refineNote.value.trim()
+  const combined = note
+    ? `${baseQuestion}\n\n【样式与排版微调】\n${note}`
+    : `${baseQuestion}\n\n【样式与排版微调】\n请按更新后的排版参数（宽度 ${appearance.value.width}px、字号 ${appearance.value.font_size}pt${appearance.value.x_label ? `、横轴「${appearance.value.x_label}」` : ''}${appearance.value.y_label ? `、纵轴「${appearance.value.y_label}」` : ''}）优化图形布局并避免文字重叠。`
+  const targetDataset = op.dataset_id
+  if (preview.value?.dataset_id !== targetDataset) {
+    await action(async () => {
+      const value = await plottingApi.preview(projectId.value, targetDataset)
+      preview.value = value
+    })
+  }
+  if (preview.value?.dataset_id !== targetDataset) return
+  datasetId.value = targetDataset
+  selected.value = null
+  consent.value = true
+  question.value = combined
+  await plan()
+}
+defineExpose({ submitQuestion, canPrepare, busy, canUpload, readinessHint, chooseFile: () => fileInput.value?.click() })
 async function execute() {
   if (!selected.value?.proposal || selected.value.kind !== 'plan' || !reviewed.value || pending.value || busy.value) return
   keep({ kind: 'run', id: crypto.randomUUID(), payload: { plan_id: selected.value.id, confirm_execute: true } })
@@ -241,21 +289,77 @@ onBeforeUnmount(() => { navigation++; imageNavigation++; previewNavigation++; so
         <div v-if="status && !status.storage_ready" class="plot-setup"><h2>准备绘图记录存储</h2><p>首次使用需要在当前 PostgreSQL 中新增绘图扩展表，核心数据库版本保持不变。确认后才创建。</p><button type="button" :disabled="busy" @click="setupDialog?.showModal()">准备绘图数据库</button></div>
         <p v-if="status" class="plot-environment small" :class="{ muted: !status.execution_configured }">{{ status.message }}</p>
         <div v-if="pending" class="notice"><p>保留的{{ pending.kind === 'plan' ? '方案' : '运行' }}请求：<code>{{ pending.id }}</code>。连接中断不代表取消，不会自动重放。</p><button type="button" :disabled="busy" @click="submitPending">使用同一编号继续提交</button></div>
-        <section v-if="!dataset && !selected" class="plot-empty"><span class="eyebrow">PYTHON · GNUPLOT</span><h2>从数据到可复现的图形</h2><p>导入数据，描述图形，审阅方案与脚本，再确认隔离执行。</p><p class="small muted">支持散点、折线、直方图与误差棒；先选择下方数据来源。</p><div class="plot-empty-actions"><button type="button" class="plot-primary" :disabled="busy || !status?.storage_ready" @click="fileInput?.click()">导入 CSV / TSV</button><RouterLink :to="`/projects/${projectId}`">选择项目查询快照 →</RouterLink><RouterLink to="/">查询新数据 →</RouterLink></div></section>
-        <section v-if="dataset && !selected" class="plot-dataset-detail">
-          <div class="plot-section-heading"><h2>{{ dataset.name }}</h2><button type="button" :disabled="busy" @click="downloadData">下载输入数据</button></div>
-          <p class="small muted">{{ dataset.rows }}行 · {{ dataset.source === 'snapshot' ? dataset.provenance.origin_type === 'conversation_turn' ? '会话完整响应副本' : '完整交付快照副本' : '上传文件副本' }} · 未自动筛选</p>
-          <div class="plot-table"><table><thead><tr><th>列</th><th>类型</th><th>缺失</th><th>单位</th></tr></thead><tbody><tr v-for="col in dataset.columns" :key="col.name"><td><code>{{ col.name }}</code></td><td>{{ col.kind }}</td><td>{{ col.missing }}</td><td>{{ col.unit || '未提供' }}</td></tr></tbody></table></div>
+        <section v-if="!dataset && !selected" class="ui-empty-card plot-empty">
+          <div class="ui-empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 19h16M6 16l4-5 4 3 5-7" /><circle cx="10" cy="11" r="1.2" /><circle cx="19" cy="7" r="1.2" /></svg>
+          </div>
+          <div class="ui-pill-list" style="justify-content: center;">
+            <span class="ui-pill ui-pill-gaia">Python · Matplotlib</span>
+            <span class="ui-pill ui-pill-compute">Gnuplot</span>
+          </div>
+          <h2>从数据到可复现的科研图形</h2>
+          <p>{{ embedded ? '支持散点图、折线图、直方图与误差棒；可从上方自动载入会话 Gaia 查询数据，或导入本地 CSV / TSV。' : '支持散点图、折线图、直方图与误差棒；可导入本地 CSV / TSV 或从项目查询快照载入。' }}</p>
+          <div class="ui-step-rail" aria-label="绘图流程">
+            <span class="ui-step-pill"><span class="ui-step-num">1</span>载入数据</span>
+            <span class="ui-step-arrow" aria-hidden="true">→</span>
+            <span class="ui-step-pill"><span class="ui-step-num">2</span>描述图形</span>
+            <span class="ui-step-arrow" aria-hidden="true">→</span>
+            <span class="ui-step-pill"><span class="ui-step-num">3</span>审阅脚本</span>
+            <span class="ui-step-arrow" aria-hidden="true">→</span>
+            <span class="ui-step-pill"><span class="ui-step-num">4</span>隔离出图</span>
+          </div>
+          <div class="plot-empty-actions">
+            <button type="button" class="plot-primary" :disabled="busy || !status?.storage_ready" @click="fileInput?.click()">导入 CSV / TSV</button>
+            <RouterLink :to="`/projects/${projectId}`" class="ui-pill ui-pill-accent">选择项目查询快照 →</RouterLink>
+            <RouterLink to="/" class="ui-pill ui-pill-neutral">查询新数据 →</RouterLink>
+          </div>
+        </section>
+        <section v-if="dataset && !selected" class="plot-dataset-detail ui-card">
+          <div class="plot-section-heading">
+            <div>
+              <h2>{{ dataset.name }}</h2>
+              <div class="ui-pill-list" style="margin-top: 8px;">
+                <span class="ui-pill ui-pill-gaia">{{ dataset.rows }} 行样本</span>
+                <span class="ui-pill ui-pill-accent">{{ dataset.columns.length }} 列字段</span>
+                <span class="ui-pill ui-pill-neutral">{{ dataset.source === 'snapshot' ? dataset.provenance.origin_type === 'conversation_turn' ? '会话完整响应副本' : '完整交付快照副本' : '上传文件副本' }}</span>
+                <span class="ui-pill ui-pill-neutral">未自动筛选</span>
+              </div>
+            </div>
+            <button type="button" :disabled="busy" @click="downloadData">下载输入数据</button>
+          </div>
+          <div class="plot-table"><table><thead><tr><th>列名</th><th>数据类型</th><th>缺失数</th><th>单位</th></tr></thead><tbody><tr v-for="col in dataset.columns" :key="col.name"><td><code>{{ col.name }}</code></td><td><span class="ui-pill ui-pill-neutral">{{ col.kind }}</span></td><td>{{ col.missing }}</td><td><span v-if="col.unit" class="ui-pill ui-pill-mono">{{ col.unit }}</span><span v-else class="small muted">—</span></td></tr></tbody></table></div>
           <details v-if="preview"><summary>查看将发送给模型的数据范围</summary><p class="small">列信息、缺失数、已知单位、总行数与前{{ preview.sample_rows }}行样例，每格最多{{ preview.sample_cell_max_chars }}字符；不发送原文件。{{ preview.sample_cells_truncated ? '样例中的部分单元格已截短。' : '' }}</p><pre>{{ JSON.stringify(preview, null, 2) }}</pre></details>
           <details><summary>来源与科学限制</summary><pre>{{ JSON.stringify(dataset.provenance, null, 2) }}</pre><p v-for="warning in dataset.warnings" :key="warning" class="small">{{ warning }}</p><p class="small">输入 SHA256：<code>{{ dataset.data_sha256 }}</code></p></details>
         </section>
-        <section v-if="selected" class="plot-plan-detail">
-          <div class="plot-section-heading"><span class="eyebrow">{{ selected.kind === 'plan' ? '绘图方案' : '绘图运行' }} / {{ labels[selected.state] }}</span><button type="button" :disabled="busy" @click="action(() => selectDataset(selected!.dataset_id))">返回数据与新方案</button></div>
+        <section v-if="selected" class="plot-plan-detail ui-card">
+          <div class="plot-section-heading">
+            <div class="ui-pill-list">
+              <span class="ui-pill ui-pill-accent">{{ selected.kind === 'plan' ? '绘图方案' : '绘图运行' }}</span>
+              <span class="ui-pill" :class="selected.state === 'completed' ? 'ui-pill-success' : selected.state === 'failed' ? 'ui-pill-danger' : 'ui-pill-warning'">{{ labels[selected.state] }}</span>
+              <span v-if="selected.proposal" class="ui-pill ui-pill-gaia">{{ selected.proposal.engine }}</span>
+              <span v-if="selected.proposal" class="ui-pill ui-pill-compute">{{ ({ scatter: '散点图', line: '折线图', histogram: '直方图', errorbar: '误差棒图' })[selected.proposal.chart] }}</span>
+            </div>
+            <button type="button" :disabled="busy" @click="action(() => selectDataset(selected!.dataset_id))">返回数据与新方案</button>
+          </div>
           <p v-if="selected.error" class="notice danger">{{ selected.error }}</p>
           <p v-if="selected.imported" class="notice">导入历史未经本机执行验证；不会直接执行导入脚本。</p>
           <template v-if="selected.proposal">
-            <h2>{{ selected.proposal.title }}</h2><p>{{ selected.proposal.explanation }}</p>
-          <dl class="plot-facts"><dt>引擎 / 图种</dt><dd>{{ selected.proposal.engine }} / {{ ({ scatter: '散点图', line: '折线图', histogram: '直方图', errorbar: '误差棒图' })[selected.proposal.chart] }}</dd><dt>数据列</dt><dd>{{ selected.proposal.columns.join(' · ') }}</dd><template v-for="(label, axis) in selected.proposal.axes" :key="axis"><dt>{{ axisNames[axis] || axis }}</dt><dd>{{ label }}</dd></template><dt>筛选与处理</dt><dd>{{ selected.proposal.filters.length ? selected.proposal.filters.join('；') : '方案未列出额外筛选' }}</dd></dl>
+            <h2>{{ selected.proposal.title }}</h2>
+            <p class="small muted">{{ selected.proposal.explanation }}</p>
+            <div class="ui-pill-list">
+              <span class="small muted" style="margin-right: 4px;">使用列：</span>
+              <span v-for="col in selected.proposal.columns" :key="col" class="ui-pill ui-pill-mono">{{ col }}</span>
+            </div>
+            <dl class="ui-param-grid">
+              <div v-for="(label, axis) in selected.proposal.axes" :key="axis" class="ui-param-tile">
+                <dt>{{ axisNames[axis] || axis }}</dt>
+                <dd>{{ label }}</dd>
+              </div>
+              <div class="ui-param-tile">
+                <dt>筛选与缺失处理</dt>
+                <dd>{{ selected.proposal.filters.length ? selected.proposal.filters.join('；') : '方案未列出额外筛选' }}</dd>
+              </div>
+            </dl>
             <p v-for="warning in selected.proposal.warnings" :key="warning" class="notice">{{ warning }}</p>
             <details>
 <summary>原始需求与模型用量</summary><pre>{{ JSON.stringify(selected.request, null, 2) }}
@@ -266,9 +370,24 @@ onBeforeUnmount(() => { navigation++; imageNavigation++; previewNavigation++; so
             <pre class="plot-code"><code>{{ selected.proposal.script }}</code></pre><p class="small muted">脚本 SHA256：<code>{{ selected.script_sha256 }}</code></p>
 </details>
             <template v-if="selected.kind === 'plan' && selected.state === 'completed' && !selected.imported">
-              <label class="plot-check"><input v-model="reviewed" type="checkbox" :disabled="busy" />我已核对脚本、数据列、单位与筛选，确认执行此方案</label>
+              <label class="plot-check plot-consent-card" :class="{ 'is-checked': reviewed }"><input v-model="reviewed" type="checkbox" :disabled="busy" />我已核对脚本、数据列、单位与筛选，确认执行此方案</label>
               <button type="button" class="plot-primary" :disabled="busy || active || !!pending || !reviewed || !status?.execution_configured" @click="execute">确认隔离执行</button>
             </template>
+            <details v-if="!selected.imported && selected.state === 'completed'" :open="refineOpen" class="plot-refine-panel" @toggle="refineOpen = ($event.target as HTMLDetailsElement).open">
+              <summary>微调样式与标注并重新生成方案</summary>
+              <div class="plot-refine-body">
+                <p class="small muted">保留原始绘图需求与数据集，快速调整色带、坐标范围、字号或留白后重新规划脚本。</p>
+                <div class="plot-appearance">
+                  <label>图片宽度<select v-model.number="appearance.width" :disabled="busy"><option :value="1200">1200 px</option><option :value="1600">1600 px</option><option :value="2000">2000 px</option><option :value="2400">2400 px</option></select></label>
+                  <label>基础字号<select v-model.number="appearance.font_size" :disabled="busy"><option :value="10">10 pt</option><option :value="12">12 pt</option><option :value="14">14 pt</option><option :value="16">16 pt</option><option :value="18">18 pt</option></select></label>
+                  <label>横轴名称与单位<input v-model="appearance.x_label" maxlength="80" placeholder="保持自动或自定义" :disabled="busy" /></label>
+                  <label>纵轴名称与单位<input v-model="appearance.y_label" maxlength="80" placeholder="保持自动或自定义" :disabled="busy" /></label>
+                </div>
+                <label class="plot-refine-note">补充微调说明（可选）<textarea v-model="refineNote" rows="2" maxlength="1000" placeholder="例如：色带改为 plasma，纵轴限定 4–16 mag，图例移至左下角，底部留白加大。" :disabled="busy" /></label>
+                <label class="plot-check plot-consent-card" :class="{ 'is-checked': refineConsent }"><input v-model="refineConsent" type="checkbox" :disabled="busy" />确认将微调需求与数据样例发送给所选外部模型重新生成方案</label>
+                <button type="button" class="plot-primary" :disabled="busy || active || !!pending || !refineConsent || !currentModel || !status?.storage_ready || !models.configured" @click="refinePlan">生成微调方案</button>
+              </div>
+            </details>
             <details v-if="selected.kind === 'run'"><summary>运行环境与记录</summary><pre>{{ JSON.stringify(selected.runtime, null, 2) }}</pre><p class="small">创建：{{ selected.created_at }}<br />结束：{{ selected.completed_at || '未确认' }}</p></details>
           </template>
         </section>
@@ -285,7 +404,7 @@ onBeforeUnmount(() => { navigation++; imageNavigation++; previewNavigation++; so
             <label>纵轴名称与单位<input v-model="appearance.y_label" maxlength="80" placeholder="自动使用列名和已知单位" /></label>
             <p class="small muted">默认不逐点显示长编号；完整编号保留在数据表中。排版设置会写入方案请求，执行前仍可核对脚本和科学条件。</p>
           </fieldset>
-          <label class="plot-check"><input v-model="consent" type="checkbox" :disabled="busy || preview?.dataset_id !== dataset.id" />确认将需求、列信息和上方样例发送给所选外部模型，生成方案可能产生费用</label>
+          <label class="plot-check plot-consent-card" :class="{ 'is-checked': consent }"><input v-model="consent" type="checkbox" :disabled="busy || preview?.dataset_id !== dataset.id" /><span><b>数据外发确认（必选）：</b>确认将需求、列信息和上方样例发送给所选外部模型，生成方案可能产生费用</span></label>
           <button v-if="!embedded" type="button" class="plot-primary" :disabled="busy || active || !!pending || preview?.dataset_id !== dataset.id || !consent || !question.trim() || !currentModel || !status?.storage_ready || !models.configured" @click="plan">生成绘图方案</button>
         </section>
       </div>
@@ -295,6 +414,7 @@ onBeforeUnmount(() => { navigation++; imageNavigation++; previewNavigation++; so
       <div class="workspace-pane-body">
       <template v-if="image && selected?.kind === 'run' && selected.state === 'completed'">
         <button type="button" class="plot-image" aria-label="放大绘图" @click="zoom?.showModal()"><img :src="image" :alt="selected.proposal?.title || '绘图结果'" /></button><p class="small muted">点击图像放大；模型脚本生成结果需要人工核对。</p>
+        <button v-if="!selected.imported" type="button" class="plot-results-refine" @click="refineOpen = true">微调样式并重新生成方案</button>
         <h3>选择保存内容</h3><div v-for="name in selected.files" :key="name" class="plot-export-row"><label class="plot-check"><input v-model="exportNames" type="checkbox" :value="name" />{{ name }}</label><button type="button" :disabled="busy" :aria-label="`下载${name}`" @click="download(name)">下载</button></div>
         <button type="button" class="plot-primary" :disabled="busy || !exportNames.length" @click="bundle">保存所选文件 ZIP</button>
       </template>

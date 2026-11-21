@@ -91,7 +91,7 @@ test('settings refresh failure clears the previous ready status', async ({ page 
     else await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'database_unavailable', message: '合成读取失败', retryable: true } }) })
   })
   await page.goto('/settings?section=general')
-  await expect(page.getByText('业务数据库已就绪')).toBeVisible()
+  await expect(page.getByText('业务数据库已就绪', { exact: true })).toBeVisible()
   // The redesigned settings page reads status on entry; browser refresh is the
   // available retry trigger after the separate status-refresh control was removed.
   await page.reload()
@@ -132,7 +132,7 @@ test('project navigation survives direct load and refresh without sending reques
   page.on('request', entry => {
     if (entry.method() === 'POST' && /\/turns$|\/rag\/(answers|indexes)$/.test(new URL(entry.url()).pathname)) writes++
   })
-  for (const [suffix, label] of [['', '项目记录'], ['/overview', '来源关联'], ['/workflows', '科研流程'], ['/knowledge', '本地知识库'], ['/rag', '文献问答']]) {
+  for (const [suffix, label] of [['', '项目主页'], ['/overview', '来源关联'], ['/workflows', '科研流程'], ['/knowledge', '本地知识库'], ['/rag', '文献问答']]) {
     await page.goto(`/projects/${project.id}${suffix}`)
     const link = page.getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: label, exact: true })
     await expect(link).toHaveAttribute('aria-current', 'page')

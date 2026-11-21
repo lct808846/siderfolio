@@ -1,0 +1,82 @@
+ Image astroagent-qa-frontend:20261121t092707z Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.58kB 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 563B done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#3 DONE 2.2s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 682B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 47.48kB 0.0s done
+#5 DONE 0.0s
+
+#6 [build 1/6] FROM docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#6 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.0s done
+#6 DONE 0.0s
+
+#7 [build 2/6] WORKDIR /app
+#7 CACHED
+
+#8 [build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#8 CACHED
+
+#9 [build 4/6] RUN npm ci
+#9 CACHED
+
+#10 [build 5/6] COPY frontend ./
+#10 DONE 0.1s
+
+#11 [build 6/6] RUN npm run build
+#11 0.322 
+#11 0.322 > astroagent-workbench@1.7.0-dev.0 build
+#11 0.322 > vue-tsc --noEmit && vite build
+#11 0.322 
+#11 6.645 vite v7.3.8 building client environment for production...
+#11 6.761 transforming...
+#11 9.792 ✓ 179 modules transformed.
+#11 10.10 rendering chunks...
+#11 10.11 computing gzip size...
+#11 10.13 dist/index.html                   0.44 kB │ gzip:   0.34 kB
+#11 10.13 dist/assets/index-BSNJZomq.css  315.35 kB │ gzip:  53.22 kB
+#11 10.13 dist/assets/index-DKPPDYU8.js   716.46 kB │ gzip: 246.48 kB
+#11 10.13 
+#11 10.13 (!) Some chunks are larger than 500 kB after minification. Consider:
+#11 10.13 - Using dynamic import() to code-split the application
+#11 10.13 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+#11 10.13 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+#11 10.13 ✓ built in 3.46s
+#11 DONE 10.2s
+
+#7 [build 2/6] WORKDIR /app
+#7 CACHED
+
+#12 [runtime 3/4] COPY --from=build --chown=node:node /app/dist ./dist
+#12 DONE 0.0s
+
+#13 [runtime 4/4] COPY --chown=node:node frontend/server.mjs ./server.mjs
+#13 DONE 0.1s
+
+#14 exporting to image
+#14 exporting layers 0.1s done
+#14 exporting manifest sha256:dcedd5a9eeb06ab945c26b113a037c40ecfa17d6c2592ff7f7c7e1ead7437a17 0.0s done
+#14 exporting config sha256:6ce3eee4ce617f6240d22b0cb939a4c7b2aa7bbba8dff0f89808488978b9188e 0.0s done
+#14 exporting attestation manifest sha256:b1e0760d2bb48e04b7c4d04aeadfd935986903bef39305f3448d49cd33c0226b 0.0s done
+#14 exporting manifest list sha256:6f6b79d529ef5dbffdcdb60063ef5c72c0783b8fc2450b4954e4b6cbaf8f53b8 0.0s done
+#14 naming to docker.io/library/astroagent-qa-frontend:20261121t092707z done
+#14 unpacking to docker.io/library/astroagent-qa-frontend:20261121t092707z 0.0s done
+#14 DONE 0.2s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ Image astroagent-qa-frontend:20261121t092707z Built 

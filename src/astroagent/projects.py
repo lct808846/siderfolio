@@ -101,6 +101,62 @@ class ProjectRepository:
         ).fetchone():
             raise ServiceError(409, "project_busy", "项目中有运行中的会话，请稍后重试。")
 
+    @staticmethod
+    def _has_meta_table(db):
+        if getattr(db, "dialect", None) == "postgresql":
+            return bool(db.execute("SELECT to_regclass('astroagent_meta')").fetchone()[0])
+        return bool(
+            db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='astroagent_meta'"
+            ).fetchone()
+        )
+
+    def _default_id(self, db):
+        if not self._has_meta_table(db):
+            return None
+        row = db.execute(
+            "SELECT value FROM astroagent_meta WHERE key='default_workspace_project_id'"
+        ).fetchone()
+        return row[0] if row else None
+
+    def default_project(self):
+        with self.repo.connection() as db:
+            default_id = self._default_id(db)
+            if not default_id:
+                return None
+            row = db.execute("SELECT record FROM projects WHERE id=?", (default_id,)).fetchone()
+            return json.loads(row[0]) if row else None
+
+    def ensure_default(self):
+        with self.repo.connection() as db, self.repo.transaction(db):
+            if not self._has_meta_table(db):
+                db.execute(
+                    "CREATE TABLE IF NOT EXISTS astroagent_meta "
+                    "(key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+                )
+            default_id = self._default_id(db)
+            if default_id:
+                row = db.execute("SELECT record FROM projects WHERE id=?", (default_id,)).fetchone()
+                if row:
+                    return json.loads(row[0])
+            value = Project(
+                id=str(uuid4()),
+                name="个人空间",
+                description="默认工作区，用于直接存放未归入具体课题项目的绘图、文献与科研流程。",
+                revision=0,
+                created_at=utc_now(),
+                updated_at=utc_now(),
+            ).model_dump()
+            db.execute("INSERT INTO projects VALUES (?,?)", (value["id"], encode(value)))
+            db.execute(
+                "INSERT INTO astroagent_meta (key,value) "
+                "VALUES ('default_workspace_project_id',?) "
+                "ON CONFLICT (key) DO UPDATE SET value=excluded.value",
+                (value["id"],),
+            )
+            self._budget(db)
+            return value
+
     def list(self):
         with self.repo.connection() as db:
             values = [json.loads(r[0]) for r in db.execute("SELECT record FROM projects")]
@@ -108,7 +164,13 @@ class ProjectRepository:
 
     def create(self, request):
         with self.repo.connection() as db, self.repo.transaction(db):
-            if db.execute("SELECT count(*) FROM projects").fetchone()[0] >= 20:
+            default_id = self._default_id(db)
+            count = (
+                db.execute("SELECT count(*) FROM projects WHERE id!=?", (default_id,)).fetchone()[0]
+                if default_id
+                else db.execute("SELECT count(*) FROM projects").fetchone()[0]
+            )
+            if count >= 20:
                 raise ServiceError(409, "project_limit", "最多保存20个项目。")
             value = Project(
                 id=str(uuid4()),
@@ -195,6 +257,10 @@ class ProjectRepository:
         with self.repo.connection() as db, self.repo.transaction(db):
             self._project(db, identifier, revision)
             self._idle(db, identifier)
+            if getattr(db, "dialect", None) == "postgresql":
+                from astroagent.compute_tasks import remove_project
+
+                remove_project(db, identifier)
             for row in db.execute(
                 "SELECT conversation_id FROM project_conversations WHERE project_id=?",
                 (identifier,),
@@ -208,6 +274,8 @@ class ProjectRepository:
 
             clear_index(db, project_id=identifier)
             db.execute("DELETE FROM projects WHERE id=?", (identifier,))
+            if self._default_id(db) == identifier:
+                db.execute("DELETE FROM astroagent_meta WHERE key='default_workspace_project_id'")
 
     def membership(self, identifier, conversation_id, request, *, remove=False):
         with self.repo.connection() as db, self.repo.transaction(db):

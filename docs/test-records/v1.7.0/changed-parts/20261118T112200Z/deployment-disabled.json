@@ -1,0 +1,26 @@
+{
+  "healthy": {
+    "backend": "healthy",
+    "frontend": "healthy",
+    "compute-worker": "healthy",
+    "postgres": "healthy",
+    "ollama": "healthy",
+    "plot-executor": "healthy",
+    "ingress": "healthy"
+  },
+  "entry_checks": {
+    "/login": 200,
+    "/activate": 200,
+    "/api/v1/auth/session": 401
+  },
+  "compute_enabled": false,
+  "worker_heartbeat": true,
+  "database_and_existing_service_mounts_preserved": true,
+  "images": {
+    "backend": "sha256:e079e2af7ac5d8e1638ae0d40d2f80562b563215e0825e0de0b1b01edd8da98f",
+    "frontend": "sha256:c090003b7b434f1278f9913c049466450686f82fb41ee9c5beda7cec82e33e07",
+    "compute-worker": "sha256:154b877eac7eb5e1188d135160c7b7ed0ff9e39ae8f1c55dfc4ae8c4bd5867b8"
+  },
+  "schema_applied": false,
+  "observed_schema": false
+}

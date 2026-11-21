@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { api, ApiError } from '../api'
-import type { ChatAttachment, Conversation, ConversationDetail, Turn } from '../types'
+import type { ArchivedConversation, ChatAttachment, Conversation, ConversationDetail, Turn } from '../types'
 
 export const useWorkbench = defineStore('workbench', {
-  state: () => ({ conversations: [] as Conversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[] } }),
+  state: () => ({ conversations: [] as Conversation[], archived: [] as ArchivedConversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[] } }),
   getters: {
     selectedTurn: state => state.turns.find(t => t.turn_id === state.selectedTurnId) || null,
     running: state => state.pending || state.turns.some(t => t.execution_status === 'running'),
@@ -26,6 +26,27 @@ export const useWorkbench = defineStore('workbench', {
           this.current.title = saved.title; this.current.metadata_revision = saved.metadata_revision
         }
       }
+    },
+    async refreshArchived() {
+      this.archived = await api.archived()
+    },
+    async archiveConversation(id: string) {
+      const archived = await api.archive(id)
+      this.conversations = this.conversations.filter(item => item.id !== id)
+      this.archived = [archived, ...this.archived.filter(item => item.id !== id)]
+      if (this.current?.id === id) {
+        this.loadToken++
+        this.current = null
+        this.turns = []
+        this.selectedTurnId = ''
+      }
+      return archived
+    },
+    async unarchiveConversation(id: string) {
+      const restored = await api.unarchive(id)
+      this.archived = this.archived.filter(item => item.id !== id)
+      await this.refreshList()
+      return restored
     },
     async load(id: string) {
       const token = ++this.loadToken
@@ -114,6 +135,7 @@ export const useWorkbench = defineStore('workbench', {
       const request = { id, message: message.trim(), requestId: crypto.randomUUID(), revision: this.current.revision, model, attachments: attachments.map(item => ({ ...item, warnings: [...(item.warnings || [])] })) }
       try {
         const turn = await api.submit(id, request.message, request.requestId, request.revision, request.model, request.attachments)
+        this.archived = this.archived.filter(item => item.id !== id)
         if (this.current?.id === id) { this.selectedTurnId = turn.turn_id; await this.load(id) }
         await this.refreshList()
       } catch (error) {

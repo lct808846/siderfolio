@@ -17,9 +17,16 @@ class GaiaFieldParameters(Contract):
     ra_deg: FiniteNumber | None = Field(default=None, ge=0, lt=360)
     dec_deg: FiniteNumber | None = Field(default=None, ge=-90, le=90)
     radius_arcmin: FiniteNumber = Field(gt=0, le=30)
-    limit: StrictInt = Field(ge=1, le=100)
+    limit: StrictInt = Field(ge=1, le=500)
     ruwe_max: FiniteNumber | None = Field(default=None, gt=0, le=10)
     parallax_snr_min: FiniteNumber | None = Field(default=None, gt=0, le=1000)
+    parallax_min: FiniteNumber | None = Field(default=None, ge=-100, le=1000)
+    parallax_max: FiniteNumber | None = Field(default=None, ge=-100, le=1000)
+    pmra_min: FiniteNumber | None = Field(default=None, ge=-10000, le=10000)
+    pmra_max: FiniteNumber | None = Field(default=None, ge=-10000, le=10000)
+    pmdec_min: FiniteNumber | None = Field(default=None, ge=-10000, le=10000)
+    pmdec_max: FiniteNumber | None = Field(default=None, ge=-10000, le=10000)
+    g_mag_max: FiniteNumber | None = Field(default=None, ge=-5, le=25)
     estimate_distance: StrictBool = False
     plots: list[PlotKind] = Field(default_factory=list, max_length=3)
 
@@ -31,6 +38,24 @@ class GaiaFieldParameters(Contract):
             self.object_name = ObjectQuery(object_name=self.object_name).object_name
         elif self.object_name is not None or self.ra_deg is None or self.dec_deg is None:
             raise ValueError("坐标模式要求完整ICRS坐标，且不能提供名称")
+        if (
+            self.parallax_min is not None
+            and self.parallax_max is not None
+            and self.parallax_min > self.parallax_max
+        ):
+            raise ValueError("视差下限不能大于上限")
+        if (
+            self.pmra_min is not None
+            and self.pmra_max is not None
+            and self.pmra_min > self.pmra_max
+        ):
+            raise ValueError("pmRA 下限不能大于上限")
+        if (
+            self.pmdec_min is not None
+            and self.pmdec_max is not None
+            and self.pmdec_min > self.pmdec_max
+        ):
+            raise ValueError("pmDec 下限不能大于上限")
         if len(set(self.plots)) != len(self.plots):
             raise ValueError("图种不能重复")
         self.plots = sorted(self.plots)

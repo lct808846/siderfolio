@@ -1,0 +1,107 @@
+
+Running 4 tests using 1 worker
+
+(node:27992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\compute-browser\compute.spec.ts:54:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (17.3s)
+(node:26212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\compute-browser\compute.spec.ts:132:1 › presets, Kepler elements, CSV import and center-of-mass reset (4.0s)
+(node:30300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [edge] › tests\compute-browser\compute.spec.ts:54:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (6.2s)
+(node:10940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 [edge] › tests\compute-browser\compute.spec.ts:132:1 › presets, Kepler elements, CSV import and center-of-mass reset (6.2s)
+
+
+  1) [chromium] › tests\compute-browser\compute.spec.ts:54:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: locator.selectOption: Error: strict mode violation: getByLabel('切换当前科研空间') resolved to 2 elements:
+        1) <select aria-label="切换当前科研空间" value="e3f69606-9ab4-4059-bf05-b5e91be160f7">…</select> aka getByRole('complementary', { name: '计算任务列表' }).getByLabel('切换当前科研空间')
+        2) <select aria-label="切换当前科研空间" value="e3f69606-9ab4-4059-bf05-b5e91be160f7">…</select> aka getByRole('main').getByLabel('切换当前科研空间')
+
+    Call log:
+      - waiting for getByLabel('切换当前科研空间')
+
+
+      122 |   await page.setViewportSize({ width: 1440, height: 900 })
+      123 |   const space = page.getByLabel('切换当前科研空间')
+    > 124 |   await space.selectOption({ label: '个人空间（默认）' })
+          |               ^
+      125 |   await expect(page).toHaveURL(origin + '/compute')
+      126 |   await expect(page.getByText('此项目还没有计算任务。')).toBeVisible()
+      127 |   await space.selectOption(project.id)
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:124:15
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-recheck\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-recheck\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\error-context.md
+
+  2) [edge] › tests\compute-browser\compute.spec.ts:54:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected: "http://127.0.0.1:5287/"
+    Received: "http://127.0.0.1:5287/login"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × locator resolved to <html lang="zh-CN" data-glass="on" data-ambient="on" data-theme="emerald" data-font-scale="md" data-motion="normal" data-radius="rounded" data-theme-mode="light" data-reading-font="sans" data-density="comfortable" data-reading-width="standard">…</html>
+           - unexpected value "http://127.0.0.1:5287/login"
+
+
+      43 |   await page.getByLabel('密码', { exact: true }).fill('[synthetic password redacted]')
+      44 |   await page.getByRole('button', { name: '继续', exact: true }).click()
+    > 45 |   await expect(page).toHaveURL(origin + '/')
+         |                      ^
+      46 |   const csrf = (await (await page.request.get('/api/v1/auth/csrf')).json()).csrf_token
+      47 |   const created = await page.request.post('/api/v1/projects', {
+      48 |     data: { name }, headers: { Origin: origin, 'X-CSRF-Token': csrf },
+        at createProject (D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:45:22)
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:55:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-recheck\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-recheck\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\error-context.md
+
+  3) [edge] › tests\compute-browser\compute.spec.ts:132:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected: "http://127.0.0.1:5287/"
+    Received: "http://127.0.0.1:5287/login"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × locator resolved to <html lang="zh-CN" data-glass="on" data-ambient="on" data-theme="emerald" data-font-scale="md" data-motion="normal" data-radius="rounded" data-theme-mode="light" data-reading-font="sans" data-density="comfortable" data-reading-width="standard">…</html>
+           - unexpected value "http://127.0.0.1:5287/login"
+
+
+      43 |   await page.getByLabel('密码', { exact: true }).fill('[synthetic password redacted]')
+      44 |   await page.getByRole('button', { name: '继续', exact: true }).click()
+    > 45 |   await expect(page).toHaveURL(origin + '/')
+         |                      ^
+      46 |   const csrf = (await (await page.request.get('/api/v1/auth/csrf')).json()).csrf_token
+      47 |   const created = await page.request.post('/api/v1/projects', {
+      48 |     data: { name }, headers: { Origin: origin, 'X-CSRF-Token': csrf },
+        at createProject (D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:45:22)
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:133:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-recheck\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-recheck\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\error-context.md
+
+  3 failed
+    [chromium] › tests\compute-browser\compute.spec.ts:54:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+    [edge] › tests\compute-browser\compute.spec.ts:54:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+    [edge] › tests\compute-browser\compute.spec.ts:132:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+  1 passed (38.8s)

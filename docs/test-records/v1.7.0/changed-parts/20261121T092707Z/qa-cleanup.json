@@ -1,0 +1,11 @@
+{
+  "project": "astroagent-petar-qa-20261121t092707z",
+  "temporary_lab_removed": true,
+  "remaining_test_volumes": 0,
+  "removed_containers": 5,
+  "removed_test_volumes": [
+    "astroagent-petar-qa-20261121t092707z_compute-spool",
+    "astroagent-petar-qa-20261121t092707z_postgres_data"
+  ],
+  "remaining_test_containers": 0
+}

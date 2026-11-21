@@ -1,0 +1,21 @@
+
+> astroagent-workbench@1.7.0 typecheck
+> vue-tsc --noEmit
+
+
+> astroagent-workbench@1.7.0 lint
+> eslint . --max-warnings 0
+
+
+> astroagent-workbench@1.7.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/project/astroagent/frontend
+
+
+ Test Files  10 passed (10)
+      Tests  47 passed (47)
+   Start at  19:19:51
+   Duration  4.92s (transform 3.14s, setup 0ms, import 7.11s, tests 554ms, environment 24.23s)
+

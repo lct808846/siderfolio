@@ -1,0 +1,38 @@
+{
+  "project": "astroagent-petar-qa-20261121t092707z",
+  "orbit_tolerance": 1e-06,
+  "checks": {
+    "cancel_live_native_child_and_release_slot": {
+      "passed": true,
+      "detail": {
+        "state": "cancelled",
+        "elapsed_seconds": 3.811,
+        "native_child_seen": true,
+        "remaining_attempt_directories": 0,
+        "next_job": "succeeded"
+      },
+      "seconds": 8.754
+    },
+    "real_120_second_timeout_and_release_slot": {
+      "passed": true,
+      "detail": {
+        "state": "failed",
+        "elapsed_seconds": 122.697,
+        "native_child_seen": true,
+        "remaining_attempt_directories": 0,
+        "next_job": "succeeded"
+      },
+      "seconds": 127.875
+    },
+    "worker_unavailable_preserves_draft": {
+      "passed": true,
+      "detail": {
+        "saved_while_offline": true,
+        "ready_after_restart": true,
+        "result": "succeeded"
+      },
+      "seconds": 13.153
+    }
+  },
+  "image": "sha256:e21540c937530a69c2f09a340bc52f25525510b3ba0ea8e7348b4d5803ef9506"
+}

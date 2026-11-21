@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from astroagent.api.chat import get_agent, get_agent_for_model
 from astroagent.conversation_schemas import (
+    ArchivedConversation,
     ArtifactInfo,
     ArtifactRequest,
     Conversation,
@@ -45,13 +46,30 @@ def create(request: ConversationCreate, service: Service):
 
 
 @router.get("", response_model=list[Conversation])
-def list_conversations(service: Service):
-    return service.repository.list()
+def list_conversations(service: Service, include_archived: bool = False):
+    return service.repository.list(include_archived=include_archived)
+
+
+@router.get("/archived", response_model=list[ArchivedConversation])
+def list_archived_conversations(service: Service):
+    return service.repository.list_archived()
 
 
 @router.get("/{conversation_id}", response_model=ConversationDetail)
 def detail(conversation_id: UUID, service: Service):
     return service.repository.detail(str(conversation_id))
+
+
+@router.post("/{conversation_id}/archive", response_model=ArchivedConversation)
+def archive(conversation_id: UUID, service: Service):
+    with service.gate:
+        return service.repository.archive(str(conversation_id))
+
+
+@router.delete("/{conversation_id}/archive", response_model=Conversation)
+def unarchive(conversation_id: UUID, service: Service):
+    with service.gate:
+        return service.repository.unarchive(str(conversation_id))
 
 
 @router.patch("/{conversation_id}", response_model=Conversation)

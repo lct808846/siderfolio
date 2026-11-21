@@ -394,10 +394,6 @@ onMounted(() => { void loadSessions() })
           <div><h4>多因素验证</h4><p>账号登录与敏感操作的双重验证状态</p></div>
           <span class="account-detail-value">{{ identityUser?.totp_enabled ? '已启用' : '未启用' }}</span>
         </div>
-        <div class="settings-row">
-          <div><h4>个人资料与用量</h4><p>管理个人头像，查看模型调用与科研工作台使用统计</p></div>
-          <RouterLink to="/profile" class="account-value-action">查看个人资料 ›</RouterLink>
-        </div>
       </section>
     </template>
 

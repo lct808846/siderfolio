@@ -1,0 +1,368 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\api\compute.py:3:1
+   |
+ 1 |   """Project-scoped N-body drafts, execution control and immutable results."""
+ 2 |
+ 3 | / import json
+ 4 | | from contextlib import contextmanager
+ 5 | | from uuid import UUID
+ 6 | |
+ 7 | | from fastapi import APIRouter, Query, Request, Response
+ 8 | | from langchain_core.messages import HumanMessage, SystemMessage
+ 9 | | from psycopg.errors import UndefinedTable
+10 | |
+11 | | from astroagent import compute_tasks as queue
+12 | | from astroagent.api.conversations import Service
+13 | | from astroagent.compute_exports import experiment_zip, plot_svg, snapshot_csv
+14 | | from astroagent.compute_schemas import (
+15 | |     ComputeConfirm, ComputeDescribe, ComputeDraft, ComputeEdit, ComputeList, ComputeProposal,
+16 | |     ComputeTask, PlotKind, SimulationParameters, SimulationResult, binary_template,
+17 | | )
+18 | | from astroagent.config import Settings
+19 | | from astroagent.errors import ServiceError
+20 | | from astroagent.execution import MODEL_TASK_SLOTS
+21 | | from astroagent.model_client import chat_model
+22 | | from astroagent.schemas import ErrorResponse
+   | |____________________________________________^
+23 |
+24 |   router = APIRouter(
+   |
+help: Organize imports
+   |
+14 | from astroagent.compute_schemas import (
+   -     ComputeConfirm, ComputeDescribe, ComputeDraft, ComputeEdit, ComputeList, ComputeProposal,
+   -     ComputeTask, PlotKind, SimulationParameters, SimulationResult, binary_template,
+15 +     ComputeConfirm,
+16 +     ComputeDescribe,
+17 +     ComputeDraft,
+18 +     ComputeEdit,
+19 +     ComputeList,
+20 +     ComputeProposal,
+21 +     ComputeTask,
+22 +     PlotKind,
+23 +     SimulationParameters,
+24 +     SimulationResult,
+25 +     binary_template,
+26 | )
+   |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\api\compute.py:115:101
+    |
+114 | @router.post("/{task_id}/confirm", response_model=ComputeTask)
+115 | def confirm(project_id: UUID, task_id: UUID, body: ComputeConfirm, request: Request, service: Service):
+    |                                                                                                     ^^^
+116 |     with access(request, project_id, mutation=True) as (db, owner):
+117 |         return queue.confirm(db, queue.task(db, owner, task_id, update=True), body)
+    |
+
+E501 Line too long (104 > 100)
+   --> src\astroagent\api\compute.py:163:101
+    |
+161 |         plot_svg(published(request, project_id, task_id), kind, sample),
+162 |         media_type="image/svg+xml",
+163 |         headers={"Cache-Control": "private, no-store", "Content-Security-Policy": "default-src 'none'"},
+    |                                                                                                     ^^^^
+164 |     )
+    |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\api\compute.py:175:101
+    |
+173 |         snapshot_csv(published(request, project_id, task_id)),
+174 |         media_type="text/csv",
+175 |         headers={"Content-Disposition": f'attachment; filename="astroagent-snapshots-{task_id}.csv"'},
+    |                                                                                                     ^^
+176 |     )
+    |
+
+B008 Do not perform function call `Query` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> src\astroagent\api\compute.py:182:29
+    |
+180 | def archive(
+181 |     project_id: UUID, task_id: UUID, request: Request, service: Service,
+182 |     plots: list[PlotKind] = Query(default=[], max_length=3),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+183 | ):
+184 |     return Response(
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\api\compute.py:187:101
+    |
+185 |         experiment_zip(published(request, project_id, task_id), plots),
+186 |         media_type="application/zip",
+187 |         headers={"Content-Disposition": f'attachment; filename="astroagent-experiment-{task_id}.zip"'},
+    |                                                                                                     ^^^
+188 |     )
+    |
+
+E501 Line too long (108 > 100)
+  --> src\astroagent\compute_exports.py:22:101
+   |
+20 |     samples = row["result"]["samples"]
+21 |     particles = row["parameters"]["particles"]
+22 |     selected = max(0, min(len(samples) - 1, sample_index if sample_index is not None else len(samples) - 1))
+   |                                                                                                     ^^^^^^^^
+23 |     if kind == "energy":
+24 |         relative = samples[0]["energy_relative"] is not None
+   |
+
+E501 Line too long (106 > 100)
+  --> src\astroagent\compute_exports.py:33:95
+   |
+31 |         series = [[tuple(sample["particles"][index]["position"][:2]) for sample in samples]
+32 |                   for index in range(len(particles))]
+33 |         title = "XY 轨迹" if kind == "trajectory" else f"XY 位置快照 · {samples[selected]['time']:.5g} yr"
+   |                                                                                                     ^^^^^^
+34 |         xlabel, ylabel = "X (AU)", "Y (AU)"
+   |
+
+E501 Line too long (102 > 100)
+  --> src\astroagent\compute_exports.py:48:101
+   |
+47 |     def coordinates(point):
+48 |         return left + (point[0] - x0) / xspan * width, top + height - (point[1] - y0) / yspan * height
+   |                                                                                                     ^^
+49 |
+50 |     pieces = [
+   |
+
+E501 Line too long (108 > 100)
+  --> src\astroagent\compute_exports.py:67:101
+   |
+65 |     pieces.extend([
+66 |         f'<text x="{left + width / 2:g}" y="386" text-anchor="middle">{escape(xlabel)}</text>',
+67 |         f'<text x="20" y="196" text-anchor="middle" transform="rotate(-90 20 196)">{escape(ylabel)}</text>',
+   |                                                                                                     ^^^^^^^^
+68 |     ])
+69 |     for index, line in enumerate(series):
+   |
+
+E501 Line too long (126 > 100)
+  --> src\astroagent\compute_exports.py:74:101
+   |
+72 |         if kind == "snapshot":
+73 |             x, y = coordinates(line[selected])
+74 |             pieces.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="4.5" fill="{color}"><title>{escape(label)}</title></circle>')
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+75 |         else:
+76 |             points = " ".join(f"{x:.2f},{y:.2f}" for x, y in map(coordinates, line))
+   |
+
+E501 Line too long (147 > 100)
+  --> src\astroagent\compute_exports.py:77:101
+   |
+75 | …
+76 | … in map(coordinates, line))
+77 | …"{color}" stroke-width="1.5" points="{points}"><title>{escape(label)}</title></polyline>')
+   |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+78 | …
+79 | …
+   |
+
+E501 Line too long (104 > 100)
+  --> src\astroagent\compute_exports.py:97:101
+   |
+95 |          "vx_AU_per_yr", "vy_AU_per_yr", "vz_AU_per_yr"],
+96 |         ((sample["time"], particle["id"], particle["mass"], *state["position"], *state["velocity"])
+97 |          for sample in samples for particle, state in zip(particles, sample["particles"], strict=True)),
+   |                                                                                                     ^^^^
+98 |     )
+   |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\compute_exports.py:117:101
+    |
+115 |             ["time_yr", "energy", "Lx", "Ly", "Lz", "energy_delta", "energy_relative",
+116 |              "angular_delta", "angular_relative"],
+117 |             ((s["time"], s["energy"], *s["angular_momentum"], s["energy_delta"], s["energy_relative"],
+    |                                                                                                     ^^
+118 |               s["angular_delta"], s["angular_relative"]) for s in samples),
+119 |         ),
+    |
+
+E501 Line too long (123 > 100)
+   --> src\astroagent\compute_exports.py:141:101
+    |
+139 |         "files": [
+140 |             {"name": name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+141 |              "media_type": {"json": "application/json", "csv": "text/csv", "svg": "image/svg+xml"}[name.rsplit(".", 1)[1]]}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+142 |             for name, data in files.items()
+143 |         ],
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\compute_runner.py:3:1
+   |
+ 1 |   """Run a single validated simulation in an offline, memory-limited child process."""
+ 2 |
+ 3 | / import math
+ 4 | | import os
+ 5 | | import platform
+ 6 | | import resource
+ 7 | | import sys
+ 8 | | import time
+ 9 | | from pathlib import Path
+10 | |
+11 | | import rebound
+12 | |
+13 | | from astroagent import __version__
+14 | | from astroagent.compute_io import read, write
+15 | | from astroagent.compute_schemas import (
+16 | |     ENERGY_WARNING,
+17 | |     EPSILON,
+18 | |     G,
+19 | |     MAX_OUTPUT_BYTES,
+20 | |     MIN_DISTANCE,
+21 | |     REBOUND_VERSION,
+22 | |     REBOUND_WHEEL_SHA256,
+23 | |     ZERO_THRESHOLD,
+24 | |     SimulationParameters,
+25 | | )
+   | |_^
+help: Organize imports
+   |
+17 |     EPSILON,
+   -     G,
+18 |     MAX_OUTPUT_BYTES,
+--------------------------------------------------------------------------------
+22 |     ZERO_THRESHOLD,
+23 +     G,
+24 |     SimulationParameters,
+   |
+
+E501 Line too long (106 > 100)
+  --> src\astroagent\compute_runner.py:58:101
+   |
+56 |         if abs(initial_energy) > ZERO_THRESHOLD else None,
+57 |         "angular_delta": angular_delta,
+58 |         "angular_relative": angular_delta / angular_initial if angular_initial > ZERO_THRESHOLD else None,
+   |                                                                                                     ^^^^^^
+59 |     }
+   |
+
+E501 Line too long (103 > 100)
+  --> src\astroagent\compute_runner.py:97:101
+   |
+95 |         "zero_threshold": ZERO_THRESHOLD,
+96 |         "wall_seconds": time.monotonic() - start,
+97 |         "environment": f"{platform.system()} {platform.machine()}, Python {platform.python_version()}",
+   |                                                                                                     ^^^
+98 |         "warnings": ["最大相对能量偏差超过 10⁻⁶，请核对时间跨度与近接情况。"] if warning else [],
+99 |         "samples": samples,
+   |
+
+E501 Line too long (106 > 100)
+  --> src\astroagent\compute_schemas.py:66:101
+   |
+64 | class ComputeDraft(ComputeInput):
+65 |     name: Annotated[
+66 |         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120, pattern=r"^[^\x00]+$")
+   |                                                                                                     ^^^^^^
+67 |     ]
+68 |     source: DraftSource = "manual"
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\compute_tasks.py:3:1
+   |
+ 1 |   """Durable queue and tenant-scoped experiment records."""
+ 2 |
+ 3 | / import logging
+ 4 | | import os
+ 5 | | import shutil
+ 6 | | import threading
+ 7 | | from datetime import UTC, datetime
+ 8 | | from uuid import uuid4
+ 9 | |
+10 | | import psycopg
+11 | | from psycopg import sql
+12 | | from psycopg.types.json import Jsonb
+13 | |
+14 | | from astroagent.compute_io import attempts, fresh, read, spool, write
+15 | | from astroagent.compute_schemas import (
+16 | |     EPSILON, G, MIN_DISTANCE, REBOUND_WHEEL_SHA256, WALL_SECONDS, ZERO_THRESHOLD, SimulationResult,
+17 | | )
+18 | | from astroagent.errors import ServiceError
+   | |__________________________________________^
+19 |
+20 |   LOGGER = logging.getLogger(__name__)
+   |
+help: Organize imports
+   |
+15 | from astroagent.compute_schemas import (
+   -     EPSILON, G, MIN_DISTANCE, REBOUND_WHEEL_SHA256, WALL_SECONDS, ZERO_THRESHOLD, SimulationResult,
+16 +     EPSILON,
+17 +     MIN_DISTANCE,
+18 +     REBOUND_WHEEL_SHA256,
+19 +     WALL_SECONDS,
+20 +     ZERO_THRESHOLD,
+21 +     G,
+22 +     SimulationResult,
+23 | )
+   |
+
+E501 Line too long (105 > 100)
+  --> src\astroagent\compute_tasks.py:69:101
+   |
+67 |         return False
+68 |     return bool(db.execute(
+69 |         sql.SQL("SELECT 1 FROM {}.projects WHERE id=%s FOR KEY SHARE").format(sql.Identifier(namespace)),
+   |                                                                                                     ^^^^^
+70 |         (str(project_id),),
+71 |     ).fetchone())
+   |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\compute_tasks.py:310:101
+    |
+308 |                 transition(db, row, "failed", "计算结果未通过完整性检查，请重新运行。")
+309 |                 return
+310 |             db.execute(f"UPDATE {TABLE} SET samples_completed=sample_count WHERE id=%s", (row["id"],))
+    |                                                                                                     ^^
+311 |             transition(db, row, "succeeded", result=result)
+312 |         elif state == "interrupted":
+    |
+
+F401 [*] `astroagent.compute_io.read` imported but unused
+  --> src\astroagent\compute_worker.py:10:45
+   |
+ 8 | from pathlib import Path
+ 9 |
+10 | from astroagent.compute_io import attempts, read, spool, write
+   |                                             ^^^^
+11 | from astroagent.compute_schemas import WALL_SECONDS
+   |
+help: Remove unused import: `astroagent.compute_io.read`
+   |
+9  |
+   - from astroagent.compute_io import attempts, read, spool, write
+10 + from astroagent.compute_io import attempts, spool, write
+11 | from astroagent.compute_schemas import WALL_SECONDS
+   |
+
+E501 Line too long (103 > 100)
+  --> src\astroagent\compute_worker.py:45:79
+   |
+43 |                 process.wait()
+44 |                 if not cancelled:
+45 |                     write(directory / "failure", "模拟已达到 120 秒运行上限，请缩短时长或减少粒子数。")
+   |                                                                                                      ^^
+46 |                 write(directory / "done", "cancelled" if cancelled else "failed")
+47 |                 return
+   |
+
+E501 Line too long (105 > 100)
+  --> src\astroagent\compute_worker.py:49:101
+   |
+47 |                 return
+48 |             time.sleep(0.25)
+49 |         state = "succeeded" if process.returncode == 0 and (directory / "result").is_file() else "failed"
+   |                                                                                                     ^^^^^
+50 |         write(directory / "done", state)
+   |
+
+Found 25 errors.
+[*] 4 fixable with `--fix`.

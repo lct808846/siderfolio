@@ -86,12 +86,19 @@ def prepare_input(run, step_id):
             ra_deg=position["ra_deg"],
             dec_deg=position["dec_deg"],
             **{
-                key: p[key]
+                key: p.get(key)
                 for key in (
                     "radius_arcmin",
                     "limit",
                     "ruwe_max",
                     "parallax_snr_min",
+                    "parallax_min",
+                    "parallax_max",
+                    "pmra_min",
+                    "pmra_max",
+                    "pmdec_min",
+                    "pmdec_max",
+                    "g_mag_max",
                     "estimate_distance",
                 )
             },

@@ -1,0 +1,13 @@
+
+> astroagent-workbench@1.7.0-dev.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/project/astroagent/frontend
+
+
+ Test Files  9 passed (9)
+      Tests  40 passed (40)
+   Start at  19:31:39
+   Duration  7.36s (transform 4.21s, setup 0ms, import 8.80s, tests 814ms, environment 34.28s)
+

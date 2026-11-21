@@ -1,0 +1,289 @@
+ Image astroagent-frontend:1.7.0 Building 
+ Image astroagent-compute-worker:1.7.0 Building 
+ Image astroagent-backend:1.7.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.34kB 0.0s done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 563B done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#2 DONE 0.0s
+
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 3.29kB done
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 33)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 33)
+#3 DONE 0.0s
+
+#4 [compute-worker internal] load metadata for docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#4 DONE 2.6s
+
+#5 [frontend internal] load metadata for docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#5 DONE 2.6s
+
+#6 [backend internal] load .dockerignore
+#6 transferring context: 682B done
+#6 DONE 0.0s
+
+#7 [compute-worker petar-build 4/9] ADD --checksum=sha256:5a5b7d2cfb30cc877b1fc301b5e662a7e310cca0c27e3f2942c86d6850905e3f https://codeload.github.com/lwang-astro/PeTar/tar.gz/fcca98d425cbb8bc9ce409532e31aa72dfd39e28 PeTar.tar.gz
+#7 DONE 0.0s
+
+#8 [compute-worker petar-build 6/9] ADD --checksum=sha256:5447a5827f11694aac8c6ef9ee3ace82715f0d20eb376099a4a067650ef51515 https://codeload.github.com/FDPS/FDPS/tar.gz/b3530c636f7b98f2208dc3813349cdd781d93f92 FDPS.tar.gz
+#8 DONE 0.0s
+
+#9 [compute-worker petar-build 5/9] ADD --checksum=sha256:226a2d3d99d9d69841d60e62037386ec2b14b299aa138a2d82d89fd44101f243 https://codeload.github.com/lwang-astro/SDAR/tar.gz/3a66fc20763a463055bea5c1f036162d2e46d735 SDAR.tar.gz
+#9 DONE 0.0s
+
+#10 [backend runtime 1/7] FROM docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#10 resolve docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2 0.0s done
+#10 DONE 0.0s
+
+#11 [frontend build 1/6] FROM docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#11 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.0s done
+#11 DONE 0.0s
+
+#12 [compute-worker internal] load build context
+#12 transferring context: 72.79kB 0.1s done
+#12 DONE 0.1s
+
+#13 [compute-worker petar-build 2/9] RUN apt-get update     && apt-get install -y --no-install-recommends g++ make     && rm -rf /var/lib/apt/lists/*
+#13 CACHED
+
+#14 [compute-worker petar-build 7/9] RUN mkdir PeTar SDAR FDPS     && for source in PeTar SDAR FDPS; do         tar -xzf "${source}.tar.gz" -C "$source" --strip-components=1         && install -Dm644 "$source/LICENSE" "/opt/petar/licenses/$source" || exit 1;     done
+#14 CACHED
+
+#15 [compute-worker petar-build 8/9] WORKDIR /build/PeTar
+#15 CACHED
+
+#16 [compute-worker petar-build 4/9] ADD --checksum=sha256:5a5b7d2cfb30cc877b1fc301b5e662a7e310cca0c27e3f2942c86d6850905e3f https://codeload.github.com/lwang-astro/PeTar/tar.gz/fcca98d425cbb8bc9ce409532e31aa72dfd39e28 PeTar.tar.gz
+#16 CACHED
+
+#17 [compute-worker petar-build 5/9] ADD --checksum=sha256:226a2d3d99d9d69841d60e62037386ec2b14b299aa138a2d82d89fd44101f243 https://codeload.github.com/lwang-astro/SDAR/tar.gz/3a66fc20763a463055bea5c1f036162d2e46d735 SDAR.tar.gz
+#17 CACHED
+
+#18 [compute-worker petar-build 6/9] ADD --checksum=sha256:5447a5827f11694aac8c6ef9ee3ace82715f0d20eb376099a4a067650ef51515 https://codeload.github.com/FDPS/FDPS/tar.gz/b3530c636f7b98f2208dc3813349cdd781d93f92 FDPS.tar.gz
+#18 CACHED
+
+#19 [compute-worker petar-build 3/9] WORKDIR /build
+#19 CACHED
+
+#20 [compute-worker petar-build 9/9] RUN CXXFLAGS="-static-libstdc++ -static-libgcc"     ./configure --with-arch=generic --with-mpi=no --disable-openmp     && make build/petar     && install -D -s -m 0755 build/petar /opt/petar/bin/petar     && /opt/petar/bin/petar -h >/dev/null
+#20 CACHED
+
+#21 [backend internal] load build context
+#21 transferring context: 79.07kB 0.1s done
+#21 DONE 0.1s
+
+#22 [compute-worker runtime 2/7] WORKDIR /app
+#22 CACHED
+
+#23 [compute-worker runtime 3/7] COPY containers/application/requirements-runtime.lock /tmp/requirements-runtime.lock
+#23 CACHED
+
+#24 [compute-worker runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#24 CACHED
+
+#25 [frontend internal] load build context
+#25 transferring context: 2.27MB 0.2s done
+#25 DONE 0.2s
+
+#26 [compute-worker runtime 5/7] COPY pyproject.toml README.md ./
+#26 DONE 0.1s
+
+#27 [frontend build 2/6] WORKDIR /app
+#27 CACHED
+
+#28 [frontend build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#28 DONE 0.1s
+
+#29 [backend runtime 6/7] COPY src ./src
+#29 DONE 0.1s
+
+#30 [backend runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#30 1.759 Processing /app
+#30 1.764   Preparing metadata (pyproject.toml): started
+#30 2.489   Preparing metadata (pyproject.toml): finished with status 'done'
+#30 2.500 Building wheels for collected packages: astroagent
+#30 2.506   Building wheel for astroagent (pyproject.toml): started
+#30 4.122   Building wheel for astroagent (pyproject.toml): finished with status 'done'
+#30 4.124   Created wheel for astroagent: filename=astroagent-1.7.0-py3-none-any.whl size=702164 sha256=333063bb64956edd22bc030a2ce69a0d7fd0dfc3ef3c800b5eff5575cbbe60e1
+#30 4.124   Stored in directory: /tmp/pip-ephem-wheel-cache-eoq6fa57/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+#30 4.141 Successfully built astroagent
+#30 4.141 Installing collected packages: astroagent
+#30 4.750 Successfully installed astroagent-1.7.0
+#30 4.751 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#30 5.824 
+#30 5.824 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#30 5.824 [notice] To update, run: pip install --upgrade pip
+#30 8.853 No broken requirements found.
+#30 DONE 9.6s
+
+#31 [frontend build 4/6] RUN npm ci
+#31 2.610 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#31 ...
+
+#30 [compute-worker runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#30 DONE 9.6s
+
+#32 [backend] exporting to image
+#32 exporting layers
+#32 ...
+
+#33 [compute-worker compute-worker 1/3] COPY --from=petar-build /opt/petar /opt/petar
+#33 DONE 0.2s
+
+#34 [compute-worker compute-worker 2/3] COPY containers/application/requirements-compute.lock /tmp/requirements-compute.lock
+#34 DONE 0.1s
+
+#32 [backend] exporting to image
+#32 exporting layers 0.6s done
+#32 exporting manifest sha256:3080b6f8219331facd840af40d842f3d7cd8af49726e0fb6d7dc57bbab52ec34 0.0s done
+#32 exporting config sha256:04494e8a55aa5e6cbc29040258acf5a536895f90ec9de780ba700600b71b1732 0.0s done
+#32 exporting attestation manifest sha256:e77e81de1ad6b1d6b814b1f10a6fc6caa6f0dbd0c119548b3f72f0080d6d7449 0.0s done
+#32 exporting manifest list sha256:3da8884d96a8d440671d7861214a5640e4f793c33f2bf7930f80e108ebd41855 0.0s done
+#32 naming to docker.io/library/astroagent-backend:1.7.0
+#32 naming to docker.io/library/astroagent-backend:1.7.0 done
+#32 unpacking to docker.io/library/astroagent-backend:1.7.0
+#32 unpacking to docker.io/library/astroagent-backend:1.7.0 0.3s done
+#32 DONE 1.1s
+
+#35 [compute-worker compute-worker 3/3] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#35 ...
+
+#36 [backend] resolving provenance for metadata file
+#36 DONE 0.0s
+
+#31 [frontend build 4/6] RUN npm ci
+#31 ...
+
+#35 [compute-worker compute-worker 3/3] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#35 3.272 Collecting rebound==4.4.11 (from -r /tmp/requirements-compute.lock (line 1))
+#35 4.167   Downloading rebound-4.4.11-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (793 kB)
+#35 5.218      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 793.5/793.5 kB 1.2 MB/s eta 0:00:00
+#35 5.224 Installing collected packages: rebound
+#35 5.295 Successfully installed rebound-4.4.11
+#35 5.295 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#35 ...
+
+#31 [frontend build 4/6] RUN npm ci
+#31 17.34 
+#31 17.34 added 281 packages, and audited 282 packages in 17s
+#31 17.34 
+#31 17.34 69 packages are looking for funding
+#31 17.34   run `npm fund` for details
+#31 17.34 
+#31 17.34 found 0 vulnerabilities
+#31 17.34 npm notice
+#31 17.34 npm notice New major version of npm available! 11.12.1 -> 12.2.3
+#31 17.34 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+#31 17.34 npm notice To update run: npm install -g npm@12.2.3
+#31 17.34 npm notice
+#31 DONE 17.5s
+
+#37 [frontend build 5/6] COPY frontend ./
+#37 DONE 0.2s
+
+#35 [compute-worker compute-worker 3/3] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#35 7.878 
+#35 7.878 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#35 7.878 [notice] To update, run: pip install --upgrade pip
+#35 DONE 8.0s
+
+#38 [frontend build 6/6] RUN npm run build
+#38 0.302 
+#38 0.302 > astroagent-workbench@1.7.0 build
+#38 0.302 > vue-tsc --noEmit && vite build
+#38 0.302 
+#38 ...
+
+#39 [compute-worker] exporting to image
+#39 exporting layers 0.2s done
+#39 exporting manifest sha256:ce0fcad5d2e715417db501b028fcd6c6366b82df5508633aabd138e86dab5e14 0.0s done
+#39 exporting config sha256:a30d4499e238f6e0897ed2cd205f0d38b72265cf1ea97abe1d1c3461ec57d017 0.0s done
+#39 exporting attestation manifest sha256:5525195298a7e66252503d960238c07ad71a51b8cdffe192e931a1fb90decd1d 0.0s done
+#39 exporting manifest list sha256:53391c3584385460d32e09ae0a18c9f4e03d0eb0a505b5f85ac8464371cc0e3a 0.0s done
+#39 naming to docker.io/library/astroagent-compute-worker:1.7.0 done
+#39 unpacking to docker.io/library/astroagent-compute-worker:1.7.0 0.1s done
+#39 DONE 0.5s
+
+#40 [compute-worker] resolving provenance for metadata file
+#40 DONE 0.0s
+
+#38 [frontend build 6/6] RUN npm run build
+#38 7.017 /app/node_modules/rollup/dist/native.js:126
+#38 7.017 		throw new Error(
+#38 7.017 		      ^
+#38 7.017 
+#38 7.017 Error: Cannot find module @rollup/rollup-linux-x64-gnu. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+#38 7.017     at requireWithFriendlyError (/app/node_modules/rollup/dist/native.js:126:9)
+#38 7.017     at Object.<anonymous> (/app/node_modules/rollup/dist/native.js:135:22)
+#38 7.017     at Module._compile (node:internal/modules/cjs/loader:1830:14)
+#38 7.017     at Object..js (node:internal/modules/cjs/loader:1961:10)
+#38 7.017     at Module.load (node:internal/modules/cjs/loader:1553:32)
+#38 7.017     at Module._load (node:internal/modules/cjs/loader:1355:12)
+#38 7.017     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+#38 7.017     at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:326:3)
+#38 7.017     at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:231:7)
+#38 7.017     at ModuleJob.run (node:internal/modules/esm/module_job:437:25) {
+#38 7.017   [cause]: Error: Cannot find module '@rollup/rollup-linux-x64-gnu'
+#38 7.017   Require stack:
+#38 7.017   - /app/node_modules/rollup/dist/native.js
+#38 7.017       at Module._resolveFilename (node:internal/modules/cjs/loader:1476:15)
+#38 7.017       at wrapResolveFilename (node:internal/modules/cjs/loader:1049:27)
+#38 7.017       at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1073:10)
+#38 7.017       at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1094:12)
+#38 7.017       at Module._load (node:internal/modules/cjs/loader:1262:25)
+#38 7.017       at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+#38 7.017       at Module.require (node:internal/modules/cjs/loader:1576:12)
+#38 7.017       at require (node:internal/modules/helpers:153:16)
+#38 7.017       at requireWithFriendlyError (/app/node_modules/rollup/dist/native.js:104:10)
+#38 7.017       at Object.<anonymous> (/app/node_modules/rollup/dist/native.js:135:22) {
+#38 7.017     code: 'MODULE_NOT_FOUND',
+#38 7.017     requireStack: [ '/app/node_modules/rollup/dist/native.js' ]
+#38 7.017   }
+#38 7.017 }
+#38 7.017 
+#38 7.017 Node.js v24.15.0
+#38 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+------
+ > [frontend build 6/6] RUN npm run build:
+7.017       at Module.require (node:internal/modules/cjs/loader:1576:12)
+7.017       at require (node:internal/modules/helpers:153:16)
+7.017       at requireWithFriendlyError (/app/node_modules/rollup/dist/native.js:104:10)
+7.017       at Object.<anonymous> (/app/node_modules/rollup/dist/native.js:135:22) {
+7.017     code: 'MODULE_NOT_FOUND',
+7.017     requireStack: [ '/app/node_modules/rollup/dist/native.js' ]
+7.017   }
+7.017 }
+7.017 
+7.017 Node.js v24.15.0
+------
+Dockerfile:7
+
+--------------------
+
+   5 |     RUN npm ci
+
+   6 |     COPY frontend ./
+
+   7 | >>> RUN npm run build
+
+   8 |     
+
+   9 |     FROM ${NODE_IMAGE} AS runtime
+
+--------------------
+
+target frontend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+
+
+
+View build details: docker-desktop://dashboard/build/default/default/dpxelz4la1z4nwe0iasxzvh5r
+

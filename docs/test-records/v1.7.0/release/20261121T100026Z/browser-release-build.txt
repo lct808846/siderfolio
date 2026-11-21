@@ -1,0 +1,18 @@
+
+> astroagent-workbench@1.7.0 build
+> vue-tsc --noEmit && vite build
+
+vite v7.3.8 building client environment for production...
+transforming...
+✓ 179 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.44 kB │ gzip:   0.33 kB
+dist/assets/index-B9wwjBs2.css  315.35 kB │ gzip:  53.22 kB
+dist/assets/index-DrPpeHo-.js   716.61 kB │ gzip: 246.47 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.34s

@@ -1,0 +1,1962 @@
+{
+  "config": {
+    "argv": [
+      "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\tools\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\playwright.config.ts",
+      "--output",
+      "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial",
+      "--max-failures",
+      "8"
+    ],
+    "configFile": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\playwright.config.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 8,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.astroagent/temp/v17-release/browser-output-initial",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 60000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5288",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "actionTimeout": 10000,
+          "navigationTimeout": 15000,
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\docs\\test-records\\v1.7.0\\release\\20261121T100026Z\\browser-initial.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": {
+      "command": "\"D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\tools\\node.exe\" server.mjs",
+      "cwd": "D:\\project\\astroagent\\frontend",
+      "url": "http://127.0.0.1:5288",
+      "reuseExistingServer": false,
+      "timeout": 20000,
+      "env": {
+        "FRONTEND_PORT": "5288",
+        "ASTROAGENT_API_TARGET": "http://127.0.0.1:8288",
+        "ASTROAGENT_SITE_ORIGIN": "http://127.0.0.1:5288",
+        "ASTROAGENT_DEPLOYMENT_MODE": "fixture"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "account-changes.spec.ts",
+      "file": "account-changes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "account QR enrollment, invalid code, recovery download and narrow layout",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2109,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:04:57.475Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f5bd2fe0f1860c52aebc-f138e610451840a47936",
+          "file": "account-changes.spec.ts",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "username propagates to sidebar, menu closes and logout clears private browser state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6001,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:00.021Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f5bd2fe0f1860c52aebc-d210e2e0ba1ed6b76c07",
+          "file": "account-changes.spec.ts",
+          "line": 69,
+          "column": 1
+        },
+        {
+          "title": "activity dialog only revokes the selected other browser after password confirmation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1764,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:06.045Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f5bd2fe0f1860c52aebc-74b7625f186231fc2c6f",
+          "file": "account-changes.spec.ts",
+          "line": 100,
+          "column": 1
+        },
+        {
+          "title": "MFA switch waits for confirmation and disabling requires proof",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1923,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:07.828Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f5bd2fe0f1860c52aebc-849d632f502bc09cef96",
+          "file": "account-changes.spec.ts",
+          "line": 117,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "container-live.spec.ts",
+      "file": "container-live.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "isolated container plot history works on desktop and narrow screens",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Requires a separately prepared synthetic container deployment",
+                  "location": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                    "line": 4,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 149,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:09.781Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Requires a separately prepared synthetic container deployment",
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\container-live.spec.ts",
+                        "line": 4,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "4ecd8166ba589eef34aa-fb4f951e282f708f00fc",
+          "file": "container-live.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "current-changes.spec.ts",
+      "file": "current-changes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "model selection and attachment preview do not send a message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1731,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:09.951Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "cac2e3242fe11f83a65d-60d33cb16388a71407a6",
+          "file": "current-changes.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "dragged attachment and edited question create separate preserved turns",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2202,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:11.694Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "cac2e3242fe11f83a65d-56e378d9c131ac672f0b",
+          "file": "current-changes.spec.ts",
+          "line": 28,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "knowledge.spec.ts",
+      "file": "knowledge.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "local documents can be uploaded, searched, cited and downloaded",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1845,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'synthetic.md', exact: true })\nExpected: visible\nError: strict mode violation: getByRole('heading', { name: 'synthetic.md', exact: true }) resolved to 2 elements:\n    1) <h2>synthetic.md</h2> aka locator('h2').filter({ hasText: 'synthetic.md' })\n    2) <h3 class=\"ui-card-title\">synthetic.md</h3> aka getByRole('article').getByRole('heading', { name: 'synthetic.md' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'synthetic.md', exact: true }) with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'synthetic.md', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'synthetic.md', exact: true })\nExpected: visible\nError: strict mode violation: getByRole('heading', { name: 'synthetic.md', exact: true }) resolved to 2 elements:\n    1) <h2>synthetic.md</h2> aka locator('h2').filter({ hasText: 'synthetic.md' })\n    2) <h3 class=\"ui-card-title\">synthetic.md</h3> aka getByRole('article').getByRole('heading', { name: 'synthetic.md' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'synthetic.md', exact: true }) with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'synthetic.md', exact: true })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts:12:84",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                      "column": 84,
+                      "line": 12
+                    },
+                    "snippet": "  10 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: 'synthetic.md', mimeType: 'text/markdown', buffer: raw })\n  11 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 12 |     await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true })).toBeVisible({ timeout: 30000 })\n     |                                                                                    ^\n  13 |     await page.getByLabel('问题中的明确关键词').fill('银河潮汐')\n  14 |     await page.getByRole('button', { name: '检索原文证据' }).click()\n  15 |     await expect(page.getByRole('heading', { name: '找到的相关原文' })).toBeVisible()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                        "column": 84,
+                        "line": 12
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'synthetic.md', exact: true })\nExpected: visible\nError: strict mode violation: getByRole('heading', { name: 'synthetic.md', exact: true }) resolved to 2 elements:\n    1) <h2>synthetic.md</h2> aka locator('h2').filter({ hasText: 'synthetic.md' })\n    2) <h3 class=\"ui-card-title\">synthetic.md</h3> aka getByRole('article').getByRole('heading', { name: 'synthetic.md' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'synthetic.md', exact: true }) with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'synthetic.md', exact: true })\u001b[22m\n\n\n  10 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: 'synthetic.md', mimeType: 'text/markdown', buffer: raw })\n  11 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 12 |     await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true })).toBeVisible({ timeout: 30000 })\n     |                                                                                    ^\n  13 |     await page.getByLabel('问题中的明确关键词').fill('银河潮汐')\n  14 |     await page.getByRole('button', { name: '检索原文证据' }).click()\n  15 |     await expect(page.getByRole('heading', { name: '找到的相关原文' })).toBeVisible()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts:12:84"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:13.925Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                    "column": 84,
+                    "line": 12
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-16c7bb46130b5e060c6d",
+          "file": "knowledge.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "public PDF citation opens its original and downloads identical bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Public PDF is an explicitly provided local fixture",
+                  "location": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                    "line": 51,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 233,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:16.639Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Public PDF is an explicitly provided local fixture",
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\knowledge.spec.ts",
+                        "line": 51,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-7457d714d4e0bde208f7",
+          "file": "knowledge.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "long Chinese filename remains usable on a narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1159,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:17.169Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0828a03cd0e93ee0ce1b-7d4da0b7d59f116f94ec",
+          "file": "knowledge.spec.ts",
+          "line": 74,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "model-settings.spec.ts",
+      "file": "model-settings.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "provider editor, directory, default, key omission, conflict and removal",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3732,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:18.381Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64ee1c6ad3eff8e52c60-e454fcad6baaf3849b13",
+          "file": "model-settings.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "ordinary user settings expose only account controls and no admin link",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 456,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:22.125Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64ee1c6ad3eff8e52c60-f98d3243eeb821e61926",
+          "file": "model-settings.spec.ts",
+          "line": 91,
+          "column": 1
+        },
+        {
+          "title": "RAG and local assistant failures remain readable without starting model jobs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 843,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:22.591Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64ee1c6ad3eff8e52c60-a77412441dc53335e7e4",
+          "file": "model-settings.spec.ts",
+          "line": 108,
+          "column": 1
+        },
+        {
+          "title": "administrator layout keeps masked metadata, tabs and current-account protection",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 844,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:23.446Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "64ee1c6ad3eff8e52c60-3d51bb34e0153976dfbe",
+          "file": "model-settings.spec.ts",
+          "line": 131,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "overview.spec.ts",
+      "file": "overview.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "project overview creates and removes an explicit evidence link",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1951,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'synthetic.md', exact: true })\nExpected: visible\nError: strict mode violation: getByRole('heading', { name: 'synthetic.md', exact: true }) resolved to 2 elements:\n    1) <h2>synthetic.md</h2> aka locator('h2').filter({ hasText: 'synthetic.md' })\n    2) <h3 class=\"ui-card-title\">synthetic.md</h3> aka getByRole('article').getByRole('heading', { name: 'synthetic.md' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'synthetic.md', exact: true }) with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'synthetic.md', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'synthetic.md', exact: true })\nExpected: visible\nError: strict mode violation: getByRole('heading', { name: 'synthetic.md', exact: true }) resolved to 2 elements:\n    1) <h2>synthetic.md</h2> aka locator('h2').filter({ hasText: 'synthetic.md' })\n    2) <h3 class=\"ui-card-title\">synthetic.md</h3> aka getByRole('article').getByRole('heading', { name: 'synthetic.md' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'synthetic.md', exact: true }) with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'synthetic.md', exact: true })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts:18:84",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                      "column": 84,
+                      "line": 18
+                    },
+                    "snippet": "  16 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: 'synthetic.md', mimeType: 'text/markdown', buffer: Buffer.from('# 合成文献\\n银河潮汐 synthetic evidence\\n') })\n  17 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 18 |     await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true })).toBeVisible({ timeout: 30000 })\n     |                                                                                    ^\n  19 |     await page.getByLabel('问题中的明确关键词').fill('银河潮汐')\n  20 |     await page.getByRole('button', { name: '检索原文证据' }).click()\n  21 |     await page.getByRole('button', { name: '核对引用与原始版本' }).first().click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                        "column": 84,
+                        "line": 18
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'synthetic.md', exact: true })\nExpected: visible\nError: strict mode violation: getByRole('heading', { name: 'synthetic.md', exact: true }) resolved to 2 elements:\n    1) <h2>synthetic.md</h2> aka locator('h2').filter({ hasText: 'synthetic.md' })\n    2) <h3 class=\"ui-card-title\">synthetic.md</h3> aka getByRole('article').getByRole('heading', { name: 'synthetic.md' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'synthetic.md', exact: true }) with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'synthetic.md', exact: true })\u001b[22m\n\n\n  16 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: 'synthetic.md', mimeType: 'text/markdown', buffer: Buffer.from('# 合成文献\\n银河潮汐 synthetic evidence\\n') })\n  17 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()\n> 18 |     await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true })).toBeVisible({ timeout: 30000 })\n     |                                                                                    ^\n  19 |     await page.getByLabel('问题中的明确关键词').fill('银河潮汐')\n  20 |     await page.getByRole('button', { name: '检索原文证据' }).click()\n  21 |     await page.getByRole('button', { name: '核对引用与原始版本' }).first().click()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts:18:84"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:24.324Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\overview.spec.ts",
+                    "column": 84,
+                    "line": 18
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6e2f4ad74dab265ac116-595a3fd380ef1ba31ecb",
+          "file": "overview.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "plot-acceptance.spec.ts",
+      "file": "plot-acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "plot workflow requires confirmations before model and execution",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10775,
+                  "error": {
+                    "message": "TimeoutError: locator.check: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/确认将需求、列信息/)\u001b[22m\n",
+                    "stack": "TimeoutError: locator.check: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/确认将需求、列信息/)\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts:45:38",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                      "column": 38,
+                      "line": 45
+                    },
+                    "snippet": "  43 |   await expect(page.getByRole('button', { name: '生成绘图方案' })).toBeDisabled()\n  44 |   expect(plans).toBe(0)\n> 45 |   await page.getByLabel(/确认将需求、列信息/).check()\n     |                                      ^\n  46 |   await page.getByRole('button', { name: '生成绘图方案' }).click()\n  47 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()\n  48 |   expect(plans).toBe(1)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                        "column": 38,
+                        "line": 45
+                      },
+                      "message": "TimeoutError: locator.check: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/确认将需求、列信息/)\u001b[22m\n\n\n  43 |   await expect(page.getByRole('button', { name: '生成绘图方案' })).toBeDisabled()\n  44 |   expect(plans).toBe(0)\n> 45 |   await page.getByLabel(/确认将需求、列信息/).check()\n     |                                      ^\n  46 |   await page.getByRole('button', { name: '生成绘图方案' }).click()\n  47 |   await expect(page.getByRole('heading', { name: '实际绘图脚本' })).toBeVisible()\n  48 |   expect(plans).toBe(1)\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts:45:38"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:27.330Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\plot-acceptance.spec.ts",
+                    "column": 38,
+                    "line": 45
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "8a191b024618097f7a79-dbc25dda554259f48e40",
+          "file": "plot-acceptance.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "profile-changes.spec.ts",
+      "file": "profile-changes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "profile name editing, avatar change/removal and missing usage stay accurate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1127,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:39.301Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d7ca720cd31b38a72865-5e17863313a123413326",
+          "file": "profile-changes.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "profile rejects oversized files before upload and displays read/upload errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1540,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:40.699Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d7ca720cd31b38a72865-d82bc83ae2e5e0d089a1",
+          "file": "profile-changes.spec.ts",
+          "line": 60,
+          "column": 1
+        },
+        {
+          "title": "profile navigation and responsive sidebar preserve the unsent question",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5070,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:42.254Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d7ca720cd31b38a72865-1063d7c922033fb50bcc",
+          "file": "profile-changes.spec.ts",
+          "line": 82,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "projects.spec.ts",
+      "file": "projects.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.8078.4"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10569,
+                  "error": {
+                    "message": "TimeoutError: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('项目名称', { exact: true })\u001b[22m\n",
+                    "stack": "TimeoutError: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('项目名称', { exact: true })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\projects.spec.ts:15:52",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\projects.spec.ts",
+                      "column": 52,
+                      "line": 15
+                    },
+                    "snippet": "  13 |     expect(turn.ok()).toBeTruthy()\n  14 |     await page.goto('/projects')\n> 15 |     await page.getByLabel('项目名称', { exact: true }).fill('候选源复核项目')\n     |                                                    ^\n  16 |     await page.getByLabel('项目说明（可选）').fill('保留条件、来源和完整结果，不推断成员。')\n  17 |     await page.getByRole('button', { name: '创建项目', exact: true }).click()\n  18 |     await expect(page.getByRole('heading', { name: '候选源复核项目', exact: true })).toBeVisible()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\projects.spec.ts",
+                        "column": 52,
+                        "line": 15
+                      },
+                      "message": "TimeoutError: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('项目名称', { exact: true })\u001b[22m\n\n\n  13 |     expect(turn.ok()).toBeTruthy()\n  14 |     await page.goto('/projects')\n> 15 |     await page.getByLabel('项目名称', { exact: true }).fill('候选源复核项目')\n     |                                                    ^\n  16 |     await page.getByLabel('项目说明（可选）').fill('保留条件、来源和完整结果，不推断成员。')\n  17 |     await page.getByRole('button', { name: '创建项目', exact: true }).click()\n  18 |     await expect(page.getByRole('heading', { name: '候选源复核项目', exact: true })).toBeVisible()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\projects.spec.ts:15:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:47.344Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.8078.4"
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\projects.spec.ts",
+                    "column": 52,
+                    "line": 15
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "3a2958b1096c5d9a8472-67397c9f887423ec96ae",
+          "file": "projects.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "remaining-acceptance.spec.ts",
+      "file": "remaining-acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "clipboard preserves the question and reports a denied copy",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1214,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:05:58.615Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-4a023cc55aac5d9eeaf5",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 10,
+          "column": 1
+        },
+        {
+          "title": "pending response does not open results and manual close survives refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1578,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:00.111Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-e348e61fc070762b1ecf",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "rename, pin and export a noncurrent conversation; cancel deletion",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3838,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:01.702Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-842098da3dfa17615e5d",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 52,
+          "column": 1
+        },
+        {
+          "title": "settings refresh failure clears the previous ready status",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 584,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('业务数据库已就绪')\nExpected: visible\nError: strict mode violation: getByText('业务数据库已就绪') resolved to 2 elements:\n    1) <div class=\"ui-kpi-card\">…</div> aka getByText('业务数据库已就绪PostgreSQL / pgvector')\n    2) <span class=\"ui-pill ui-pill-success\">…</span> aka getByText('业务数据库已就绪', { exact: true })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('业务数据库已就绪') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('业务数据库已就绪')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('业务数据库已就绪')\nExpected: visible\nError: strict mode violation: getByText('业务数据库已就绪') resolved to 2 elements:\n    1) <div class=\"ui-kpi-card\">…</div> aka getByText('业务数据库已就绪PostgreSQL / pgvector')\n    2) <span class=\"ui-pill ui-pill-success\">…</span> aka getByText('业务数据库已就绪', { exact: true })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('业务数据库已就绪') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('业务数据库已就绪')\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:94:44",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                      "column": 44,
+                      "line": 94
+                    },
+                    "snippet": "  92 |   })\n  93 |   await page.goto('/settings?section=general')\n> 94 |   await expect(page.getByText('业务数据库已就绪')).toBeVisible()\n     |                                            ^\n  95 |   // The redesigned settings page reads status on entry; browser refresh is the\n  96 |   // available retry trigger after the separate status-refresh control was removed.\n  97 |   await page.reload()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                        "column": 44,
+                        "line": 94
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('业务数据库已就绪')\nExpected: visible\nError: strict mode violation: getByText('业务数据库已就绪') resolved to 2 elements:\n    1) <div class=\"ui-kpi-card\">…</div> aka getByText('业务数据库已就绪PostgreSQL / pgvector')\n    2) <span class=\"ui-pill ui-pill-success\">…</span> aka getByText('业务数据库已就绪', { exact: true })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('业务数据库已就绪') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('业务数据库已就绪')\u001b[22m\n\n\n  92 |   })\n  93 |   await page.goto('/settings?section=general')\n> 94 |   await expect(page.getByText('业务数据库已就绪')).toBeVisible()\n     |                                            ^\n  95 |   // The redesigned settings page reads status on entry; browser refresh is the\n  96 |   // available retry trigger after the separate status-refresh control was removed.\n  97 |   await page.reload()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:94:44"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:05.567Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\remaining-acceptance-setti-977dd-s-the-previous-ready-status-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                    "column": 44,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-c6c98fe4bc93a8282cb0",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 86,
+          "column": 1
+        },
+        {
+          "title": "bulk deletion preserves the failed item and returns after deleting the current item",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1788,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:06.915Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-f940f9bf956accf49516",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 103,
+          "column": 1
+        },
+        {
+          "title": "project navigation survives direct load and refresh without sending requests",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5607,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true })\nExpected: \u001b[32m\"page\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true })\nExpected: \u001b[32m\"page\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:138:24",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                      "column": 24,
+                      "line": 138
+                    },
+                    "snippet": "  136 |     await page.goto(`/projects/${project.id}${suffix}`)\n  137 |     const link = page.getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: label, exact: true })\n> 138 |     await expect(link).toHaveAttribute('aria-current', 'page')\n      |                        ^\n  139 |     await page.reload()\n  140 |     await expect(link).toHaveAttribute('aria-current', 'page')\n  141 |   }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                        "column": 24,
+                        "line": 138
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true })\nExpected: \u001b[32m\"page\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: '项目记录', exact: true })\u001b[22m\n\n\n  136 |     await page.goto(`/projects/${project.id}${suffix}`)\n  137 |     const link = page.getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: label, exact: true })\n> 138 |     await expect(link).toHaveAttribute('aria-current', 'page')\n      |                        ^\n  139 |     await page.reload()\n  140 |     await expect(link).toHaveAttribute('aria-current', 'page')\n  141 |   }\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts:138:24"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:08.974Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\remaining-acceptance-proje-d43fc-sh-without-sending-requests-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\remaining-acceptance-proje-d43fc-sh-without-sending-requests-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\remaining-acceptance-proje-d43fc-sh-without-sending-requests-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\remaining-acceptance.spec.ts",
+                    "column": 24,
+                    "line": 138
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-34b45ca943d3dc0a88a1",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "low-height compact layout keeps focused controls visible and input scrollable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 716,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:15.701Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-5e103279d9e0caa869ac",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 145,
+          "column": 1
+        },
+        {
+          "title": "reduced transparency disables large background blur",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 531,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:16.783Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-51344dcda6828e46af2a",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 166,
+          "column": 1
+        },
+        {
+          "title": "sidebar toggles across compact and desktop boundaries without losing draft",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3192,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:17.333Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a77a56ebf823f06c9c-0f1008fe282271e5f0dd",
+          "file": "remaining-acceptance.spec.ts",
+          "line": 178,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "v11-layout.spec.ts",
+      "file": "v11-layout.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "responsive panels preserve drafts without sending",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6302,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:20.563Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4022788feb6bfc4f2438-5803e8f07463d194a436",
+          "file": "v11-layout.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "keyboard controls work with reduced motion and forced colors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 473,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:26.878Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4022788feb6bfc4f2438-6bd0e3cdd21e2cbb09a7",
+          "file": "v11-layout.spec.ts",
+          "line": 23,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workbench.spec.ts",
+      "file": "workbench.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production build: conversation, follow-up, complete table, preview, download and restore",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "browser_version",
+                  "description": "156.0.8078.4"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4578,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:27.371Z",
+                  "annotations": [
+                    {
+                      "type": "browser_version",
+                      "description": "156.0.8078.4"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-7a84d1b4043fcc979e24",
+          "file": "workbench.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "IME composition, explicit examples, plain text literature, rename and delete",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10978,
+                  "error": {
+                    "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'ADS 文献检索' })\u001b[22m\n",
+                    "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'ADS 文献检索' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workbench.spec.ts:46:56",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workbench.spec.ts",
+                      "column": 56,
+                      "line": 46
+                    },
+                    "snippet": "  44 | test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {\n  45 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话', exact: true }).click()\n> 46 |   await page.getByRole('button', { name: 'ADS 文献检索' }).click()\n     |                                                        ^\n  47 |   const input = page.getByRole('textbox', { name: '天文问题' })\n  48 |   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })\n  49 |   await expect(page.getByText('第 1 轮', { exact: true })).toHaveCount(0)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workbench.spec.ts",
+                        "column": 56,
+                        "line": 46
+                      },
+                      "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'ADS 文献检索' })\u001b[22m\n\n\n  44 | test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {\n  45 |   await page.goto('/'); await page.getByRole('button', { name: '新建会话', exact: true }).click()\n> 46 |   await page.getByRole('button', { name: 'ADS 文献检索' }).click()\n     |                                                        ^\n  47 |   const input = page.getByRole('textbox', { name: '天文问题' })\n  48 |   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })\n  49 |   await expect(page.getByText('第 1 轮', { exact: true })).toHaveCount(0)\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workbench.spec.ts:46:56"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:31.963Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\workbench-IME-composition--732ba-iterature-rename-and-delete-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\workbench-IME-composition--732ba-iterature-rename-and-delete-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\workbench-IME-composition--732ba-iterature-rename-and-delete-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workbench.spec.ts",
+                    "column": 56,
+                    "line": 46
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-705e08751c9a17b77433",
+          "file": "workbench.spec.ts",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "narrow viewport has usable panel navigation and no page overflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1994,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:43.808Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-4bfbdfaa404ac4a2485b",
+          "file": "workbench.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "backend connection error is explicit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 489,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:46.087Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-07d0c520548227ad0c54",
+          "file": "workbench.spec.ts",
+          "line": 78,
+          "column": 1
+        },
+        {
+          "title": "a rejected send preserves the question and only retries on explicit action",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1333,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:46.599Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-c08a2ba5b12b461f3e8f",
+          "file": "workbench.spec.ts",
+          "line": 83,
+          "column": 1
+        },
+        {
+          "title": "a late initial list does not clear a send error after navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 991,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:47.949Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-b5cce396a9cd368e62b2",
+          "file": "workbench.spec.ts",
+          "line": 100,
+          "column": 1
+        },
+        {
+          "title": "local static proxy keeps its API target and never returns SPA HTML for API errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 40,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:48.961Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "921e070f285a8b470d11-ae8cf3653592a0ec7fc3",
+          "file": "workbench.spec.ts",
+          "line": 123,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workflows.spec.ts",
+      "file": "workflows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "fixed workflows create, confirm, execute, display outputs and restore after refresh",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10809,
+                  "error": {
+                    "message": "TimeoutError: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('交付行上限 / 1—100')\u001b[22m\n",
+                    "stack": "TimeoutError: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('交付行上限 / 1—100')\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:27:44",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                      "column": 44,
+                      "line": 27
+                    },
+                    "snippet": "  25 |     await page.getByLabel('ICRS赤纬 / 度 [-90,90]').fill('24.12')\n  26 |     await page.getByLabel('圆锥半径 / 角分 (0,30]').fill('5')\n> 27 |     await page.getByLabel('交付行上限 / 1—100').fill('10')\n     |                                            ^\n  28 |     await page.getByRole('button', { name: '创建待执行记录' }).click()\n  29 |     await expect(page.getByRole('heading', { name: '合成 Gaia 流程' })).toBeVisible()\n  30 |     await page.getByRole('button', { name: '核对并启动' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                        "column": 44,
+                        "line": 27
+                      },
+                      "message": "TimeoutError: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('交付行上限 / 1—100')\u001b[22m\n\n\n  25 |     await page.getByLabel('ICRS赤纬 / 度 [-90,90]').fill('24.12')\n  26 |     await page.getByLabel('圆锥半径 / 角分 (0,30]').fill('5')\n> 27 |     await page.getByLabel('交付行上限 / 1—100').fill('10')\n     |                                            ^\n  28 |     await page.getByRole('button', { name: '创建待执行记录' }).click()\n  29 |     await expect(page.getByRole('heading', { name: '合成 Gaia 流程' })).toBeVisible()\n  30 |     await page.getByRole('button', { name: '核对并启动' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts:27:44"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T11:06:49.024Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\browser-output-initial\\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\browser\\workflows.spec.ts",
+                    "column": 44,
+                    "line": 27
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-d825ce04b4ceccf16d00",
+          "file": "workflows.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "failed workflow resumes only after confirmation and retains attempts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "26aa48cee8983222f549-0b1bdb59a60b0050c4d2",
+          "file": "workflows.spec.ts",
+          "line": 65,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 8 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-11-21T11:04:56.003Z",
+    "duration": 124300.653,
+    "expected": 29,
+    "skipped": 3,
+    "unexpected": 8,
+    "flaky": 0
+  }
+}

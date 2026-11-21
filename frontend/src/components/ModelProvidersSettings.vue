@@ -143,11 +143,21 @@ onMounted(() => { void load() })
     <p v-if="loading" role="status">正在读取服务商…</p>
     <template v-else-if="catalog">
       <article v-for="provider in catalog.providers" :key="provider.id" class="provider-card">
-        <header class="provider-card-heading"><div><h4>{{ provider.name }}</h4><span class="tag" :class="provider.enabled && provider.key_configured ? '' : 'partial'">{{ !provider.enabled ? '已停用' : provider.key_configured ? '已配置' : '待配置密钥' }}</span></div><div class="provider-actions"><button type="button" :disabled="busy" @click="edit(provider)">编辑</button><button type="button" :disabled="busy" @click="confirmDelete(provider)">删除</button></div></header>
-        <p class="provider-address">{{ provider.base_url }}</p>
+        <header class="provider-card-heading">
+          <div>
+            <h4>{{ provider.name }}</h4>
+            <div class="ui-pill-list">
+              <span class="ui-pill" :class="provider.enabled && provider.key_configured ? 'ui-pill-success' : 'ui-pill-warning'"><span class="ui-dot" aria-hidden="true" />{{ !provider.enabled ? '已停用' : provider.key_configured ? '已配置' : '待配置密钥' }}</span>
+              <span class="ui-pill ui-pill-ads">{{ protocolName(provider.protocol) }}</span>
+              <span class="ui-pill ui-pill-neutral">{{ provider.models.length }} 个模型</span>
+            </div>
+          </div>
+          <div class="provider-actions"><button type="button" :disabled="busy" @click="edit(provider)">编辑</button><button type="button" :disabled="busy" @click="confirmDelete(provider)">删除</button></div>
+        </header>
+        <p class="provider-address"><span class="ui-pill ui-pill-mono">{{ provider.base_url }}</span></p>
         <details class="provider-models" :open="catalog.providers.length === 1">
-<summary>{{ provider.models.length }} 个模型 · {{ protocolName(provider.protocol) }}</summary>
-          <div v-for="model in provider.models" :key="model.id" class="settings-row"><div><h4>{{ model.label }}</h4><p v-if="model.id !== model.label">{{ model.id }}</p></div><span v-if="model.selection_id === catalog.default_model" class="tag">默认</span><button v-else type="button" :disabled="busy || !provider.enabled || !provider.key_configured" @click="setDefault(model)">设为默认</button></div>
+          <summary>已选模型清单（{{ provider.models.length }}）</summary>
+          <div v-for="model in provider.models" :key="model.id" class="settings-row"><div><h4>{{ model.label }}</h4><p v-if="model.id !== model.label">{{ model.id }}</p></div><span v-if="model.selection_id === catalog.default_model" class="ui-pill ui-pill-accent"><span class="ui-dot" aria-hidden="true" />默认模型</span><button v-else type="button" :disabled="busy || !provider.enabled || !provider.key_configured" @click="setDefault(model)">设为默认</button></div>
           <p v-if="!provider.models.length" class="settings-footnote">还未选择模型，编辑服务商后获取目录或手动添加。</p>
         </details>
       </article>

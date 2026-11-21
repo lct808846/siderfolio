@@ -60,6 +60,10 @@ class Conversation(BaseModel):
     metadata_revision: int = 0
 
 
+class ArchivedConversation(Conversation):
+    archived_at: str
+
+
 class Turn(BaseModel):
     _auto_title_eligible: bool = PrivateAttr(default=False)
     conversation_id: str

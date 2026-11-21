@@ -1,0 +1,177 @@
+ Image astroagent-compute-worker:1.7.0 Building 
+ Image astroagent-backend:1.7.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.67kB 0.0s done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 3.29kB done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 33)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 33)
+#2 DONE 0.0s
+
+#3 [backend internal] load metadata for docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#3 DONE 2.6s
+
+#4 [compute-worker internal] load .dockerignore
+#4 transferring context: 682B done
+#4 DONE 0.0s
+
+#5 [compute-worker petar-build 4/9] ADD --checksum=sha256:5a5b7d2cfb30cc877b1fc301b5e662a7e310cca0c27e3f2942c86d6850905e3f https://codeload.github.com/lwang-astro/PeTar/tar.gz/fcca98d425cbb8bc9ce409532e31aa72dfd39e28 PeTar.tar.gz
+#5 DONE 0.0s
+
+#6 [compute-worker petar-build 6/9] ADD --checksum=sha256:5447a5827f11694aac8c6ef9ee3ace82715f0d20eb376099a4a067650ef51515 https://codeload.github.com/FDPS/FDPS/tar.gz/b3530c636f7b98f2208dc3813349cdd781d93f92 FDPS.tar.gz
+#6 DONE 0.0s
+
+#7 [compute-worker petar-build 5/9] ADD --checksum=sha256:226a2d3d99d9d69841d60e62037386ec2b14b299aa138a2d82d89fd44101f243 https://codeload.github.com/lwang-astro/SDAR/tar.gz/3a66fc20763a463055bea5c1f036162d2e46d735 SDAR.tar.gz
+#7 DONE 0.0s
+
+#8 [backend runtime 1/7] FROM docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#8 resolve docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2 0.0s done
+#8 DONE 0.0s
+
+#9 [backend internal] load build context
+#9 transferring context: 7.72kB 0.0s done
+#9 DONE 0.0s
+
+#10 [backend runtime 2/7] WORKDIR /app
+#10 CACHED
+
+#11 [backend runtime 3/7] COPY containers/application/requirements-runtime.lock /tmp/requirements-runtime.lock
+#11 CACHED
+
+#12 [backend runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#12 CACHED
+
+#13 [backend runtime 5/7] COPY pyproject.toml README.md ./
+#13 DONE 0.0s
+
+#14 [compute-worker internal] load build context
+#14 transferring context: 1.84MB 0.2s done
+#14 DONE 0.2s
+
+#12 [compute-worker runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#12 CACHED
+
+#13 [compute-worker runtime 5/7] COPY pyproject.toml README.md ./
+#13 DONE 0.0s
+
+#15 [compute-worker runtime 6/7] COPY src ./src
+#15 DONE 0.1s
+
+#16 [compute-worker petar-build 8/9] WORKDIR /build/PeTar
+#16 CACHED
+
+#17 [compute-worker petar-build 3/9] WORKDIR /build
+#17 CACHED
+
+#18 [compute-worker petar-build 2/9] RUN apt-get update     && apt-get install -y --no-install-recommends g++ make     && rm -rf /var/lib/apt/lists/*
+#18 CACHED
+
+#19 [compute-worker petar-build 5/9] ADD --checksum=sha256:226a2d3d99d9d69841d60e62037386ec2b14b299aa138a2d82d89fd44101f243 https://codeload.github.com/lwang-astro/SDAR/tar.gz/3a66fc20763a463055bea5c1f036162d2e46d735 SDAR.tar.gz
+#19 CACHED
+
+#20 [compute-worker petar-build 6/9] ADD --checksum=sha256:5447a5827f11694aac8c6ef9ee3ace82715f0d20eb376099a4a067650ef51515 https://codeload.github.com/FDPS/FDPS/tar.gz/b3530c636f7b98f2208dc3813349cdd781d93f92 FDPS.tar.gz
+#20 CACHED
+
+#21 [compute-worker petar-build 7/9] RUN mkdir PeTar SDAR FDPS     && for source in PeTar SDAR FDPS; do         tar -xzf "${source}.tar.gz" -C "$source" --strip-components=1         && install -Dm644 "$source/LICENSE" "/opt/petar/licenses/$source" || exit 1;     done
+#21 CACHED
+
+#22 [compute-worker petar-build 4/9] ADD --checksum=sha256:5a5b7d2cfb30cc877b1fc301b5e662a7e310cca0c27e3f2942c86d6850905e3f https://codeload.github.com/lwang-astro/PeTar/tar.gz/fcca98d425cbb8bc9ce409532e31aa72dfd39e28 PeTar.tar.gz
+#22 CACHED
+
+#23 [compute-worker petar-build 9/9] RUN CXXFLAGS="-static-libstdc++ -static-libgcc"     ./configure --with-arch=generic --with-mpi=no --disable-openmp     && make build/petar     && install -D -s -m 0755 build/petar /opt/petar/bin/petar     && /opt/petar/bin/petar -h >/dev/null
+#23 CACHED
+
+#24 [compute-worker runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#24 1.354 Processing /app
+#24 1.359   Preparing metadata (pyproject.toml): started
+#24 2.018   Preparing metadata (pyproject.toml): finished with status 'done'
+#24 2.024 Building wheels for collected packages: astroagent
+#24 2.028   Building wheel for astroagent (pyproject.toml): started
+#24 2.765   Building wheel for astroagent (pyproject.toml): finished with status 'done'
+#24 2.766   Created wheel for astroagent: filename=astroagent-1.7.0-py3-none-any.whl size=702263 sha256=59b2f595deb75a661f93814230953d1f6d348308efac63458f79774a28e84de7
+#24 2.767   Stored in directory: /tmp/pip-ephem-wheel-cache-kpgmgcv9/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+#24 2.772 Successfully built astroagent
+#24 2.772 Installing collected packages: astroagent
+#24 2.978 Successfully installed astroagent-1.7.0
+#24 2.978 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#24 3.891 
+#24 3.891 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#24 3.891 [notice] To update, run: pip install --upgrade pip
+#24 4.974 No broken requirements found.
+#24 DONE 5.1s
+
+#24 [compute-worker runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#24 DONE 5.1s
+
+#25 [compute-worker runtime 3/7] COPY containers/application/requirements-runtime.lock /tmp/requirements-runtime.lock
+#25 CACHED
+
+#26 [compute-worker runtime 5/7] COPY pyproject.toml README.md ./
+#26 CACHED
+
+#10 [compute-worker runtime 2/7] WORKDIR /app
+#10 CACHED
+
+#27 [compute-worker runtime 6/7] COPY src ./src
+#27 CACHED
+
+#28 [compute-worker runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#28 CACHED
+
+#29 [compute-worker runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#29 CACHED
+
+#30 [compute-worker compute-worker 1/3] COPY --from=petar-build /opt/petar /opt/petar
+#30 DONE 0.1s
+
+#31 [compute-worker compute-worker 2/3] COPY containers/application/requirements-compute.lock /tmp/requirements-compute.lock
+#31 DONE 0.1s
+
+#32 [backend] exporting to image
+#32 exporting layers
+#32 exporting layers 0.3s done
+#32 exporting manifest sha256:3b2770e77a12092c3f4d6b6092e6db06c3d54f2fa8d8a2f76d5683173ed6ef29 0.0s done
+#32 exporting config sha256:4cd54d898a12d730617562cacd9754df5af5cccdfcdfd985fe2d46fa7e1c46db 0.0s done
+#32 exporting attestation manifest sha256:9c579149647991d88543bc7d18f67e37666868f461d8571c362c17e81d687d9d 0.0s done
+#32 exporting manifest list sha256:c77a58a67eb47371613e38cea5031a05dfbdbd7a87e68fde62013636372c8220 0.0s done
+#32 naming to docker.io/library/astroagent-backend:1.7.0 done
+#32 unpacking to docker.io/library/astroagent-backend:1.7.0
+#32 unpacking to docker.io/library/astroagent-backend:1.7.0 0.2s done
+#32 DONE 0.6s
+
+#33 [backend] resolving provenance for metadata file
+#33 DONE 0.0s
+
+#34 [compute-worker compute-worker 3/3] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#34 2.576 Collecting rebound==4.4.11 (from -r /tmp/requirements-compute.lock (line 1))
+#34 3.824   Downloading rebound-4.4.11-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (793 kB)
+#34 5.107      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 793.5/793.5 kB 762.2 kB/s eta 0:00:00
+#34 5.113 Installing collected packages: rebound
+#34 5.179 Successfully installed rebound-4.4.11
+#34 5.179 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#34 6.121 
+#34 6.121 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#34 6.121 [notice] To update, run: pip install --upgrade pip
+#34 DONE 6.2s
+
+#35 [compute-worker] exporting to image
+#35 exporting layers
+#35 exporting layers 0.2s done
+#35 exporting manifest sha256:2707ea9a156d96ab288c20ebf6bb901a63d49029700c89616a3db078931277c3 0.0s done
+#35 exporting config sha256:002c76e83102ff1f81d982443d5ab98fbebf7970c7066a2f933a8da03d3b9704 0.0s done
+#35 exporting attestation manifest sha256:fe5f4c304c13f9f53a4c4fd60bc705f7e388236a5744480d0cebb27857bc652f 0.0s done
+#35 exporting manifest list sha256:17651dc717c82e27bb99b9b2db88c812b05eb02fba9d36c51fafaa624d45ac27 0.0s done
+#35 naming to docker.io/library/astroagent-compute-worker:1.7.0 done
+#35 unpacking to docker.io/library/astroagent-compute-worker:1.7.0 0.1s done
+#35 DONE 0.4s
+
+#36 [compute-worker] resolving provenance for metadata file
+#36 DONE 0.0s
+ Image astroagent-backend:1.7.0 Built 
+ Image astroagent-compute-worker:1.7.0 Built 

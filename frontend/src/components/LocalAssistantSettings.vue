@@ -31,7 +31,17 @@ onMounted(() => { void act(localAssistantApi.status) })
     <p v-if="busy" role="status">正在读取或更新本地助手状态…</p>
     <p v-else-if="!state && !error" role="status">本地助手状态未确认。</p>
     <template v-if="state">
-      <div class="settings-row"><div><h4>本地小模型</h4><p>{{ state.model }}<span v-if="state.quantization"> · {{ state.parameter_size }} / {{ state.quantization }}</span></p></div><span class="tag">{{ labels[state.state] }}</span></div>
+      <div class="settings-row">
+        <div>
+          <h4>本地小模型</h4>
+          <div class="ui-pill-list" style="margin-top: 6px;">
+            <span class="ui-pill ui-pill-mono">{{ state.model }}</span>
+            <span v-if="state.parameter_size" class="ui-pill ui-pill-compute">{{ state.parameter_size }}</span>
+            <span v-if="state.quantization" class="ui-pill ui-pill-neutral">{{ state.quantization }}</span>
+          </div>
+        </div>
+        <span class="ui-pill" :class="state.state === 'ready' ? 'ui-pill-success' : state.state === 'busy' ? 'ui-pill-warning' : 'ui-pill-neutral'"><span class="ui-dot" aria-hidden="true" />{{ labels[state.state] }}</span>
+      </div>
       <p class="settings-footnote" role="status">{{ state.message }}</p>
       <h3 class="settings-subheading">功能偏好</h3>
       <label class="settings-row settings-switch-row"><div><h4>启用本地助手</h4><p>拟标题、摘要、整理格式与查询条件建议</p></div><input class="settings-switch" type="checkbox" role="switch" :checked="state.preferences.enabled" :disabled="busy || !state.storage_ready || !state.configured" @change="toggle('enabled', $event)" /></label>

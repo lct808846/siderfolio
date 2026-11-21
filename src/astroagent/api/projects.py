@@ -65,6 +65,17 @@ def memberships(service: Projects):
         }
 
 
+@router.get("/default", response_model=Project | None)
+def default_project(service: Projects):
+    return service.repository.default_project()
+
+
+@router.post("/default", response_model=Project)
+def ensure_default_project(service: Projects):
+    with service.conversations.gate:
+        return service.repository.ensure_default()
+
+
 @router.post(
     "/import",
     response_model=ImportResult,

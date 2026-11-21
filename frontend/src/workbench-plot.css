@@ -8,15 +8,25 @@
 }
 .composer-task-button svg, .workbench-plot-upload svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; }
 .composer-task-tools > .composer-task-button:hover:not(:disabled) { color: var(--accent); background: var(--soft); }
-.composer-task-tools > .composer-plot-toggle.active { color: #2e6547; background: var(--accent-soft); border-color: #ccded0; }
-.composer-nbody-toggle small { padding-left: 6px; border-left: 1px solid var(--line); color: var(--muted); font-size: 10px; }
-.nbody-placeholder { max-width: min(440px, calc(100vw - 32px)); }
-.nbody-placeholder p { margin-block: 18px; color: var(--muted); line-height: 1.8; }
-.composer-plot-return { color: var(--muted); border-left: 1px solid #c8d8cb; padding-left: 9px; margin-left: 2px; font-size: 11px; }
-.composer-plot-mode { border-color: #b5cdbb; }
+.composer-task-tools > .composer-plot-toggle.active { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 32%, var(--line)); }
+.composer-task-tools > .composer-task-button.is-unavailable { color: var(--muted); border-style: dashed; }
+.composer-status-pill {
+  display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 999px;
+  background: var(--soft); color: var(--muted); font-size: 10.5px; line-height: 1.5;
+}
+.composer-readiness-hint {
+  margin: 0; color: var(--warning); font-size: 12px; font-weight: 500;
+}
+.workbench-plot-loaded-pill {
+  display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px;
+  border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+  font-size: 11.5px; font-weight: 550; align-self: flex-end;
+}
+.composer-plot-return { color: var(--muted); border-left: 1px solid var(--line-strong); padding-left: 9px; margin-left: 2px; font-size: 11px; }
+.composer-plot-mode { border-color: color-mix(in srgb, var(--accent) 44%, var(--line)); }
 .workbench-plot-upload { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; min-height: 34px; padding: 0; margin-left: auto; border: 0; background: transparent; color: var(--muted); }
 .workbench-plot { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; min-width: 0; overflow: hidden; animation: surface-fade-in 180ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)); }
-.workbench-plot-context { display: flex; flex: none; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fafcfb; max-height: 35%; overflow: auto; }
+.workbench-plot-context { display: flex; flex: none; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: var(--surface-subtle); max-height: 35%; overflow: auto; }
 .workbench-plot-context > label { display: flex; flex-direction: column; gap: 5px; min-width: 130px; max-width: min(100%, 320px); color: var(--muted); font-size: 11px; }
 .workbench-plot-context select { min-height: 34px; max-width: 100%; padding: 6px 10px; font-size: 12px; }
 .workbench-plot-context > button { min-height: 34px; padding: 6px 11px; font-size: 12px; }
@@ -54,6 +64,16 @@
   width: min(500px, 100%); border-radius: 0; z-index: 30; box-shadow: -12px 0 32px rgb(31 62 44 / 12%);
 }
 .plot-workspace-embedded > .plot-results > .workspace-pane-header { min-height: 48px; border-radius: 0; }
+.plot-results-refine { width: 100%; margin: 10px 0 14px; }
+@media (min-width: 1180px) {
+  .workbench-plot > .plot-workspace.plot-workspace-embedded[data-results-open="true"] {
+    grid-template-columns: 0 minmax(0, 1fr) minmax(320px, 420px);
+  }
+  .plot-workspace.plot-workspace-embedded[data-results-open="true"] > .plot-results {
+    position: static; grid-column: 3; grid-row: 1; width: auto; height: 100%; min-height: 0;
+    border-left: 1px solid var(--line); box-shadow: none; z-index: auto;
+  }
+}
 .workbench-plot ~ .composer { margin-top: 10px; }
 @media (max-width: 680px) {
   .workbench-plot-context { gap: 8px; padding: 10px 12px; }

@@ -1,0 +1,10 @@
+binary_and_artifacts {'passed': True, 'detail': {'metrics': {'period_relative': 2.220446049250313e-16, 'separation_AU': 2.220446049250313e-16, 'center_AU': 0.0, 'energy_relative': 4.440892098500626e-16, 'angular_relative': 2.220446049250313e-16}, 'archive_sha256': 'fc0b5eb14860363692bf73dfb771e539541c6868981c8e153822971fce1e4f49', 'archive_members': 6, 'rows': 258, 'same_parameter_rerun': 'identical samples', 'worker_image': 'sha256:154b877eac7eb5e1188d135160c7b7ed0ff9e39ae8f1c55dfc4ae8c4bd5867b8', 'integration_seconds': 0.03599058800000421}, 'wall_seconds': 8.344}
+ownership {'passed': True, 'detail': {'cross_account_and_parent_checks': 17, 'anonymous': 401, 'csrf': 403}, 'wall_seconds': 1.343}
+three_body {'passed': True, 'detail': {'max_abs_coordinate_or_velocity_delta': 0.0, 'reference_epsilon': 1e-12, 'particles': 3, 'samples': 17}, 'wall_seconds': 4.688}
+ Container astroagent-v17-qa-20261118t112200z-compute-worker-1 Stopping 
+ Container astroagent-v17-qa-20261118t112200z-compute-worker-1 Stopped 
+ Container astroagent-v17-qa-20261118t112200z-compute-worker-1 Starting 
+ Container astroagent-v17-qa-20261118t112200z-compute-worker-1 Started 
+ Container astroagent-v17-qa-20261118t112200z-compute-worker-1 Waiting 
+ Container astroagent-v17-qa-20261118t112200z-compute-worker-1 Healthy 
+container_boundary {'passed': True, 'detail': {'network': 'none', 'uid': 10001, 'memory_MiB': 512, 'cpus': 1, 'volume_mounts': 1, 'worker_unavailable_preserves_draft': True}, 'wall_seconds': 15.953}

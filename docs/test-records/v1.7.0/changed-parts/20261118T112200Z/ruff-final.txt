@@ -1,0 +1,21 @@
+F811 Redefinition of unused `identity_client` from line 9
+  --> tests\test_compute_postgres.py:21:16
+   |
+20 | @pytest.fixture
+21 | def laboratory(identity_client, tmp_path, monkeypatch):
+   |                ^^^^^^^^^^^^^^^ `identity_client` redefined here
+22 |     client = identity_client
+23 |     monkeypatch.setenv("ASTROAGENT_COMPUTE_ENABLED", "1")
+   |
+  ::: tests\test_compute_postgres.py:9:45
+   |
+ 7 | import pytest
+ 8 | from langchain_core.messages import AIMessage
+ 9 | from test_identity_postgres import account, identity_client, post  # noqa: F401
+   |                                             --------------- previous definition of `identity_client` here
+10 |
+11 | from astroagent.api import compute
+   |
+help: Remove definition: `identity_client`
+
+Found 1 error.

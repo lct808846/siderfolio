@@ -19,7 +19,7 @@ from astroagent.schemas import ErrorInfo, GaiaQuery, GaiaQueryResult, GaiaSource
 GAIA_ENDPOINT = "https://gea.esac.esa.int/tap-server/tap/sync"
 GAIA_ARCHIVE = "https://gea.esac.esa.int/archive/"
 GAIA_TABLE = "gaiadr3.gaia_source"
-MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+MAX_RESPONSE_BYTES = 4 * 1024 * 1024
 GAIA_UNITS = {
     "source_id": "1",
     "ra": "deg",
@@ -88,6 +88,20 @@ def build_adql(query: GaiaQuery) -> tuple[str, int]:
             " AND parallax > 0 AND parallax_error > 0"
             f" AND parallax / parallax_error >= {query.parallax_snr_min!r}"
         )
+    if query.parallax_min is not None:
+        adql += f" AND parallax >= {query.parallax_min!r}"
+    if query.parallax_max is not None:
+        adql += f" AND parallax <= {query.parallax_max!r}"
+    if query.pmra_min is not None:
+        adql += f" AND pmra >= {query.pmra_min!r}"
+    if query.pmra_max is not None:
+        adql += f" AND pmra <= {query.pmra_max!r}"
+    if query.pmdec_min is not None:
+        adql += f" AND pmdec >= {query.pmdec_min!r}"
+    if query.pmdec_max is not None:
+        adql += f" AND pmdec <= {query.pmdec_max!r}"
+    if query.g_mag_max is not None:
+        adql += f" AND phot_g_mean_mag <= {query.g_mag_max!r}"
     return adql + " ORDER BY separation_deg ASC, source_id ASC", query.limit + 1
 
 
@@ -349,7 +363,7 @@ class GaiaService:
                 analysis=analyze_sources(sources, arguments, truncated=has_more),
             )
         except ResponseTooLarge:
-            return failure("gaia_response_too_large", "Gaia 响应超过 2 MiB 上限，已终止读取。")
+            return failure("gaia_response_too_large", "Gaia 响应超过 4 MiB 上限，已终止读取。")
         except TapQueryError:
             return failure("gaia_query_failed", "Gaia TAP 报告查询失败，请检查固定模板。")
         except requests.Timeout:

@@ -278,6 +278,24 @@ class ConversationRepository:
             db.execute("UPDATE projects SET record=? WHERE id=?", (encode(value), value["id"]))
 
     @staticmethod
+    def _has_archive_table(db):
+        if getattr(db, "dialect", None) == "postgresql":
+            return bool(db.execute("SELECT to_regclass('conversation_archives')").fetchone()[0])
+        return bool(
+            db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='conversation_archives'"
+            ).fetchone()
+        )
+
+    @staticmethod
+    def _ensure_archive_table(db):
+        db.execute(
+            "CREATE TABLE IF NOT EXISTS conversation_archives ("
+            "conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE,"
+            "archived_at TEXT NOT NULL)"
+        )
+
+    @staticmethod
     def _used(db):
         from astroagent.knowledge import used_bytes
 
@@ -291,6 +309,11 @@ class ConversationRepository:
                 len(encode(dict(row)).encode()) for row in db.execute("SELECT * FROM conversations")
             )
         )
+        if ConversationRepository._has_archive_table(db):
+            base += sum(
+                len(encode(dict(row)).encode())
+                for row in db.execute("SELECT * FROM conversation_archives")
+            )
         for table in (
             "projects",
             "snapshots",
@@ -346,12 +369,60 @@ class ConversationRepository:
             )
             return value
 
-    def list(self):
+    def list(self, *, include_archived: bool = False):
         with self.connection() as db:
+            if not include_archived and self._has_archive_table(db):
+                return [
+                    dict(row)
+                    for row in db.execute(
+                        "SELECT c.* FROM conversations c "
+                        "LEFT JOIN conversation_archives a ON c.id=a.conversation_id "
+                        "WHERE a.conversation_id IS NULL "
+                        "ORDER BY c.updated_at DESC,c.id"
+                    )
+                ]
             return [
                 dict(row)
                 for row in db.execute("SELECT * FROM conversations ORDER BY updated_at DESC,id")
             ]
+
+    def list_archived(self):
+        with self.connection() as db:
+            if not self._has_archive_table(db):
+                return []
+            return [
+                dict(row)
+                for row in db.execute(
+                    "SELECT c.id,c.title,c.created_at,c.updated_at,c.revision,"
+                    "c.metadata_revision,a.archived_at "
+                    "FROM conversations c JOIN conversation_archives a "
+                    "ON c.id=a.conversation_id "
+                    "ORDER BY a.archived_at DESC,c.id"
+                )
+            ]
+
+    def archive(self, identifier):
+        with self.connection() as db, self.transaction(db):
+            conversation = self._conversation(db, identifier)
+            self._idle(db, identifier)
+            self._ensure_archive_table(db)
+            archived_at = utc_now()
+            db.execute(
+                "INSERT INTO conversation_archives (conversation_id,archived_at) VALUES (?,?) "
+                "ON CONFLICT (conversation_id) DO UPDATE SET archived_at=excluded.archived_at",
+                (identifier, archived_at),
+            )
+            return {**conversation, "archived_at": archived_at}
+
+    def unarchive(self, identifier):
+        with self.connection() as db, self.transaction(db):
+            conversation = self._conversation(db, identifier)
+            if self._has_archive_table(db):
+                db.execute(
+                    "DELETE FROM conversation_archives WHERE conversation_id=?",
+                    (identifier,),
+                )
+            return conversation
 
     def detail(self, identifier):
         with self.connection() as db:
@@ -507,10 +578,11 @@ class ConversationRepository:
                 received_at=utc_now(),
             )
             text = turn.model_dump_json()
-            turn._auto_title_eligible = (
-                needs_title
-                and conversation["revision"] == 0
-                and conversation["metadata_revision"] == 0
+            turn._auto_title_eligible = needs_title and conversation["revision"] == 0
+            turn._title_metadata_revision = (
+                conversation["metadata_revision"] + 1
+                if needs_title
+                else conversation["metadata_revision"]
             )
             db.execute(
                 "INSERT INTO turns VALUES (?,?,?,?,?,?,?,?,?)",
@@ -536,6 +608,11 @@ class ConversationRepository:
                 db.execute(
                     "UPDATE conversations SET revision=?,updated_at=? WHERE id=?",
                     (turn.revision, utc_now(), identifier),
+                )
+            if self._has_archive_table(db):
+                db.execute(
+                    "DELETE FROM conversation_archives WHERE conversation_id=?",
+                    (identifier,),
                 )
             self._touch_project(db, identifier)
             if self._used(db) > self.settings.storage_bytes:

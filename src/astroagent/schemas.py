@@ -110,9 +110,16 @@ class GaiaQuery(BaseModel):
     ra_deg: Annotated[FiniteNumber, Field(ge=0, lt=360)] | None = None
     dec_deg: Annotated[FiniteNumber, Field(ge=-90, le=90)] | None = None
     radius_arcmin: Annotated[FiniteNumber, Field(gt=0, le=30)] | None = None
-    limit: StrictInt = Field(default=20, ge=1, le=100)
+    limit: StrictInt = Field(default=20, ge=1, le=500)
     ruwe_max: Annotated[FiniteNumber, Field(gt=0, le=10)] | None = None
     parallax_snr_min: Annotated[FiniteNumber, Field(gt=0, le=1000)] | None = None
+    parallax_min: Annotated[FiniteNumber, Field(ge=-100, le=1000)] | None = None
+    parallax_max: Annotated[FiniteNumber, Field(ge=-100, le=1000)] | None = None
+    pmra_min: Annotated[FiniteNumber, Field(ge=-10000, le=10000)] | None = None
+    pmra_max: Annotated[FiniteNumber, Field(ge=-10000, le=10000)] | None = None
+    pmdec_min: Annotated[FiniteNumber, Field(ge=-10000, le=10000)] | None = None
+    pmdec_max: Annotated[FiniteNumber, Field(ge=-10000, le=10000)] | None = None
+    g_mag_max: Annotated[FiniteNumber, Field(ge=-5, le=25)] | None = None
     estimate_distance: StrictBool = False
 
     @model_validator(mode="after")
@@ -127,6 +134,13 @@ class GaiaQuery(BaseModel):
                 "limit",
                 "ruwe_max",
                 "parallax_snr_min",
+                "parallax_min",
+                "parallax_max",
+                "pmra_min",
+                "pmra_max",
+                "pmdec_min",
+                "pmdec_max",
+                "g_mag_max",
             }
             if self.model_fields_set & cone_fields:
                 raise ValueError("Cone fields are not allowed in source_id mode")
@@ -137,15 +151,52 @@ class GaiaQuery(BaseModel):
             or self.radius_arcmin is None
         ):
             raise ValueError("Cone mode requires coordinates and radius, without source_id")
+        if (
+            self.parallax_min is not None
+            and self.parallax_max is not None
+            and self.parallax_min > self.parallax_max
+        ):
+            raise ValueError("parallax_min must be <= parallax_max")
+        if (
+            self.pmra_min is not None
+            and self.pmra_max is not None
+            and self.pmra_min > self.pmra_max
+        ):
+            raise ValueError("pmra_min must be <= pmra_max")
+        if (
+            self.pmdec_min is not None
+            and self.pmdec_max is not None
+            and self.pmdec_min > self.pmdec_max
+        ):
+            raise ValueError("pmdec_min must be <= pmdec_max")
         return self
 
     def effective_parameters(self) -> dict:
-        fields = (
-            {"mode", "source_id", "estimate_distance"}
-            if self.mode == "source_id"
-            else set(type(self).model_fields) - {"source_id"}
+        if self.mode == "source_id":
+            return self.model_dump(include={"mode", "source_id", "estimate_distance"})
+        base = {
+            "mode",
+            "ra_deg",
+            "dec_deg",
+            "radius_arcmin",
+            "limit",
+            "ruwe_max",
+            "parallax_snr_min",
+            "estimate_distance",
+        }
+        optional = (
+            "parallax_min",
+            "parallax_max",
+            "pmra_min",
+            "pmra_max",
+            "pmdec_min",
+            "pmdec_max",
+            "g_mag_max",
         )
-        return self.model_dump(include=fields)
+        for key in optional:
+            if getattr(self, key) is not None:
+                base.add(key)
+        return self.model_dump(include=base)
 
 
 class GaiaSourceData(BaseModel):

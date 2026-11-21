@@ -13,6 +13,8 @@ from astroagent.api.artifacts import router as artifacts_router
 from astroagent.api.attachments import router as attachments_router
 from astroagent.api.auth import router as auth_router
 from astroagent.api.chat import router as chat_router
+from astroagent.api.compute import router as compute_router
+from astroagent.api.compute import status_router as compute_status_router
 from astroagent.api.conversations import router as conversations_router
 from astroagent.api.exports import ExportBodyLimit
 from astroagent.api.exports import router as exports_router
@@ -41,6 +43,7 @@ async def lifespan(app):
     app.state.conversation_service = None
     app.state.repository = None
     app.state.identity = None
+    dispatcher = None
     try:
         from astroagent.identity import IdentityRuntime
 
@@ -50,8 +53,15 @@ async def lifespan(app):
             exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
         )
     try:
+        from astroagent.compute_tasks import Dispatcher, enabled
+
+        if app.state.identity is not None and enabled():
+            dispatcher = Dispatcher(app.state.identity.store)
+            dispatcher.start()
         yield
     finally:
+        if dispatcher is not None:
+            dispatcher.close()
         identity = app.state.identity
         if identity is not None:
             identity.close()
@@ -71,6 +81,8 @@ app.include_router(exports_router)
 app.include_router(conversations_router)
 app.include_router(artifacts_router)
 app.include_router(projects_router)
+app.include_router(compute_status_router)
+app.include_router(compute_router)
 app.include_router(workflows_router)
 app.include_router(knowledge_router)
 app.include_router(links_router)

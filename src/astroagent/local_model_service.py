@@ -214,15 +214,23 @@ class LocalModelService:
                 return
             self.title_completions.add(completion)
         try:
+            expected_rev = getattr(turn, "_title_metadata_revision", 1)
             self.dispatch.submit(
-                self._automatic, turn.conversation_id, turn.turn_id, turn.message, completion
+                self._automatic,
+                turn.conversation_id,
+                turn.turn_id,
+                turn.message,
+                expected_rev,
+                completion,
             )
         except RuntimeError:
             self.dispatch_slots.release()
             self._complete_title(completion)
         return completion
 
-    def _automatic(self, conversation_id, turn_id, original, completion):
+    def _automatic(
+        self, conversation_id, turn_id, original, expected_metadata_revision, completion
+    ):
         queued = False
         try:
             if self.closed or completion.cancelled.is_set():
@@ -235,7 +243,7 @@ class LocalModelService:
             current = source[0]
             if (
                 source[1] != turn_id
-                or current["metadata_revision"] != 1
+                or current["metadata_revision"] != expected_metadata_revision
                 or current["title"] != conversation_title(original)
             ):
                 return

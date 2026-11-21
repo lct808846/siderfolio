@@ -1,0 +1,218 @@
+ Image astroagent-compute-worker:1.7.0-dev.0 Building 
+ Image astroagent-frontend:1.7.0-dev.0 Building 
+ Image astroagent-backend:1.7.0-dev.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.42kB 0.0s done
+#1 DONE 0.0s
+
+#2 [compute-worker internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.91kB done
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${DOCKER_CLI_IMAGE} results in empty or invalid base image name (line 4)
+#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${PYTHON_IMAGE} results in empty or invalid base image name (line 5)
+#2 DONE 0.0s
+
+#3 [frontend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 563B done
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 2)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 9)
+#3 WARN: InvalidDefaultArgInFrom: Default value for ARG ${NODE_IMAGE} results in empty or invalid base image name (line 17)
+#3 DONE 0.0s
+
+#4 [frontend internal] load metadata for docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#4 DONE 0.0s
+
+#5 [frontend internal] load .dockerignore
+#5 transferring context: 682B done
+#5 DONE 0.0s
+
+#6 [frontend build 1/6] FROM docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+#6 resolve docker.io/library/node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d 0.0s done
+#6 DONE 0.0s
+
+#7 [frontend internal] load build context
+#7 transferring context: 1.10MB 0.1s done
+#7 DONE 0.1s
+
+#8 [frontend build 2/6] WORKDIR /app
+#8 CACHED
+
+#9 [frontend build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#9 CACHED
+
+#10 [frontend build 4/6] RUN npm ci
+#10 CACHED
+
+#11 [frontend build 5/6] COPY frontend ./
+#11 DONE 0.1s
+
+#12 [compute-worker internal] load metadata for docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#12 DONE 2.3s
+
+#5 [compute-worker internal] load .dockerignore
+#5 transferring context: 682B done
+#5 DONE 0.0s
+
+#13 [backend runtime 1/7] FROM docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+#13 resolve docker.io/library/python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2 0.0s done
+#13 DONE 0.0s
+
+#14 [compute-worker internal] load build context
+#14 transferring context: 49.73kB 0.0s done
+#14 DONE 0.0s
+
+#15 [backend internal] load build context
+#15 transferring context: 135.61kB 0.0s done
+#15 DONE 0.0s
+
+#16 [compute-worker runtime 2/7] WORKDIR /app
+#16 CACHED
+
+#17 [compute-worker runtime 3/7] COPY containers/application/requirements-runtime.lock /tmp/requirements-runtime.lock
+#17 CACHED
+
+#18 [compute-worker runtime 4/7] RUN python -m pip install --no-deps --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements-runtime.lock
+#18 CACHED
+
+#19 [backend runtime 5/7] COPY pyproject.toml README.md ./
+#19 CACHED
+
+#20 [compute-worker runtime 6/7] COPY src ./src
+#20 DONE 0.1s
+
+#21 [frontend build 6/6] RUN npm run build
+#21 0.416 
+#21 0.416 > astroagent-workbench@1.7.0-dev.0 build
+#21 0.416 > vue-tsc --noEmit && vite build
+#21 0.416 
+#21 ...
+
+#20 [backend runtime 6/7] COPY src ./src
+#20 DONE 0.1s
+
+#22 [backend runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#22 2.190 Processing /app
+#22 2.198   Preparing metadata (pyproject.toml): started
+#22 3.159   Preparing metadata (pyproject.toml): finished with status 'done'
+#22 3.166 Building wheels for collected packages: astroagent
+#22 3.171   Building wheel for astroagent (pyproject.toml): started
+#22 4.378   Building wheel for astroagent (pyproject.toml): finished with status 'done'
+#22 4.380   Created wheel for astroagent: filename=astroagent-1.7.0.dev0-py3-none-any.whl size=694214 sha256=2484dc48570c7324ee254241945264198b3e2c1145349f7c3b67e1e631681b02
+#22 4.381   Stored in directory: /tmp/pip-ephem-wheel-cache-xi6fnjbz/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+#22 4.388 Successfully built astroagent
+#22 4.388 Installing collected packages: astroagent
+#22 4.725 Successfully installed astroagent-1.7.0.dev0
+#22 4.725 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#22 5.464 
+#22 5.464 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#22 5.464 [notice] To update, run: pip install --upgrade pip
+#22 ...
+
+#21 [frontend build 6/6] RUN npm run build
+#21 8.270 vite v7.3.8 building client environment for production...
+#21 8.456 transforming...
+#21 ...
+
+#22 [compute-worker runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#22 7.118 No broken requirements found.
+#22 DONE 7.3s
+
+#22 [backend runtime 7/7] RUN python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent     && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute     && touch /var/lib/astroagent-compute/.volume     && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+#22 DONE 7.3s
+
+#23 [compute-worker compute-worker 1/2] COPY containers/application/requirements-compute.lock /tmp/requirements-compute.lock
+#23 DONE 0.1s
+
+#24 [backend] exporting to image
+#24 exporting layers
+#24 exporting layers 0.4s done
+#24 exporting manifest sha256:03709af7afbdc6b24c32ecd8045939d9c04c26eb3d90895c6dce637be3e1949f 0.0s done
+#24 exporting config sha256:ac902ed4c0d6cb9681a2b3a9ae18733d1f60735567ce2feac31b58b13faa6a9d 0.0s done
+#24 exporting attestation manifest sha256:ffa4913b3dadc3f9e02cc1ef9329b5d9cd37ddc6ad31f8fb94c0995c0453b4d8 0.0s done
+#24 exporting manifest list sha256:e079e2af7ac5d8e1638ae0d40d2f80562b563215e0825e0de0b1b01edd8da98f
+#24 exporting manifest list sha256:e079e2af7ac5d8e1638ae0d40d2f80562b563215e0825e0de0b1b01edd8da98f 0.0s done
+#24 naming to docker.io/library/astroagent-backend:1.7.0-dev.0 done
+#24 unpacking to docker.io/library/astroagent-backend:1.7.0-dev.0
+#24 unpacking to docker.io/library/astroagent-backend:1.7.0-dev.0 0.2s done
+#24 DONE 0.8s
+
+#25 [compute-worker compute-worker 2/2] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#25 ...
+
+#26 [backend] resolving provenance for metadata file
+#26 DONE 0.0s
+
+#21 [frontend build 6/6] RUN npm run build
+#21 12.57 ✓ 166 modules transformed.
+#21 12.94 rendering chunks...
+#21 12.95 computing gzip size...
+#21 12.97 dist/index.html                   0.44 kB │ gzip:   0.33 kB
+#21 12.97 dist/assets/index-CeFK8Q54.css  217.38 kB │ gzip:  41.05 kB
+#21 12.97 dist/assets/index-CnzYTZXd.js   600.86 kB │ gzip: 208.23 kB
+#21 12.97 
+#21 12.97 (!) Some chunks are larger than 500 kB after minification. Consider:
+#21 12.97 - Using dynamic import() to code-split the application
+#21 12.97 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+#21 12.97 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+#21 12.97 ✓ built in 4.66s
+#21 DONE 13.1s
+
+#25 [compute-worker compute-worker 2/2] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#25 3.132 Collecting rebound==4.4.11 (from -r /tmp/requirements-compute.lock (line 1))
+#25 ...
+
+#8 [frontend build 2/6] WORKDIR /app
+#8 CACHED
+
+#27 [frontend runtime 3/4] COPY --from=build --chown=node:node /app/dist ./dist
+#27 DONE 0.0s
+
+#28 [frontend runtime 4/4] COPY --chown=node:node frontend/server.mjs ./server.mjs
+#28 DONE 0.1s
+
+#25 [compute-worker compute-worker 2/2] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#25 ...
+
+#29 [frontend] exporting to image
+#29 exporting layers 0.1s done
+#29 exporting manifest sha256:438e26ccbec07d779b30663b95e2962a8fe8747b13f84828d90cadc28e0ec245 0.0s done
+#29 exporting config sha256:a66d259072abe47e4761f0d08173a45583da0e6fec2ea64e6737b1be0bc0a3fb 0.0s done
+#29 exporting attestation manifest sha256:b8f09db0d80b5bcbf9d6c3ab301a4a15895cc7346b4324cec625504ab87f74af 0.0s done
+#29 exporting manifest list sha256:d55e71baa0ddc357d8b1161a5c6e1bbdc0de9144671944b65cb4fb8c367426d6 0.0s done
+#29 naming to docker.io/library/astroagent-frontend:1.7.0-dev.0 done
+#29 unpacking to docker.io/library/astroagent-frontend:1.7.0-dev.0 0.1s done
+#29 DONE 0.3s
+
+#25 [compute-worker compute-worker 2/2] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#25 4.013   Downloading rebound-4.4.11-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (793 kB)
+#25 ...
+
+#30 [frontend] resolving provenance for metadata file
+#30 DONE 0.0s
+
+#25 [compute-worker compute-worker 2/2] RUN python -m pip install --require-hashes --no-deps --only-binary=:all: -r /tmp/requirements-compute.lock
+#25 5.399      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 793.5/793.5 kB 676.5 kB/s eta 0:00:00
+#25 5.405 Installing collected packages: rebound
+#25 5.497 Successfully installed rebound-4.4.11
+#25 5.497 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#25 6.164 
+#25 6.164 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#25 6.164 [notice] To update, run: pip install --upgrade pip
+#25 DONE 6.3s
+
+#31 [compute-worker] exporting to image
+#31 exporting layers 0.3s done
+#31 exporting manifest sha256:45eae63f5e40e8be0526937951c708f50f6711201f036c32917a807eb8bf88f1 0.0s done
+#31 exporting config sha256:cac7b7f3e4ce9a0f21250d937a4e1782295a62b702cb2110120beb04ca1b8b18 0.0s done
+#31 exporting attestation manifest sha256:3d7a5e367b73fa7983d119ff9125efb01c88c63dbf12372102ca01457ca76984 0.0s done
+#31 exporting manifest list sha256:154b877eac7eb5e1188d135160c7b7ed0ff9e39ae8f1c55dfc4ae8c4bd5867b8 0.0s done
+#31 naming to docker.io/library/astroagent-compute-worker:1.7.0-dev.0 done
+#31 unpacking to docker.io/library/astroagent-compute-worker:1.7.0-dev.0 0.1s done
+#31 DONE 0.5s
+
+#32 [compute-worker] resolving provenance for metadata file
+#32 DONE 0.0s
+ Image astroagent-compute-worker:1.7.0-dev.0 Built 
+ Image astroagent-backend:1.7.0-dev.0 Built 
+ Image astroagent-frontend:1.7.0-dev.0 Built 

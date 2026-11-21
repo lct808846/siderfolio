@@ -1,0 +1,337 @@
+[WebServer] (node:8656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 40 tests using 1 worker
+
+(node:35880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\account-changes.spec.ts:35:1 › account QR enrollment, invalid code, recovery download and narrow layout (2.6s)
+  x   2 [chromium] › tests\browser\account-changes.spec.ts:69:1 › username propagates to sidebar, menu closes and logout clears private browser state (14.7s)
+(node:27380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  3 [chromium] › tests\browser\account-changes.spec.ts:100:1 › activity dialog only revokes the selected other browser after password confirmation (1.5s)
+  ok  4 [chromium] › tests\browser\account-changes.spec.ts:117:1 › MFA switch waits for confirmation and disabling requires proof (2.0s)
+  -   5 [chromium] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens
+  x   6 [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (10.9s)
+(node:35116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   7 [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (5.8s)
+(node:24388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   8 [chromium] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded (10.8s)
+(node:33956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -   9 [chromium] › tests\browser\knowledge.spec.ts:50:1 › public PDF citation opens its original and downloads identical bytes
+  x  10 [chromium] › tests\browser\knowledge.spec.ts:75:1 › long Chinese filename remains usable on a narrow screen (10.7s)
+(node:20460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [chromium] › tests\browser\model-settings.spec.ts:5:1 › provider editor, directory, default, key omission, conflict and removal (3.9s)
+  ok 12 [chromium] › tests\browser\model-settings.spec.ts:91:1 › ordinary user settings expose only account controls and no admin link (593ms)
+  x  13 [chromium] › tests\browser\model-settings.spec.ts:108:1 › RAG and local assistant failures remain readable without starting model jobs (325ms)
+(node:36836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 14 [chromium] › tests\browser\model-settings.spec.ts:131:1 › administrator layout keeps masked metadata, tabs and current-account protection (1.1s)
+  x  15 [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (240ms)
+(node:30272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  16 [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (5.7s)
+Testing stopped early after 8 maximum allowed failures.
+
+
+  1) [chromium] › tests\browser\account-changes.spec.ts:69:1 › username propagates to sidebar, menu closes and logout clears private browser state 
+
+    TimeoutError: locator.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('heading', { name: '天文数据与文献检索' })
+
+
+      82 |   await expect(page.getByRole('menu', { name: '账号菜单' })).toHaveCount(0)
+      83 |   await trigger.click()
+    > 84 |   await page.getByRole('heading', { name: '天文数据与文献检索' }).click()
+         |                                                          ^
+      85 |   await expect(page.getByRole('menu', { name: '账号菜单' })).toHaveCount(0)
+      86 |   await page.setViewportSize({ width: 390, height: 740 })
+      87 |   await page.getByRole('button', { name: '展开会话列表', exact: true }).click()
+        at D:\project\astroagent\frontend\tests\browser\account-changes.spec.ts:84:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\account-changes-username-p-90f3c-lears-private-browser-state-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\account-changes-username-p-90f3c-lears-private-browser-state-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\account-changes-username-p-90f3c-lears-private-browser-state-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\account-changes-username-p-90f3c-lears-private-browser-state-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message 
+
+    TimeoutError: locator.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '查看附件文本：synthetic.txt' })
+
+
+      14 |   await page.goto('/')
+      15 |   await page.getByLabel('选择附件').setInputFiles({ name: 'synthetic.txt', mimeType: 'text/plain', buffer: Buffer.from('合成附件内容') })
+    > 16 |   await page.getByRole('button', { name: '查看附件文本：synthetic.txt' }).click()
+         |                                                                    ^
+      17 |   await expect(page.getByRole('dialog').getByText('合成附件内容')).toBeVisible()
+      18 |   await page.getByRole('button', { name: '关闭附件预览' }).click()
+      19 |   await page.getByRole('button', { name: '回答模型：DeepSeek' }).click()
+        at D:\project\astroagent\frontend\tests\browser\current-changes.spec.ts:16:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\current-changes-model-sele-d2f31-eview-do-not-send-a-message-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\current-changes-model-sele-d2f31-eview-do-not-send-a-message-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\current-changes-model-sele-d2f31-eview-do-not-send-a-message-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\current-changes-model-sele-d2f31-eview-do-not-send-a-message-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: '查看附件文本：dragged.txt' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: '查看附件文本：dragged.txt' }) with timeout 5000ms
+      - waiting for getByRole('button', { name: '查看附件文本：dragged.txt' })
+
+
+      38 |   })
+      39 |   await page.locator('form.composer').dispatchEvent('drop', { dataTransfer: transfer })
+    > 40 |   await expect(page.getByRole('button', { name: '查看附件文本：dragged.txt' })).toBeVisible()
+         |                                                                          ^
+      41 |   const input = page.getByRole('textbox', { name: '天文问题' })
+      42 |   await input.fill('第一条合成查询')
+      43 |   expect(sends).toBe(0)
+        at D:\project\astroagent\frontend\tests\browser\current-changes.spec.ts:40:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\current-changes-dragged-at-0cbc4-te-separate-preserved-turns-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded 
+
+    TimeoutError: locator.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '保存文件并本地解析' })
+        - locator resolved to <button class="button-primary">保存文件并本地解析</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+          - waiting 100ms
+        19 × waiting for element to be visible, enabled and stable
+           - element is not enabled
+         - retrying click action
+           - waiting 500ms
+
+
+       9 |     const raw = Buffer.from('# 合成文献\n银河潮汐 synthetic tidal evidence\n<script>window.injected=true</script>\n')
+      10 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: 'synthetic.md', mimeType: 'text/markdown', buffer: raw })
+    > 11 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()
+         |                                                           ^
+      12 |     await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true, level: 3 })).toBeVisible({ timeout: 30000 })
+      13 |     await page.getByLabel('问题中的明确关键词').fill('银河潮汐')
+      14 |     await page.getByRole('button', { name: '检索原文证据' }).click()
+        at D:\project\astroagent\frontend\tests\browser\knowledge.spec.ts:11:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\knowledge-local-documents--4f3cc-arched-cited-and-downloaded-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests\browser\knowledge.spec.ts:75:1 › long Chinese filename remains usable on a narrow screen 
+
+    TimeoutError: locator.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '保存文件并本地解析' })
+        - locator resolved to <button class="button-primary">保存文件并本地解析</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+          - waiting 100ms
+        19 × waiting for element to be visible, enabled and stable
+           - element is not enabled
+         - retrying click action
+           - waiting 500ms
+
+
+      81 |     const filename = `${'中文长文件名'.repeat(25)}.md`
+      82 |     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: filename, mimeType: 'text/markdown', buffer: Buffer.from('# 合成\n长文件名验收\n') })
+    > 83 |     await page.getByRole('button', { name: '保存文件并本地解析' }).click()
+         |                                                           ^
+      84 |     await expect(page.getByRole('status')).toContainText('已提取并索引', { timeout: 30000 })
+      85 |     await page.getByRole('button', { name: '文档与上传', exact: true }).click()
+      86 |     await expect(page.getByText(filename, { exact: true }).first()).toBeVisible({ timeout: 30000 })
+        at D:\project\astroagent\frontend\tests\browser\knowledge.spec.ts:83:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\knowledge-long-Chinese-fil-bd049-s-usable-on-a-narrow-screen-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › tests\browser\model-settings.spec.ts:108:1 › RAG and local assistant failures remain readable without starting model jobs 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      108 | test('RAG and local assistant failures remain readable without starting model jobs', async ({ page, request }, info) => {
+      109 |   const created = await request.post('/api/v1/projects', { data: { name: 'Synthetic status layout' } })
+    > 110 |   expect(created.status()).toBe(201)
+          |                            ^
+      111 |   const project = await created.json()
+      112 |   let jobs = 0
+      113 |   page.on('request', value => { if (value.method() !== 'GET' && /\/jobs\/|\/rag\/answers/.test(value.url())) jobs++ })
+        at D:\project\astroagent\frontend\tests\browser\model-settings.spec.ts:110:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\model-settings-RAG-and-loc-1ea62-without-starting-model-jobs-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\model-settings-RAG-and-loc-1ea62-without-starting-model-jobs-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\model-settings-RAG-and-loc-1ea62-without-starting-model-jobs-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\model-settings-RAG-and-loc-1ea62-without-starting-model-jobs-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      4 | test('project overview creates and removes an explicit evidence link', async ({ page, request }, info) => {
+      5 |   const projectResponse = await request.post('/api/v1/projects', { data: { name: '合成关联验收' } })
+    > 6 |   expect(projectResponse.status()).toBe(201)
+        |                                    ^
+      7 |   const project = await projectResponse.json()
+      8 |   const conversation = await (await request.post('/api/v1/conversations', { data: { title: '关联测试' } })).json()
+      9 |   try {
+        at D:\project\astroagent\frontend\tests\browser\overview.spec.ts:6:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByLabel('保存空间')
+    Expected: "10000000-0000-4000-8000-000000000001"
+    Received: ""
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('保存空间') with timeout 5000ms
+      - waiting for getByLabel('保存空间')
+        14 × locator resolved to <select>…</select>
+           - unexpected value ""
+
+
+      39 |   })
+      40 |   await page.goto(`/projects/${projectId}/plotting`)
+    > 41 |   await expect(page.getByLabel('保存空间')).toHaveValue(projectId)
+         |                                         ^
+      42 |   await page.locator('input[type=file]').setInputFiles({ name: 'synthetic.csv', mimeType: 'text/csv', buffer: Buffer.from('x,y\n1,2\n2,4\n') })
+      43 |   await expect(page.getByLabel('绘图需求')).toBeVisible()
+      44 |   await page.getByLabel('绘图需求').fill('绘制散点图')
+        at D:\project\astroagent\frontend\tests\browser\plot-acceptance.spec.ts:41:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-final\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-final\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-final\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [chromium] › tests\browser\account-changes.spec.ts:69:1 › username propagates to sidebar, menu closes and logout clears private browser state 
+    [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message 
+    [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns 
+    [chromium] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded 
+    [chromium] › tests\browser\knowledge.spec.ts:75:1 › long Chinese filename remains usable on a narrow screen 
+    [chromium] › tests\browser\model-settings.spec.ts:108:1 › RAG and local assistant failures remain readable without starting model jobs 
+    [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link 
+    [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+  2 skipped
+  24 did not run
+  6 passed (1.4m)
+  1 error was not a part of any test, see above for details

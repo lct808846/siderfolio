@@ -1,0 +1,3 @@
+account_disabled {'passed': False, 'error': 'RuntimeError: Cannot open a client instance more than once.', 'wall_seconds': 29.062}
+hard_timeout {'passed': False, 'error': "AssertionError: No {'running'} after 28s, last=queued: None", 'wall_seconds': 28.375}
+backup_restore {'passed': True, 'detail': {'same_task_rows': 17, 'same_result_digests': True, 'isolated_dump_restore': True}, 'wall_seconds': 4.672}

@@ -163,17 +163,32 @@ class LocalAccess:
         }:
             if scope["method"] == "DELETE" and scope["path"].startswith("/api/v1/conversations"):
                 return await self.app(scope, receive, with_headers)
-            bodyless_preview_delete = (
+            bodyless_delete = (
                 scope["method"] == "DELETE"
                 and re.fullmatch(
-                    r"/api/v1/projects/[0-9a-fA-F-]{36}/rag/previews/[0-9a-fA-F-]{36}",
+                    r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
                     scope["path"],
                 )
                 is not None
-                and not headers.get(b"content-type", "").strip()
             )
+            bodyless_action = scope["method"] == "POST" and (
+                scope["path"] == "/api/v1/projects/default"
+                or re.fullmatch(
+                    r"/api/v1/conversations/[0-9a-fA-F-]{36}/archive",
+                    scope["path"],
+                )
+                is not None
+                or re.fullmatch(
+                    r"/api/v1/projects/[0-9a-fA-F-]{36}/compute-tasks/[0-9a-fA-F-]{36}/(?:cancel|copy)",
+                    scope["path"],
+                )
+                is not None
+            )
+            bodyless_operation = (bodyless_delete or bodyless_action) and not headers.get(
+                b"content-type", ""
+            ).strip()
             if (
-                not bodyless_preview_delete
+                not bodyless_operation
                 and headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
                 != ("application/zip" if importing else "application/json")
                 or headers.get(b"content-encoding", "identity").strip().lower() != "identity"
@@ -210,7 +225,7 @@ class LocalAccess:
                 body.extend(chunk)
                 if not message.get("more_body", False):
                     break
-            if bodyless_preview_delete and body:
+            if bodyless_operation and body:
                 return await failure(
                     415, "unsupported_conversation_media_type", "仅支持空请求或JSON。"
                 )
@@ -232,7 +247,7 @@ class LocalAccess:
 
                 parsed = (
                     {}
-                    if importing or bodyless_preview_delete
+                    if importing or bodyless_operation
                     else json.loads(
                         body.decode("utf-8"), object_pairs_hook=pairs, parse_constant=constant
                     )

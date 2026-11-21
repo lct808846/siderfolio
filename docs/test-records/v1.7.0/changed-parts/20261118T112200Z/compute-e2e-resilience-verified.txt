@@ -1,0 +1,3 @@
+account_disabled {'passed': True, 'detail': {'account_revoked': True, 'running_task': 'cancelled'}, 'wall_seconds': 4.843}
+hard_timeout {'passed': True, 'detail': {'wall_seconds': 122.594, 'failed_result_denied': True, 'slot_released': 'succeeded'}, 'wall_seconds': 126.954}
+backup_restore {'passed': True, 'detail': {'same_task_rows': 20, 'same_result_digests': True, 'isolated_dump_restore': True}, 'wall_seconds': 3.734}

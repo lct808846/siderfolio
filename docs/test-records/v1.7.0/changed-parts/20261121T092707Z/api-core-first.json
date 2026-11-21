@@ -1,0 +1,63 @@
+{
+  "project": "astroagent-petar-qa-20261121t092707z",
+  "orbit_tolerance": 1e-06,
+  "checks": {
+    "engine_availability_and_allowlist": {
+      "passed": true,
+      "detail": [
+        "rebound",
+        "petar"
+      ],
+      "seconds": 0.108
+    },
+    "legacy_rebound_draft_result_and_archive": {
+      "passed": true,
+      "detail": {
+        "metrics": {
+          "separation_AU": 2.220446049250313e-16,
+          "center_AU": 0.0,
+          "energy_relative": 4.440892098500626e-16,
+          "angular_relative": 1.4135798584282297e-16,
+          "position_AU": 7.987869494273747e-16,
+          "period_relative": 2.220446049250313e-16
+        },
+        "archive_members": 6,
+        "rows": 258
+      },
+      "seconds": 5.497
+    },
+    "petar_analytic_orbit": {
+      "passed": false,
+      "error": "AssertionError: {'separation_AU': 1.8824599287592392e-05, 'center_AU': 0.0, 'energy_relative': 3.5435476775091956e-10, 'angular_relative': 1.5549378442710527e-15, 'position_AU': 4.1193436408948194e-05, 'period_relative': 1.2549828348307202e-05}",
+      "seconds": 4.265
+    },
+    "petar_non_dyadic_grid_translation_exports_copy_and_permissions": {
+      "passed": false,
+      "error": "AssertionError: {'separation_AU': 3.1180911866490746e-05, 'center_AU': 1.5329378028862133e-13, 'energy_relative': 9.740669382196643e-10, 'angular_relative': 1.9038912552688617e-14, 'position_AU': 4.080340710551753e-05, 'period_relative': 2.0702846561082566e-05}",
+      "seconds": 8.972
+    },
+    "petar_maximum_grid": {
+      "passed": true,
+      "detail": {
+        "csv_bytes": 10208995,
+        "rows": 65536,
+        "integrator_seconds": 3.6003343579996
+      },
+      "seconds": 10.573
+    },
+    "worker_isolation": {
+      "passed": true,
+      "detail": {
+        "network": "none",
+        "read_only": true,
+        "memory_mib": 512,
+        "cpus": 1,
+        "pids_limit": 24,
+        "non_root_uid": 10001,
+        "anonymous_tmpfs_mib": 32
+      },
+      "seconds": 0.099
+    }
+  },
+  "image": "sha256:145e2efa61710b1bf8fb8c65cbbded070c6440d1860642c98217a22f41ced6ec"
+}

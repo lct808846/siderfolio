@@ -5,6 +5,8 @@ import type { Comparison, ImportResult, Project, ProjectDetail, Rerun, RerunRequ
 const prefix = '/api/v1/projects'
 export const projectsApi = {
   list: () => request<Project[]>(prefix),
+  defaultProject: () => request<Project | null>(`${prefix}/default`),
+  ensureDefault: () => request<Project>(`${prefix}/default`, 'POST'),
   create: (name: string, description = '') => request<Project>(prefix, 'POST', { name, description }),
   detail: (id: string) => request<ProjectDetail>(`${prefix}/${id}`),
   memberships: () => request<Record<string, string>>(`${prefix}/memberships`),
@@ -25,20 +27,20 @@ async function binaryRequest(path: string, body: BodyInit, media: string): Promi
   try { response = await sessionFetch(apiUrl(path), { method: 'POST', headers: { 'Content-Type': media }, body, cache: 'no-store' }) }
   catch { throw new ApiError('connection_lost', '连接已断开。先刷新项目列表核对状态，操作不会自动重试。') }
   if (!response.ok) {
-    let message = `项目归档操作失败（${response.status}）`, code = 'project_archive_failed'
+    let message = `项目备份操作失败（${response.status}）`, code = 'project_archive_failed'
     try { const data = await response.json(); message = data.error?.message || message; code = data.error?.code || code } catch { /* Use safe text. */ }
     throw new ApiError(code, message, response.status)
   }
   return response
 }
 export async function importProject(file: File): Promise<ImportResult> {
-  if (file.size > 32 * 1024 ** 2) throw new ApiError('project_archive_too_large', '项目归档超过32 MiB。')
+  if (file.size > 32 * 1024 ** 2) throw new ApiError('project_archive_too_large', '项目备份包超过 32 MiB。')
   const response = await binaryRequest(`${prefix}/import`, file, 'application/zip')
   return response.json() as Promise<ImportResult>
 }
 export async function exportProject(project: Project, format_version: 1 | 2 | 3 | 4 | 5 | 6 = 6, knowledge_mode: 'full' | 'metadata' = 'metadata', confirmed_include_originals = false): Promise<void> {
   const response = await binaryRequest(`${prefix}/${project.id}/archive`, JSON.stringify({ expected_revision: project.revision, format_version, knowledge_mode, confirmed_include_originals }), 'application/json')
-  if (!(response.headers.get('content-type') || '').includes('application/zip')) throw new ApiError('invalid_archive_response', '服务没有返回项目归档。')
+  if (!(response.headers.get('content-type') || '').includes('application/zip')) throw new ApiError('invalid_archive_response', '服务没有返回项目备份包。')
   const url = URL.createObjectURL(await response.blob())
   const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'astroagent-project.zip'; anchor.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)

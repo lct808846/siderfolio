@@ -366,7 +366,7 @@ onMounted(() => { void loadSummary() })
             <h2 id="profile-workspace-title">科研工作区资产概览</h2>
             <p class="profile-section-sub">统计范围仅限当前登录账号的独立数据空间</p>
           </div>
-          <RouterLink to="/projects" class="settings-action-link">打开项目归档 ↗</RouterLink>
+          <RouterLink to="/projects" class="settings-action-link">管理科研项目 ↗</RouterLink>
         </div>
 
         <div v-if="summary" class="profile-asset-grid">

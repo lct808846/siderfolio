@@ -1,0 +1,51 @@
+[WebServer] (node:18308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:28440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (13.6s)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog')
+    Expected substring: "会话及其轮次保留"
+    Received string:    "删除这个科研项目？将删除此项目、0 条文献问答、命名快照、重跑记录、0 次科研流程、0 条关联以及知识库原文与索引；会话及历史轮次保留并恢复为未归属项目。取消确认删除"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('dialog') with timeout 5000ms
+      - waiting for getByRole('dialog')
+        14 × locator resolved to <dialog open="" data-v-92f709de="" class="project-dialog">…</dialog>
+           - unexpected value "删除这个科研项目？将删除此项目、0 条文献问答、命名快照、重跑记录、0 次科研流程、0 条关联以及知识库原文与索引；会话及历史轮次保留并恢复为未归属项目。取消确认删除"
+
+
+       95 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+       96 |     await page.getByRole('button', { name: '删除项目', exact: true }).click()
+    >  97 |     await expect(page.getByRole('dialog')).toContainText('会话及其轮次保留')
+          |                                            ^
+       98 |     await page.getByRole('button', { name: '确认删除', exact: true }).click()
+       99 |     await expect(page).toHaveURL(/\/projects$/)
+      100 |     for (const cid of imported.conversation_ids) expect((await request.get(`/api/v1/conversations/${cid}`)).ok()).toBe(true)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:97:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\output-browser-project-mobile-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\output-browser-project-mobile-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\output-browser-project-mobile-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\output-browser-project-mobile-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 

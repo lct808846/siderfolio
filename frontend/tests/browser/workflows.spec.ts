@@ -24,7 +24,9 @@ test('fixed workflows create, confirm, execute, display outputs and restore afte
     await page.getByLabel('ICRS赤经 / 度 [0,360)').fill('56.75')
     await page.getByLabel('ICRS赤纬 / 度 [-90,90]').fill('24.12')
     await page.getByLabel('圆锥半径 / 角分 (0,30]').fill('5')
-    await page.getByLabel('交付行上限 / 1—100').fill('10')
+    const limit = page.getByLabel('交付行上限 / 1—500')
+    await expect(limit).toHaveAttribute('max', '500')
+    await limit.fill('10')
     await page.getByRole('button', { name: '创建待执行记录' }).click()
     await expect(page.getByRole('heading', { name: '合成 Gaia 流程' })).toBeVisible()
     await page.getByRole('button', { name: '核对并启动' }).click()
@@ -34,7 +36,7 @@ test('fixed workflows create, confirm, execute, display outputs and restore afte
     await page.getByRole('button', { name: '核对并启动' }).click()
     await page.getByRole('button', { name: '确认执行' }).click()
     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible({ timeout: 30000 })
-    await expect(page.getByText('4/4 步已完成或跳过')).toBeVisible()
+    await expect(page.getByText('4 / 4 步已完成或跳过')).toBeVisible()
     await test.step('核对并下载 Gaia 归档', () => expectOutputDownload(page, 'workflow-results.zip'))
     await page.reload()
     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible()
@@ -71,7 +73,7 @@ test('failed workflow resumes only after confirmation and retains attempts', asy
     // Each repeat or retry gets a new worker and its own first-failure sample.
     await page.getByLabel('ICRS赤纬 / 度 [-90,90]').fill((24.12 + info.workerIndex / 1000).toFixed(3))
     await page.getByLabel('圆锥半径 / 角分 (0,30]').fill('5')
-    await page.getByLabel('交付行上限 / 1—100').fill('10')
+    await page.getByLabel('交付行上限 / 1—500').fill('10')
     await page.getByRole('button', { name: '创建待执行记录' }).click()
     await expect(page.getByRole('heading', { name: '合成超时后继续' })).toBeVisible()
     const runId = new URL(page.url()).pathname.split('/').at(-1)!

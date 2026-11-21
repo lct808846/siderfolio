@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import sqlite3
 import threading
 import time
@@ -429,3 +430,277 @@ class KnowledgeService:
                     f"{unavailable}份文档存在解析/索引缺口或尚未就绪；旧版本不参与新检索。",
                 ],
             }
+
+    def chat_context(self, conversation_id, query, *, max_bytes=16384, max_hits=6):
+        """Read-only bounded excerpts from the conversation's research project sources."""
+        repo = self.repository.repo
+        with repo.connection() as db:
+            row = db.execute(
+                "SELECT m.project_id, p.record FROM project_conversations m "
+                "JOIN projects p ON p.id=m.project_id WHERE m.conversation_id=?",
+                (conversation_id,),
+            ).fetchone()
+            if not row:
+                return None
+            project_id = row[0]
+            project = json.loads(row[1])
+            doc_rows = db.execute(
+                "SELECT record FROM knowledge_documents WHERE project_id=?",
+                (project_id,),
+            ).fetchall()
+            ready_docs = {}
+            for doc_row in doc_rows:
+                doc = KnowledgeDocument.model_validate_json(doc_row[0])
+                if doc.state in ("ready", "partial") and doc.current_version_id:
+                    ready_docs[doc.id] = doc
+            if not ready_docs:
+                return None
+            ordered_docs = sorted(
+                ready_docs.values(),
+                key=lambda item: (item.updated_at, item.id),
+                reverse=True,
+            )
+            version_ids = [doc.current_version_id for doc in ordered_docs]
+            placeholders = ",".join("?" for _ in version_ids)
+            unit_rows = db.execute(
+                f"SELECT record, normalized FROM knowledge_units "
+                f"WHERE project_id=? AND version_id IN ({placeholders}) LIMIT 2000",
+                (project_id, *version_ids),
+            ).fetchall()
+
+        if not unit_rows:
+            return None
+
+        normalized_query = normalize(query or "").strip()
+        latin_terms, cjk_terms = _chat_query_tokens(normalized_query)
+        deadline = time.monotonic() + 1.5
+        units_by_doc = {doc.id: [] for doc in ordered_docs}
+        scored = []
+        total_valid = 0
+
+        for unit_row in unit_rows:
+            if time.monotonic() > deadline:
+                break
+            unit = TextUnit.model_validate_json(unit_row[0])
+            if (
+                unit.document_id not in ready_docs
+                or unit.text is None
+                or checksum(unit.text) != unit.sha256
+            ):
+                continue
+            total_valid += 1
+            units_by_doc[unit.document_id].append(unit)
+            haystack = unit_row[1] or normalize(unit.text)
+            score = _score_chat_unit(haystack, normalized_query, latin_terms, cjk_terms)
+            if score > 0:
+                scored.append((score, unit))
+
+        if total_valid == 0:
+            return None
+
+        for doc_units in units_by_doc.values():
+            doc_units.sort(key=lambda u: (u.source_position, u.ordinal, u.char_start, u.id))
+
+        chosen = []
+        chosen_ids = set()
+        if scored:
+            retrieval_mode = "matched"
+            scored.sort(
+                key=lambda item: (
+                    -item[0],
+                    item[1].document_id,
+                    item[1].source_position,
+                    item[1].ordinal,
+                    item[1].id,
+                )
+            )
+            seen_docs = set()
+            for _, unit in scored:
+                if len(chosen) >= max_hits:
+                    break
+                if unit.document_id not in seen_docs:
+                    seen_docs.add(unit.document_id)
+                    chosen.append(unit)
+                    chosen_ids.add(unit.id)
+            for _, unit in scored:
+                if len(chosen) >= max_hits:
+                    break
+                if unit.id not in chosen_ids:
+                    chosen.append(unit)
+                    chosen_ids.add(unit.id)
+        else:
+            retrieval_mode = "overview_fallback"
+            depth = 0
+            while len(chosen) < max_hits:
+                added = False
+                for doc in ordered_docs:
+                    doc_units = units_by_doc.get(doc.id) or []
+                    if depth < len(doc_units):
+                        unit = doc_units[depth]
+                        if unit.id not in chosen_ids:
+                            chosen.append(unit)
+                            chosen_ids.add(unit.id)
+                            added = True
+                            if len(chosen) >= max_hits:
+                                break
+                if not added:
+                    break
+                depth += 1
+
+        payload = {
+            "project_id": project_id,
+            "project_name": project.get("name", ""),
+            "project_description": (project.get("description") or "")[:300],
+            "document_count": len(ordered_docs),
+            "documents": [
+                {
+                    "title": doc.metadata.title,
+                    "filename": doc.filename,
+                    "state": doc.state,
+                }
+                for doc in ordered_docs[:20]
+            ],
+            "retrieval_mode": retrieval_mode,
+            "excerpts": [],
+            "truncated": False,
+        }
+
+        for unit in chosen:
+            doc = ready_docs[unit.document_id]
+            entry = {
+                "title": doc.metadata.title,
+                "filename": doc.filename,
+                "page": unit.page,
+                "line_start": unit.line_start,
+                "line_end": unit.line_end,
+                "heading_path": unit.heading_path[:4],
+                "text": unit.text,
+            }
+            payload["excerpts"].append(entry)
+            encoded = json.dumps(
+                payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+            ).encode("utf-8")
+            if len(encoded) > max_bytes:
+                payload["excerpts"].pop()
+                if not payload["excerpts"]:
+                    entry["text"] = (unit.text or "")[:1200]
+                    payload["excerpts"].append(entry)
+                payload["truncated"] = True
+                break
+
+        if not payload["excerpts"]:
+            return None
+        if total_valid > len(payload["excerpts"]):
+            payload["truncated"] = True
+        return payload
+
+
+_LATIN_STOPWORDS = frozenset(
+    {
+        "the",
+        "and",
+        "for",
+        "with",
+        "from",
+        "this",
+        "that",
+        "what",
+        "how",
+        "are",
+        "was",
+        "were",
+        "about",
+        "please",
+        "can",
+        "you",
+        "your",
+        "project",
+        "source",
+        "sources",
+        "document",
+        "documents",
+        "paper",
+        "papers",
+        "file",
+        "files",
+    }
+)
+_CJK_STOPWORDS = frozenset(
+    {
+        "请问",
+        "一下",
+        "根据",
+        "项目",
+        "来源",
+        "文档",
+        "资料",
+        "论文",
+        "知识",
+        "可以",
+        "什么",
+        "怎么",
+        "如何",
+        "总结",
+        "介绍",
+        "分析",
+        "帮我",
+        "告诉",
+        "解释",
+        "这个",
+        "这些",
+        "里面",
+        "内容",
+        "问题",
+        "回答",
+        "参考",
+        "相关",
+        "主要",
+        "具体",
+        "说明",
+        "给我",
+        "有没有",
+        "是否",
+    }
+)
+
+
+def _chat_query_tokens(normalized_query):
+    latin = [
+        token
+        for token in dict.fromkeys(re.findall(r"[a-z0-9][a-z0-9_.-]{1,}", normalized_query))
+        if token not in _LATIN_STOPWORDS
+    ][:24]
+    cjk = []
+    seen = set()
+    for run in re.findall(r"[\u3400-\u9fff\uf900-\ufaff]+", normalized_query):
+        if 2 <= len(run) <= 8 and run not in _CJK_STOPWORDS and run not in seen:
+            seen.add(run)
+            cjk.append(run)
+        if len(run) >= 2:
+            for idx in range(len(run) - 1):
+                gram = run[idx : idx + 2]
+                if gram not in _CJK_STOPWORDS and gram not in seen:
+                    seen.add(gram)
+                    cjk.append(gram)
+                    if len(cjk) >= 32:
+                        break
+        if len(cjk) >= 32:
+            break
+    return latin, cjk
+
+
+def _score_chat_unit(haystack, normalized_query, latin_terms, cjk_terms):
+    score = 0
+    if len(normalized_query) >= 4 and normalized_query in haystack:
+        score += 100
+    words = set(re.findall(r"[a-z0-9][a-z0-9_.-]{1,}", haystack)) if latin_terms else set()
+    for term in latin_terms:
+        if term in words:
+            score += 14 + min(haystack.count(term), 5)
+        elif term in haystack:
+            score += 8
+    for term in cjk_terms:
+        count = haystack.count(term)
+        if count:
+            score += (10 if len(term) >= 3 else 4) + min(count, 5)
+    return score

@@ -12,6 +12,7 @@ test('plot workflow requires confirmations before model and execution', async ({
     if (path.startsWith('/api/v1/auth/')) return route.continue()
     if (path === '/api/v1/conversations') return json([])
     if (path === '/api/v1/projects') return json([{ id: projectId, name: '合成项目', revision: 0 }])
+    if (path === '/api/v1/projects/default') return json(null)
     if (path === '/api/v1/projects/memberships') return json({})
     if (path === '/api/v1/models') return json({ configured: true, default_model: 'synthetic', models: [{ id: 'synthetic', label: 'synthetic' }] })
     if (path === '/api/v1/setup/plotting') return json({ storage_ready: true, execution_configured: true, message: '合成测试' })
@@ -37,7 +38,12 @@ test('plot workflow requires confirmations before model and execution', async ({
     return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
   })
   await page.goto(`/projects/${projectId}/plotting`)
-  await page.locator('input[type=file]').setInputFiles({ name: 'synthetic.csv', mimeType: 'text/csv', buffer: Buffer.from('x,y\n1,2\n2,4\n') })
+  await expect(page.getByLabel('保存空间')).toHaveValue(projectId)
+  const [upload] = await Promise.all([
+    page.waitForEvent('filechooser'),
+    page.getByRole('button', { name: '上传绘图 CSV 或 TSV 数据' }).click(),
+  ])
+  await upload.setFiles({ name: 'synthetic.csv', mimeType: 'text/csv', buffer: Buffer.from('x,y\n1,2\n2,4\n') })
   await expect(page.getByLabel('绘图需求')).toBeVisible()
   await page.getByLabel('绘图需求').fill('绘制散点图')
   await expect(page.getByRole('button', { name: '生成绘图方案' })).toBeDisabled()

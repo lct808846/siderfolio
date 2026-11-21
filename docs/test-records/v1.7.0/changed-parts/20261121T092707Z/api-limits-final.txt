@@ -1,0 +1,7 @@
+cancel_live_native_child_and_release_slot {"passed": true, "detail": {"state": "cancelled", "elapsed_seconds": 3.811, "native_child_seen": true, "remaining_attempt_directories": 0, "next_job": "succeeded"}, "seconds": 8.754}
+real_120_second_timeout_and_release_slot {"passed": true, "detail": {"state": "failed", "elapsed_seconds": 122.697, "native_child_seen": true, "remaining_attempt_directories": 0, "next_job": "succeeded"}, "seconds": 127.875}
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Stopping 
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Stopped 
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Starting 
+ Container astroagent-petar-qa-20261121t092707z-compute-worker-1 Started 
+worker_unavailable_preserves_draft {"passed": true, "detail": {"saved_while_offline": true, "ready_after_restart": true, "result": "succeeded"}, "seconds": 13.153}

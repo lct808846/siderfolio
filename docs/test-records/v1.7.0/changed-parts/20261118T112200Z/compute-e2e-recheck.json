@@ -1,0 +1,60 @@
+{
+  "stack": "astroagent-v17-qa-20261118t112200z",
+  "origin": "http://127.0.0.1:5287",
+  "thresholds": {
+    "binary_relative": 1e-06,
+    "three_body": 1e-08
+  },
+  "checks": {
+    "binary_and_artifacts": {
+      "passed": true,
+      "detail": {
+        "metrics": {
+          "period_relative": 2.220446049250313e-16,
+          "separation_AU": 2.220446049250313e-16,
+          "center_AU": 0.0,
+          "energy_relative": 4.440892098500626e-16,
+          "angular_relative": 2.220446049250313e-16
+        },
+        "archive_sha256": "fc0b5eb14860363692bf73dfb771e539541c6868981c8e153822971fce1e4f49",
+        "archive_members": 6,
+        "rows": 258,
+        "same_parameter_rerun": "identical samples",
+        "worker_image": "sha256:154b877eac7eb5e1188d135160c7b7ed0ff9e39ae8f1c55dfc4ae8c4bd5867b8",
+        "integration_seconds": 0.03599058800000421
+      },
+      "wall_seconds": 8.344
+    },
+    "ownership": {
+      "passed": true,
+      "detail": {
+        "cross_account_and_parent_checks": 17,
+        "anonymous": 401,
+        "csrf": 403
+      },
+      "wall_seconds": 1.343
+    },
+    "three_body": {
+      "passed": true,
+      "detail": {
+        "max_abs_coordinate_or_velocity_delta": 0.0,
+        "reference_epsilon": 1e-12,
+        "particles": 3,
+        "samples": 17
+      },
+      "wall_seconds": 4.688
+    },
+    "container_boundary": {
+      "passed": true,
+      "detail": {
+        "network": "none",
+        "uid": 10001,
+        "memory_MiB": 512,
+        "cpus": 1,
+        "volume_mounts": 1,
+        "worker_unavailable_preserves_draft": true
+      },
+      "wall_seconds": 15.953
+    }
+  }
+}

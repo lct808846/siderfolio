@@ -1,0 +1,6 @@
+✨ openapi-typescript 7.13.0
+🚀 /tmp/tmpexfzjkqj/openapi.json → /tmp/tmpexfzjkqj/generated.ts [329.1ms]
+Generated OpenAPI / TypeScript files; validation was not run
+✨ openapi-typescript 7.13.0
+🚀 /tmp/tmpd8hxqhz2/openapi.json → /tmp/tmpd8hxqhz2/generated.ts [1.3s]
+OpenAPI / TypeScript contract matches

@@ -43,7 +43,7 @@ test('production build: conversation, follow-up, complete table, preview, downlo
 
 test('IME composition, explicit examples, plain text literature, rename and delete', async ({ page }) => {
   await page.goto('/'); await page.getByRole('button', { name: '新建会话', exact: true }).click()
-  await page.getByRole('button', { name: 'ADS 文献检索' }).click()
+  await page.getByRole('button', { name: /^ADS 文献 / }).click()
   const input = page.getByRole('textbox', { name: '天文问题' })
   await input.dispatchEvent('compositionstart'); await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true })
   await expect(page.getByText('第 1 轮', { exact: true })).toHaveCount(0)

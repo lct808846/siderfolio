@@ -1,0 +1,35 @@
+[WebServer] INFO:     Started server process [37208]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8101 (Press CTRL+C to quit)
+[WebServer] (node:37736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 20 tests using 1 worker
+
+(node:36908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (1.9s)
+  ok  2 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (5.5s)
+  ok  3 [chromium] › tests\browser\workbench.spec.ts:44:1 › IME composition, explicit examples, plain text literature, rename and delete (3.5s)
+  ok  4 [chromium] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow (2.1s)
+  ok  5 [chromium] › tests\browser\workbench.spec.ts:78:1 › backend connection error is explicit (487ms)
+  ok  6 [chromium] › tests\browser\workbench.spec.ts:83:1 › a rejected send preserves the question and only retries on explicit action (1.5s)
+  ok  7 [chromium] › tests\browser\workbench.spec.ts:100:1 › a late initial list does not clear a send error after navigation (840ms)
+  ok  8 [chromium] › tests\browser\workbench.spec.ts:123:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (38ms)
+  ok  9 [chromium] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (5.4s)
+  ok 10 [chromium] › tests\browser\workflows.spec.ts:65:1 › failed workflow resumes only after confirmation and retains attempts (3.6s)
+(node:37920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [edge] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (2.7s)
+  ok 12 [edge] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (6.7s)
+  ok 13 [edge] › tests\browser\workbench.spec.ts:44:1 › IME composition, explicit examples, plain text literature, rename and delete (3.4s)
+  ok 14 [edge] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow (2.1s)
+  ok 15 [edge] › tests\browser\workbench.spec.ts:78:1 › backend connection error is explicit (730ms)
+  ok 16 [edge] › tests\browser\workbench.spec.ts:83:1 › a rejected send preserves the question and only retries on explicit action (3.1s)
+  ok 17 [edge] › tests\browser\workbench.spec.ts:100:1 › a late initial list does not clear a send error after navigation (2.3s)
+  ok 18 [edge] › tests\browser\workbench.spec.ts:123:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (88ms)
+  ok 19 [edge] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (10.0s)
+  ok 20 [edge] › tests\browser\workflows.spec.ts:65:1 › failed workflow resumes only after confirmation and retains attempts (5.3s)
+
+  20 passed (1.3m)

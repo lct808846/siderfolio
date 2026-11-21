@@ -1,0 +1,29 @@
+{
+  "stack": "astroagent-v17-qa-20261118t112200z",
+  "origin": "http://127.0.0.1:5287",
+  "thresholds": {
+    "binary_relative": 1e-06,
+    "three_body": 1e-08
+  },
+  "checks": {
+    "account_disabled": {
+      "passed": false,
+      "error": "RuntimeError: Cannot open a client instance more than once.",
+      "wall_seconds": 29.062
+    },
+    "hard_timeout": {
+      "passed": false,
+      "error": "AssertionError: No {'running'} after 28s, last=queued: None",
+      "wall_seconds": 28.375
+    },
+    "backup_restore": {
+      "passed": true,
+      "detail": {
+        "same_task_rows": 17,
+        "same_result_digests": true,
+        "isolated_dump_restore": true
+      },
+      "wall_seconds": 4.672
+    }
+  }
+}

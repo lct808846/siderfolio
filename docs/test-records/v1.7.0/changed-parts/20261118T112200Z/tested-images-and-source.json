@@ -1,0 +1,48 @@
+{
+  "baseline": "be0e18ba82db827d37e1a64bbdbe986bf64f6598",
+  "changed_source_sha256": {
+    "compose.compute.yaml": "46eb517a2dbfb1904dd8a2b1daddeb6e13b42ad50dc2170e3fd388909497c9f2",
+    "containers/application/requirements-compute.lock": "968fe302a616d37ab98d8e28a9a63d5e023c7b07fdf7653db0eecca28f43aadc",
+    "frontend/playwright.compute-acceptance.ts": "025fe5c1c9654692d8a0eb92a21a2be74b45fd06a56fa605f2dd6211e00655f8",
+    "frontend/src/api/compute.ts": "39ee2a0114041ae24a3155d846c30e86e55ab07e1109272df5f8c3d0cd9b63b5",
+    "frontend/src/views/ComputeWorkspace.vue": "bf499f49bb75cb94d7259c6e16b91e84ad8c4c93efa70f6d0c99ae2aaedeff52",
+    "frontend/tests/compute-browser/compute.spec.ts": "31b9cb025889e9889fadced64beba3eca46d749adcf4ed9ddb64577ec1d1fca3",
+    "scripts/compute_schema.sql": "479504cd5bdcf5816ec02f3e006b9efccc7d5b02bd9ee0904edf9f46558d9c2c",
+    "src/astroagent/api/compute.py": "e6181fdeb377c04a7d2eb096222ee7a5dbc970e7531356c7e960672cd59b9baf",
+    "src/astroagent/compute_exports.py": "bcd53b770884e059ff70934b3cd612244717bfd512d4d099e756235dec13a5cc",
+    "src/astroagent/compute_io.py": "4645305b285053342901568a803d81c9f47c5fd5e98f1c434fbfdd60ec5651e7",
+    "src/astroagent/compute_runner.py": "75d782487b79933c5c4e35ac68bbe52ac70e90af6a157027bb266f543dc4a4d1",
+    "src/astroagent/compute_schemas.py": "c4a4f5329d9818759c4f8bcfa55cefe9aaeb044d04b5cd556b9304aa563d2b39",
+    "src/astroagent/compute_tasks.py": "00c6f49e04b072638470b10b0ea57bd176e0155fc60dbbae125976f7457d8b22",
+    "src/astroagent/compute_worker.py": "74d92fe5c435b91ac3fe609859a90ebc9452998e9d9cdc69e7c65e621a9c8034",
+    "tests/test_compute.py": "842e1b69a62b445e80bf364ab93c20721d401381a3162d8f60a63c0543bc30ca",
+    "tests/test_compute_postgres.py": "3f2fc4e3168fe14eefdbc44e53eaa3e618f3cb440f76b12b6cd6265e2773b32d",
+    "containers/application/Dockerfile": "79bb7127e849422f37af2171c29d20350a00fe571ae89fba76d52a0d60e4844f",
+    "frontend/openapi.json": "04bd0af0d9f70c3fb2bf0b649d38ec5ca6fca696f74fdaae7ee15ccb54352398",
+    "frontend/package-lock.json": "4c747b8cc7072ade1c942abd7db01f4e18dbf69b80ca5889f041bc87797d6343",
+    "frontend/package.json": "66e8f920017741aa69d8e71f631eb6c10a842887a29da06254f657d90079b78b",
+    "frontend/src/api/index.ts": "a714aa4bf285cf463ed9fc40c76e1ea323a449ff8fd708f28f376790247162b2",
+    "frontend/src/components/WorkspaceHeader.vue": "7a290a2418f62359db48a0bd6e646a9d93d0205c36f3172c56ab31ad273a6dd3",
+    "frontend/src/main.ts": "c0e6f6e6f97efc8dcaf29f478ad0d5600e2b2a34a7840bcfb3b8a67ccbdc6d1a",
+    "frontend/src/types/generated.ts": "b4bf473bad8c0f890d2fd1406c6b2b9a530b42f4faafc4536771f7a9b2e18667",
+    "frontend/src/views/App.vue": "7ea1c6780beba907599ddbd47e2848eebddfc8d2e4be7c3f031806fbe2521e2c",
+    "frontend/src/workbench-plot.css": "6c8c4c64923658f931812377a52ad756f60124fb6006fd06a22c76393fd8d9ac",
+    "pyproject.toml": "f495f9120762c1170dbf64c254294cca095a82e981bc1f11d10e6389b8c8944c",
+    "src/astroagent/__init__.py": "743622ccbc6fd6d9a74c025aeaf3c548825c0ddfe4eb8643f95ec49de6a3e201",
+    "src/astroagent/local_access.py": "0df5e6762c0907f802fdddbc19cabc6eecc7358814ad97700e0f565467dc2919",
+    "src/astroagent/main.py": "2eec498fc6d483b5d85b3b25ad6aee7cfa7321aec270da8bdf2d17221bb8c478",
+    "src/astroagent/projects.py": "b33bd46c436564ccb355b90aadaebc5f1d08584253e46524a2419f54a483f8ac"
+  },
+  "qa_stack": "astroagent-v17-qa-20261118t112200z",
+  "images": {
+    "backend": "sha256:e079e2af7ac5d8e1638ae0d40d2f80562b563215e0825e0de0b1b01edd8da98f",
+    "frontend": "sha256:c090003b7b434f1278f9913c049466450686f82fb41ee9c5beda7cec82e33e07",
+    "compute-worker": "sha256:154b877eac7eb5e1188d135160c7b7ed0ff9e39ae8f1c55dfc4ae8c4bd5867b8"
+  },
+  "frontend_assets_sha256": {
+    "index.html": "d86c03f7976aec4b162fb41ed6e269b5760345ae727fba6650fb59d098f53fc8",
+    "assets/index-B5ftV_Sf.css": "1f707ef8e9108fa66a2a58e46c0d4c18c489b5c4c8c31272f96a28cbcd60685c",
+    "assets/index-Cqq3lCCd.js": "b99685764bb8004ae7cb3c27fb90cb9ef1ee87410c83dd4efdfcf557aba0bfc3"
+  },
+  "comparison": "Matched all changed Python application modules and compiled frontend assets"
+}

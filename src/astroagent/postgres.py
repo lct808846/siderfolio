@@ -290,6 +290,11 @@ class PostgresRepository(ConversationRepository):
                             "RIMARY KEY,value TEXT NOT NULL)"
                         )
                         db.execute(
+                            "CREATE TABLE IF NOT EXISTS conversation_archives ("
+                            "conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) "
+                            "ON DELETE CASCADE, archived_at TEXT NOT NULL)"
+                        )
+                        db.execute(
                             "INSERT INTO astroagent_meta VALUES ('schema_version',?)",
                             (str(SCHEMA_VERSION),),
                         )

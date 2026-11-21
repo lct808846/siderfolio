@@ -75,7 +75,7 @@ def test_query_rejects_invalid_modes_ids_and_cross_mode_fields(bad):
         ("radius_arcmin", [0, -1, 30.01, True, "2", math.nan]),
         ("ruwe_max", [0, -1, 10.1, True, "1.4", math.inf]),
         ("parallax_snr_min", [0, 1001, True, "10", math.nan]),
-        ("limit", [0, 101, 1.0, True, "20"]),
+        ("limit", [0, 501, 1.0, True, "20"]),
         ("estimate_distance", [1, 0, "true", None]),
     ],
 )
@@ -99,11 +99,38 @@ def test_query_valid_boundaries_and_effective_defaults():
             ra_deg=0,
             dec_deg=dec,
             radius_arcmin=30,
-            limit=100,
+            limit=500,
             ruwe_max=10,
             parallax_snr_min=1000,
         )
-        assert query.limit == 100
+        assert query.limit == 500
+
+
+def test_cone_filters_constrain_adql_and_effective_parameters():
+    filters = {
+        "parallax_min": 0.5,
+        "parallax_max": 2.0,
+        "pmra_min": -3.0,
+        "pmra_max": 3.0,
+        "pmdec_min": -4.0,
+        "pmdec_max": 4.0,
+        "g_mag_max": 18.0,
+    }
+    query = cone(limit=500, **filters)
+    adql, requested = build_adql(query)
+    assert requested == 501
+    assert adql.startswith("SELECT TOP 501 ")
+    assert "AND parallax >= 0.5 AND parallax <= 2.0" in adql
+    assert "AND pmra >= -3.0 AND pmra <= 3.0" in adql
+    assert "AND pmdec >= -4.0 AND pmdec <= 4.0" in adql
+    assert "AND phot_g_mean_mag <= 18.0" in adql
+    assert {key: query.effective_parameters()[key] for key in filters} == filters
+
+
+@pytest.mark.parametrize("field", ["parallax", "pmra", "pmdec"])
+def test_inverted_cone_filter_ranges_are_rejected(field):
+    with pytest.raises(ValidationError, match=f"{field}_min"):
+        cone(**{f"{field}_min": 2, f"{field}_max": 1})
 
 
 def test_fixed_adql_and_http_contract(monkeypatch):

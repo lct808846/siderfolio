@@ -1,0 +1,65 @@
+[WebServer] (node:24996) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:28472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (17.6s)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    TimeoutError: locator.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '项目空间', exact: true })
+        - locator resolved to <button type="button" aria-pressed="true">项目空间</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <header data-v-92f709de="" class="chat-heading">…</header> from <main data-v-92f709de="" class="project-main">…</main> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <header data-v-92f709de="" class="chat-heading">…</header> from <main data-v-92f709de="" class="project-main">…</main> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        18 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <header data-v-92f709de="" class="chat-heading">…</header> from <main data-v-92f709de="" class="project-main">…</main> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+      86 |     await expect(page.getByText('查看完整交付表格（100 行）')).toBeVisible()
+      87 |     await page.reload(); await expect(page.getByText('查看完整交付表格（100 行）')).toBeVisible()
+    > 88 |     await page.setViewportSize({ width: 390, height: 844 }); await page.getByRole('button', { name: '项目空间', exact: true }).click()
+         |                                                                                                                            ^
+      89 |     expect(await page.locator('.project-main').evaluate(el => el.clientHeight)).toBeGreaterThan(200)
+      90 |     await page.locator('.project-main').evaluate(el => { el.scrollTop = 0 }); await screenshot('mobile')
+      91 |     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:88:124
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\output-browser-project-roundtrip\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\output-browser-project-roundtrip\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\output-browser-project-roundtrip\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\output-browser-project-roundtrip\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 

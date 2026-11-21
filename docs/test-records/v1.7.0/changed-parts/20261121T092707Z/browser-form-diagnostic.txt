@@ -1,0 +1,42 @@
+
+Running 1 test using 1 worker
+
+(node:3892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (2.7s)
+
+
+  1) [chromium] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 7
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "label": "积分轨道圈数",
+    +     "message": "Please enter a valid value. The two nearest valid values are 1.6 and 2.1.",
+    +     "value": "2",
+    +   },
+    + ]
+
+      19 |     })),
+      20 |   )
+    > 21 |   expect(invalid).toEqual([])
+         |                   ^
+      22 |   const saved = page.waitForResponse(res =>
+      23 |     /\/compute-tasks(?:\/[^/]+)?$/.test(new URL(res.url()).pathname) &&
+      24 |     ['POST', 'PATCH'].includes(res.request().method()),
+        at saveDraft (D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:21:19)
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:69:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-diagnostic\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-diagnostic\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\error-context.md
+
+  1 failed
+    [chromium] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 

@@ -1,0 +1,50 @@
+{
+  "stack": "astroagent-v17-qa-20261118t112200z",
+  "origin": "http://127.0.0.1:5287",
+  "thresholds": {
+    "binary_relative": 1e-06,
+    "three_body": 1e-08
+  },
+  "checks": {
+    "maximum_grid_and_encounter": {
+      "passed": true,
+      "detail": {
+        "particles": 128,
+        "samples": 512,
+        "result_bytes": 5021281,
+        "near_zero_relative_diagnostics": "null",
+        "encounter_result_denied": true
+      },
+      "wall_seconds": 9.531
+    },
+    "backup_restore": {
+      "passed": true,
+      "detail": {
+        "same_task_rows": 11,
+        "same_result_digests": true,
+        "isolated_dump_restore": true
+      },
+      "wall_seconds": 4.375
+    },
+    "restarts_and_cancellation": {
+      "passed": true,
+      "detail": {
+        "api_retained_same_attempt": true,
+        "active_usage": "95.98% 45.83MiB / 512MiB",
+        "worker_restart": "interrupted",
+        "cancel_no_result": true
+      },
+      "wall_seconds": 38.625
+    },
+    "account_disabled": {
+      "passed": false,
+      "error": "AssertionError: GET projects/3368f1eb-0702-4276-97c0-bbb202928199/compute-tasks/1fdcb9f2-90e6-4ae8-a7fa-1c7373d4be3b returned 404 project_not_found, expected 200",
+      "wall_seconds": 0.344
+    },
+    "hard_timeout": {
+      "passed": false,
+      "error": "AssertionError: No {'running'} after 28s, last=queued: None",
+      "wall_seconds": 28.343
+    }
+  }
+}

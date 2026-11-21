@@ -1,0 +1,185 @@
+[WebServer] (node:27700) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 24 tests using 1 worker
+
+(node:34000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded (2.7s)
+  -   2 [chromium] › tests\browser\knowledge.spec.ts:50:1 › public PDF citation opens its original and downloads identical bytes
+  ok  3 [chromium] › tests\browser\knowledge.spec.ts:75:1 › long Chinese filename remains usable on a narrow screen (1.1s)
+  x   4 [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (8.7s)
+(node:8692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   5 [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (934ms)
+(node:33596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   6 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (11.1s)
+(node:7448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [chromium] › tests\browser\remaining-acceptance.spec.ts:10:1 › clipboard preserves the question and reports a denied copy (1.3s)
+  ok  8 [chromium] › tests\browser\remaining-acceptance.spec.ts:34:1 › pending response does not open results and manual close survives refresh (1.7s)
+  ok  9 [chromium] › tests\browser\remaining-acceptance.spec.ts:52:1 › rename, pin and export a noncurrent conversation; cancel deletion (3.5s)
+  ok 10 [chromium] › tests\browser\remaining-acceptance.spec.ts:86:1 › settings refresh failure clears the previous ready status (693ms)
+  ok 11 [chromium] › tests\browser\remaining-acceptance.spec.ts:103:1 › bulk deletion preserves the failed item and returns after deleting the current item (2.0s)
+  ok 12 [chromium] › tests\browser\remaining-acceptance.spec.ts:127:1 › project navigation survives direct load and refresh without sending requests (2.7s)
+  ok 13 [chromium] › tests\browser\remaining-acceptance.spec.ts:145:1 › low-height compact layout keeps focused controls visible and input scrollable (817ms)
+  ok 14 [chromium] › tests\browser\remaining-acceptance.spec.ts:166:1 › reduced transparency disables large background blur (577ms)
+  ok 15 [chromium] › tests\browser\remaining-acceptance.spec.ts:178:1 › sidebar toggles across compact and desktop boundaries without losing draft (3.1s)
+  ok 16 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (4.9s)
+  ok 17 [chromium] › tests\browser\workbench.spec.ts:44:1 › IME composition, explicit examples, plain text literature, rename and delete (4.9s)
+  ok 18 [chromium] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow (2.5s)
+  ok 19 [chromium] › tests\browser\workbench.spec.ts:78:1 › backend connection error is explicit (491ms)
+  ok 20 [chromium] › tests\browser\workbench.spec.ts:83:1 › a rejected send preserves the question and only retries on explicit action (1.2s)
+  ok 21 [chromium] › tests\browser\workbench.spec.ts:100:1 › a late initial list does not clear a send error after navigation (1.2s)
+  ok 22 [chromium] › tests\browser\workbench.spec.ts:123:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (48ms)
+  x  23 [chromium] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (7.5s)
+(node:11564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 24 [chromium] › tests\browser\workflows.spec.ts:67:1 › failed workflow resumes only after confirmation and retains attempts (3.2s)
+
+
+  1) [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('项目关联 · 0/1000')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('项目关联 · 0/1000') with timeout 5000ms
+      - waiting for getByText('项目关联 · 0/1000')
+
+
+      31 |     await expect(page.getByRole('dialog')).toContainText('合成备注')
+      32 |     await page.getByRole('dialog').getByRole('button', { name: '取消' }).click()
+    > 33 |     await expect(page.getByText('项目关联 · 0/1000')).toBeVisible()
+         |                                                   ^
+      34 |     await create.click()
+      35 |     await page.getByRole('dialog').getByRole('button', { name: '确认关联这两项' }).click()
+      36 |     await expect(page.getByText('已建立用户引用关系', { exact: false })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\overview.spec.ts:33:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-fixes\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-fixes\overview-project-overview--b2378-s-an-explicit-evidence-link-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+
+    Error: locator.setInputFiles: Error: strict mode violation: locator('input[type=file]') resolved to 2 elements:
+        1) <input multiple type="file" class="sr-only" data-v-228d4454="" id="create-project-files" accept=".pdf,.md,.markdown"/> aka getByLabel('参考来源 可选')
+        2) <input hidden="" type="file" accept=".csv,.tsv"/> aka getByRole('region', { name: '会话科研绘图' }).locator('input[type="file"]')
+
+    Call log:
+      - waiting for locator('input[type=file]')
+
+
+      40 |   await page.goto(`/projects/${projectId}/plotting`)
+      41 |   await expect(page.getByLabel('保存空间')).toHaveValue(projectId)
+    > 42 |   await page.locator('input[type=file]').setInputFiles({ name: 'synthetic.csv', mimeType: 'text/csv', buffer: Buffer.from('x,y\n1,2\n2,4\n') })
+         |   ^
+      43 |   await expect(page.getByLabel('绘图需求')).toBeVisible()
+      44 |   await page.getByLabel('绘图需求').fill('绘制散点图')
+      45 |   await expect(page.getByRole('button', { name: '生成绘图方案' })).toBeDisabled()
+        at D:\project\astroagent\frontend\tests\browser\plot-acceptance.spec.ts:42:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-fixes\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-fixes\plot-acceptance-plot-workf-bcbfb--before-model-and-execution-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    TimeoutError: locator.fill: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('dialog', { name: '新建科研项目' }).getByLabel('项目名称', { exact: true })
+
+
+      15 |     await page.getByRole('complementary', { name: '项目列表' }).getByRole('button', { name: '新建科研项目' }).click()
+      16 |     const createDialog = page.getByRole('dialog', { name: '新建科研项目' })
+    > 17 |     await createDialog.getByLabel('项目名称', { exact: true }).fill('候选源复核项目')
+         |                                                            ^
+      18 |     await createDialog.getByLabel(/项目说明/).fill('保留条件、来源和完整结果，不推断成员。')
+      19 |     await createDialog.getByRole('button', { name: '创建科研项目', exact: true }).click()
+      20 |     await expect(page.getByRole('heading', { name: '候选源复核项目', exact: true, level: 1 })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:17:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-fixes\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-fixes\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('4/4 步已完成或跳过')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('4/4 步已完成或跳过') with timeout 5000ms
+      - waiting for getByText('4/4 步已完成或跳过')
+
+
+      37 |     await page.getByRole('button', { name: '确认执行' }).click()
+      38 |     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible({ timeout: 30000 })
+    > 39 |     await expect(page.getByText('4/4 步已完成或跳过')).toBeVisible()
+         |                                                 ^
+      40 |     await test.step('核对并下载 Gaia 归档', () => expectOutputDownload(page, 'workflow-results.zip'))
+      41 |     await page.reload()
+      42 |     await expect(page.getByText('workflow-results.zip', { exact: true })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\workflows.spec.ts:39:49
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\browser-output-fixes\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\browser-output-fixes\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\browser-output-fixes\workflows-fixed-workflows--58a1a-s-and-restore-after-refresh-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link 
+    [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution 
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+    [chromium] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh 
+  1 skipped
+  19 passed (1.2m)

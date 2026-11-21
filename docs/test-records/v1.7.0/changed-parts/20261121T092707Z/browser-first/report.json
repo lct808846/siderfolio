@@ -1,0 +1,440 @@
+{
+  "config": {
+    "argv": [
+      "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\node24\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.compute-acceptance.ts",
+      "--output",
+      "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.compute-acceptance.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/compute-browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.astroagent/acceptance-tmp/petar-20261121t092707z/playwright-first",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/compute-browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "D:/project/astroagent/.astroagent/acceptance-tmp/petar-20261121t092707z/playwright-first",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/compute-browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\compute-browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\compute-browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5287",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "edge",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\compute-browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\compute-browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5287",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "browserName": "chromium",
+          "channel": "msedge"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "edge"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\docs\\test-records\\v1.7.0\\changed-parts\\20261121T092707Z\\browser-first\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "compute.spec.ts",
+      "file": "compute.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "workbench handoff, PeTar run, exports and comparison with REBOUND",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 9733,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:52:61",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                      "column": 61,
+                      "line": 52
+                    },
+                    "snippet": "  50 |   await page.getByLabel('采样点数').fill('100')\n  51 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 52 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n     |                                                             ^\n  53 |   const originalUrl = page.url()\n  54 |   const originalId = new URL(originalUrl).pathname.split('/').at(-1)!\n  55 |   await page.getByRole('button', { name: '核对并运行' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                        "column": 61,
+                        "line": 52
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n\n  50 |   await page.getByLabel('采样点数').fill('100')\n  51 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 52 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n     |                                                             ^\n  53 |   const originalUrl = page.url()\n  54 |   const originalId = new URL(originalUrl).pathname.split('/').at(-1)!\n  55 |   await page.getByRole('button', { name: '核对并运行' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:52:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T09:39:49.180Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                    "column": 61,
+                    "line": 52
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ee39d50196f491047331-f28addf8bcabbb5b0743",
+          "file": "compute.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "presets, Kepler elements, CSV import and center-of-mass reset",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 8814,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:155:61",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                      "column": 61,
+                      "line": 155
+                    },
+                    "snippet": "  153 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })\n  154 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 155 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n      |                                                             ^\n  156 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)\n  157 |   expect(task.status()).toBe(200)\n  158 |   const params = (await task.json()).parameters"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                        "column": 61,
+                        "line": 155
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n\n  153 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })\n  154 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 155 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n      |                                                             ^\n  156 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)\n  157 |   expect(task.status()).toBe(200)\n  158 |   const params = (await task.json()).parameters\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:155:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T09:40:02.269Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                    "column": 61,
+                    "line": 155
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ee39d50196f491047331-0cd6c102fbb3fab3bf26",
+          "file": "compute.spec.ts",
+          "line": 112,
+          "column": 1
+        },
+        {
+          "title": "workbench handoff, PeTar run, exports and comparison with REBOUND",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7743,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:52:61",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                      "column": 61,
+                      "line": 52
+                    },
+                    "snippet": "  50 |   await page.getByLabel('采样点数').fill('100')\n  51 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 52 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n     |                                                             ^\n  53 |   const originalUrl = page.url()\n  54 |   const originalId = new URL(originalUrl).pathname.split('/').at(-1)!\n  55 |   await page.getByRole('button', { name: '核对并运行' }).click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                        "column": 61,
+                        "line": 52
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n\n  50 |   await page.getByLabel('采样点数').fill('100')\n  51 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 52 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n     |                                                             ^\n  53 |   const originalUrl = page.url()\n  54 |   const originalId = new URL(originalUrl).pathname.split('/').at(-1)!\n  55 |   await page.getByRole('button', { name: '核对并运行' }).click()\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:52:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T09:40:11.978Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                    "column": 61,
+                    "line": 52
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ee39d50196f491047331-43ec42f0de3035a189eb",
+          "file": "compute.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "presets, Kepler elements, CSV import and center-of-mass reset",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 8851,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:155:61",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                      "column": 61,
+                      "line": 155
+                    },
+                    "snippet": "  153 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })\n  154 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 155 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n      |                                                             ^\n  156 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)\n  157 |   expect(task.status()).toBe(200)\n  158 |   const params = (await task.json()).parameters"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                        "column": 61,
+                        "line": 155
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: '核对并运行' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('button', { name: '核对并运行' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: '核对并运行' })\u001b[22m\n\n\n  153 |   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })\n  154 |   await page.getByRole('button', { name: '保存草稿' }).click()\n> 155 |   await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()\n      |                                                             ^\n  156 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)\n  157 |   expect(task.status()).toBe(200)\n  158 |   const params = (await task.json()).parameters\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:155:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T09:40:21.303Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-first\\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                    "column": 61,
+                    "line": 155
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ee39d50196f491047331-6e59cfb465ec7e6807df",
+          "file": "compute.spec.ts",
+          "line": 112,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-21T09:39:48.527Z",
+    "duration": 42485.711,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

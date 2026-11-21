@@ -13,11 +13,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useWorkbench } from '../stores/workbench'
 import { useModels } from '../stores/models'
 import { useAttachments } from '../stores/attachments'
+import { useProjects } from '../stores/projects'
 import ResultPanel from '../components/ResultPanel.vue'
 import MarkdownAnswer from '../components/MarkdownAnswer'
 import UserMessage from '../components/UserMessage.vue'
 import ProjectWorkspace from './ProjectWorkspace.vue'
 import WorkflowWorkspace from './WorkflowWorkspace.vue'
+import ComputeWorkspace from './ComputeWorkspace.vue'
 import KnowledgeWorkspace from './KnowledgeWorkspace.vue'
 import ProjectOverview from './ProjectOverview.vue'
 import RagWorkspace from './RagWorkspace.vue'
@@ -26,11 +28,15 @@ import LocalAssistantWorkspace from './LocalAssistantWorkspace.vue'
 import ProfileWorkspace from './ProfileWorkspace.vue'
 import LocalTitleStatus from '../components/LocalTitleStatus.vue'
 import { safeLink } from '../api'
+import { computeApi, setComputeHandoff, type ComputeStatus } from '../api/compute'
+import { takeWorkbenchDraft } from '../research-handoff'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
 
 const store = useWorkbench(), route = useRoute(), router = useRouter()
 const models = useModels()
 const attachments = useAttachments()
+const projectsStore = useProjects()
+const unarchiving = ref(false)
 const dragDepth = ref(0)
 const draft = ref(''), composing = ref(false)
 const profileMode = computed(() => route.path === '/profile')
@@ -38,10 +44,48 @@ const plotMode = computed(() => !profileMode.value && route.query.mode === 'plot
 const openedPlot = ref(false), plotDraft = ref('')
 const plotPanel = ref<InstanceType<typeof WorkbenchPlot> | null>(null)
 const nbodyDialog = ref<HTMLDialogElement | null>(null)
+const nbodyProject = ref('')
+const nbodyLoading = ref(false)
+const nbodyError = ref('')
+const computeStatus = ref<ComputeStatus | null>(null)
+const computeDisabled = computed(() => computeStatus.value !== null && !computeStatus.value.enabled)
+const nbodySpaces = computed(() => {
+  const items: Array<{ id: string; label: string }> = []
+  if (projectsStore.defaultProject) items.push({ id: projectsStore.defaultProject.id, label: '个人空间（默认）' })
+  for (const project of projectsStore.customProjects) items.push({ id: project.id, label: project.name })
+  return items
+})
+async function openNbody() {
+  nbodyError.value = ''
+  nbodyLoading.value = true
+  try {
+    await projectsStore.load(true)
+    const fallback = await projectsStore.ensureDefault()
+    if (!projectsStore.customProjects.length) {
+      setComputeHandoff(fallback.id, draft.value || store.turns.at(-1)?.message || '', currentModel.value || undefined)
+      void router.push('/compute')
+      return
+    }
+    const preferred = projectsStore.memberships[conversationId.value] || fallback.id
+    nbodyProject.value = nbodySpaces.value.some(item => item.id === preferred) ? preferred : fallback.id
+    nbodyDialog.value?.showModal()
+  } catch (reason) {
+    nbodyError.value = reason instanceof Error ? reason.message : '暂时无法准备计算空间。'
+    nbodyDialog.value?.showModal()
+  } finally { nbodyLoading.value = false }
+}
+function nbodyContinue() {
+  if (!nbodyProject.value) return
+  setComputeHandoff(nbodyProject.value, draft.value || store.turns.at(-1)?.message || '', currentModel.value || undefined)
+  nbodyDialog.value?.close()
+  if (nbodyProject.value === projectsStore.defaultProjectId) void router.push('/compute')
+  else void router.push(`/projects/${nbodyProject.value}/compute`)
+}
 watch(() => route.fullPath, () => nbodyDialog.value?.close())
 const composerDraft = computed({ get: () => plotMode.value ? plotDraft.value : draft.value, set: value => { if (plotMode.value) plotDraft.value = value; else draft.value = value } })
 const plotBusy = computed(() => !!plotPanel.value?.busy)
 const plotReady = computed(() => !!plotPanel.value?.canPrepare)
+const plotHint = computed(() => plotPanel.value?.readinessHint || '')
 watch(plotMode, value => { if (value) openedPlot.value = true }, { immediate: true })
 async function togglePlot() {
   if (store.running || store.creating || store.loading || sending.value || store.disconnectedRequest) return
@@ -66,6 +110,24 @@ const resultsToggle = ref<HTMLButtonElement | null>(null)
 const resultsPanelStates = readResultsPanelStates()
 const restoringResults = ref(true)
 const conversationId = computed(() => typeof route.params.id === 'string' ? route.params.id : '')
+const currentProject = computed(() => conversationId.value ? projectsStore.projectFor(conversationId.value) : null)
+const currentProjectSources = computed(() => currentProject.value ? projectsStore.sourceCounts[currentProject.value.id] : undefined)
+watch(() => currentProject.value?.id, projectId => {
+  if (projectId) {
+    projectsStore.setActiveProject(projectId)
+    if (projectsStore.sourceCounts[projectId] === undefined) {
+      void projectsStore.refreshSourceCount(projectId).catch(() => undefined)
+    }
+  }
+}, { immediate: true })
+const currentArchived = computed(() => !!conversationId.value && store.archived.some(item => item.id === conversationId.value))
+async function restoreCurrentConversation() {
+  if (!conversationId.value || unarchiving.value) return
+  unarchiving.value = true
+  try { await store.unarchiveConversation(conversationId.value) }
+  catch (reason) { store.report(reason) }
+  finally { unarchiving.value = false }
+}
 const conversationReady = computed(() => !conversationId.value || store.current?.id === conversationId.value)
 const modelScope = computed(() => conversationId.value || 'draft')
 const plotDrafts = new Map<string, string>()
@@ -166,9 +228,27 @@ watch([() => route.fullPath, () => store.turns], () => {
 })
 const newest = computed(() => store.turns.at(-1)?.turn_id)
 const examples = [
-  { label: '坐标圆锥查询', text: '以 ICRS 赤经56.75度、赤纬24.12度为中心，查5角分内最近100个Gaia DR3位置候选源，不估算距离。' },
-  { label: '指定 DR3 编号', text: '查询 Gaia DR3 source_id 5853498713190525696 的测量信息并估算距离，说明近似条件。' },
-  { label: 'ADS 文献检索', text: '检索2020—2026年双星团相关论文，取3篇，按发表日期降序，给出来源。' },
+  {
+    badge: 'Gaia DR3',
+    badgeClass: 'ui-pill-gaia',
+    label: '坐标圆锥查询',
+    summary: '以 ICRS 坐标为中心检索 5 角分内 Gaia DR3 位置候选源与基础统计。',
+    text: '以 ICRS 赤经56.75度、赤纬24.12度为中心，查5角分内最近100个Gaia DR3位置候选源，不估算距离。',
+  },
+  {
+    badge: 'DR3 编号',
+    badgeClass: 'ui-pill-simbad',
+    label: '指定源精确测量',
+    summary: '按 Gaia DR3 source_id 精确核查天体测量与高信噪比视差距离近似。',
+    text: '查询 Gaia DR3 source_id 5853498713190525696 的测量信息并估算距离，说明近似条件。',
+  },
+  {
+    badge: 'ADS 文献',
+    badgeClass: 'ui-pill-ads',
+    label: '近期论文与来源检索',
+    summary: '按年份与发表日期降序检索 ADS 天文文献摘要，保留可追溯 bibcode。',
+    text: '检索2020—2026年双星团相关论文，取3篇，按发表日期降序，给出来源。',
+  },
 ]
 let preparingConversation = false
 async function create() {
@@ -277,13 +357,27 @@ watch(() => route.params.id, async id => {
     })
   })
 }, { immediate: true, flush: 'sync' })
+async function applyWorkbenchHandoff() {
+  if (route.path !== '/' && !route.path.startsWith('/conversations/')) return
+  const handed = takeWorkbenchDraft()
+  if (!handed) return
+  draft.value = handed
+  await nextTick()
+  resizeComposer()
+  input.value?.focus()
+}
+watch(() => route.fullPath, () => { void applyWorkbenchHandoff() }, { immediate: true })
 onMounted(async () => {
   layoutQuery = window.matchMedia('(max-width: 980px)')
   updateLayout(); layoutQuery.addEventListener('change', updateLayout)
   window.addEventListener('resize', resizeComposer)
   resizeComposer()
+  void applyWorkbenchHandoff()
+  void computeApi.status().then(status => { computeStatus.value = status }).catch(() => undefined)
   try {
     await Promise.all([store.refreshList(), models.load()])
+    void store.refreshArchived().catch(() => undefined)
+    void projectsStore.load().catch(() => undefined)
   } catch (error) { store.report(error) }
 })
 onBeforeUnmount(() => {
@@ -302,6 +396,7 @@ onBeforeUnmount(() => {
   <ProjectOverview v-else-if="route.path.endsWith('/overview')" />
   <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />
+  <ComputeWorkspace v-else-if="route.path.includes('/compute')" />
   <ProjectWorkspace v-else-if="route.path.startsWith('/projects')" />
   <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode || plotMode ? 'chat' : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && !plotMode && store.panel==='results'" :data-results-restoring="restoringResults">
     <WorkspaceHeader title="本地科研工作台" />
@@ -310,6 +405,16 @@ onBeforeUnmount(() => {
       <header class="chat-heading">
         <button type="button" class="chat-toolbar-button history-toggle" :aria-expanded="historyVisible" aria-controls="conversation-history" :aria-label="historyVisible ? '收起会话列表' : '展开会话列表'" :title="historyVisible ? '收起会话列表' : '展开会话列表'" @click="toggleHistory"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /><path class="history-toggle-chevron" d="m16 10-2 2 2 2" /></svg></button>
         <h1 :title="profileMode ? '个人资料' : conversationTitle">{{ profileMode ? '个人资料' : conversationTitle }}</h1>
+        <RouterLink
+          v-if="!profileMode && currentProject"
+          :to="`/projects/${currentProject.id}`"
+          class="chat-project-pill"
+          :data-tooltip="currentProjectSources ? `所属项目：${currentProject.name}（回答时自动参考 ${currentProjectSources} 份项目来源）` : `所属项目：${currentProject.name}（点击查看或添加参考来源）`"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
+          <span class="chat-project-pill-name">{{ currentProject.name }}</span>
+          <span v-if="currentProjectSources" class="chat-project-pill-sources">{{ currentProjectSources }} 份来源</span>
+        </RouterLink>
         <LocalTitleStatus v-if="!profileMode" silent :conversation-id="conversationId" :has-message="!!store.turns.length || store.pending" :submitting="store.pending" />
         <button
           v-show="!profileMode && !plotMode && store.panel !== 'results'"
@@ -328,6 +433,10 @@ onBeforeUnmount(() => {
       </header>
       <ProfileWorkspace v-if="profileMode" />
       <template v-else>
+        <div v-if="currentArchived" class="archived-banner" role="status">
+          <span>此会话已归档，当前处于收纳状态。继续发送消息或取消归档将恢复至左侧会话列表。</span>
+          <button type="button" :disabled="unarchiving" @click="restoreCurrentConversation">{{ unarchiving ? '正在恢复…' : '取消归档' }}</button>
+        </div>
         <ConversationErrorNotice v-if="store.error" class="global-error" :message="store.error" :code="store.errorCode" current :busy="store.running || store.loading" :can-retry="!!draft.trim() && !store.disconnectedRequest" @retry="send" />
       <div v-if="store.disconnectedRequest" class="notice"><p>断线前的问题尚未确认。先恢复会话；若仍未显示，可用原请求编号重新核对，避免重复执行。</p><button @click="store.resendSameRequest">用原请求编号核对</button></div>
       <div v-show="!plotMode" class="chat-scroll" :class="{'chat-scroll-empty':showWelcome}" :aria-busy="store.loading" aria-live="polite">
@@ -337,13 +446,39 @@ onBeforeUnmount(() => {
           <div class="conversation-loading-answer" aria-hidden="true"><span></span><span></span><span></span></div>
         </div>
         <div v-else-if="showWelcome" class="welcome">
-          <div class="welcome-intro"><div class="welcome-copy"><p class="eyebrow">SIMBAD · ADS · Gaia DR3</p><h2>天文数据与文献检索</h2><p>查询天体、Gaia 测量和论文，保留每轮来源与结果。</p></div></div>
-          <div class="example-list"><button v-for="example in examples" :key="example.label" @click="useExample(example.text)"><span>{{ example.label }}</span><span aria-hidden="true">↗</span></button></div>
-          <p class="welcome-hint">示例仅填入输入框，由你确认发送。</p>
+          <div class="welcome-intro">
+            <div class="welcome-copy">
+              <div class="ui-pill-list" style="justify-content: center; margin-bottom: 14px;">
+                <span class="ui-pill ui-pill-simbad">SIMBAD · 天体目标</span>
+                <span class="ui-pill ui-pill-gaia">Gaia DR3 · 天体测量</span>
+                <span class="ui-pill ui-pill-ads">ADS · 学术文献</span>
+              </div>
+              <h2>天文数据与文献检索</h2>
+              <p>查询天体、Gaia DR3 测量和学术论文，自动保留每轮数据来源、统计与可复现导出。</p>
+            </div>
+          </div>
+          <div v-if="currentProject" class="welcome-project-banner">
+            <span>
+              <template v-if="currentProjectSources">当前会话属于科研项目「{{ currentProject.name }}」，已启用 {{ currentProjectSources }} 份参考来源，回答时将自动参考项目文献。</template>
+              <template v-else>当前会话属于科研项目「{{ currentProject.name }}」，可添加 PDF / Markdown 来源供模型回答时参考。</template>
+            </span>
+            <RouterLink :to="`/projects/${currentProject.id}`">{{ currentProjectSources ? '管理来源 →' : '添加来源 →' }}</RouterLink>
+          </div>
+          <div class="welcome-launch-grid">
+            <button v-for="example in examples" :key="example.label" type="button" class="welcome-launch-card" @click="useExample(example.text)">
+              <div class="welcome-launch-head">
+                <span class="ui-pill" :class="example.badgeClass">{{ example.badge }}</span>
+                <span class="welcome-launch-arrow" aria-hidden="true">↗</span>
+              </div>
+              <b>{{ example.label }}</b>
+              <p>{{ example.summary }}</p>
+            </button>
+          </div>
+          <p class="welcome-hint">点击上方任务卡片仅将示例填入输入框，由你核对后确认发送。</p>
         </div>
         <template v-for="{ turn, modelChange } in conversationTimeline" :key="turn.turn_id">
           <ModelChangeNotice v-if="modelChange" :from="models.labelFor(modelChange.from)" :to="models.labelFor(modelChange.to)" />
-          <article class="turn" :class="{ 'selected-turn':store.selectedTurnId===turn.turn_id }"><div class="turn-label"><span class="eyebrow">第 {{ turn.revision }} 轮</span><time>{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="tag">历史记录</span></div><UserMessage :text="turn.message" :attachments="turn.attachments" :turn-number="turn.revision" :disabled="store.running || store.creating || store.loading || sending || !!store.disconnectedRequest" @edit="editQuestion($event, turn.revision, turn.conversation_id)" /><div class="answer"><div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response" class="tag" :class="turn.response.status">{{ turn.response.status === 'success' ? '已完成' : turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div><p v-if="turn.execution_status==='running'" class="processing">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</p><ConversationErrorNotice v-if="turn.error" :message="turn.error.message" :code="turn.error.code" /><MarkdownAnswer v-if="turn.response" class="answer-text" :text="turn.response.answer" /><ContextNotice v-if="turn.context?.warnings?.length" :messages="turn.context?.warnings || []" /><details v-if="turn.context?.included_turn_ids?.length" class="small"><summary>使用了 {{ turn.context.included_turn_ids.length }} 轮历史上下文</summary><p>历史数据保持原查询时间，不代表本轮重新查询。</p><code>{{ turn.context.included_turn_ids.join('\n') }}</code></details><div v-if="turn.response?.sources?.length" class="source-links"><template v-for="source in turn.response.sources" :key="source.url"><a v-if="safeLink(source.url)" :href="safeLink(source.url)!" target="_blank" rel="noopener noreferrer">{{ source.name }} ↗</a><span v-else>{{ source.url }}</span></template></div><button class="view-results" @click="openResults(turn.turn_id)">核查本轮结果与导出 <span aria-hidden="true">→</span></button></div></article>
+          <article class="turn" :class="{ 'selected-turn':store.selectedTurnId===turn.turn_id }"><div class="turn-label"><span class="ui-pill ui-pill-neutral">第 {{ turn.revision }} 轮</span><time class="ui-pill ui-pill-mono">{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="ui-pill ui-pill-neutral">历史记录</span></div><UserMessage :text="turn.message" :attachments="turn.attachments" :turn-number="turn.revision" :disabled="store.running || store.creating || store.loading || sending || !!store.disconnectedRequest" @edit="editQuestion($event, turn.revision, turn.conversation_id)" /><div class="answer"><div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response" class="tag" :class="turn.response.status">{{ turn.response.status === 'success' ? '已完成' : turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div><p v-if="turn.execution_status==='running'" class="processing">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</p><ConversationErrorNotice v-if="turn.error" :message="turn.error.message" :code="turn.error.code" /><MarkdownAnswer v-if="turn.response" class="answer-text" :text="turn.response.answer" /><ContextNotice v-if="turn.context?.warnings?.length" :messages="turn.context?.warnings || []" /><details v-if="turn.context?.included_turn_ids?.length" class="small"><summary>使用了 {{ turn.context.included_turn_ids.length }} 轮历史上下文</summary><p>历史数据保持原查询时间，不代表本轮重新查询。</p><code>{{ turn.context.included_turn_ids.join('\n') }}</code></details><div v-if="turn.response?.sources?.length" class="source-links"><template v-for="source in turn.response.sources" :key="source.url"><a v-if="safeLink(source.url)" :href="safeLink(source.url)!" target="_blank" rel="noopener noreferrer">{{ source.name }} ↗</a><span v-else>{{ source.url }}</span></template></div><button class="view-results" @click="openResults(turn.turn_id)">核查本轮结果与导出 <span aria-hidden="true">→</span></button></div></article>
         </template>
         <p v-if="store.pending" class="processing pending"><span class="status-dot"></span>正在处理，请稍候…</p>
         <p v-if="store.loading && store.turns.length" class="small muted">正在读取本地记录…</p>
@@ -359,25 +494,44 @@ onBeforeUnmount(() => {
         <div class="composer-bottom">
           <div class="composer-task-tools">
             <button type="button" class="composer-task-button composer-plot-toggle" :class="{ active: plotMode }" :aria-pressed="plotMode" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" :data-tooltip="plotMode ? '返回对话，保留绘图进度和草稿' : '在当前工作台选择数据、描述图形并审阅绘图方案'" @click="togglePlot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M7 15l4-5 4 3 5-7" /><circle cx="11" cy="10" r="1" /></svg><span>科研绘图</span><span v-if="plotMode" class="composer-plot-return">返回对话</span></button>
-            <button type="button" class="composer-task-button composer-nbody-toggle" aria-haspopup="dialog" data-tooltip="N 体模拟入口已预留，后续开放" @click="nbodyDialog?.showModal()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><circle cx="5" cy="6" r="1.5" /><circle cx="19" cy="17" r="1.5" /><path d="M6.3 7.2l3.4 2.9m4.7 3.8 3.4 2M18.5 8a8 8 0 0 0-9-3m-4 8a8 8 0 0 0 9 7" /></svg><span>N 体模拟</span><small>待开放</small></button>
+            <button type="button" class="composer-task-button composer-nbody-toggle" :class="{ 'is-unavailable': computeDisabled }" :data-tooltip="computeDisabled ? '服务端暂未启用 N 体计算执行器（仍可编辑初始条件草稿）' : '准备并运行 N 体模拟实验'" @click="openNbody"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><circle cx="5" cy="6" r="1.5" /><circle cx="19" cy="17" r="1.5" /><path d="M6.3 7.2l3.4 2.9m4.7 3.8 3.4 2M18.5 8a8 8 0 0 0-9-3m-4 8a8 8 0 0 0 9 7" /></svg><span>N 体模拟</span><span v-if="computeDisabled" class="composer-status-pill">未启用</span></button>
           </div>
           <div v-show="!plotMode" class="composer-tools"><ModelSelector :model-value="currentModel" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" @update:model-value="selectModel" /></div>
           <button v-if="plotMode" type="button" class="workbench-plot-upload" :disabled="!plotPanel?.canUpload" aria-label="上传绘图 CSV 或 TSV 数据" data-tooltip="上传 CSV / TSV 绘图数据" @click="plotPanel?.chooseFile()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M5 14v6h14v-6" /></svg></button>
           <AttachmentButton v-else :scope="modelScope" :disabled="attachmentDisabled" />
-          <button class="button-primary composer-send" :disabled="plotMode ? !plotDraft.trim() || !plotReady || plotBusy : (!draft.trim() && !attachedFiles.length) || attachments.blocked(modelScope) || !currentModel || !models.configured || models.loading || store.running || store.creating || store.loading || sending || !!store.disconnectedRequest" type="submit" :aria-label="plotMode ? plotBusy ? '正在准备绘图' : '生成绘图方案' : store.running || sending ? '正在处理问题' : '发送问题'" :data-tooltip="plotMode ? '生成绘图方案，审阅后再确认执行' : store.running || sending ? '正在处理，请稍候' : '发送问题及附件；Enter 发送，Shift + Enter 换行'">
+          <button class="button-primary composer-send" :disabled="plotMode ? !plotDraft.trim() || !plotReady || plotBusy : (!draft.trim() && !attachedFiles.length) || attachments.blocked(modelScope) || !currentModel || !models.configured || models.loading || store.running || store.creating || store.loading || sending || !!store.disconnectedRequest" type="submit" :aria-label="plotMode ? plotBusy ? '正在准备绘图' : '生成绘图方案' : store.running || sending ? '正在处理问题' : '发送问题'" :data-tooltip="plotMode ? (plotHint || '生成绘图方案，审阅后再确认执行') : store.running || sending ? '正在处理，请稍候' : '发送问题及附件；Enter 发送，Shift + Enter 换行'">
             <svg v-if="store.running || sending || (plotMode && plotBusy)" class="composer-send-spinner" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" /></svg>
             <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-5.5 5.5L12 5l5.5 5.5" /></svg>
           </button>
         </div>
-        <p>{{ plotMode ? '生成方案后请核对数据、单位与脚本；确认执行后才会绘图。' : '模型回答需对照原始数据核查；位置候选源不等于星团成员。' }}</p>
+        <p v-if="plotMode && !plotReady && plotHint" class="composer-readiness-hint" role="status">{{ plotHint }}</p>
+        <p v-else>{{ plotMode ? '生成方案后请核对数据、单位与脚本；确认执行后才会绘图。' : '模型回答需对照原始数据核查；位置候选源不等于星团成员。' }}</p>
       </form>
       </template>
     </main>
     <ResultPanel id="workbench-results" :inert="profileMode || plotMode || store.panel !== 'results'" :aria-hidden="profileMode || plotMode || store.panel !== 'results'" :pending="store.pending" :turn="store.selectedTurn" :historical="!!store.selectedTurn && store.selectedTurn.turn_id!==newest" dismissible @close="closeResults" />
-    <dialog ref="nbodyDialog" class="project-dialog nbody-placeholder" aria-labelledby="nbody-title" aria-describedby="nbody-description">
-      <h2 id="nbody-title">N 体模拟 · 待开放</h2>
-      <p id="nbody-description">模拟入口已预留，后续将在这里接入 N 体模拟功能。</p>
-      <div class="project-actions"><button type="button" class="button-primary" autofocus @click="nbodyDialog?.close()">知道了</button></div>
+    <dialog ref="nbodyDialog" class="project-dialog" aria-labelledby="nbody-title">
+      <div class="dialog-header">
+        <div class="dialog-header-copy">
+          <h2 id="nbody-title">选择计算空间</h2>
+          <p class="dialog-subtitle">指定保存 N 体模拟实验参数、轨迹图表与诊断数据的空间。</p>
+        </div>
+        <button type="button" class="dialog-close" aria-label="关闭" @click="nbodyDialog?.close()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
+        </button>
+      </div>
+      <p v-if="nbodyLoading" class="processing" role="status">正在准备计算空间…</p>
+      <p v-else-if="nbodyError" class="notice danger" role="alert">{{ nbodyError }}</p>
+      <div v-else class="project-form">
+        <p v-if="computeDisabled" class="notice warning" role="status">当前服务端暂未启用 N 体计算执行器。你仍可进入页面准备轨道初始条件草稿；启用 compute 服务后即可执行积分。</p>
+        <label for="nbody-space-select">保存计算结果的空间</label>
+        <select id="nbody-space-select" v-model="nbodyProject"><option v-for="space in nbodySpaces" :key="space.id" :value="space.id">{{ space.label }}</option></select>
+        <p v-if="draft || store.turns.length" class="small muted">当前输入或最近一条提问将填入实验描述，可在提交前编辑。</p>
+      </div>
+      <div class="project-actions">
+        <button type="button" autofocus @click="nbodyDialog?.close()">取消</button>
+        <button type="button" class="button-primary" :disabled="nbodyLoading || !nbodyProject || !!nbodyError" @click="nbodyContinue">打开计算任务</button>
+      </div>
     </dialog>
 </div>
 </template>

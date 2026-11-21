@@ -1,0 +1,87 @@
+{
+  "project": "astroagent-petar-qa-20261121t092707z",
+  "orbit_tolerance": 1e-06,
+  "checks": {
+    "engine_availability_and_allowlist": {
+      "passed": true,
+      "detail": [
+        "rebound",
+        "petar"
+      ],
+      "seconds": 0.121
+    },
+    "legacy_rebound_draft_result_and_archive": {
+      "passed": true,
+      "detail": {
+        "metrics": {
+          "separation_AU": 2.220446049250313e-16,
+          "center_AU": 0.0,
+          "energy_relative": 4.440892098500626e-16,
+          "angular_relative": 1.4135798584282297e-16,
+          "position_AU": 7.987869494273747e-16,
+          "period_relative": 2.220446049250313e-16
+        },
+        "archive_members": 6,
+        "rows": 258
+      },
+      "seconds": 4.327
+    },
+    "petar_analytic_orbit": {
+      "passed": true,
+      "detail": {
+        "metrics": {
+          "separation_AU": 2.941370840225943e-07,
+          "center_AU": 0.0,
+          "energy_relative": 8.459899447643693e-14,
+          "angular_relative": 4.382097561127512e-15,
+          "position_AU": 6.436559365728487e-07,
+          "period_relative": 1.9609141066467828e-07
+        },
+        "tree_step_yr": 0.0001220703125,
+        "archive_members": 6,
+        "rows": 258
+      },
+      "seconds": 4.403
+    },
+    "petar_non_dyadic_grid_translation_exports_copy_and_permissions": {
+      "passed": true,
+      "detail": {
+        "metrics": {
+          "separation_AU": 1.228938291131243e-07,
+          "center_AU": 4.5089272162835767e-13,
+          "energy_relative": 2.4868995751603507e-14,
+          "angular_relative": 4.868474838792019e-14,
+          "position_AU": 1.6139341788827673e-07,
+          "period_relative": 8.194984268961036e-08
+        },
+        "tree_step_yr": 7.891414141414142e-05,
+        "archive_members": 6,
+        "rows": 200
+      },
+      "seconds": 7.981
+    },
+    "petar_maximum_grid": {
+      "passed": true,
+      "detail": {
+        "csv_bytes": 10208995,
+        "rows": 65536,
+        "integrator_seconds": 3.1767969230004383
+      },
+      "seconds": 10.036
+    },
+    "worker_isolation": {
+      "passed": true,
+      "detail": {
+        "network": "none",
+        "read_only": true,
+        "memory_mib": 512,
+        "cpus": 1,
+        "pids_limit": 24,
+        "non_root_uid": 10001,
+        "anonymous_tmpfs_mib": 32
+      },
+      "seconds": 0.099
+    }
+  },
+  "image": "sha256:e21540c937530a69c2f09a340bc52f25525510b3ba0ea8e7348b4d5803ef9506"
+}

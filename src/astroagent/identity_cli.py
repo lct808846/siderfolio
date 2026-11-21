@@ -17,6 +17,7 @@ from astroagent.postgres import COLUMNS, LOCK_ID
 
 BUSINESS_TABLES = set(COLUMNS) | {
     "astroagent_meta",
+    "conversation_archives",
     "rag_indexes",
     "rag_active",
     "rag_vectors",

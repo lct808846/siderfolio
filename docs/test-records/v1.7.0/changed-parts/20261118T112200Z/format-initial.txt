@@ -1,0 +1,561 @@
+unformatted: File would be reformatted
+   --> src\astroagent\api\compute.py:15:20
+    |
+14  | from astroagent.compute_schemas import (
+    -     ComputeConfirm, ComputeDescribe, ComputeDraft, ComputeEdit, ComputeList, ComputeProposal,
+    -     ComputeTask, PlotKind, SimulationParameters, SimulationResult, binary_template,
+15  +     ComputeConfirm,
+16  +     ComputeDescribe,
+17  +     ComputeDraft,
+18  +     ComputeEdit,
+19  +     ComputeList,
+20  +     ComputeProposal,
+21  +     ComputeTask,
+22  +     PlotKind,
+23  +     SimulationParameters,
+24  +     SimulationResult,
+25  +     binary_template,
+26  | )
+--------------------------------------------------------------------------------
+80  |         schema = json.dumps(ComputeProposal.model_json_schema(), ensure_ascii=False)
+    -         answer = model.invoke([
+    -             SystemMessage(content=(
+    -                 "你将用户明确给出的小规模孤立牛顿点质量系统转成 JSON 参数草稿。"
+    -                 "固定单位 AU、yr、M_sun、AU/yr。没有明确给出粒子质量、三维坐标、"
+    -                 "三维速度、持续时间或采样数时，返回中文 clarification 并留空 parameters。"
+    -                 "存在不兼容物理条件时同样追问。不要补造物理量、执行任务或输出代码。"
+    -                 f"仅返回符合此 JSON Schema 的对象：{schema}"
+    -             )),
+    -             HumanMessage(content=body.description),
+    -         ])
+81  +         answer = model.invoke(
+82  +             [
+83  +                 SystemMessage(
+84  +                     content=(
+85  +                         "你将用户明确给出的小规模孤立牛顿点质量系统转成 JSON 参数草稿。"
+86  +                         "固定单位 AU、yr、M_sun、AU/yr。没有明确给出粒子质量、三维坐标、"
+87  +                         "三维速度、持续时间或采样数时，返回中文 clarification 并留空 parameters。"
+88  +                         "存在不兼容物理条件时同样追问。不要补造物理量、执行任务或输出代码。"
+89  +                         f"仅返回符合此 JSON Schema 的对象：{schema}"
+90  +                     )
+91  +                 ),
+92  +                 HumanMessage(content=body.description),
+93  +             ]
+94  +         )
+95  |         proposal = ComputeProposal.model_validate_json(answer.content)
+--------------------------------------------------------------------------------
+102 |         raise ServiceError(
+    -             502, "compute_proposal_failed", "模型未返回完整参数。请补充初始条件，或使用表单录入。",
+103 +             502,
+104 +             "compute_proposal_failed",
+105 +             "模型未返回完整参数。请补充初始条件，或使用表单录入。",
+106 |         ) from exc
+--------------------------------------------------------------------------------
+129 | @router.post("/{task_id}/confirm", response_model=ComputeTask)
+    - def confirm(project_id: UUID, task_id: UUID, body: ComputeConfirm, request: Request, service: Service):
+130 + def confirm(
+131 +     project_id: UUID, task_id: UUID, body: ComputeConfirm, request: Request, service: Service
+132 + ):
+133 |     with access(request, project_id, mutation=True) as (db, owner):
+--------------------------------------------------------------------------------
+146 |         row = queue.task(db, owner, task_id, update=True)
+    -         return queue.create(db, owner, ComputeDraft(
+    -             name=row["name"], source=row["source"], parameters=row["parameters"],
+    -         ), origin=task_id)
+147 +         return queue.create(
+148 +             db,
+149 +             owner,
+150 +             ComputeDraft(
+151 +                 name=row["name"],
+152 +                 source=row["source"],
+153 +                 parameters=row["parameters"],
+154 +             ),
+155 +             origin=task_id,
+156 +         )
+157 |
+--------------------------------------------------------------------------------
+180 | def plot(
+    -     project_id: UUID, task_id: UUID, kind: PlotKind, request: Request, service: Service,
+181 +     project_id: UUID,
+182 +     task_id: UUID,
+183 +     kind: PlotKind,
+184 +     request: Request,
+185 +     service: Service,
+186 |     sample: int | None = Query(default=None, ge=0, le=511),
+--------------------------------------------------------------------------------
+190 |         media_type="image/svg+xml",
+    -         headers={"Cache-Control": "private, no-store", "Content-Security-Policy": "default-src 'none'"},
+191 +         headers={
+192 +             "Cache-Control": "private, no-store",
+193 +             "Content-Security-Policy": "default-src 'none'",
+194 +         },
+195 |     )
+196 |
+197 |
+198 | @router.get(
+    -     "/{task_id}/snapshots", response_class=Response,
+199 +     "/{task_id}/snapshots",
+200 +     response_class=Response,
+201 |     responses={200: {"content": {"text/csv": {"schema": {"type": "string"}}}}},
+--------------------------------------------------------------------------------
+206 |         media_type="text/csv",
+    -         headers={"Content-Disposition": f'attachment; filename="astroagent-snapshots-{task_id}.csv"'},
+207 +         headers={
+208 +             "Content-Disposition": f'attachment; filename="astroagent-snapshots-{task_id}.csv"'
+209 +         },
+210 |     )
+--------------------------------------------------------------------------------
+214 | def archive(
+    -     project_id: UUID, task_id: UUID, request: Request, service: Service,
+215 +     project_id: UUID,
+216 +     task_id: UUID,
+217 +     request: Request,
+218 +     service: Service,
+219 |     plots: list[PlotKind] = Query(default=[], max_length=3),
+--------------------------------------------------------------------------------
+223 |         media_type="application/zip",
+    -         headers={"Content-Disposition": f'attachment; filename="astroagent-experiment-{task_id}.zip"'},
+224 +         headers={
+225 +             "Content-Disposition": f'attachment; filename="astroagent-experiment-{task_id}.zip"'
+226 +         },
+227 |     )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\compute_exports.py:15:10
+    |
+14  | COLORS = ("#287567", "#a7633a", "#4c68ab", "#a44363", "#577139", "#755ba3")
+    - UNITS = {"position": "AU", "time": "yr", "mass": "M_sun", "velocity": "AU/yr",
+    -          "energy": "M_sun AU²/yr²", "angular_momentum": "M_sun AU²/yr"}
+15  + UNITS = {
+16  +     "position": "AU",
+17  +     "time": "yr",
+18  +     "mass": "M_sun",
+19  +     "velocity": "AU/yr",
+20  +     "energy": "M_sun AU²/yr²",
+21  +     "angular_momentum": "M_sun AU²/yr",
+22  + }
+23  |
+--------------------------------------------------------------------------------
+27  |     particles = row["parameters"]["particles"]
+    -     selected = max(0, min(len(samples) - 1, sample_index if sample_index is not None else len(samples) - 1))
+28  +     selected = max(
+29  +         0, min(len(samples) - 1, sample_index if sample_index is not None else len(samples) - 1)
+30  +     )
+31  |     if kind == "energy":
+--------------------------------------------------------------------------------
+38  |     else:
+    -         series = [[tuple(sample["particles"][index]["position"][:2]) for sample in samples]
+    -                   for index in range(len(particles))]
+    -         title = "XY 轨迹" if kind == "trajectory" else f"XY 位置快照 · {samples[selected]['time']:.5g} yr"
+39  +         series = [
+40  +             [tuple(sample["particles"][index]["position"][:2]) for sample in samples]
+41  +             for index in range(len(particles))
+42  +         ]
+43  +         title = (
+44  +             "XY 轨迹"
+45  +             if kind == "trajectory"
+46  +             else f"XY 位置快照 · {samples[selected]['time']:.5g} yr"
+47  +         )
+48  |         xlabel, ylabel = "X (AU)", "Y (AU)"
+--------------------------------------------------------------------------------
+61  |     def coordinates(point):
+    -         return left + (point[0] - x0) / xspan * width, top + height - (point[1] - y0) / yspan * height
+62  +         return left + (point[0] - x0) / xspan * width, top + height - (
+63  +             point[1] - y0
+64  +         ) / yspan * height
+65  |
+--------------------------------------------------------------------------------
+75  |         x, y = left + width * fraction, top + height * (1 - fraction)
+    -         pieces.extend([
+    -             f'<path d="M{x:g} {top}v{height} M{left} {y:g}h{width}" stroke="#dce5df"/>',
+    -             f'<text x="{x:g}" y="360" text-anchor="middle">{x0 + xspan * fraction:.3g}</text>',
+    -             f'<text x="83" y="{y + 4:g}" text-anchor="end">{y0 + yspan * fraction:.3g}</text>',
+    -         ])
+    -     pieces.extend([
+    -         f'<text x="{left + width / 2:g}" y="386" text-anchor="middle">{escape(xlabel)}</text>',
+    -         f'<text x="20" y="196" text-anchor="middle" transform="rotate(-90 20 196)">{escape(ylabel)}</text>',
+    -     ])
+76  +         pieces.extend(
+77  +             [
+78  +                 f'<path d="M{x:g} {top}v{height} M{left} {y:g}h{width}" stroke="#dce5df"/>',
+79  +                 f'<text x="{x:g}" y="360" text-anchor="middle">{x0 + xspan * fraction:.3g}</text>',
+80  +                 f'<text x="83" y="{y + 4:g}" text-anchor="end">{y0 + yspan * fraction:.3g}</text>',
+81  +             ]
+82  +         )
+83  +     pieces.extend(
+84  +         [
+85  +             f'<text x="{left + width / 2:g}" y="386" text-anchor="middle">{escape(xlabel)}</text>',
+86  +             f'<text x="20" y="196" text-anchor="middle" transform="rotate(-90 20 196)">{escape(ylabel)}</text>',
+87  +         ]
+88  +     )
+89  |     for index, line in enumerate(series):
+--------------------------------------------------------------------------------
+93  |             x, y = coordinates(line[selected])
+    -             pieces.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="4.5" fill="{color}"><title>{escape(label)}</title></circle>')
+94  +             pieces.append(
+95  +                 f'<circle cx="{x:.2f}" cy="{y:.2f}" r="4.5" fill="{color}"><title>{escape(label)}</title></circle>'
+96  +             )
+97  |         else:
+98  |             points = " ".join(f"{x:.2f},{y:.2f}" for x, y in map(coordinates, line))
+    -             pieces.append(f'<polyline fill="none" stroke="{color}" stroke-width="1.5" points="{points}"><title>{escape(label)}</title></polyline>')
+99  +             pieces.append(
+100 +                 f'<polyline fill="none" stroke="{color}" stroke-width="1.5" points="{points}"><title>{escape(label)}</title></polyline>'
+101 +             )
+102 |     pieces.append("</g></svg>")
+--------------------------------------------------------------------------------
+117 |     return csv_bytes(
+    -         ["time_yr", "particle_id", "mass_M_sun", "x_AU", "y_AU", "z_AU",
+    -          "vx_AU_per_yr", "vy_AU_per_yr", "vz_AU_per_yr"],
+    -         ((sample["time"], particle["id"], particle["mass"], *state["position"], *state["velocity"])
+    -          for sample in samples for particle, state in zip(particles, sample["particles"], strict=True)),
+118 +         [
+119 +             "time_yr",
+120 +             "particle_id",
+121 +             "mass_M_sun",
+122 +             "x_AU",
+123 +             "y_AU",
+124 +             "z_AU",
+125 +             "vx_AU_per_yr",
+126 +             "vy_AU_per_yr",
+127 +             "vz_AU_per_yr",
+128 +         ],
+129 +         (
+130 +             (
+131 +                 sample["time"],
+132 +                 particle["id"],
+133 +                 particle["mass"],
+134 +                 *state["position"],
+135 +                 *state["velocity"],
+136 +             )
+137 +             for sample in samples
+138 +             for particle, state in zip(particles, sample["particles"], strict=True)
+139 +         ),
+140 |     )
+--------------------------------------------------------------------------------
+146 |     files = {
+    -         "input.json": json.dumps({
+    -             "parameters": row["parameters"],
+    -             "units": UNITS,
+    -             "reference_frame": "input inertial Cartesian frame",
+    -             "random_seed": None,
+    -             "softening": 0,
+    -             "close_encounter": "stop",
+    -         }, ensure_ascii=False, indent=2).encode(),
+147 +         "input.json": json.dumps(
+148 +             {
+149 +                 "parameters": row["parameters"],
+150 +                 "units": UNITS,
+151 +                 "reference_frame": "input inertial Cartesian frame",
+152 +                 "random_seed": None,
+153 +                 "softening": 0,
+154 +                 "close_encounter": "stop",
+155 +             },
+156 +             ensure_ascii=False,
+157 +             indent=2,
+158 +         ).encode(),
+159 |         "snapshots.csv": snapshot_csv(row),
+160 |         "diagnostics.csv": csv_bytes(
+    -             ["time_yr", "energy", "Lx", "Ly", "Lz", "energy_delta", "energy_relative",
+    -              "angular_delta", "angular_relative"],
+    -             ((s["time"], s["energy"], *s["angular_momentum"], s["energy_delta"], s["energy_relative"],
+    -               s["angular_delta"], s["angular_relative"]) for s in samples),
+161 +             [
+162 +                 "time_yr",
+163 +                 "energy",
+164 +                 "Lx",
+165 +                 "Ly",
+166 +                 "Lz",
+167 +                 "energy_delta",
+168 +                 "energy_relative",
+169 +                 "angular_delta",
+170 +                 "angular_relative",
+171 +             ],
+172 +             (
+173 +                 (
+174 +                     s["time"],
+175 +                     s["energy"],
+176 +                     *s["angular_momentum"],
+177 +                     s["energy_delta"],
+178 +                     s["energy_relative"],
+179 +                     s["angular_delta"],
+180 +                     s["angular_relative"],
+181 +                 )
+182 +                 for s in samples
+183 +             ),
+184 |         ),
+--------------------------------------------------------------------------------
+204 |         "files": [
+    -             {"name": name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+    -              "media_type": {"json": "application/json", "csv": "text/csv", "svg": "image/svg+xml"}[name.rsplit(".", 1)[1]]}
+205 +             {
+206 +                 "name": name,
+207 +                 "bytes": len(data),
+208 +                 "sha256": hashlib.sha256(data).hexdigest(),
+209 +                 "media_type": {
+210 +                     "json": "application/json",
+211 +                     "csv": "text/csv",
+212 +                     "svg": "image/svg+xml",
+213 +                 }[name.rsplit(".", 1)[1]],
+214 +             }
+215 |             for name, data in files.items()
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\compute_runner.py:37:70
+    |
+36  |     particles = [
+    -         {"position": [p.x, p.y, p.z], "velocity": [p.vx, p.vy, p.vz]}
+    -         for p in sim.particles
+37  +         {"position": [p.x, p.y, p.z], "velocity": [p.vx, p.vy, p.vz]} for p in sim.particles
+38  |     ]
+--------------------------------------------------------------------------------
+54  |         "energy_relative": energy_delta / abs(initial_energy)
+    -         if abs(initial_energy) > ZERO_THRESHOLD else None,
+55  +         if abs(initial_energy) > ZERO_THRESHOLD
+56  +         else None,
+57  |         "angular_delta": angular_delta,
+    -         "angular_relative": angular_delta / angular_initial if angular_initial > ZERO_THRESHOLD else None,
+58  +         "angular_relative": angular_delta / angular_initial
+59  +         if angular_initial > ZERO_THRESHOLD
+60  +         else None,
+61  |     }
+--------------------------------------------------------------------------------
+86  |     warning = any(abs(sample["energy_relative"] or 0.0) > ENERGY_WARNING for sample in samples)
+    -     write(directory / "result", {
+    -         "format_version": 1,
+    -         "astroagent_version": __version__,
+    -         "image_id": os.environ.get("ASTROAGENT_COMPUTE_IMAGE_ID") or None,
+    -         "rebound_version": rebound.__version__,
+    -         "rebound_wheel_sha256": REBOUND_WHEEL_SHA256,
+    -         "integrator": "IAS15",
+    -         "gravitational_constant": G,
+    -         "epsilon": EPSILON,
+    -         "min_distance": MIN_DISTANCE,
+    -         "zero_threshold": ZERO_THRESHOLD,
+    -         "wall_seconds": time.monotonic() - start,
+    -         "environment": f"{platform.system()} {platform.machine()}, Python {platform.python_version()}",
+    -         "warnings": ["最大相对能量偏差超过 10⁻⁶，请核对时间跨度与近接情况。"] if warning else [],
+    -         "samples": samples,
+    -     })
+87  +     write(
+88  +         directory / "result",
+89  +         {
+90  +             "format_version": 1,
+91  +             "astroagent_version": __version__,
+92  +             "image_id": os.environ.get("ASTROAGENT_COMPUTE_IMAGE_ID") or None,
+93  +             "rebound_version": rebound.__version__,
+94  +             "rebound_wheel_sha256": REBOUND_WHEEL_SHA256,
+95  +             "integrator": "IAS15",
+96  +             "gravitational_constant": G,
+97  +             "epsilon": EPSILON,
+98  +             "min_distance": MIN_DISTANCE,
+99  +             "zero_threshold": ZERO_THRESHOLD,
+100 +             "wall_seconds": time.monotonic() - start,
+101 +             "environment": f"{platform.system()} {platform.machine()}, Python {platform.python_version()}",
+102 +             "warnings": ["最大相对能量偏差超过 10⁻⁶，请核对时间跨度与近接情况。"]
+103 +             if warning
+104 +             else [],
+105 +             "samples": samples,
+106 +         },
+107 +     )
+108 |
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\compute_schemas.py:66:13
+   |
+65 |     name: Annotated[
+   -         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120, pattern=r"^[^\x00]+$")
+66 +         str,
+67 +         StringConstraints(
+68 +             strip_whitespace=True, min_length=1, max_length=120, pattern=r"^[^\x00]+$"
+69 +         ),
+70 |     ]
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\compute_tasks.py:16:13
+    |
+15  | from astroagent.compute_schemas import (
+    -     EPSILON, G, MIN_DISTANCE, REBOUND_WHEEL_SHA256, WALL_SECONDS, ZERO_THRESHOLD, SimulationResult,
+16  +     EPSILON,
+17  +     G,
+18  +     MIN_DISTANCE,
+19  +     REBOUND_WHEEL_SHA256,
+20  +     WALL_SECONDS,
+21  +     ZERO_THRESHOLD,
+22  +     SimulationResult,
+23  | )
+--------------------------------------------------------------------------------
+52  |     """Use the project transaction, including its final identity check."""
+    -     if db.identity is None or not db.raw.execute(
+    -         "SELECT to_regclass('public.compute_tasks')"
+    -     ).fetchone()[0]:
+53  +     if (
+54  +         db.identity is None
+55  +         or not db.raw.execute("SELECT to_regclass('public.compute_tasks')").fetchone()[0]
+56  +     ):
+57  |         return
+--------------------------------------------------------------------------------
+70  |     ).fetchone()
+    -     if not user or not db.execute(
+    -         "SELECT to_regclass(%s) AS relation", (f"{namespace}.projects",)
+    -     ).fetchone()["relation"]:
+71  +     if (
+72  +         not user
+73  +         or not db.execute(
+74  +             "SELECT to_regclass(%s) AS relation", (f"{namespace}.projects",)
+75  +         ).fetchone()["relation"]
+76  +     ):
+77  |         return False
+    -     return bool(db.execute(
+    -         sql.SQL("SELECT 1 FROM {}.projects WHERE id=%s FOR KEY SHARE").format(sql.Identifier(namespace)),
+    -         (str(project_id),),
+    -     ).fetchone())
+78  +     return bool(
+79  +         db.execute(
+80  +             sql.SQL("SELECT 1 FROM {}.projects WHERE id=%s FOR KEY SHARE").format(
+81  +                 sql.Identifier(namespace)
+82  +             ),
+83  +             (str(project_id),),
+84  +         ).fetchone()
+85  +     )
+86  |
+--------------------------------------------------------------------------------
+99  |         f"SELECT {LIST_FIELDS} FROM {TABLE} WHERE account_id=%s AND project_id=%s "
+    -         "AND namespace=%s ORDER BY created_at DESC", owner,
+100 +         "AND namespace=%s ORDER BY created_at DESC",
+101 +         owner,
+102 |     ).fetchall()
+--------------------------------------------------------------------------------
+121 |     count = db.execute(
+    -         f"SELECT count(*) AS count FROM {TABLE} WHERE account_id=%s", (owner[0],),
+122 +         f"SELECT count(*) AS count FROM {TABLE} WHERE account_id=%s",
+123 +         (owner[0],),
+124 |     ).fetchone()["count"]
+--------------------------------------------------------------------------------
+130 |         f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'draft',%s) RETURNING {TASK_FIELDS}",
+    -         (uuid4(), *owner, draft.name, draft.source, origin, Jsonb(draft.parameters.model_dump()),
+    -          draft.parameters.digest(), draft.parameters.samples, event("draft")),
+131 +         (
+132 +             uuid4(),
+133 +             *owner,
+134 +             draft.name,
+135 +             draft.source,
+136 +             origin,
+137 +             Jsonb(draft.parameters.model_dump()),
+138 +             draft.parameters.digest(),
+139 +             draft.parameters.samples,
+140 +             event("draft"),
+141 +         ),
+142 |     ).fetchone()
+--------------------------------------------------------------------------------
+150 |         f"revision=revision+1,updated_at=now() WHERE id=%s RETURNING {TASK_FIELDS}",
+    -         (draft.name, draft.source, Jsonb(draft.parameters.model_dump()), draft.parameters.digest(),
+    -          draft.parameters.samples, row["id"]),
+151 +         (
+152 +             draft.name,
+153 +             draft.source,
+154 +             Jsonb(draft.parameters.model_dump()),
+155 +             draft.parameters.digest(),
+156 +             draft.parameters.samples,
+157 +             row["id"],
+158 +         ),
+159 |     ).fetchone()
+--------------------------------------------------------------------------------
+163 |     if row["request_id"] == confirmation.request_id:
+    -         if (row["parameter_sha256"] == confirmation.parameter_sha256
+    -                 and row["confirmed_revision"] == confirmation.expected_revision):
+164 +         if (
+165 +             row["parameter_sha256"] == confirmation.parameter_sha256
+166 +             and row["confirmed_revision"] == confirmation.expected_revision
+167 +         ):
+168 |             return row
+169 |         raise ServiceError(409, "compute_idempotency", "该请求编号已用于其他参数。")
+    -     if row["state"] != "draft" or row["revision"] != confirmation.expected_revision or (
+    -         row["parameter_sha256"] != confirmation.parameter_sha256
+170 +     if (
+171 +         row["state"] != "draft"
+172 +         or row["revision"] != confirmation.expected_revision
+173 +         or (row["parameter_sha256"] != confirmation.parameter_sha256)
+174 |     ):
+--------------------------------------------------------------------------------
+199 |         f"WHERE id=%s AND attempt_id IS NOT DISTINCT FROM %s RETURNING {TASK_FIELDS}",
+    -         (state, error, Jsonb(result) if result is not None else None, event(state), state,
+    -          row["id"], row["attempt_id"]),
+200 +         (
+201 +             state,
+202 +             error,
+203 +             Jsonb(result) if result is not None else None,
+204 +             event(state),
+205 +             state,
+206 +             row["id"],
+207 +             row["attempt_id"],
+208 +         ),
+209 |     ).fetchone()
+--------------------------------------------------------------------------------
+230 |     if len(result.samples) != count or (
+    -         result.gravitational_constant, result.epsilon, result.min_distance, result.zero_threshold,
+231 +         result.gravitational_constant,
+232 +         result.epsilon,
+233 +         result.min_distance,
+234 +         result.zero_threshold,
+235 |         result.rebound_wheel_sha256,
+236 |     ) != (G, EPSILON, MIN_DISTANCE, ZERO_THRESHOLD, REBOUND_WHEEL_SHA256):
+237 |         raise ValueError("Execution contract")
+238 |     for index, sample in enumerate(result.samples):
+    -         if (len(sample.particles) != len(row["parameters"]["particles"])
+    -                 or abs(sample.time - grid * index / (count - 1)) > 1e-12 * max(1.0, grid)):
+239 +         if len(sample.particles) != len(row["parameters"]["particles"]) or abs(
+240 +             sample.time - grid * index / (count - 1)
+241 +         ) > 1e-12 * max(1.0, grid):
+242 |             raise ValueError("Invalid sample")
+--------------------------------------------------------------------------------
+321 |         run_alive = worker_ready() and fresh(directory / "heartbeat")
+    -         if ((now > row["lease_until"] and not run_alive)
+    -                 or (now - row["started_at"]).total_seconds() > WALL_SECONDS + 15):
+322 +         if (now > row["lease_until"] and not run_alive) or (
+323 +             now - row["started_at"]
+324 +         ).total_seconds() > WALL_SECONDS + 15:
+325 |             if directory.exists():
+--------------------------------------------------------------------------------
+356 |                 return
+    -             db.execute(f"UPDATE {TABLE} SET samples_completed=sample_count WHERE id=%s", (row["id"],))
+357 +             db.execute(
+358 +                 f"UPDATE {TABLE} SET samples_completed=sample_count WHERE id=%s", (row["id"],)
+359 +             )
+360 |             transition(db, row, "succeeded", result=result)
+361 |         elif state == "interrupted":
+362 |             transition(db, row, state, "Worker 重启，本次执行已中断。")
+363 |         else:
+    -             failure = read(directory / "failure", 4096) if (directory / "failure").exists() else (
+    -                 "计算进程提前退出，请减少粒子数、时长或采样数后重试。"
+364 +             failure = (
+365 +                 read(directory / "failure", 4096)
+366 +                 if (directory / "failure").exists()
+367 +                 else ("计算进程提前退出，请减少粒子数、时长或采样数后重试。")
+368 |             )
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\compute_worker.py:45:27
+   |
+44 |                 if not cancelled:
+   -                     write(directory / "failure", "模拟已达到 120 秒运行上限，请缩短时长或减少粒子数。")
+45 +                     write(
+46 +                         directory / "failure", "模拟已达到 120 秒运行上限，请缩短时长或减少粒子数。"
+47 +                     )
+48 |                 write(directory / "done", "cancelled" if cancelled else "failed")
+49 |                 return
+50 |             time.sleep(0.25)
+   -         state = "succeeded" if process.returncode == 0 and (directory / "result").is_file() else "failed"
+51 +         state = (
+52 +             "succeeded"
+53 +             if process.returncode == 0 and (directory / "result").is_file()
+54 +             else "failed"
+55 +         )
+56 |         write(directory / "done", state)
+   |
+
+6 files would be reformatted, 179 files already formatted

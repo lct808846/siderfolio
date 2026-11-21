@@ -1,0 +1,13 @@
+
+Running 4 tests using 1 worker
+
+(node:24364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\compute-browser\compute.spec.ts:55:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (15.8s)
+  ok 2 [chromium] › tests\compute-browser\compute.spec.ts:133:1 › presets, Kepler elements, CSV import and center-of-mass reset (4.0s)
+(node:2832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [edge] › tests\compute-browser\compute.spec.ts:55:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (17.4s)
+  ok 4 [edge] › tests\compute-browser\compute.spec.ts:133:1 › presets, Kepler elements, CSV import and center-of-mass reset (4.4s)
+
+  4 passed (44.4s)

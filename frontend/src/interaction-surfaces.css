@@ -44,11 +44,11 @@
   max-width: min(280px, calc(100vw - 16px));
   margin: 0;
   padding: 8px 11px;
-  border: 1px solid rgba(215, 237, 222, .2);
+  border: 1px solid var(--line-strong);
   border-radius: 9px;
-  color: #f4f9f4;
-  background: rgba(37, 65, 53, .96);
-  box-shadow: 0 5px 18px rgba(21, 49, 33, .16), inset 0 1px rgba(255, 255, 255, .06);
+  color: var(--topbar-ink, #f4f9f4);
+  background: var(--ink, #1f3530);
+  box-shadow: var(--shadow-card-hover);
   backdrop-filter: blur(10px);
   font-family: var(--font-ui);
   font-size: 12px;

@@ -1,0 +1,29 @@
+............F........................................................... [ 23%]
+...ss.s............s................................................F... [ 47%]
+........................................................................ [ 70%]
+........................................................................ [ 94%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+___ test_automatic_title_preserves_custom_title_and_explicit_default_rename ____
+
+client = <starlette.testclient.TestClient object at 0x7a32a9d32f00>
+
+>   ???
+E   AssertionError: assert '合成问题' == '新会话'
+E     
+E     - 新会话
+E     + 合成问题
+
+D:\project\astroagent\tests\test_conversations.py:87: AssertionError
+_________ test_query_strict_types_and_finite_boundaries[limit-values5] _________
+
+name = 'limit', values = [0, 101, 1.0, True, '20']
+
+>   ???
+E   Failed: DID NOT RAISE ValidationError
+
+D:\project\astroagent\tests\test_gaia.py:85: Failed
+=========================== short test summary info ============================
+FAILED tests/test_conversations.py::test_automatic_title_preserves_custom_title_and_explicit_default_rename
+FAILED tests/test_gaia.py::test_query_strict_types_and_finite_boundaries[limit-values5]
+2 failed, 300 passed, 4 skipped in 65.31s (0:01:05)

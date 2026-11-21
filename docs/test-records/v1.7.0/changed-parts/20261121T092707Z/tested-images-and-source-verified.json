@@ -1,0 +1,68 @@
+{
+  "version": "1.7.0-dev.0",
+  "git_baseline": "be0e18ba82db827d37e1a64bbdbe986bf64f6598",
+  "configuration": "astroagent-petar-qa-20261121t092707z",
+  "source_sha256": {
+    "src/astroagent/api/compute.py": "8dbc0241bc8d4aaae3c1d84293939531e8570950adac2462188f5fe7768db651",
+    "src/astroagent/compute_exports.py": "a20d602ccddeb4cb7ca72b9c174849dd0b2bc68f2d9dcb52711c0645bcb9687c",
+    "src/astroagent/compute_io.py": "4645305b285053342901568a803d81c9f47c5fd5e98f1c434fbfdd60ec5651e7",
+    "src/astroagent/compute_petar.py": "9e269760b26f5a10b084615a82eeb8262560a74931eb4cff55701b36ad4ebc93",
+    "src/astroagent/compute_runner.py": "693ea70ca5ea9759d9f1ea7081f1355a1dac76942ae783dabd39cbee1e966736",
+    "src/astroagent/compute_schemas.py": "6b44165af9787afdaf15c2d79eadd7fc44c747803b410b1606cb5ce532920d04",
+    "src/astroagent/compute_tasks.py": "d2e9ba0f4b48cbdeb21499307377df6c2a42c967654fad783934401d8cc204d4",
+    "src/astroagent/compute_worker.py": "b4baa6c961a04671ed98ae0dc540b6681a24b7a9bfccf36a02da175732f65f9a",
+    "frontend/src/api/compute.ts": "d6d42e3d9f7970a03cb679c06c3e729a8e32823da0a0ea37fe15926499003be3",
+    "frontend/src/compute-presets.ts": "cb3d57e1d243a4d2fe4d1f951a57a55e97019ace62bab640a0025e0fcec99671",
+    "frontend/src/views/ComputeWorkspace.vue": "1f330592fda8e4ef3e8e5da10994b089d5922ff644a787dc257427cb2a766d3c",
+    "frontend/src/components/WorkspaceSpaceBar.vue": "8ca38f5038c925a60eb423b1ee9a043c1911c41e950d5983a21b568bd247c023",
+    "frontend/src/views/App.vue": "63a9fb76c9c0eda32d8b7dbc62523bf4dabe016134368bc8eaa9a10eac72c0a1",
+    "frontend/tests/compute-browser/compute.spec.ts": "adb98875f06ac381175af2e7234345b8199607c6a794a68c5ad8626cb031fe86",
+    "frontend/tests/unit/compute-presets.test.ts": "22fd072059d329220e217af9c2b604410147e905d49609e51fc1ef017dc40ece",
+    "frontend/openapi.json": "ff599bf28a1c73dfeedc25a5e41519201983fe5e7285f1bda167637298ea9590",
+    "frontend/src/types/generated.ts": "b91945fa1316275928cbf2b134f7cb906ebedc74d8ae6079f327cf0b4a1dea4b",
+    "containers/application/Dockerfile": "fdd9fb0157f2062550487171b56b42704660ad2761b5221d9a80cb15ed6f8031",
+    "containers/application/requirements-compute.lock": "968fe302a616d37ab98d8e28a9a63d5e023c7b07fdf7653db0eecca28f43aadc",
+    "compose.compute.yaml": "46eb517a2dbfb1904dd8a2b1daddeb6e13b42ad50dc2170e3fd388909497c9f2",
+    "tests/test_compute.py": "7af9bd52b638aa658872eb16ef4e66bb96cee3c68573954652893d2e31e2e753",
+    "tests/test_compute_postgres.py": "3f2fc4e3168fe14eefdbc44e53eaa3e618f3cb440f76b12b6cd6265e2773b32d"
+  },
+  "containers": {
+    "backend": {
+      "id": "a8fa885d5d0b8023400d03696747ee43d260798f0dda85dd361a62b1b19013f7",
+      "image": "sha256:32ab8123e7f878b66ec3e75d9c6126f3a154d509352fd9c9590eae81698213e0"
+    },
+    "frontend": {
+      "id": "80297c1fd0065b3563b27ec1ba4031b904f84fbbe6d5e5cb230c6a749db130b3",
+      "image": "sha256:6f6b79d529ef5dbffdcdb60063ef5c72c0783b8fc2450b4954e4b6cbaf8f53b8"
+    },
+    "compute-worker": {
+      "id": "ec9ddccc8427ea2aa799022d4581abc320e244cc1df58a1314394ad96205b2e8",
+      "image": "sha256:e21540c937530a69c2f09a340bc52f25525510b3ba0ea8e7348b4d5803ef9506"
+    },
+    "postgres": {
+      "id": "deb9bc207ec05b75f9fc7b306f9d87ca9c787ffb57e5bd59e637db66b8774bf3",
+      "image": "sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f"
+    },
+    "ingress": {
+      "id": "5167294b041a8367710a4cfa7ddd582d66a215aa113e09c94d5fe73c7cf985e9",
+      "image": "sha256:e4b2b8d52f370864ff1158c31ad340c559f616c1d99f49934ef3f401bdf4b9c1"
+    }
+  },
+  "compute_openapi_matched": {
+    "routes": 11,
+    "schemas": 16
+  },
+  "frontend_assets_sha256": {
+    "index.html": "76527e23aef1be9bb5f4e4f8243b50cfb33e6385920d2265f812a853f87a632b",
+    "assets/index-BSNJZomq.css": "492e6f48efacc85c8ea492c7b5e02be2343b7b9da2b5ae229889b94f3c71c70b",
+    "assets/index-DKPPDYU8.js": "57cc5b341407c694654e8daf42bf9c1d6bc9dd7c2eeef5d264df4a9c58a7ff63"
+  },
+  "petar_binary_sha256": "ad89c96e016fddd13e32dc0127f78fafd64464245f3ba84eb303d84d9d12905f",
+  "existing_backend_compute_files_match": {
+    "api/compute.py": true,
+    "compute_exports.py": true,
+    "compute_io.py": true,
+    "compute_schemas.py": true,
+    "compute_tasks.py": true
+  }
+}

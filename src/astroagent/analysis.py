@@ -73,7 +73,17 @@ def analyze_sources(
         truncated=truncated,
         quality_filters={
             name: value
-            for name in ("ruwe_max", "parallax_snr_min")
+            for name in (
+                "ruwe_max",
+                "parallax_snr_min",
+                "parallax_min",
+                "parallax_max",
+                "pmra_min",
+                "pmra_max",
+                "pmdec_min",
+                "pmdec_max",
+                "g_mag_max",
+            )
             if (value := getattr(query, name)) is not None
         },
         statistics=statistics,

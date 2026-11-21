@@ -1,0 +1,85 @@
+[WebServer] (node:32112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 40 tests using 1 worker
+
+(node:37396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\browser\account-changes.spec.ts:35:1 › account QR enrollment, invalid code, recovery download and narrow layout (2.1s)
+  ok  2 [chromium] › tests\browser\account-changes.spec.ts:69:1 › username propagates to sidebar, menu closes and logout clears private browser state (5.6s)
+  ok  3 [chromium] › tests\browser\account-changes.spec.ts:100:1 › activity dialog only revokes the selected other browser after password confirmation (2.1s)
+  ok  4 [chromium] › tests\browser\account-changes.spec.ts:117:1 › MFA switch waits for confirmation and disabling requires proof (2.4s)
+  -   5 [chromium] › tests\browser\container-live.spec.ts:3:1 › isolated container plot history works on desktop and narrow screens
+  ok  6 [chromium] › tests\browser\current-changes.spec.ts:3:1 › model selection and attachment preview do not send a message (1.6s)
+  ok  7 [chromium] › tests\browser\current-changes.spec.ts:28:1 › dragged attachment and edited question create separate preserved turns (1.8s)
+  ok  8 [chromium] › tests\browser\knowledge.spec.ts:5:1 › local documents can be uploaded, searched, cited and downloaded (2.3s)
+  -   9 [chromium] › tests\browser\knowledge.spec.ts:50:1 › public PDF citation opens its original and downloads identical bytes
+  ok 10 [chromium] › tests\browser\knowledge.spec.ts:75:1 › long Chinese filename remains usable on a narrow screen (948ms)
+  ok 11 [chromium] › tests\browser\model-settings.spec.ts:5:1 › provider editor, directory, default, key omission, conflict and removal (3.1s)
+  ok 12 [chromium] › tests\browser\model-settings.spec.ts:91:1 › ordinary user settings expose only account controls and no admin link (449ms)
+  ok 13 [chromium] › tests\browser\model-settings.spec.ts:108:1 › RAG and local assistant failures remain readable without starting model jobs (794ms)
+  ok 14 [chromium] › tests\browser\model-settings.spec.ts:131:1 › administrator layout keeps masked metadata, tabs and current-account protection (663ms)
+  ok 15 [chromium] › tests\browser\overview.spec.ts:4:1 › project overview creates and removes an explicit evidence link (3.1s)
+  ok 16 [chromium] › tests\browser\plot-acceptance.spec.ts:3:1 › plot workflow requires confirmations before model and execution (1.7s)
+  ok 17 [chromium] › tests\browser\profile-changes.spec.ts:32:1 › profile name editing, avatar change/removal and missing usage stay accurate (880ms)
+  ok 18 [chromium] › tests\browser\profile-changes.spec.ts:60:1 › profile rejects oversized files before upload and displays read/upload errors (1.3s)
+  ok 19 [chromium] › tests\browser\profile-changes.spec.ts:82:1 › profile navigation and responsive sidebar preserve the unsent question (4.3s)
+  x  20 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (10.7s)
+(node:36888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 21 [chromium] › tests\browser\remaining-acceptance.spec.ts:10:1 › clipboard preserves the question and reports a denied copy (1.3s)
+  ok 22 [chromium] › tests\browser\remaining-acceptance.spec.ts:34:1 › pending response does not open results and manual close survives refresh (2.1s)
+  ok 23 [chromium] › tests\browser\remaining-acceptance.spec.ts:52:1 › rename, pin and export a noncurrent conversation; cancel deletion (3.7s)
+  ok 24 [chromium] › tests\browser\remaining-acceptance.spec.ts:86:1 › settings refresh failure clears the previous ready status (718ms)
+  ok 25 [chromium] › tests\browser\remaining-acceptance.spec.ts:103:1 › bulk deletion preserves the failed item and returns after deleting the current item (2.0s)
+  ok 26 [chromium] › tests\browser\remaining-acceptance.spec.ts:127:1 › project navigation survives direct load and refresh without sending requests (2.5s)
+  ok 27 [chromium] › tests\browser\remaining-acceptance.spec.ts:145:1 › low-height compact layout keeps focused controls visible and input scrollable (641ms)
+  ok 28 [chromium] › tests\browser\remaining-acceptance.spec.ts:166:1 › reduced transparency disables large background blur (501ms)
+  ok 29 [chromium] › tests\browser\remaining-acceptance.spec.ts:178:1 › sidebar toggles across compact and desktop boundaries without losing draft (2.4s)
+  ok 30 [chromium] › tests\browser\v11-layout.spec.ts:3:1 › responsive panels preserve drafts without sending (7.4s)
+  ok 31 [chromium] › tests\browser\v11-layout.spec.ts:23:1 › keyboard controls work with reduced motion and forced colors (716ms)
+  ok 32 [chromium] › tests\browser\workbench.spec.ts:6:1 › production build: conversation, follow-up, complete table, preview, download and restore (5.2s)
+  ok 33 [chromium] › tests\browser\workbench.spec.ts:44:1 › IME composition, explicit examples, plain text literature, rename and delete (3.2s)
+  ok 34 [chromium] › tests\browser\workbench.spec.ts:65:1 › narrow viewport has usable panel navigation and no page overflow (2.1s)
+  ok 35 [chromium] › tests\browser\workbench.spec.ts:78:1 › backend connection error is explicit (634ms)
+  ok 36 [chromium] › tests\browser\workbench.spec.ts:83:1 › a rejected send preserves the question and only retries on explicit action (1.4s)
+  ok 37 [chromium] › tests\browser\workbench.spec.ts:100:1 › a late initial list does not clear a send error after navigation (1.0s)
+  ok 38 [chromium] › tests\browser\workbench.spec.ts:123:1 › local static proxy keeps its API target and never returns SPA HTML for API errors (34ms)
+  ok 39 [chromium] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (3.6s)
+  ok 40 [chromium] › tests\browser\workflows.spec.ts:67:1 › failed workflow resumes only after confirmation and retains attempts (4.0s)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    TimeoutError: locator.fill: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('dialog', { name: '新建科研项目' }).getByLabel('项目名称', { exact: true })
+
+
+      15 |     await page.getByRole('complementary', { name: '项目列表' }).getByRole('button', { name: '新建科研项目' }).click()
+      16 |     const createDialog = page.getByRole('dialog', { name: '新建科研项目' })
+    > 17 |     await createDialog.getByLabel('项目名称', { exact: true }).fill('候选源复核项目')
+         |                                                            ^
+      18 |     await createDialog.getByLabel(/项目说明/).fill('保留条件、来源和完整结果，不推断成员。')
+      19 |     await createDialog.getByRole('button', { name: '创建科研项目', exact: true }).click()
+      20 |     await expect(page.getByRole('heading', { name: '候选源复核项目', exact: true, level: 1 })).toBeVisible()
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:17:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\output-browser-release\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v17-release\output-browser-release\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v17-release\output-browser-release\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v17-release\output-browser-release\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+  2 skipped
+  37 passed (1.6m)

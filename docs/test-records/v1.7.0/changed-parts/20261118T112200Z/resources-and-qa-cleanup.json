@@ -1,0 +1,11 @@
+{
+  "qa_cleanup": true,
+  "expired_spool_entries": 0,
+  "image_total_bytes_including_shared_layers": {
+    "backend": 2490065792,
+    "frontend": 323598134,
+    "compute-worker": 2494079419
+  },
+  "idle_daily_worker_cpu_and_memory": "0.05% 20.93MiB / 512MiB",
+  "D_free_bytes": 73470824448
+}

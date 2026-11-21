@@ -1,0 +1,208 @@
+{
+  "config": {
+    "argv": [
+      "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\node24\\node.exe",
+      "D:\\project\\astroagent\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.compute-acceptance.ts",
+      "--project",
+      "chromium",
+      "--grep",
+      "workbench handoff",
+      "--output",
+      "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-diagnostic"
+    ],
+    "configFile": "D:\\project\\astroagent\\frontend\\playwright.compute-acceptance.ts",
+    "rootDir": "D:/project/astroagent/frontend/tests/compute-browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/project/astroagent/.astroagent/acceptance-tmp/petar-20261121t092707z/playwright-diagnostic",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/project/astroagent/frontend/tests/compute-browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "D:/project/astroagent/.astroagent/acceptance-tmp/petar-20261121t092707z/playwright-diagnostic",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "D:/project/astroagent/frontend/tests/compute-browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-diagnostic",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "D:\\project\\astroagent\\frontend\\tests\\compute-browser",
+        "snapshotDir": "D:\\project\\astroagent\\frontend\\tests\\compute-browser",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5287",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "screenshot": "only-on-failure",
+          "browserName": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "D:\\project\\astroagent\\docs\\test-records\\v1.7.0\\changed-parts\\20261121T092707Z\\browser-form-diagnostic.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "compute.spec.ts",
+      "file": "compute.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "workbench handoff, PeTar run, exports and comparison with REBOUND",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2675,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"label\": \"积分轨道圈数\",\u001b[39m\n\u001b[31m+     \"message\": \"Please enter a valid value. The two nearest valid values are 1.6 and 2.1.\",\u001b[39m\n\u001b[31m+     \"value\": \"2\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"label\": \"积分轨道圈数\",\u001b[39m\n\u001b[31m+     \"message\": \"Please enter a valid value. The two nearest valid values are 1.6 and 2.1.\",\u001b[39m\n\u001b[31m+     \"value\": \"2\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at saveDraft (D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:21:19)\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:69:3",
+                    "location": {
+                      "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                      "column": 19,
+                      "line": 21
+                    },
+                    "snippet": "  19 |     })),\n  20 |   )\n> 21 |   expect(invalid).toEqual([])\n     |                   ^\n  22 |   const saved = page.waitForResponse(res =>\n  23 |     /\\/compute-tasks(?:\\/[^/]+)?$/.test(new URL(res.url()).pathname) &&\n  24 |     ['POST', 'PATCH'].includes(res.request().method()),"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                        "column": 19,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"label\": \"积分轨道圈数\",\u001b[39m\n\u001b[31m+     \"message\": \"Please enter a valid value. The two nearest valid values are 1.6 and 2.1.\",\u001b[39m\n\u001b[31m+     \"value\": \"2\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  19 |     })),\n  20 |   )\n> 21 |   expect(invalid).toEqual([])\n     |                   ^\n  22 |   const saved = page.waitForResponse(res =>\n  23 |     /\\/compute-tasks(?:\\/[^/]+)?$/.test(new URL(res.url()).pathname) &&\n  24 |     ['POST', 'PATCH'].includes(res.request().method()),\n    at saveDraft (D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:21:19)\n    at D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts:69:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-21T09:41:56.866Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-diagnostic\\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\project\\astroagent\\.astroagent\\acceptance-tmp\\petar-20261121t092707z\\playwright-diagnostic\\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\project\\astroagent\\frontend\\tests\\compute-browser\\compute.spec.ts",
+                    "column": 19,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ee39d50196f491047331-f28addf8bcabbb5b0743",
+          "file": "compute.spec.ts",
+          "line": 50,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-21T09:41:56.205Z",
+    "duration": 3890.7879999999996,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

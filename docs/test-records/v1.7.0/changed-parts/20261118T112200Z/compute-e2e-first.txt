@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "D:\project\astroagent\.astroagent\v17-compute-e2e.py", line 66, in <module>
+    base = add_project(one, f'V1.7 compute laboratory {run_name}')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\project\astroagent\.astroagent\v17-compute-e2e.py", line 62, in add_project
+    value = call(client, 'POST', 'projects', 201, json={'name': name}).json()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\project\astroagent\.astroagent\v17-compute-e2e.py", line 48, in call
+    raise AssertionError(f'{method} {path} returned {res.status_code} {info}, expected {status}')
+AssertionError: POST projects returned 403 account_unavailable, expected 201

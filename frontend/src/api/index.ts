@@ -1,5 +1,5 @@
 import { sessionFetch } from '../session-http'
-import type { ArtifactInfo, ChatAttachment, ChatModelCatalog, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
+import type { ArchivedConversation, ArtifactInfo, ChatAttachment, ChatModelCatalog, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
 
 const configured = import.meta.env.VITE_API_BASE_URL || ''
 export function validateApiOrigin(value: string): string {
@@ -36,10 +36,13 @@ export async function request<T>(path: string, method = 'GET', payload?: unknown
 }
 export const api = {
   models: () => request<ChatModelCatalog>('/api/v1/models'),
-  list: () => request<Conversation[]>('/api/v1/conversations'),
+  list: (includeArchived = false) => request<Conversation[]>(includeArchived ? '/api/v1/conversations?include_archived=true' : '/api/v1/conversations'),
+  archived: () => request<ArchivedConversation[]>('/api/v1/conversations/archived'),
   create: (title = '新会话') => request<Conversation>('/api/v1/conversations', 'POST', { title }),
   detail: (id: string) => request<ConversationDetail>(`/api/v1/conversations/${id}`),
   rename: (id: string, title: string, expected_metadata_revision?: number) => request<Conversation>(`/api/v1/conversations/${id}`, 'PATCH', { title, expected_metadata_revision }),
+  archive: (id: string) => request<ArchivedConversation>(`/api/v1/conversations/${id}/archive`, 'POST'),
+  unarchive: (id: string) => request<Conversation>(`/api/v1/conversations/${id}/archive`, 'DELETE'),
   delete: (id: string) => request<void>(`/api/v1/conversations/${id}`, 'DELETE'),
   submit: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[]) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision, model, attachments }),
   turn: (id: string, turn: string) => request<Turn>(`/api/v1/conversations/${id}/turns/${turn}`),
@@ -47,7 +50,7 @@ export const api = {
   manifest: (path: string) => request<Manifest>(path),
   snapshotArtifact: (path: string, plots: PlotSpec[]) => request<ArtifactInfo>(path, 'POST', { plots }),
 }
-export async function download(path: string): Promise<void> {
+export async function download(path: string, filename = 'astroagent-results.zip', mediaType = 'application/zip'): Promise<void> {
   assertApiConfiguration()
   let response: Response
   try { response = await sessionFetch(apiUrl(path), { cache: 'no-store' }) } catch { throw new ApiError('connection_lost', '下载连接已断开，请重新点击下载。') }
@@ -56,9 +59,9 @@ export async function download(path: string): Promise<void> {
     try { body = await response.json() } catch { /* Use safe fallback. */ }
     throw new ApiError(body.error?.code || 'download_failed', body.error?.message || '产物不可用，请重新生成。', response.status)
   }
-  if (!(response.headers.get('content-type') || '').includes('application/zip')) throw new ApiError('download_failed', '服务没有返回数据包，请检查连接。')
+  if (response.headers.get('content-type')?.split(';', 1)[0] !== mediaType) throw new ApiError('download_failed', '服务返回的文件格式有误，请检查连接。')
   const href = URL.createObjectURL(await response.blob())
-  const anchor = document.createElement('a'); anchor.href = href; anchor.download = 'astroagent-results.zip'; anchor.click()
+  const anchor = document.createElement('a'); anchor.href = href; anchor.download = filename; anchor.click()
   setTimeout(() => URL.revokeObjectURL(href), 1000)
 }
 export function safeLink(value: string): string | null {

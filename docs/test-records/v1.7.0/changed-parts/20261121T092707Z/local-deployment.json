@@ -1,0 +1,27 @@
+{
+  "deployed_images": {
+    "frontend": "sha256:6f6b79d529ef5dbffdcdb60063ef5c72c0783b8fc2450b4954e4b6cbaf8f53b8",
+    "compute-worker": "sha256:e21540c937530a69c2f09a340bc52f25525510b3ba0ea8e7348b4d5803ef9506"
+  },
+  "updated_services": [
+    "frontend",
+    "compute-worker"
+  ],
+  "preserved_container_ids": {
+    "backend": "a619ded5aba79552765f48fd3400fa092fa7a6dcbd5ea0ef1fb385c602b0823a",
+    "postgres": "7b297a812ae027906240b590bd636121f2d447a26d7c0ac2153d65eb5000b88b",
+    "ollama": "f53f84dd41b7921a444ac1d39efa5f085d1787909015beaf22916fd4e619cf71",
+    "plot-executor": "84bf85381dc1358110972d9c02af3c396512acc24efd1b4298674dec8a1a3b4e",
+    "ingress": "ea95f009a76eabe81b4b49fc10f18895a11704779accebc44c17699ad29f67e3"
+  },
+  "calculation_programs_ready": [
+    "rebound",
+    "petar"
+  ],
+  "login_http_status": 200,
+  "existing_compute_volume": "astroagent-v16_compute-spool /var/lib/astroagent-compute",
+  "rollback_image_tags": {
+    "frontend": "astroagent-frontend:before-petar-qa-20261121t092707z",
+    "compute-worker": "astroagent-compute-worker:before-petar-qa-20261121t092707z"
+  }
+}

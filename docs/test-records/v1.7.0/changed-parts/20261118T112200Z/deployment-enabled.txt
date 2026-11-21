@@ -1,0 +1,48 @@
+Verified private pre-upgrade PostgreSQL backup: D:\project\astroagent\.astroagent\backups\v17-pre-compute-20261118T115222046564Z\database.dump
+BEGIN
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+REVOKE
+COMMIT
+ Container astroagent-v16-frontend-1 Running 
+ Container astroagent-v16-compute-worker-1 Running 
+ Container astroagent-v16-backend-1 Recreate 
+ Container astroagent-v16-backend-1 Recreated 
+ Container astroagent-v16-backend-1 Starting 
+ Container astroagent-v16-backend-1 Started 
+ Container astroagent-v16-backend-1 Waiting 
+ Container astroagent-v16-backend-1 Healthy 
+ Container astroagent-v16-compute-worker-1 Waiting 
+ Container astroagent-v16-frontend-1 Waiting 
+ Container astroagent-v16-backend-1 Waiting 
+ Container astroagent-v16-compute-worker-1 Healthy 
+ Container astroagent-v16-frontend-1 Healthy 
+ Container astroagent-v16-backend-1 Healthy 
+{
+  "healthy": {
+    "backend": "healthy",
+    "frontend": "healthy",
+    "compute-worker": "healthy",
+    "postgres": "healthy",
+    "ollama": "healthy",
+    "plot-executor": "healthy",
+    "ingress": "healthy"
+  },
+  "entry_checks": {
+    "/login": 200,
+    "/activate": 200,
+    "/api/v1/auth/session": 401
+  },
+  "compute_enabled": true,
+  "worker_heartbeat": true,
+  "database_and_existing_service_mounts_preserved": true,
+  "images": {
+    "backend": "sha256:e079e2af7ac5d8e1638ae0d40d2f80562b563215e0825e0de0b1b01edd8da98f",
+    "frontend": "sha256:c090003b7b434f1278f9913c049466450686f82fb41ee9c5beda7cec82e33e07",
+    "compute-worker": "sha256:154b877eac7eb5e1188d135160c7b7ed0ff9e39ae8f1c55dfc4ae8c4bd5867b8"
+  },
+  "schema_applied": true,
+  "observed_schema": true
+}

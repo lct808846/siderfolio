@@ -9,7 +9,7 @@ test('local documents can be uploaded, searched, cited and downloaded', async ({
     const raw = Buffer.from('# 合成文献\n银河潮汐 synthetic tidal evidence\n<script>window.injected=true</script>\n')
     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles({ name: 'synthetic.md', mimeType: 'text/markdown', buffer: raw })
     await page.getByRole('button', { name: '保存文件并本地解析' }).click()
-    await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true })).toBeVisible({ timeout: 30000 })
+    await expect(page.getByRole('heading', { name: 'synthetic.md', exact: true, level: 3 })).toBeVisible({ timeout: 30000 })
     await page.getByLabel('问题中的明确关键词').fill('银河潮汐')
     await page.getByRole('button', { name: '检索原文证据' }).click()
     await expect(page.getByRole('heading', { name: '找到的相关原文' })).toBeVisible()
@@ -23,10 +23,11 @@ test('local documents can be uploaded, searched, cited and downloaded', async ({
     if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-knowledge-mobile.png`) })
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(`/projects/${project.id}`)
+    await page.getByText('导出项目备份包（ZIP 迁移格式）', { exact: true }).click()
     await expect(page.getByLabel('文献原文')).toBeVisible()
     await expect(page.getByLabel('文献原文').locator('option[value="metadata"]')).toContainText('保留标题、检索词及项目记录')
     await page.getByLabel('文献原文').selectOption('full')
-    await page.getByRole('button', { name: '导出项目 ZIP' }).click()
+    await page.getByRole('button', { name: '导出项目备份 ZIP' }).click()
     const dialog = page.getByRole('dialog')
     await expect(dialog.getByRole('heading', { name: '导出含文献原文的完整备份？' })).toBeVisible()
     await expect(dialog).toContainText('1 份文档')
@@ -36,7 +37,7 @@ test('local documents can be uploaded, searched, cited and downloaded', async ({
     const [response, download] = await Promise.all([
       page.waitForResponse(response => response.url().endsWith(`/projects/${project.id}/archive`) && response.request().method() === 'POST'),
       page.waitForEvent('download'),
-      page.getByRole('button', { name: '导出项目 ZIP' }).click(),
+      page.getByRole('button', { name: '导出项目备份 ZIP' }).click(),
     ])
     expect(response.status()).toBe(200)
     expect(download.suggestedFilename()).toMatch(/\.zip$/)
@@ -54,7 +55,7 @@ test('public PDF citation opens its original and downloads identical bytes', asy
     await page.goto(`/projects/${project.id}/knowledge`)
     await page.getByLabel('选择文件（断线后可重选同一文件核对）').setInputFiles(pdfPath!)
     await page.getByRole('button', { name: '保存文件并本地解析' }).click()
-    await expect(page.getByRole('heading', { name: path.basename(pdfPath!), exact: true })).toBeVisible({ timeout: 60000 })
+    await expect(page.getByRole('heading', { name: path.basename(pdfPath!), exact: true, level: 3 })).toBeVisible({ timeout: 60000 })
     await page.getByLabel('问题中的明确关键词').fill('dynamical fate')
     await page.getByRole('button', { name: '检索原文证据' }).click()
     await page.getByRole('button', { name: '核对引用与原始版本' }).first().click()

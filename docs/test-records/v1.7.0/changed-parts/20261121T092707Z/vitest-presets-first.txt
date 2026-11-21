@@ -1,0 +1,53 @@
+
+ RUN  v4.1.12 D:/project/astroagent/frontend
+
+ ❯ tests/unit/compute-presets.test.ts (7 tests | 2 failed) 13ms
+     × rejects a malformed first data row instead of importing a partial particle set 4ms
+     × rejects changed identities and misaligned columns 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/compute-presets.test.ts > particle table import > rejects a malformed first data row instead of importing a partial particle set
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ tests/unit/compute-presets.test.ts:71:72
+     69|
+     70|   it('rejects a malformed first data row instead of importing a partia…
+     71|     expect(() => parseParticlesCsv('Broken,nan,0,0,0,0,0,0\n' + rows))…
+       |                                                                        ^
+     72|   })
+     73|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/compute-presets.test.ts > particle table import > rejects changed identities and misaligned columns
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ tests/unit/compute-presets.test.ts:75:71
+     73|
+     74|   it('rejects changed identities and misaligned columns', () => {
+     75|     expect(() => parseParticlesCsv('A B,1,-0.5,0,0,0,-3,0\n' + rows)).…
+       |                                                                       ^
+     76|     expect(() => parseParticlesCsv('Extra,1,0,0,0,0,0,0,0\n' + rows)).…
+     77|     expect(() => parseParticlesCsv('Empty,1,2,,0,0,0,0\n' + rows)).toT…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  17:34:36
+   Duration  1.39s (transform 53ms, setup 0ms, import 75ms, tests 13ms, environment 994ms)
+

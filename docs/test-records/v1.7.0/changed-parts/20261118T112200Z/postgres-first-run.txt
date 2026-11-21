@@ -1,0 +1,2 @@
+Disposable PostgreSQL acceptance exit: 0
+Owned disposable database and its temporary volume removed.

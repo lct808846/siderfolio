@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import IdentityRoot from './views/IdentityRoot.vue'
 import { identityGuard } from './identity-state'
+import { initAppearance } from './stores/appearance'
 import './style.css'
 import './observation-log.css'
 import './glass-surfaces.css'
@@ -34,9 +35,10 @@ function plottingRedirect(to: Pick<RouteLocationNormalized, 'query' | 'params'>)
   } }
 }
 
-const router = createRouter({ history: createWebHistory(), routes: [{ path: '/local-assistant', component: { render: () => null } }, { path: '/projects/:projectId/plotting', redirect: plottingRedirect }, { path: '/settings', component: { render: () => null } }, { path: '/profile', component: { render: () => null } }, { path: '/projects/:projectId/rag', component: { render: () => null } }, { path: '/', component: { render: () => null } }, { path: '/conversations/:id', component: { render: () => null } }, { path: '/projects/:projectId?', component: { render: () => null } }, { path: '/projects/:projectId/overview', component: { render: () => null } }, { path: '/projects/:projectId/knowledge/:documentId?', component: { render: () => null } }, { path: '/projects/:projectId/workflows/:runId?', component: { render: () => null } }] })
+const router = createRouter({ history: createWebHistory(), routes: [{ path: '/local-assistant', component: { render: () => null } }, { path: '/projects/:projectId/plotting', redirect: plottingRedirect }, { path: '/settings', component: { render: () => null } }, { path: '/profile', component: { render: () => null } }, { path: '/knowledge/:documentId?', component: { render: () => null } }, { path: '/rag', component: { render: () => null } }, { path: '/workflows/:runId?', component: { render: () => null } }, { path: '/compute/:taskId?', component: { render: () => null } }, { path: '/projects/:projectId/rag', component: { render: () => null } }, { path: '/', component: { render: () => null } }, { path: '/conversations/:id', component: { render: () => null } }, { path: '/projects/:projectId?', component: { render: () => null } }, { path: '/projects/:projectId/overview', component: { render: () => null } }, { path: '/projects/:projectId/knowledge/:documentId?', component: { render: () => null } }, { path: '/projects/:projectId/workflows/:runId?', component: { render: () => null } }, { path: '/projects/:projectId/compute/:taskId?', component: { render: () => null } }] })
 router.addRoute({ path: '/plotting', redirect: plottingRedirect })
 router.addRoute({ path: '/account', redirect: { path: '/settings', query: { section: 'account' } } })
 for (const path of ['/login', '/register', '/activate', '/resend', '/forgot-password', '/reset-password', '/admin']) router.addRoute({ path, component: { render: () => null } })
+initAppearance()
 router.beforeEach(identityGuard)
 createApp(IdentityRoot).use(createPinia()).use(router).mount('#app')

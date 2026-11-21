@@ -4,21 +4,24 @@ param(
     [string]$Action,
     [switch]$WithPlotting,
     [switch]$WithGpu,
-    [switch]$WithIdentity
+    [switch]$WithIdentity,
+    [switch]$WithCompute
 )
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $identityConfiguration = Join-Path $projectRoot '.astroagent\container\deployment-v16.env'
 $usingIdentity = $WithIdentity -or (Test-Path -LiteralPath $identityConfiguration)
 $sharedModels = Join-Path $projectRoot '.astroagent\container\compose-v16-shared-model.yaml'
+$computeOverlay = Join-Path $projectRoot 'compose.compute.yaml'
 $configuration = if ($usingIdentity) { $identityConfiguration } else { Join-Path $projectRoot '.astroagent\container\deployment.env' }
 if ((Test-Path -LiteralPath (Join-Path $projectRoot 'compose.identity.yaml')) -and -not $usingIdentity) {
     throw 'V1.6 source requires a separate identity deployment configuration. Do not rebuild the V1.5 tags with V1.6 source.'
 }
 if ($usingIdentity) { $WithPlotting = $true }
 if (-not (Test-Path -LiteralPath $configuration)) { throw 'Prepare the separate container configuration first. See the V1.5 container guide.' }
+$publicConfiguration = [System.IO.File]::ReadAllText($configuration)
+$usingCompute = (Test-Path -LiteralPath $computeOverlay) -and ($WithCompute -or ($publicConfiguration -match '(?m)^COMPUTE_ENABLED=1\r?$'))
 if ($Action -eq 'up') {
-    $publicConfiguration = [System.IO.File]::ReadAllText($configuration)
     foreach ($imageName in @('PYTHON_IMAGE','NODE_IMAGE','POSTGRES_IMAGE','OLLAMA_IMAGE','DOCKER_CLI_IMAGE')) {
         if ($publicConfiguration -notmatch ('(?m)^' + $imageName + '="[a-zA-Z0-9_./:-]+@sha256:[0-9a-f]{64}"\r?$')) { throw 'An immutable base image identity is missing. Prepare the image lock before building.' }
     }
@@ -32,6 +35,9 @@ if ($WithGpu) { $composeArguments += @('-f',(Join-Path $projectRoot 'compose.gpu
 if ($usingIdentity) {
     $composeArguments += @('-f',(Join-Path $projectRoot 'compose.identity.yaml'))
     if (Test-Path -LiteralPath $sharedModels) { $composeArguments += @('-f',$sharedModels) }
+}
+if ($usingCompute) {
+    $composeArguments += @('-f',$computeOverlay,'--profile','compute')
 }
 switch ($Action) {
     'up' {

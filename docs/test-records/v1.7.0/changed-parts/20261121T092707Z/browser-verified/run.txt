@@ -1,0 +1,110 @@
+
+Running 4 tests using 1 worker
+
+(node:11216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (3.3s)
+(node:7732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\compute-browser\compute.spec.ts:129:1 › presets, Kepler elements, CSV import and center-of-mass reset (4.6s)
+(node:33584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [edge] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND (3.3s)
+(node:13236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 [edge] › tests\compute-browser\compute.spec.ts:129:1 › presets, Kepler elements, CSV import and center-of-mass reset (3.9s)
+
+
+  1) [chromium] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "draft"
+    Received: undefined
+
+      74 |   await page.keyboard.press('Escape')
+      75 |   const base = `/api/v1/projects/${project.id}/compute-tasks`
+    > 76 |   expect((await (await page.request.get(`${base}/${originalId}`)).json()).state).toBe('draft')
+         |                                                                                  ^
+      77 |
+      78 |   await startOrbit(page)
+      79 |   await page.reload()
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:76:82
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-chromium\error-context.md
+
+  2) [chromium] › tests\compute-browser\compute.spec.ts:129:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 422
+
+      171 |   await saveDraft(page)
+      172 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)
+    > 173 |   expect(task.status()).toBe(200)
+          |                         ^
+      174 |   const params = (await task.json()).parameters
+      175 |   expect(params.engine).toBe('petar')
+      176 |   expect(params.particles.map((item: { id: string }) => item.id)).toEqual(['Z9', 'A1'])
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:173:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-chromium\error-context.md
+
+  3) [edge] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "draft"
+    Received: undefined
+
+      74 |   await page.keyboard.press('Escape')
+      75 |   const base = `/api/v1/projects/${project.id}/compute-tasks`
+    > 76 |   expect((await (await page.request.get(`${base}/${originalId}`)).json()).state).toBe('draft')
+         |                                                                                  ^
+      77 |
+      78 |   await startOrbit(page)
+      79 |   await page.reload()
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:76:82
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-workbench-handoff--f04af-and-comparison-with-REBOUND-edge\error-context.md
+
+  4) [edge] › tests\compute-browser\compute.spec.ts:129:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 422
+
+      171 |   await saveDraft(page)
+      172 |   const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${new URL(page.url()).pathname.split('/').at(-1)}`)
+    > 173 |   expect(task.status()).toBe(200)
+          |                         ^
+      174 |   const params = (await task.json()).parameters
+      175 |   expect(params.engine).toBe('petar')
+      176 |   expect(params.particles.map((item: { id: string }) => item.id)).toEqual(['Z9', 'A1'])
+        at D:\project\astroagent\frontend\tests\compute-browser\compute.spec.ts:173:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\acceptance-tmp\petar-20261121t092707z\playwright-verified\compute-presets-Kepler-ele-d1dd0-rt-and-center-of-mass-reset-edge\error-context.md
+
+  4 failed
+    [chromium] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+    [chromium] › tests\compute-browser\compute.spec.ts:129:1 › presets, Kepler elements, CSV import and center-of-mass reset 
+    [edge] › tests\compute-browser\compute.spec.ts:50:1 › workbench handoff, PeTar run, exports and comparison with REBOUND 
+    [edge] › tests\compute-browser\compute.spec.ts:129:1 › presets, Kepler elements, CSV import and center-of-mass reset 

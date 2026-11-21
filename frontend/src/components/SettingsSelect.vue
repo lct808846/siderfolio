@@ -1,7 +1,14 @@
 <script setup lang="ts" generic="T extends string">
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 
-const props = defineProps<{ modelValue: T; label: string; disabled?: boolean; options: readonly { value: T; label: string; description?: string }[] }>()
+export interface SettingsSelectOption<V extends string = string> {
+  value: V
+  label: string
+  description?: string
+  swatch?: readonly [string, string]
+}
+
+const props = defineProps<{ modelValue: T; label: string; disabled?: boolean; options: readonly SettingsSelectOption<T>[] }>()
 const emit = defineEmits<{ 'update:modelValue': [value: T] }>()
 const id = `settings-select-${useId()}`
 const trigger = ref<HTMLButtonElement | null>(null), popup = ref<HTMLElement | null>(null)
@@ -73,11 +80,23 @@ onBeforeUnmount(() => close())
 <template>
   <div class="settings-select">
     <button ref="trigger" type="button" class="settings-select-trigger" :disabled="disabled" :aria-label="`${label}：${selected?.label || ''}`" aria-haspopup="listbox" :aria-expanded="open" :aria-controls="id" data-tooltip="" @click="open ? close(true) : show()" @keydown="key">
-      <span>{{ selected?.label }}</span><svg viewBox="0 0 24 24" aria-hidden="true" :class="{ 'is-open': open }"><path d="m7 10 5 5 5-5" /></svg>
+      <span class="settings-select-trigger-main">
+        <span v-if="selected?.swatch" class="settings-select-swatch" aria-hidden="true" :style="{ background: `linear-gradient(135deg, ${selected.swatch[0]} 50%, ${selected.swatch[1]} 50%)` }" />
+        <span class="settings-select-trigger-label">{{ selected?.label }}</span>
+        <small v-if="selected?.swatch && selected?.description" class="settings-select-trigger-meta">{{ selected.description }}</small>
+      </span>
+      <svg viewBox="0 0 24 24" aria-hidden="true" :class="{ 'is-open': open }"><path d="m7 10 5 5 5-5" /></svg>
     </button>
     <div :id="id" ref="popup" class="settings-select-popup" popover="manual" role="listbox" :aria-label="label" :style="{ left: `${left}px`, top: `${top}px`, width: `${width}px`, maxHeight: `${height}px`, visibility: positioned ? 'visible' : 'hidden' }" @keydown="key" @focusout="event => { const next = event.relatedTarget as Node | null; if (next && !popup?.contains(next) && !trigger?.contains(next)) close() }">
       <button v-for="(item, index) in options" :key="item.value" type="button" class="settings-select-option" role="option" :aria-selected="modelValue === item.value" tabindex="-1" data-tooltip="" @focus="active = index" @click="choose(item.value)">
-        <span><strong>{{ item.label }}</strong><small v-if="item.description">{{ item.description }}</small></span><svg v-if="modelValue === item.value" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10" /></svg>
+        <span class="settings-select-option-main">
+          <span v-if="item.swatch" class="settings-select-swatch" aria-hidden="true" :style="{ background: `linear-gradient(135deg, ${item.swatch[0]} 50%, ${item.swatch[1]} 50%)` }" />
+          <span class="settings-select-option-copy">
+            <strong>{{ item.label }}</strong>
+            <small v-if="item.description">{{ item.description }}</small>
+          </span>
+        </span>
+        <svg v-if="modelValue === item.value" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10" /></svg>
       </button>
     </div>
   </div>

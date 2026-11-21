@@ -2,9 +2,9 @@
 
 界面开发统一遵循 [UI 设计规范](docs/UI_DESIGN_SPEC.md)，其中规定视觉变量、布局、组件、交互状态、页面族例外及审查清单。
 
-当前正式源码版本为 **V1.6.0**，包含邮箱激活、登录与用户隔离、MFA、个人资料及头像、模型服务商与四协议适配。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.6.0)、[发布说明](docs/development/v1.6.0/RELEASE.md)及[自动验收记录](docs/test-records/v1.6.0/changed-parts/20261116T071217Z/README.md)。
+当前正式源码版本为 **V1.7.0**，新增项目计算任务、可选的 REBOUND 与 PeTar 模拟程序、轨迹和实验归档，并更新科研空间与工作台。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.7.0)、[发布说明](docs/development/v1.7.0/RELEASE.md)及[增量验收记录](docs/test-records/v1.7.0/changed-parts/20261121T092707Z/README.md)。
 
-已准备私有 `deployment-v16.env` 的本机可使用 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/containers.ps1 -Action up` 启动V1.6；脚本自动选择身份部署覆盖文件，复用现有模型时不重新导入。首次安装先阅读[V1.6实施与限制](docs/development/v1.6.0/IMPLEMENTATION.md)、[部署/数据操作](docs/development/v1.6.0/OPERATIONS.md)和[验收状态](docs/development/v1.6.0/ACCEPTANCE.md)，不要用V1.6源码重新构建V1.5标签。
+V1.7.0 计算部署沿用现有身份配置与数据卷。计算功能的镜像构建、启用和更新步骤见[计算任务操作说明](docs/development/v1.7.0/OPERATIONS.md)。首次安装的身份配置和数据操作仍按 [V1.6 部署说明](docs/development/v1.6.0/OPERATIONS.md)准备。
 
 以下保留V1.5及更早版本的使用和验收历史：
 

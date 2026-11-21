@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import { api } from '../api'
 import { localAssistantApi, localTaskLabels, conditionLabels, intentLabels } from '../api/local-assistant'
 import type { LocalStatus, LocalTaskRequest, LocalTaskView, LocalConditionResult } from '../api/local-assistant'
+import { setWorkbenchDraft, setWorkflowHandoff } from '../research-handoff'
+import { useProjects } from '../stores/projects'
 import type { Conversation, ConversationDetail } from '../types'
+
+const router = useRouter(), projectsStore = useProjects()
 
 const state = ref<LocalStatus | null>(null), text = ref(''), operation = ref<LocalTaskRequest['action']>('summary'), format = ref<LocalTaskRequest['output_format']>('bullets')
 const view = ref<LocalTaskView | null>(null), error = ref(''), message = ref(''), busy = ref(false), checking = ref(false)
@@ -14,7 +19,6 @@ const pendingId = ref(''), autoRefresh = ref(true)
 const bytes = computed(() => new TextEncoder().encode(text.value).length)
 const editableResult = ref('')
 const conditions = computed(() => view.value?.task.action === 'extract' && view.value.task.output ? view.value.task.output as unknown as LocalConditionResult : null)
-const missingLabels = computed(() => (conditions.value?.missing ?? []).map(field => conditionLabels[field] || field).join('、'))
 const comparisons: Record<string, string> = { eq: '=', lt: '<', lte: '≤', gt: '>', gte: '≥', unspecified: '' }
 const titles = { title: '拟标题', summary: '简短摘要', format: '整理格式', extract: '提取条件与任务建议' }
 let timer: ReturnType<typeof setTimeout> | undefined, generation = 0, sourceGeneration = 0
@@ -57,6 +61,70 @@ async function submit() {
   catch (e) { error.value = e instanceof Error ? e.message : '提交状态未确认，不自动重试。'; busy.value = false }
 }
 async function copy() { try { await navigator.clipboard.writeText(editableResult.value); message.value = '已复制当前结果。' } catch { error.value = '复制失败，请选中结果手动复制。' } }
+function conditionValue(field: string) {
+  return conditions.value?.conditions.find(item => item.field === field && item.status === 'explicit' && item.value)?.value?.trim() || ''
+}
+function numericToken(raw: string): string {
+  const match = raw.match(/-?\d+(?:\.\d+)?/)
+  return match ? match[0] : ''
+}
+function handoffToWorkbench() {
+  const summaryParts = (conditions.value?.conditions || [])
+    .filter(item => item.status === 'explicit' && item.value)
+    .map(item => `${conditionLabels[item.field] || item.field} ${comparisons[item.comparison] || ''}${item.value}${item.unit ? ` ${item.unit}` : ''}`.trim())
+  const draftText = text.value.trim() || summaryParts.join('；')
+  if (!draftText) return
+  setWorkbenchDraft(draftText)
+  void router.push('/')
+}
+function handoffToWorkflow() {
+  const extracted = conditions.value
+  if (!extracted) return
+  const objectName = conditionValue('object_name')
+  const raVal = numericToken(conditionValue('ra'))
+  const decVal = numericToken(conditionValue('dec'))
+  const radiusEntry = extracted.conditions.find(item => item.field === 'radius' && item.status === 'explicit' && item.value)
+  let radiusArcmin = numericToken(radiusEntry?.value || '')
+  if (radiusArcmin && radiusEntry?.unit) {
+    const unit = radiusEntry.unit.toLowerCase()
+    const num = Number(radiusArcmin)
+    if (Number.isFinite(num)) {
+      if (unit.includes('sec') || unit.includes('秒') || unit === '"') radiusArcmin = String(Number((num / 60).toPrecision(5)))
+      else if (unit.includes('deg') || unit.includes('度') || unit === '°') radiusArcmin = String(Number((num * 60).toPrecision(5)))
+    }
+  }
+  const ruweVal = numericToken(conditionValue('ruwe_max'))
+  const snrVal = numericToken(conditionValue('parallax_snr_min'))
+  const yearStart = numericToken(conditionValue('year_start'))
+  const yearEnd = numericToken(conditionValue('year_end'))
+  const wantsAds = extracted.suggestions.some(item => item.kind === 'literature_search')
+    && !raVal && !decVal && !radiusArcmin && !ruweVal && !snrVal
+  if (wantsAds) {
+    const terms: string[] = []
+    if (objectName) terms.push(`"${objectName}"`)
+    if (yearStart && yearEnd) terms.push(`year:${yearStart}-${yearEnd}`)
+    else if (yearStart) terms.push(`year:${yearStart}-2026`)
+    setWorkflowHandoff({
+      templateId: 'ads_evidence',
+      name: objectName ? `${objectName} ADS 文献检索` : '本地助手提取 · ADS 文献检索',
+      query: terms.join(' ') || text.value.trim().slice(0, 200),
+    })
+  } else {
+    setWorkflowHandoff({
+      templateId: 'gaia_field',
+      name: objectName ? `${objectName} Gaia DR3 视场查询` : '本地助手提取 · Gaia 视场查询',
+      objectName: objectName || undefined,
+      ra: raVal || undefined,
+      dec: decVal || undefined,
+      radius: radiusArcmin || undefined,
+      limit: '200',
+      ruwe: ruweVal || undefined,
+      snr: snrVal || undefined,
+    })
+  }
+  const projectId = projectsStore.activeCustomProjectId
+  void router.push(projectId ? `/projects/${encodeURIComponent(projectId)}/workflows` : '/workflows')
+}
 function releasePending() { if (timer) clearTimeout(timer); generation++; busy.value = false; remember(''); message.value = '已清除本页等待状态；这不会取消服务端已经开始的推理。' }
 onMounted(async () => {
   try { const id = sessionStorage.getItem('astroagent.local-task.pending.v1'); if (id && /^[0-9a-f-]{36}$/.test(id)) pendingId.value = id } catch { /* Keep input in memory only. */ }
@@ -71,11 +139,11 @@ onBeforeUnmount(() => { generation++; sourceGeneration++; if (timer) clearTimeou
   <div class="workspace-panes primary-workspace local-assistant-workspace">
     <WorkspaceHeader title="本地轻量助手" />
     <main class="local-assistant-main">
-      <WorkspacePaneHeader title="本地助手"><template #actions><div class="local-actions"><span v-if="state" class="tag">{{ state.state === 'ready' ? '本机可用' : state.state === 'busy' ? '本机处理中' : state.message }}</span><RouterLink to="/settings?section=assistant">模型与开关设置 →</RouterLink></div></template></WorkspacePaneHeader>
+      <WorkspacePaneHeader title="本地助手"><template #actions><div class="local-actions"><span v-if="state" class="ui-pill" :class="state.state === 'ready' ? 'ui-pill-success' : state.state === 'busy' ? 'ui-pill-warning' : 'ui-pill-neutral'"><span class="ui-dot" aria-hidden="true" />{{ state.state === 'ready' ? '本机可用' : state.state === 'busy' ? '本机处理中' : state.message }}</span><RouterLink to="/settings?section=assistant" class="ui-pill ui-pill-accent">模型与开关设置 →</RouterLink></div></template></WorkspacePaneHeader>
       <div class="local-assistant-reading">
         <p class="muted">由本机千问辅助处理选定文本。明示条件按原文提取，模型只建议任务类型；摘要选取原文片段，格式整理保留原文。结果供核对和编辑，不自动改写会话或执行科研工具。</p>
         <p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p>
-        <div class="local-task-tabs" role="group" aria-label="选择本地文本任务"><button v-for="(label, key) in titles" :key="key" type="button" :aria-pressed="operation === key" :disabled="busy || !!pendingId" @click="operation = key">{{ label }}</button></div>
+        <div class="local-task-tabs ui-segmented" role="group" aria-label="选择本地文本任务"><button v-for="(label, key) in titles" :key="key" type="button" :aria-pressed="operation === key" :disabled="busy || !!pendingId" @click="operation = key">{{ label }}</button></div>
         <div class="local-assistant-grid">
           <section class="local-input-panel">
 <h2>选择输入</h2>
@@ -92,10 +160,35 @@ onBeforeUnmount(() => { generation++; sourceGeneration++; if (timer) clearTimeou
               <p class="small">{{ localTaskLabels[view.task.state] }} · {{ view.task.model }}</p>
               <p v-if="view.task.error" class="notice danger">{{ view.task.error }}</p><p class="small muted">{{ view.warning }}</p>
               <div v-if="conditions" class="local-conditions">
-                <div class="local-condition-table"><table><thead><tr><th>条件</th><th>原文值</th><th>依据</th></tr></thead><tbody><tr v-for="condition in conditions.conditions" :key="condition.field"><th>{{ conditionLabels[condition.field] || condition.field }}</th><td>{{ condition.status === 'ambiguous' ? '需要确认' : `${comparisons[condition.comparison] || ''} ${condition.value || '—'} ${condition.unit || ''}` }}</td><td>{{ condition.evidence }}</td></tr></tbody></table></div>
-                <p v-if="!conditions.conditions.length" class="small muted">未提取出明确条件。</p>
-                <h3>任务建议</h3><ul><li v-for="suggestion in conditions.suggestions" :key="suggestion.kind"><strong>{{ intentLabels[suggestion.kind] || suggestion.kind }}</strong><span class="small">依据：{{ suggestion.evidence }}</span></li></ul>
-                <p v-if="conditions.missing.length" class="small">缺失：{{ missingLabels }}</p>
+                <div v-if="conditions.conditions.length" class="ui-param-grid">
+                  <div v-for="condition in conditions.conditions" :key="condition.field" class="ui-param-tile">
+                    <dt style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                      <span>{{ conditionLabels[condition.field] || condition.field }}</span>
+                      <span v-if="condition.status === 'ambiguous'" class="ui-pill ui-pill-warning">待确认</span>
+                    </dt>
+                    <dd>{{ condition.status === 'ambiguous' ? '需要确认' : `${comparisons[condition.comparison] || ''} ${condition.value || '—'} ${condition.unit || ''}`.trim() }}</dd>
+                    <span class="small muted">依据：{{ condition.evidence }}</span>
+                  </div>
+                </div>
+                <p v-else class="small muted">未提取出明确条件。</p>
+                <h3>任务建议</h3>
+                <div class="ui-card-subtle" style="gap: 8px;">
+                  <div v-for="suggestion in conditions.suggestions" :key="suggestion.kind" class="ui-card-head" style="align-items: center;">
+                    <span class="ui-pill" :class="suggestion.kind === 'gaia_query' ? 'ui-pill-gaia' : suggestion.kind === 'literature_search' ? 'ui-pill-ads' : suggestion.kind === 'object_query' ? 'ui-pill-simbad' : 'ui-pill-accent'">{{ intentLabels[suggestion.kind] || suggestion.kind }}</span>
+                    <span class="small muted" style="flex: 1;">依据：{{ suggestion.evidence }}</span>
+                  </div>
+                </div>
+                <div class="local-handoff-bar">
+                  <div class="project-actions">
+                    <button type="button" class="button-primary" @click="handoffToWorkbench">填入查询工作台 →</button>
+                    <button type="button" @click="handoffToWorkflow">填入科研流程参数 →</button>
+                  </div>
+                  <p class="small muted">仅填入目标草稿表单，由你核对后手动发送或创建，不会自动执行。</p>
+                </div>
+                <div v-if="conditions.missing.length" class="ui-pill-list" style="margin-top: 10px;">
+                  <span class="small muted">缺失字段：</span>
+                  <span v-for="field in conditions.missing" :key="field" class="ui-pill ui-pill-warning">{{ conditionLabels[field] || field }}</span>
+                </div>
                 <ul v-if="conditions.clarification.length"><li v-for="question in conditions.clarification" :key="question">{{ question }}</li></ul>
                 <details><summary>查看或编辑条件 JSON</summary><textarea v-model="editableResult" rows="12" aria-label="可编辑的条件结果 JSON" /></details>
               </div>
@@ -103,7 +196,13 @@ onBeforeUnmount(() => { generation++; sourceGeneration++; if (timer) clearTimeou
               <p v-else-if="view.task.state === 'completed'" class="notice">结果缓存已过期或服务已重启。任务不会自动重新推理。</p>
               <details><summary>任务范围与用量</summary><p class="small">编号：{{ view.task.id }}<br />实际输入：{{ view.task.input_characters }}字符{{ view.task.input_truncated ? '（已截取）' : '' }}<br />模型摘要：{{ view.task.model_digest }}<br />输入摘要：{{ view.task.input_sha256 }}</p><pre>{{ JSON.stringify(view.task.usage, null, 2) }}</pre></details>
             </template>
-            <div v-else class="local-assistant-empty"><h3>先选择文本和操作</h3><p>条件提取会显示原文依据、缺失值与任务建议；建议不会直接发起查询。</p></div>
+            <div v-else class="ui-empty-card local-assistant-empty">
+              <div class="ui-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" /><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9L19 16z" /></svg>
+              </div>
+              <h3>先选择文本与本机处理方式</h3>
+              <p>条件提取将以结构化卡片呈现原文依据、缺失字段与任务建议，并支持一键填入查询工作台或科研流程草稿。</p>
+            </div>
             <div v-if="pendingId" class="notice"><p class="small">当前请求：{{ pendingId }}。断开页面不代表取消；自动更新只查询状态，不自动重发。</p><label class="local-check"><input v-model="autoRefresh" type="checkbox" />自动更新状态</label><div class="local-actions"><button type="button" @click="releasePending">结束本页等待</button></div></div>
           </section>
         </div>

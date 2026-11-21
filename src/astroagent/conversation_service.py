@@ -48,7 +48,19 @@ class ConversationService:
                 pass
         failure = None
         try:
-            context = PreparedContext(history, request.message, attachments=request.attachments)
+            project_sources = None
+            knowledge = getattr(self, "knowledge", None)
+            if knowledge is not None and hasattr(knowledge, "chat_context"):
+                try:
+                    project_sources = knowledge.chat_context(identifier, request.message)
+                except Exception:
+                    project_sources = None
+            context = PreparedContext(
+                history,
+                request.message,
+                attachments=request.attachments,
+                project_sources=project_sources,
+            )
             turn.context = context.record
             agent = agent_factory()
             if turn.model is None:

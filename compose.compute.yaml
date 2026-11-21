@@ -1,0 +1,46 @@
+# Append after the V1.6 identity and site-specific overlays.
+services:
+  backend:
+    image: astroagent-backend:1.7.0
+    environment:
+      ASTROAGENT_COMPUTE_ENABLED: "${COMPUTE_ENABLED:-0}"
+    volumes:
+      - compute-spool:/var/lib/astroagent-compute
+  frontend:
+    image: astroagent-frontend:1.7.0
+  compute-worker:
+    profiles: [compute]
+    build:
+      context: .
+      dockerfile: containers/application/Dockerfile
+      target: compute-worker
+      args:
+        PYTHON_IMAGE: "${PYTHON_IMAGE:?Prepare a fixed PYTHON_IMAGE digest}"
+        DOCKER_CLI_IMAGE: "${DOCKER_CLI_IMAGE:?Prepare a fixed CLI image digest}"
+    image: astroagent-compute-worker:1.7.0
+    environment:
+      ASTROAGENT_COMPUTE_IMAGE_ID: "${COMPUTE_IMAGE_ID:-}"
+    platform: linux/amd64
+    restart: unless-stopped
+    read_only: true
+    network_mode: none
+    user: "10001:10001"
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=32m,mode=1777"]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 24
+    volumes:
+      - compute-spool:/var/lib/astroagent-compute
+    healthcheck:
+      test: [CMD, python, -c, "from astroagent.compute_io import fresh,spool; raise SystemExit(not fresh(spool() / 'heartbeat'))"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options: { max-size: "5m", max-file: "2" }
+volumes:
+  compute-spool:

@@ -1,0 +1,36 @@
+{
+  "stack": "astroagent-v17-qa-20261118t112200z",
+  "origin": "http://127.0.0.1:5287",
+  "thresholds": {
+    "binary_relative": 1e-06,
+    "three_body": 1e-08
+  },
+  "checks": {
+    "account_disabled": {
+      "passed": true,
+      "detail": {
+        "account_revoked": true,
+        "running_task": "cancelled"
+      },
+      "wall_seconds": 4.843
+    },
+    "hard_timeout": {
+      "passed": true,
+      "detail": {
+        "wall_seconds": 122.594,
+        "failed_result_denied": true,
+        "slot_released": "succeeded"
+      },
+      "wall_seconds": 126.954
+    },
+    "backup_restore": {
+      "passed": true,
+      "detail": {
+        "same_task_rows": 20,
+        "same_result_digests": true,
+        "isolated_dump_restore": true
+      },
+      "wall_seconds": 3.734
+    }
+  }
+}
