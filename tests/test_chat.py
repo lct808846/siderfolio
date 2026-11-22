@@ -114,7 +114,7 @@ def test_invalid_request_rejected_before_model_creation(client, monkeypatch, pay
 def test_missing_key_does_not_break_health(client, monkeypatch):
     monkeypatch.setenv("DEEPSEEK_API_KEY", "")
     response = client.post("/api/v1/chat", json={"message": "查询 Betelgeuse"})
-    assert response.status_code == 503
+    assert response.status_code == 503, response.text
     assert response.json()["error"]["code"] == "model_not_configured"
     assert client.get("/health").json() == {"status": "ok"}
 
@@ -122,7 +122,7 @@ def test_missing_key_does_not_break_health(client, monkeypatch):
 def test_invalid_configuration_is_sanitized(client, monkeypatch):
     monkeypatch.setenv("LLM_TIMEOUT_SECONDS", "secret-invalid-value")
     response = client.post("/api/v1/chat", json={"message": "hello"})
-    assert response.status_code == 503
+    assert response.status_code == 503, response.text
     assert response.json()["error"]["code"] == "invalid_configuration"
     assert "secret-invalid-value" not in response.text
 

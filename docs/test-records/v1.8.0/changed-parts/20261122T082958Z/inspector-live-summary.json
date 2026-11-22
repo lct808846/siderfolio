@@ -1,0 +1,32 @@
+[
+  {
+    "tool": "query_simbad",
+    "code": 0,
+    "mcp_protocol": "2026-07-28",
+    "state": "success",
+    "error_code": null,
+    "papers": 0,
+    "source_id": null,
+    "response_has_structured_content": true
+  },
+  {
+    "tool": "search_ads",
+    "code": 0,
+    "mcp_protocol": "2026-07-28",
+    "state": "success",
+    "error_code": null,
+    "papers": 1,
+    "source_id": null,
+    "response_has_structured_content": true
+  },
+  {
+    "tool": "query_gaia",
+    "code": 0,
+    "mcp_protocol": "2026-07-28",
+    "state": "success",
+    "error_code": null,
+    "papers": 0,
+    "source_id": "5853498713190525696",
+    "response_has_structured_content": true
+  }
+]

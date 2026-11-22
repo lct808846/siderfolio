@@ -173,7 +173,7 @@ onMounted(() => { void load() })
         <label>显示名称<input v-model="form.name" maxlength="60" required placeholder="例如：我的模型服务" :disabled="busy" /></label>
         <div class="provider-field"><span>API 协议</span><SettingsSelect v-model="form.protocol" label="API 协议" :options="protocols" :disabled="busy" /></div>
         <label>API 地址<input v-model="form.base_url" type="url" maxlength="500" required :placeholder="addressExample" :disabled="busy" /></label>
-        <p class="settings-footnote">根地址示例：{{ addressExample }}。不包含具体请求端点。科研查询及绘图要求模型支持工具调用，本地助手仍使用独立配置。</p>
+        <p class="settings-footnote">根地址示例：{{ addressExample }}。不包含具体请求端点。科研查询及绘图要求模型支持工具调用。</p>
         <label>API 密钥<input v-model="apiKey" class="provider-api-key" name="provider-api-token" :type="keyInputType" autocomplete="off" autocapitalize="off" autocorrect="off" :spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other" maxlength="4096" :required="!storedKey" :placeholder="storedKey ? '已配置，留空保留；更改地址或协议需重新填写' : '输入此服务商的 API 密钥'" :disabled="busy" /></label>
         <label class="provider-enabled settings-row settings-switch-row"><span>启用此服务商</span><input v-model="form.enabled" class="settings-switch" type="checkbox" role="switch" :disabled="busy" /></label>
         <details class="provider-advanced"><summary>高级设置</summary><label>服务商标识<input v-model="form.id" pattern="[a-z][a-z0-9-]{0,23}" maxlength="24" :disabled="editing || busy" required /></label><div v-if="form.protocol === 'openai_chat'" class="provider-field"><span>思考参数</span><SettingsSelect v-model="form.thinking_parameter" label="思考参数" :options="thinkingOptions" :disabled="busy" /></div></details>

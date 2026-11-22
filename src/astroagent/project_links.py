@@ -182,7 +182,7 @@ class ProjectLinks:
                     type=kind,
                     id=identifier,
                     conversation_id=turn.conversation_id,
-                    label=f"{row[1]} · 第{turn.revision}轮",
+                    label=f"{row[1]} · {' '.join(turn.message.split())[:64] or '查询结果'}",
                     state=turn.execution_status,
                     response_status=turn.response.status if turn.response else None,
                     available=turn.response is not None and turn.execution_status != "running",

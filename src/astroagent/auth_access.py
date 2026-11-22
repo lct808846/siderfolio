@@ -126,6 +126,7 @@ class IdentityAccess:
                 "/docs/oauth2-redirect",
                 "/api/v1/setup/status",
                 "/api/v1/setup/initialize",
+                "/api/v1/setup/astronomy-transport",
             } or path.startswith("/api/v1/admin/"):
                 administrator(
                     user,

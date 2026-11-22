@@ -14,6 +14,7 @@ import astroagent.services as services
 from astroagent.agent import AstroAgent
 from astroagent.api import conversations, models, projects, workflows
 from astroagent.auth_access import IdentityAccess
+from astroagent.compute_schemas import binary_template
 from astroagent.config import Settings
 from astroagent.conversations import ConversationRepository
 from astroagent.main import app as app
@@ -71,6 +72,51 @@ class SyntheticModel:
         if messages[-1].type == "tool":
             return AIMessage(
                 content="合成验收结果已返回。请在右侧核查完整测量、单位和查询条件；这些不是实际观测。"
+            )
+        if "__qa_inline_nbody__" in message:
+            return AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "prepare_nbody_simulation",
+                        "args": {
+                            **binary_template().model_dump(mode="json"),
+                            "name": "合成双体轨道",
+                            "explanation": "固定质量和速度的圆轨道验收样例。",
+                        },
+                        "id": str(uuid4()),
+                    }
+                ],
+            )
+        if "__qa_inline_plot__" in message:
+            return AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "query_gaia",
+                        "args": {
+                            "mode": "cone",
+                            "ra_deg": 56.75,
+                            "dec_deg": 24.12,
+                            "radius_arcmin": 5,
+                            "limit": 10,
+                        },
+                        "id": str(uuid4()),
+                    },
+                    {
+                        "name": "prepare_scientific_plot",
+                        "args": {
+                            "data_source_kind": "current_turn_gaia",
+                            "chart": "scatter",
+                            "title": "合成 Gaia 散点",
+                            "columns": ["pmra", "pmdec"],
+                            "axes": {"x": "pmra", "y": "pmdec"},
+                            "explanation": "检查对话中的自行散点绘图流程。",
+                            "script": 'print("synthetic plot fixture")',
+                        },
+                        "id": str(uuid4()),
+                    },
+                ],
             )
         if "__wait__" in message:
             time.sleep(10)

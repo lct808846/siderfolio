@@ -21,18 +21,18 @@
 /* Chromium's standard properties otherwise override its more detailed scrollbar skin. */
 @supports selector(::-webkit-scrollbar) {
   * { scrollbar-width: auto; scrollbar-color: auto; }
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 999px; }
   ::-webkit-scrollbar-thumb {
     min-height: 32px;
     min-width: 32px;
-    border: 3px solid transparent;
+    border: 2px solid transparent;
     border-radius: 999px;
     background: var(--scrollbar-thumb);
     background-clip: padding-box;
   }
-  ::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-hover); border-width: 2px; }
-  ::-webkit-scrollbar-thumb:active { background-color: var(--scrollbar-active); border-width: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-hover); border-width: 1.5px; }
+  ::-webkit-scrollbar-thumb:active { background-color: var(--scrollbar-active); border-width: 1.5px; }
   ::-webkit-scrollbar-corner { background: transparent; }
   ::-webkit-scrollbar-button { display: none; }
 }
@@ -43,18 +43,19 @@
   width: max-content;
   max-width: min(280px, calc(100vw - 16px));
   margin: 0;
-  padding: 8px 11px;
-  border: 1px solid var(--line-strong);
-  border-radius: 9px;
+  padding: 7px 11px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: var(--radius-control, 8px);
   color: var(--topbar-ink, #f4f9f4);
-  background: var(--ink, #1f3530);
-  box-shadow: var(--shadow-card-hover);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--ink, #1b302b) 92%, transparent);
+  box-shadow: var(--shadow-float, 0 12px 32px -8px rgb(0 0 0 / 28%));
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
   font-family: var(--font-ui);
   font-size: 12px;
-  font-weight: 400;
-  line-height: 1.65;
-  letter-spacing: .015em;
+  font-weight: 450;
+  line-height: 1.6;
+  letter-spacing: .01em;
   text-align: left;
   overflow-wrap: anywhere;
   pointer-events: auto;

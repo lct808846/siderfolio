@@ -1,15 +1,98 @@
 /* Plotting is a task inside the conversation, sharing its composer and frame. */
 .composer-bottom { flex-wrap: wrap; }
-.composer-task-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
-.composer-task-tools > .composer-task-button {
-  display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto;
-  min-height: 34px; padding: 6px 10px; border: 1px solid var(--line-strong);
-  border-radius: 8px; background: var(--paper); color: var(--ink); font-size: 12px;
+.composer-task-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; min-width: 0; }
+.composer-task-tools .composer-task-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 0 0 auto;
+  height: 34px; min-height: 34px; padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control, 8px);
+  background: var(--specular-spot, none), var(--surface-glass-card, var(--paper));
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  box-shadow: var(--control-shadow), var(--specular-top);
+  color: var(--ink);
+  font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
+  transition:
+    transform var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),
+    border-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),
+    background-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),
+    color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
 }
-.composer-task-button svg, .workbench-plot-upload svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; }
-.composer-task-tools > .composer-task-button:hover:not(:disabled) { color: var(--accent); background: var(--soft); }
-.composer-task-tools > .composer-plot-toggle.active { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 32%, var(--line)); }
-.composer-task-tools > .composer-task-button.is-unavailable { color: var(--muted); border-style: dashed; }
+.composer-task-tools .composer-task-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: var(--specular-sheen);
+  opacity: 0.72;
+  pointer-events: none;
+  transition: opacity var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.composer-task-tools .composer-task-button::after {
+  content: '';
+  position: absolute;
+  inset: -40% -20%;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 52%) 50%, transparent 70%);
+  transform: translateX(-140%) skewX(-18deg);
+  pointer-events: none;
+  transition: transform 540ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.composer-task-button svg, .workbench-plot-upload svg {
+  width: 15px; height: 15px; flex: 0 0 15px; fill: none; stroke: currentColor; stroke-width: 1.65;
+  transition: transform 220ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.composer-task-tools .composer-task-button:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 46%, var(--line-strong));
+  background:
+    var(--specular-spot, none),
+    linear-gradient(160deg, color-mix(in srgb, var(--accent) 13%, var(--surface-card)) 0%, color-mix(in srgb, var(--accent) 6%, var(--surface-subtle)) 100%);
+  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--accent) 36%, transparent), 0 2px 6px rgb(0 0 0 / 8%), var(--specular-strong);
+  transform: translateY(-1.5px);
+}
+.composer-task-tools .composer-task-button:hover:not(:disabled)::before { opacity: 1; }
+.composer-task-tools .composer-task-button:hover:not(:disabled)::after { transform: translateX(140%) skewX(-18deg); }
+.composer-task-tools .composer-task-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.965);
+  box-shadow: var(--control-shadow);
+}
+.composer-task-tools .composer-plot-toggle:hover:not(:disabled) svg { transform: scale(1.12) translateY(-0.5px); }
+.composer-task-tools .composer-nbody-toggle:hover:not(:disabled) svg { transform: rotate(42deg) scale(1.1); }
+.composer-task-tools .composer-project-trigger:hover:not(:disabled) svg:first-child { transform: scale(1.1); }
+.composer-task-tools .composer-task-button.active:not(.composer-project-trigger) {
+  color: #fff;
+  font-weight: 600;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 68%, #fff) 0%, var(--accent) 52%, color-mix(in srgb, var(--accent) 72%, var(--astro-tertiary, var(--accent-hover))) 100%);
+  border-color: color-mix(in srgb, var(--accent) 78%, #fff);
+  box-shadow:
+    0 8px 22px -5px color-mix(in srgb, var(--accent) 64%, transparent),
+    0 2px 8px -2px color-mix(in srgb, var(--accent) 34%, transparent),
+    inset 0 1px 0 0 rgb(255 255 255 / 62%);
+}
+.composer-task-tools .composer-task-button.active:not(.composer-project-trigger)::before {
+  background: linear-gradient(90deg, transparent 8%, rgb(255 255 255 / 90%) 50%, transparent 92%);
+  opacity: 1;
+}
+.composer-task-tools .composer-task-button.active:not(.composer-project-trigger):hover:not(:disabled) {
+  color: #fff;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 58%, #fff) 0%, color-mix(in srgb, var(--accent) 92%, #fff) 52%, color-mix(in srgb, var(--accent) 66%, var(--astro-tertiary, var(--accent))) 100%);
+  border-color: color-mix(in srgb, var(--accent) 66%, #fff);
+  box-shadow:
+    0 12px 28px -5px color-mix(in srgb, var(--accent) 74%, transparent),
+    0 3px 10px -2px color-mix(in srgb, var(--accent) 42%, transparent),
+    inset 0 1px 0 0 rgb(255 255 255 / 72%);
+}
+.composer-task-tools .composer-task-button.active:not(.composer-project-trigger) .composer-status-pill {
+  background: rgb(255 255 255 / 22%);
+  color: #fff;
+}
+.composer-task-tools .composer-task-button.is-unavailable { color: var(--muted); border-style: dashed; }
 .composer-status-pill {
   display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 999px;
   background: var(--soft); color: var(--muted); font-size: 10.5px; line-height: 1.5;
@@ -81,7 +164,7 @@
   .plot-workspace-embedded .plot-reading { padding: 16px 12px; }
   .plot-workspace-embedded .plot-main > .chat-heading { padding-inline: 12px; }
   .composer-task-tools { flex-basis: 100%; }
-  .composer-task-tools > .composer-task-button { padding-inline: 7px; gap: 5px; }
+  .composer-task-tools .composer-task-button { padding-inline: 8px; gap: 5px; }
   .composer-plot-return { display: none; }
   .workbench-plot .plot-appearance { grid-template-columns: minmax(0, 1fr); }
 }

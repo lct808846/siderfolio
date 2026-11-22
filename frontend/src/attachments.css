@@ -1,6 +1,22 @@
-.attachment-add { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 30px; width: 30px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; box-shadow: none; color: var(--muted); }
-.attachment-add svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.attachment-add:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); border: 0; box-shadow: none; }
+.attachment-add {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 32px; width: 32px; height: 34px;
+  padding: 0; border: 1px solid transparent; border-radius: var(--radius-control, 8px);
+  background: transparent; box-shadow: none; color: var(--muted);
+  transition: background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), color 160ms var(--ease-out), transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.attachment-add svg {
+  width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform 200ms var(--ease-out);
+}
+.attachment-add:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 26%, transparent);
+  color: var(--accent);
+  box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--accent) 34%, transparent), inset 0 1px 0 rgb(255 255 255 / 35%);
+  transform: translateY(-1px);
+}
+.attachment-add:hover:not(:disabled) svg { transform: rotate(-14deg) scale(1.08); }
+.attachment-add:active:not(:disabled) { transform: scale(0.93); }
 .attachment-tray { padding: 12px 14px 2px; }
 .attachment-drafts, .message-attachments { display: flex; flex-wrap: wrap; gap: 8px; }
 .attachment-draft { display: flex; align-items: center; flex-wrap: wrap; max-width: 300px; padding: 5px 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-tint); color: var(--ink); }

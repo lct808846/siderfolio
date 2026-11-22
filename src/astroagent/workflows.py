@@ -355,7 +355,7 @@ class WorkflowRepository:
         )
         raw = turn.model_dump_json()
         if len(raw.encode()) > self.repo.settings.turn_bytes:
-            raise ServiceError(413, "workflow_result_too_large", "完整流程输出超过单轮上限。")
+            raise ServiceError(413, "workflow_result_too_large", "完整流程输出超过单条记录上限。")
         db.execute(
             "INSERT INTO conversations VALUES (?,?,?,?,?,?)",
             (cid, "流程 · " + run.name[:70], now, now, 1, 0),

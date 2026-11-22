@@ -1,6 +1,5 @@
 """Deterministic local-model races against disposable PostgreSQL databases."""
 
-import json
 import threading
 from uuid import uuid4
 
@@ -9,7 +8,7 @@ from test_rag_postgres import pg_client as pg_client
 
 from astroagent.conversation_schemas import TurnRequest
 from astroagent.errors import ServiceError
-from astroagent.local_model_schemas import LocalPreferenceUpdate, LocalTaskRequest
+from astroagent.local_model_schemas import LocalPreferenceUpdate
 from astroagent.local_model_service import LocalModelService
 
 pytestmark = pytest.mark.postgres
@@ -19,12 +18,12 @@ def prepare(client, text="查询M45的坐标"):
     from astroagent.main import app
 
     service = app.state.conversation_service
-    service.local_assistant.close()
+    service.local_titles.close()
     settings = service.repository.settings.model_copy(
         update={"local_model_enabled": True, "local_model_digest": "a" * 64}
     )
     assistant = LocalModelService(service, settings)
-    service.local_assistant = assistant
+    service.local_titles = assistant
     assistant.store.initialize()
     assistant.store.update_preferences(
         LocalPreferenceUpdate(expected_revision=0, enabled=True, auto_titles=True)
@@ -39,19 +38,19 @@ def prepare(client, text="查询M45的坐标"):
     return service.repository, assistant, turn
 
 
-def gate(assistant, monkeypatch, output=None, failure=False):
+def gate(assistant, monkeypatch, failure=False):
     entered, release = threading.Event(), threading.Event()
     calls = []
 
-    def generate(action, text, output_format):
-        calls.append((action, text, output_format))
+    def generate_title(text):
+        calls.append(text)
         entered.set()
         assert release.wait(5), "test must release inference"
         if failure:
             raise ServiceError(504, "local_model_timeout", "synthetic timeout")
-        return output or {"title": "M45坐标查询"}, {}
+        return "M45坐标查询", {}
 
-    monkeypatch.setattr(assistant.client, "generate", generate)
+    monkeypatch.setattr(assistant.client, "generate_title", generate_title)
     return entered, release, calls
 
 
@@ -149,29 +148,6 @@ def test_restart_marks_inflight_task_interrupted_without_replay(pg_client, monke
         replacement.close()
 
 
-def test_manual_task_idempotency_and_ephemeral_output(pg_client, monkeypatch):
-    _, assistant, _ = prepare(pg_client)
-    entered, release, calls = gate(
-        assistant, monkeypatch, output={"text": "合成摘要", "warnings": []}
-    )
-    identifier = str(uuid4())
-    request = LocalTaskRequest(action="summary", text="仅包含合成输入")
-    assistant.submit(identifier, request)
-    assert entered.wait(5)
-    assert assistant.submit(identifier, request)["task"]["id"] == identifier
-    with pytest.raises(ServiceError) as caught:
-        assistant.submit(identifier, LocalTaskRequest(action="summary", text="不同输入"))
-    assert caught.value.error.code == "local_assistant_request_conflict"
-    release.set()
-    assistant.tasks.join()
-    assert len(calls) == 1
-    assert assistant.view(identifier)["task"]["output"]["text"] == "合成摘要"
-    persisted = json.dumps(assistant.store.get(identifier), ensure_ascii=False)
-    assert "合成摘要" not in persisted and "仅包含合成输入" not in persisted
-    assistant.results.clear()
-    assert not assistant.view(identifier)["task"]["output_available"]
-
-
 def test_automatic_prefix_is_bounded_and_does_not_cut_identifiers(pg_client):
     message = "请整理M45的Gaia查询需求。" + "背景说明" * 600 + "最终目标改为NGC 884，半径8角分。"
     _, assistant, turn = prepare(pg_client, message)
@@ -224,25 +200,6 @@ def test_disabled_model_keeps_rule_title_without_inference(pg_client, monkeypatc
     def forbidden(*args):
         pytest.fail("disabled assistance must not call a model")
 
-    monkeypatch.setattr(assistant.client, "generate", forbidden)
+    monkeypatch.setattr(assistant.client, "generate_title", forbidden)
     assert assistant.schedule_title(turn) is None
-    with pytest.raises(ServiceError) as caught:
-        assistant.submit(str(uuid4()), LocalTaskRequest(action="summary", text="合成文本"))
-    assert caught.value.error.code == "local_assistant_not_configured"
     assert repo.detail(turn.conversation_id)["title"] == baseline
-
-
-def test_full_queue_refuses_new_inference_without_duplicate_calls(pg_client, monkeypatch):
-    _, assistant, _ = prepare(pg_client)
-    entered, release, calls = gate(assistant, monkeypatch, output={"text": "合成", "warnings": []})
-    try:
-        for _ in range(assistant.settings.local_model_queue_size + 1):
-            assistant.submit(str(uuid4()), LocalTaskRequest(action="summary", text="合成"))
-        assert entered.wait(5)
-        with pytest.raises(ServiceError) as caught:
-            assistant.submit(str(uuid4()), LocalTaskRequest(action="summary", text="合成"))
-        assert caught.value.error.code == "local_assistant_busy"
-    finally:
-        release.set()
-    assistant.tasks.join()
-    assert len(calls) == assistant.settings.local_model_queue_size + 1

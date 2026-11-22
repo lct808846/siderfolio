@@ -7,10 +7,17 @@ from pydantic import ValidationError
 
 from astroagent.ads import AdsService
 from astroagent.agent import AstroAgent
-from astroagent.config import Settings
+from astroagent.config import LocalSettings, Settings
 from astroagent.errors import ServiceError
 from astroagent.execution import MODEL_TASK_SLOTS
 from astroagent.gaia import GaiaService
+from astroagent.mcp_client import (
+    McpAdsAdapter,
+    McpGaiaAdapter,
+    McpSimbadAdapter,
+    effective_astronomy_transport,
+    get_mcp_pool,
+)
 from astroagent.schemas import ChatRequest, ChatResponse, ErrorResponse
 from astroagent.simbad import SimbadService
 
@@ -23,9 +30,19 @@ def get_agent() -> AstroAgent:
 
 def get_agent_for_model(model_id=None) -> AstroAgent:
     try:
+        local = LocalSettings()
         settings = Settings().for_model(model_id)
     except ValidationError as exc:
         raise ServiceError(503, "invalid_configuration", "服务配置无效，请检查环境变量。") from exc
+    if effective_astronomy_transport(local) == "mcp":
+        pool = get_mcp_pool(local)
+        return AstroAgent(
+            None,
+            McpSimbadAdapter(pool, settings),
+            settings,
+            McpAdsAdapter(pool, settings),
+            McpGaiaAdapter(pool, settings),
+        )
     return AstroAgent(
         None,
         SimbadService(settings.simbad_timeout_seconds),
@@ -51,7 +68,7 @@ def chat(request: ChatRequest, agent: Annotated[AstroAgent, Depends(get_agent)])
         agent = get_agent_for_model(request.model)
     if not MODEL_TASK_SLOTS.acquire(blocking=False):
         raise ServiceError(
-            503, "conversation_service_busy", "已有两轮正在处理，请稍后重试。", retryable=True
+            503, "conversation_service_busy", "已有两个请求正在处理，请稍后重试。", retryable=True
         )
     try:
         return agent.chat(request.message)

@@ -560,7 +560,7 @@ def import_archive(repository, raw):
             for source_turn in entry["turns"]:
                 if len(entry["turns"]) > repository.settings.max_turns:
                     raise ServiceError(
-                        409, "project_import_limit", "归档轮次超过单个会话的轮次上限。"
+                        409, "project_import_limit", "归档中的消息数量超出单个会话上限。"
                     )
                 t = deepcopy(source_turn)
                 t.update(turn_id=id_map["turns"][t["turn_id"]], conversation_id=c["id"])
@@ -585,7 +585,7 @@ def import_archive(repository, raw):
                 text = encode(t)
                 if len(text.encode()) > repository.settings.turn_bytes:
                     raise ServiceError(
-                        413, "project_import_limit", "归档单轮内容超出当前存储上限。"
+                        413, "project_import_limit", "归档中的单条记录超出存储上限。"
                     )
                 request_hash = hashlib.sha256(
                     encode(

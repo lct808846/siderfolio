@@ -1,0 +1,14 @@
+
+==================================== ERRORS ====================================
+__________________ ERROR collecting tests/test_mcp_server.py ___________________
+ImportError while importing test module '/workspace/tests/test_mcp_server.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_mcp_server.py:39: in <module>
+    from tests.gaia_fixtures import make_votable, sample_row
+E   ImportError: cannot import name 'make_votable' from 'tests.gaia_fixtures' (/workspace/tests/gaia_fixtures.py)
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+105 deselected, 1 error in 11.99s

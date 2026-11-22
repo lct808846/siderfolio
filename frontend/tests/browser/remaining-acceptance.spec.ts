@@ -24,10 +24,10 @@ test('clipboard preserves the question and reports a denied copy', async ({ page
   const container = await page.locator('.user-message-block').boundingBox()
   expect(bubble).not.toBeNull(); expect(container).not.toBeNull()
   expect(Math.abs((bubble!.x + bubble!.width) - (container!.x + container!.width))).toBeLessThan(4)
-  await page.getByRole('button', { name: '复制第1轮问题' }).click()
+  await page.locator('.turn').first().getByRole('button', { name: '复制问题', exact: true }).click()
   expect(await page.evaluate(() => (window as unknown as { copied: string }).copied)).toBe(question)
   await page.evaluate(() => { (window as unknown as { rejectCopy: boolean }).rejectCopy = true })
-  await page.getByRole('button', { name: '复制第1轮问题' }).click()
+  await page.locator('.turn').first().getByRole('button', { name: '复制问题', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('复制未完成')
 })
 
@@ -132,7 +132,9 @@ test('project navigation survives direct load and refresh without sending reques
   page.on('request', entry => {
     if (entry.method() === 'POST' && /\/turns$|\/rag\/(answers|indexes)$/.test(new URL(entry.url()).pathname)) writes++
   })
-  for (const [suffix, label] of [['', '项目主页'], ['/overview', '来源关联'], ['/workflows', '科研流程'], ['/knowledge', '本地知识库'], ['/rag', '文献问答']]) {
+  await page.goto(`/projects/${project.id}?manage=context`)
+  await expect(page.getByRole('dialog', { name: `管理项目：${project.name}` })).toBeVisible()
+  for (const [suffix, label] of [['/overview', '来源关联'], ['/workflows', '科研流程'], ['/knowledge', '本地知识库'], ['/rag', '文献问答']]) {
     await page.goto(`/projects/${project.id}${suffix}`)
     const link = page.getByRole('navigation', { name: '当前项目导航' }).getByRole('link', { name: label, exact: true })
     await expect(link).toHaveAttribute('aria-current', 'page')
@@ -173,6 +175,22 @@ test('reduced transparency disables large background blur', async ({ page }) => 
   await expect(header).toHaveCSS('backdrop-filter', 'none')
   await expect(composer).toHaveCSS('backdrop-filter', 'none')
   await expect(page.getByRole('textbox', { name: '天文问题' })).toBeVisible()
+})
+
+test('appearance performance settings persist and can be restored on a narrow screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/settings?section=appearance')
+  await page.getByRole('button', { name: '一键性能模式' }).click()
+  const root = page.locator('html')
+  await expect(root).toHaveAttribute('data-glass', 'off')
+  await expect(root).toHaveAttribute('data-astro-backdrop', 'off')
+  await expect(root).toHaveAttribute('data-motion', 'reduced')
+  await page.reload()
+  await expect(root).toHaveAttribute('data-glass', 'off')
+  await page.getByRole('button', { name: '恢复全部视觉质感' }).click()
+  await expect(root).toHaveAttribute('data-glass', 'on')
+  await expect(root).toHaveAttribute('data-astro-backdrop', 'on')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })
 
 test('sidebar toggles across compact and desktop boundaries without losing draft', async ({ page }) => {

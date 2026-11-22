@@ -1,0 +1,73 @@
+...F......F...................................................           [100%]
+=================================== FAILURES ===================================
+_________ test_response_size_limit_and_server_concurrency_and_timeout __________
+  + Exception Group Traceback (most recent call last):
+  |   File "/workspace/tests/test_mcp_server.py", line 389, in test_response_size_limit_and_server_concurrency_and_timeout
+  |     anyio.run(run)
+  |   File "/usr/local/lib/python3.12/site-packages/anyio/_core/_eventloop.py", line 83, in run
+  |     return async_backend.run(func, args, {}, backend_options)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2481, in run
+  |     return runner.run(wrapper())
+  |            ^^^^^^^^^^^^^^^^^^^^^
+  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+  |     return self._loop.run_until_complete(task)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/usr/local/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+  |     return future.result()
+  |            ^^^^^^^^^^^^^^^
+  |   File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2464, in wrapper
+  |     return await func(*args)
+  |            ^^^^^^^^^^^^^^^^^
+  |   File "/workspace/tests/test_mcp_server.py", line 371, in run
+  |     async with Client(server, mode="auto") as client:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/usr/local/lib/python3.12/site-packages/mcp/client/client.py", line 480, in __aexit__
+  |     await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
+  |   File "/usr/local/lib/python3.12/contextlib.py", line 754, in __aexit__
+  |     raise exc_details[1]
+  |   File "/usr/local/lib/python3.12/contextlib.py", line 737, in __aexit__
+  |     cb_suppress = await cb(*exc_details)
+  |                   ^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 815, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Exception Group Traceback (most recent call last):
+    |   File "/usr/local/lib/python3.12/contextlib.py", line 737, in __aexit__
+    |     cb_suppress = await cb(*exc_details)
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
+    |     result = await self._task_group.__aexit__(exc_type, exc_val, exc_tb)
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 815, in __aexit__
+    |     raise BaseExceptionGroup(
+    | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+    +-+---------------- 1 ----------------
+      | Traceback (most recent call last):
+      |   File "/workspace/tests/test_mcp_server.py", line 384, in run
+      |     assert busy.structured_content["error"]["code"] == "mcp_server_busy"
+      | AssertionError: assert 'mcp_tool_timeout' == 'mcp_server_busy'
+      |   
+      |   - mcp_server_busy
+      |   + mcp_tool_timeout
+      +------------------------------------
+----------------------------- Captured stderr call -----------------------------
+{"timestamp": "2026-11-22T08:41:32.403256+00:00", "component": "mcp_server", "event": "mcp_tool_call", "correlation_id": "9e815d340a934f8bb618c7ef8b08fa27", "tool": "search_ads", "protocol_version": "2026-07-28", "duration_ms": 0, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_response_too_large"}
+{"timestamp": "2026-11-22T08:41:33.405346+00:00", "component": "mcp_server", "event": "mcp_tool_call", "correlation_id": "705fa6cc5b5047308fefd17579308352", "tool": "query_simbad", "protocol_version": "2026-07-28", "duration_ms": 1001, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_tool_timeout"}
+{"timestamp": "2026-11-22T08:41:34.407893+00:00", "component": "mcp_server", "event": "mcp_tool_call", "correlation_id": "8f8150c6799e44c088d067bd8ff75f52", "tool": "query_simbad", "protocol_version": "2026-07-28", "duration_ms": 1001, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_tool_timeout"}
+___ test_client_rejects_incompatible_protocol_and_bad_contract_and_oversized ___
+tests/test_mcp_client.py:290: in test_client_rejects_incompatible_protocol_and_bad_contract_and_oversized
+    assert exc_info.value.error.code == "mcp_response_too_large"
+E   AssertionError: assert 'mcp_incompatible_protocol' == 'mcp_response_too_large'
+E     
+E     - mcp_response_too_large
+E     + mcp_incompatible_protocol
+----------------------------- Captured stderr call -----------------------------
+{"timestamp": "2026-11-22T08:41:44.619094+00:00", "component": "mcp_client", "event": "mcp_client_connect", "correlation_id": "3b69f0382cb74ed08c7e7e30a23176d0", "tool": null, "protocol_version": null, "duration_ms": 130, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_incompatible_protocol"}
+{"timestamp": "2026-11-22T08:41:45.195878+00:00", "component": "mcp_client", "event": "mcp_client_connect", "correlation_id": "1bfdbe74e9894db09e408ad775b05f78", "tool": null, "protocol_version": null, "duration_ms": 574, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_incompatible_protocol"}
+{"timestamp": "2026-11-22T08:41:45.195978+00:00", "component": "mcp_client", "event": "mcp_client_call", "correlation_id": "1bfdbe74e9894db09e408ad775b05f78", "tool": "query_simbad", "protocol_version": null, "duration_ms": 574, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_incompatible_protocol"}
+=========================== short test summary info ============================
+FAILED tests/test_mcp_server.py::test_response_size_limit_and_server_concurrency_and_timeout
+FAILED tests/test_mcp_client.py::test_client_rejects_incompatible_protocol_and_bad_contract_and_oversized
+2 failed, 60 passed in 28.27s

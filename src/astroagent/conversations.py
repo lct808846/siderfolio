@@ -141,7 +141,7 @@ class ConversationRepository:
                         turn.completed_at = utc_now()
                         turn.error = ErrorInfo(
                             code="turn_interrupted",
-                            message="服务重启中断了该轮，请确认后重新提问。",
+                            message="服务重启时中断了请求，请确认后重新提问。",
                         )
                         self._save(db, turn)
                     from astroagent.projects import ProjectRepository
@@ -512,7 +512,7 @@ class ConversationRepository:
                 "SELECT record FROM turns WHERE id=? AND conversation_id=?", (turn_id, identifier)
             ).fetchone()
             if row is None:
-                raise ServiceError(404, "turn_not_found", "该会话中没有此轮记录。")
+                raise ServiceError(404, "turn_not_found", "该会话中没有这条记录。")
             return Turn.model_validate_json(row[0])
 
     def history(self, identifier):
@@ -548,7 +548,7 @@ class ConversationRepository:
                 )
             if conversation["revision"] >= self.settings.max_turns:
                 raise ServiceError(
-                    409, "conversation_limit_reached", "该会话轮次已满，请新建会话。"
+                    409, "conversation_limit_reached", "会话已达消息上限，请新建会话。"
                 )
             used = self._used(db)
             if used + self.settings.turn_bytes + 32768 > self.settings.storage_bytes:
@@ -637,10 +637,10 @@ class ConversationRepository:
         text = turn.model_dump_json()
         if len(text.encode()) > self.settings.turn_bytes:
             turn.response = None
-            turn.context = ContextRecord(warnings=["完整结果超出单轮存储上限，未裁剪保存。"])
+            turn.context = ContextRecord(warnings=["完整结果超出单条记录的存储上限，未裁剪保存。"])
             turn.execution_status = "failed"
             turn.error = ErrorInfo(
-                code="turn_result_too_large", message="完整结果超出单轮存储上限，未保存数据。"
+                code="turn_result_too_large", message="完整结果超出单条记录的存储上限，未保存数据。"
             )
         with self.connection() as db, self.transaction(db):
             self._save(db, turn)

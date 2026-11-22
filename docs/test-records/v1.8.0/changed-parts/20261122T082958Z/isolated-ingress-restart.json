@@ -1,0 +1,38 @@
+{
+  "test_project": "astroagent-v18-qa-edge",
+  "initial_responses": {
+    "login": 200,
+    "activation_navigation": 200,
+    "fixture_projects": 200,
+    "external_internal_health": 404
+  },
+  "frontend_only_recreate": {
+    "frontend_recreated": true,
+    "ingress_restarted": false,
+    "responses": {
+      "login": 200,
+      "activation_navigation": 200,
+      "fixture_projects": 200,
+      "external_internal_health": 404
+    }
+  },
+  "frontend_service_restart": {
+    "ingress_restarted": true,
+    "responses": {
+      "login": 200,
+      "activation_navigation": 200,
+      "fixture_projects": 200,
+      "external_internal_health": 404
+    }
+  },
+  "three_service_update": {
+    "responses": {
+      "login": 200,
+      "activation_navigation": 200,
+      "fixture_projects": 200,
+      "external_internal_health": 404
+    },
+    "all_recreated": true
+  },
+  "image": "sha256:c2eacf139716e5222607273ccf339ed57fffcf7698324b7e28254eb18b6335a4"
+}

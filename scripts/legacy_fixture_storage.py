@@ -51,8 +51,8 @@ async def lifespan(app):
         yield
     finally:
         service = app.state.conversation_service
-        if service is not None and service.local_assistant is not None:
-            service.local_assistant.close()
+        if service is not None and service.local_titles is not None:
+            service.local_titles.close()
         app.state.conversation_service = None
         active = getattr(app.state, "repository", repository)
         if active is not None:
@@ -76,6 +76,6 @@ def compose(repository, settings):
     service.workflows = WorkflowService(service)
     service.knowledge = KnowledgeService(service)
     service.links = ProjectLinks(service)
-    service.local_assistant = LocalModelService(service, settings)
+    service.local_titles = LocalModelService(service, settings)
     service.rag = UnavailableRag()
     return service

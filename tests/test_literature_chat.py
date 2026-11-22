@@ -124,7 +124,7 @@ def test_combined_fallback_retains_both_lists(final, status):
     assert body["status"] == ("partial" if status == "success" else "error")
     assert len(body["results"]) == len(body["literature_results"]) == 1
     assert body["warnings"]
-    assert "literature_results" in body["answer"]
+    assert "请查看已执行的查询结果" in body["answer"]
 
 
 @pytest.mark.parametrize(

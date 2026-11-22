@@ -1,0 +1,12 @@
+E501 Line too long (103 > 100)
+  --> src\astroagent\export_schemas.py:26:101
+   |
+24 |                 field = deepcopy(original)
+25 |                 # These fields were introduced in V1.8. Earlier snapshot manifests omit them.
+26 |                 if annotation is not ChatResponse or name not in ("nbody_proposals", "plot_proposals"):
+   |                                                                                                     ^^^
+27 |                     field.default = ...
+28 |                     field.default_factory = None
+   |
+
+Found 1 error.

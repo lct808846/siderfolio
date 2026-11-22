@@ -91,6 +91,13 @@ class PlotPlanRequest(Contract):
     appearance: PlotAppearance = Field(default_factory=PlotAppearance)
 
 
+class PlotCustomPlanRequest(Contract):
+    dataset_id: Identifier
+    model_id: str = Field(default="chat-proposal", min_length=1, max_length=128)
+    question: str = Field(default="对话内绘图方案", min_length=1, max_length=4000)
+    proposal: PlotProposal
+
+
 class PlotRunRequest(Contract):
     plan_id: Identifier
     confirm_execute: Literal[True]

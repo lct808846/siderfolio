@@ -1,0 +1,23 @@
+✨ openapi-typescript 7.13.0
+node:fs:2414
+    return binding.writeFileUtf8(
+                   ^
+
+Error: EISDIR: illegal operation on a directory, open 'C:\Users\lct\AppData\Local\Packages\openai.codex_2p2nqsd0c76g0\AC'
+    at Object.writeFileSync (node:fs:2414:20)
+    at main (file:///D:/project/astroagent/frontend/node_modules/openapi-typescript/bin/cli.js:291:10) {
+  errno: -4068,
+  code: 'EISDIR',
+  syscall: 'open',
+  path: 'C:\\Users\\lct\\AppData\\Local\\Packages\\openai.codex_2p2nqsd0c76g0\\AC'
+}
+
+Node.js v24.15.0
+Traceback (most recent call last):
+  File "D:\project\astroagent\scripts\generate_frontend_types.py", line 55, in <module>
+    main()
+  File "D:\project\astroagent\scripts\generate_frontend_types.py", line 26, in main
+    subprocess.run(
+  File "E:\miniconda3\envs\agent\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['D:\\project\\astroagent\\.astroagent\\temp\\v17-release\\tools\\node.exe', 'D:\\project\\astroagent\\frontend\\node_modules\\openapi-typescript\\bin\\cli.js', 'C:\\Users\\lct\\AppData\\Local\\Packages\\openai.codex_2p2nqsd0c76g0\\AC\\#!sandbox.{b0377b69-08cd-4a6f-808d-9cfa868d357b}\\Temp\\tmpgj26wud0\\openapi.json', '-o', 'C:\\Users\\lct\\AppData\\Local\\Packages\\openai.codex_2p2nqsd0c76g0\\AC\\#!sandbox.{b0377b69-08cd-4a6f-808d-9cfa868d357b}\\Temp\\tmpgj26wud0\\generated.ts']' returned non-zero exit status 1.

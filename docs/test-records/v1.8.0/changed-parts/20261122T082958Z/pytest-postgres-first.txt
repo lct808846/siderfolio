@@ -1,0 +1,2521 @@
+........................................E.E.E.E.E.E.E.E.E.E.E.E.E.EFE... [ 86%]
+FE.E.E.E.E.E.E.E.                                                        [100%]
+==================================== ERRORS ====================================
+____ ERROR at teardown of test_automatic_title_preserves_user_actions[none] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac88ae8fb0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+___ ERROR at teardown of test_automatic_title_preserves_user_actions[rename] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac887c3fe0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves1')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_automatic_title_preserves_user_actions[rename_back] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a4f7e90>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves2')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+___ ERROR at teardown of test_automatic_title_preserves_user_actions[delete] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac887c3560>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves3')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+__ ERROR at teardown of test_automatic_title_preserves_user_actions[disable] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a3d84d0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves4')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+___ ERROR at teardown of test_automatic_title_preserves_user_actions[cancel] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a483650>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves5')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+____ ERROR at teardown of test_automatic_title_preserves_user_actions[move] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a4f1820>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_title_preserves6')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_failed_title_preserves_baseline_without_remote_fallback _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a41d100>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_failed_title_preserves_ba0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_duplicate_automatic_request_never_replays_inference _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a41f1d0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_duplicate_automatic_reque0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_restart_marks_inflight_task_interrupted_without_replay _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a579280>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_restart_marks_inflight_ta0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_automatic_prefix_is_bounded_and_does_not_cut_identifiers _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a62f3e0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_automatic_prefix_is_bound0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_stale_tab_cannot_overwrite_manual_title_during_inference _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac88ae9ee0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_stale_tab_cannot_overwrit0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_cut_prefix_never_exposes_a_partial_identifier[x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x 65225812899613312] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8882fef0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_cut_prefix_never_exposes_0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_cut_prefix_never_exposes_a_partial_identifier[\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d\u524d NGC 884 END] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a4f62a0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_cut_prefix_never_exposes_1')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_disabled_model_keeps_rule_title_without_inference __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac887c8b00>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_disabled_model_keeps_rule0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+______ ERROR at teardown of test_plot_lifecycle_confirmations_and_export _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a476f00>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_plot_lifecycle_confirmati0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_conversation_crud_uses_postgres_parameter_binding __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac88b07440>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_conversation_crud_uses_po0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_first_question_title_is_saved_with_postgres_turn_reservation _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac889cb2c0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_first_question_title_is_s0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_unmatched_literal_preview_cannot_send_nearest_neighbours _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac88b12d50>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_unmatched_literal_preview0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_confirmation_idempotency_and_deleted_request_never_resends _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a673b60>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_confirmation_idempotency_0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_ ERROR at teardown of test_selected_model_and_previewed_evidence_are_frozen_for_confirmation _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac88997590>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_selected_model_and_previe0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+_________ ERROR at teardown of test_scope_changed_original_never_sends _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a41fdd0>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_scope_changed_original_ne0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+___ ERROR at teardown of test_format5_restores_fixed_citations_with_new_ids ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a5b7890>
+tmp_path = PosixPath('/tmp/pytest-of-astroagent/pytest-0/test_format5_restores_fixed_ci0')
+
+>   ???
+
+D:\project\astroagent\tests\test_rag_postgres.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:699: in __exit__
+    self.exit_stack.close()
+/usr/local/lib/python3.12/contextlib.py:618: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.12/contextlib.py:610: in __exit__
+    raise exc_details[1]
+/usr/local/lib/python3.12/contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:692: in wait_shutdown
+    portal.call(self.wait_shutdown)
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:739: in wait_shutdown
+    await receive()
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:729: in receive
+    self.task.result()
+/usr/local/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/local/lib/python3.12/site-packages/anyio/from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+/usr/local/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+scripts/legacy_fixture_storage.py:27: in legacy_identity_passthrough
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/local_access.py:21: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/astroagent/api/exports.py:31: in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/fastapi/routing.py:2726: in app
+    await self.lifespan(scope, receive, send)
+/usr/local/lib/python3.12/site-packages/starlette/routing.py:694: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = <fastapi.applications.FastAPI object at 0x72ac8ce275f0>
+
+    @asynccontextmanager
+    async def lifespan(app):
+        """Keep V1.5 contract tests separate from real V1.6 identity acceptance."""
+        import astroagent.main as main
+        import astroagent.services as services
+    
+        repository = None
+        app.state.conversation_service = app.state.repository = app.state.identity = None
+        try:
+            settings = LocalSettings()
+            repository = main.PostgresRepository(settings)
+            repository.initialize()
+            app.state.conversation_service = services.compose(repository, settings)
+            app.state.repository = repository
+        except Exception as exc:
+            app.state.storage_code = (
+                exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
+            )
+            if repository is not None:
+                repository.close()
+        try:
+            yield
+        finally:
+            service = app.state.conversation_service
+>           if service is not None and service.local_assistant is not None:
+                                       ^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'ConversationService' object has no attribute 'local_assistant'
+
+scripts/legacy_fixture_storage.py:54: AttributeError
+=================================== FAILURES ===================================
+____________ test_disabled_model_keeps_rule_title_without_inference ____________
+
+pg_client = <starlette.testclient.TestClient object at 0x72ac887c8a40>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac887c8b00>
+
+    def test_disabled_model_keeps_rule_title_without_inference(pg_client, monkeypatch):
+        repo, assistant, turn = prepare(pg_client)
+        baseline = repo.detail(turn.conversation_id)["title"]
+        assistant.settings = assistant.settings.model_copy(update={"local_model_enabled": False})
+    
+        def forbidden(*args):
+            pytest.fail("disabled assistance must not call a model")
+    
+        monkeypatch.setattr(assistant.client, "generate_title", forbidden)
+        assert assistant.schedule_title(turn) is None
+        with pytest.raises(ServiceError) as caught:
+>           assistant.submit(str(uuid4())(action="summary", text="合成文本"))
+            ^^^^^^^^^^^^^^^^
+E           AttributeError: 'LocalModelService' object has no attribute 'submit'
+
+tests/test_local_assistant_postgres.py:206: AttributeError
+_________________ test_plot_lifecycle_confirmations_and_export _________________
+
+pg_client = <starlette.testclient.TestClient object at 0x72ac88b07e90>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72ac8a476f00>
+
+>   ???
+E   AssertionError: {"error":{"code":"plot_sandbox_unavailable","message":"隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。","retryable":false}}
+E   assert (503 == 200)
+E    +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+D:\project\astroagent\tests\test_plot_postgres.py:83: AssertionError
+2 failed, 64 passed, 23 errors in 98.73s (0:01:38)

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { api } from '../api'
 import { knowledgeApi } from '../api/knowledge'
 import { projectsApi } from '../api/projects'
-import type { Project } from '../types'
+import type { Conversation, Project } from '../types'
 
 let ensuring: Promise<Project> | null = null
 let pendingLoad: Promise<void> | null = null
@@ -43,6 +43,13 @@ export const useProjects = defineStore('projects', {
       if (!projectId) return ''
       if (projectId === state.defaultProjectId) return '个人空间（默认）'
       return state.projects.find(item => item.id === projectId)?.name || '科研项目'
+    },
+    conversationCountFor: state => (projectId: string) => {
+      let count = 0
+      for (const value of Object.values(state.memberships)) {
+        if (value === projectId) count++
+      }
+      return count
     },
   },
   actions: {
@@ -92,7 +99,7 @@ export const useProjects = defineStore('projects', {
       this.sourceCounts = { ...this.sourceCounts, [created.id]: 0 }
       return created
     },
-    async startConversation(projectId: string): Promise<string> {
+    async startConversationDetail(projectId: string): Promise<Conversation> {
       const created = await api.create()
       const detail = await projectsApi.detail(projectId)
       await projectsApi.move(projectId, created.id, {
@@ -104,6 +111,10 @@ export const useProjects = defineStore('projects', {
       }, false)
       this.memberships = { ...this.memberships, [created.id]: projectId }
       void this.load(true).catch(() => undefined)
+      return created
+    },
+    async startConversation(projectId: string): Promise<string> {
+      const created = await this.startConversationDetail(projectId)
       return created.id
     },
     setSourceCount(projectId: string, count: number) {

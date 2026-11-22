@@ -1,0 +1,97 @@
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+.................................................................F...... [ 32%]
+........................................................................ [ 43%]
+.....................................FFFF............................... [ 54%]
+..........ss.s............s............................FFFFFF........... [ 64%]
+................................F....................................... [ 75%]
+........................................................................ [ 86%]
+.........................................................s.............. [ 97%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_historical_v03_snapshots_remain_exportable ________________
+D:\project\astroagent\tests\test_exports.py:421: in test_historical_v03_snapshots_remain_exportable
+    ???
+D:\project\astroagent\tests\test_exports.py:25: in parse
+    ???
+src/astroagent/api/exports.py:112: in validate_json
+    return ExportRequest.model_validate_json(body)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for ExportRequest
+E   snapshot.nbody_proposals
+E     Field required [type=missing, input_value={'status': 'success', 'an...665Z'}], 'warnings': []}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   snapshot.plot_proposals
+E     Field required [type=missing, input_value={'status': 'success', 'an...665Z'}], 'warnings': []}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+________ test_model_failure_or_limit_retains_all_three_results[final0] _________
+D:\project\astroagent\tests\test_gaia_chat.py:148: in test_model_failure_or_limit_retains_all_three_results
+    ???
+E   AssertionError: assert 'gaia_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。模型响应超时，请稍后重试。'
+________ test_model_failure_or_limit_retains_all_three_results[final1] _________
+D:\project\astroagent\tests\test_gaia_chat.py:148: in test_model_failure_or_limit_retains_all_three_results
+    ???
+E   AssertionError: assert 'gaia_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。模型未返回有效回答。'
+________ test_model_failure_or_limit_retains_all_three_results[final2] _________
+D:\project\astroagent\tests\test_gaia_chat.py:148: in test_model_failure_or_limit_retains_all_three_results
+    ???
+E   AssertionError: assert 'gaia_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。已达到本次查询的工具调用限制，请缩小问题范围。'
+________ test_model_failure_or_limit_retains_all_three_results[final3] _________
+D:\project\astroagent\tests\test_gaia_chat.py:148: in test_model_failure_or_limit_retains_all_three_results
+    ???
+E   AssertionError: assert 'gaia_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。已达到本次查询的工具调用限制，请缩小问题范围。'
+__________ test_combined_fallback_retains_both_lists[success-final0] ___________
+D:\project\astroagent\tests\test_literature_chat.py:127: in test_combined_fallback_retains_both_lists
+    ???
+E   AssertionError: assert 'literature_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。模型响应超时，请稍后重试。'
+__________ test_combined_fallback_retains_both_lists[success-final1] ___________
+D:\project\astroagent\tests\test_literature_chat.py:127: in test_combined_fallback_retains_both_lists
+    ???
+E   AssertionError: assert 'literature_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。模型未返回有效回答。'
+__________ test_combined_fallback_retains_both_lists[success-final2] ___________
+D:\project\astroagent\tests\test_literature_chat.py:127: in test_combined_fallback_retains_both_lists
+    ???
+E   AssertionError: assert 'literature_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。已达到本次查询的工具调用限制，请缩小问题范围。'
+___________ test_combined_fallback_retains_both_lists[error-final0] ____________
+D:\project\astroagent\tests\test_literature_chat.py:127: in test_combined_fallback_retains_both_lists
+    ???
+E   AssertionError: assert 'literature_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。模型响应超时，请稍后重试。'
+___________ test_combined_fallback_retains_both_lists[error-final1] ____________
+D:\project\astroagent\tests\test_literature_chat.py:127: in test_combined_fallback_retains_both_lists
+    ???
+E   AssertionError: assert 'literature_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。模型未返回有效回答。'
+___________ test_combined_fallback_retains_both_lists[error-final2] ____________
+D:\project\astroagent\tests\test_literature_chat.py:127: in test_combined_fallback_retains_both_lists
+    ???
+E   AssertionError: assert 'literature_results' in '回答生成未完成，请查看已执行的查询结果或生成的参数方案。已达到本次查询的工具调用限制，请缩小问题范围。'
+___ test_client_rejects_incompatible_protocol_and_bad_contract_and_oversized ___
+tests/test_mcp_client.py:295: in test_client_rejects_incompatible_protocol_and_bad_contract_and_oversized
+    assert exc_info.value.error.code == "mcp_response_too_large"
+E   AssertionError: assert 'mcp_timeout' == 'mcp_response_too_large'
+E     
+E     - mcp_response_too_large
+E     + mcp_timeout
+----------------------------- Captured stderr call -----------------------------
+{"timestamp": "2026-11-22T08:50:12.313926+00:00", "component": "mcp_client", "event": "mcp_client_connect", "correlation_id": "c3e91266f4474094a19685b3d38afbec", "tool": null, "protocol_version": null, "duration_ms": 124, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_incompatible_protocol"}
+{"timestamp": "2026-11-22T08:50:12.960794+00:00", "component": "mcp_client", "event": "mcp_client_connect", "correlation_id": "9d7838f2be044515ba51f682e2595ca5", "tool": null, "protocol_version": "2026-07-28", "duration_ms": 644, "result_status": "success", "returned_count": 3, "error_code": null}
+{"timestamp": "2026-11-22T08:50:17.967608+00:00", "component": "mcp_client", "event": "mcp_client_call", "correlation_id": "598f3be54d13424e8ce30ae0ec79c93d", "tool": "query_simbad", "protocol_version": "2026-07-28", "duration_ms": 5006, "result_status": "mcp_error", "returned_count": null, "error_code": "mcp_timeout"}
+{"timestamp": "2026-11-22T08:50:18.031549+00:00", "component": "mcp_client", "event": "mcp_client_recycle", "correlation_id": "598f3be54d13424e8ce30ae0ec79c93d", "tool": "query_simbad", "protocol_version": "2026-07-28", "duration_ms": null, "result_status": "recycled", "returned_count": null, "error_code": null}
+=========================== short test summary info ============================
+FAILED tests/test_exports.py::test_historical_v03_snapshots_remain_exportable
+FAILED tests/test_gaia_chat.py::test_model_failure_or_limit_retains_all_three_results[final0]
+FAILED tests/test_gaia_chat.py::test_model_failure_or_limit_retains_all_three_results[final1]
+FAILED tests/test_gaia_chat.py::test_model_failure_or_limit_retains_all_three_results[final2]
+FAILED tests/test_gaia_chat.py::test_model_failure_or_limit_retains_all_three_results[final3]
+FAILED tests/test_literature_chat.py::test_combined_fallback_retains_both_lists[success-final0]
+FAILED tests/test_literature_chat.py::test_combined_fallback_retains_both_lists[success-final1]
+FAILED tests/test_literature_chat.py::test_combined_fallback_retains_both_lists[success-final2]
+FAILED tests/test_literature_chat.py::test_combined_fallback_retains_both_lists[error-final0]
+FAILED tests/test_literature_chat.py::test_combined_fallback_retains_both_lists[error-final1]
+FAILED tests/test_literature_chat.py::test_combined_fallback_retains_both_lists[error-final2]
+FAILED tests/test_mcp_client.py::test_client_rejects_incompatible_protocol_and_bad_contract_and_oversized
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:160: Windows Job Object-specific failure path
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:186: Windows Job Object-specific memory limit
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:261: public PDF acceptance requires explicit local fixture
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:524: explicit opt-in for 256 MiB disk acceptance
+SKIPPED [1] D:\project\astroagent\tests\test_windows_tcp_listeners.py:9: Windows IP Helper API
+12 failed, 649 passed, 5 skipped, 106 deselected in 124.17s (0:02:04)

@@ -1,0 +1,16 @@
+[
+  {
+    "engine": "rebound",
+    "worker_version": "1.8.0",
+    "samples": 129,
+    "wall_seconds": 0.028442761999031063,
+    "max_energy_relative": 5.399477326175865e-16
+  },
+  {
+    "engine": "petar",
+    "worker_version": "1.8.0",
+    "samples": 129,
+    "wall_seconds": 1.174610649002716,
+    "max_energy_relative": 8.459181144342189e-14
+  }
+]

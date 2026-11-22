@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
-import { localAssistantApi, localTaskLabels } from '../api/local-assistant'
-import type { LocalTask } from '../api/local-assistant'
+import { localTitlesApi, localTaskLabels } from '../api/local-titles'
+import type { LocalTask } from '../api/local-titles'
 import { useWorkbench } from '../stores/workbench'
 
 const props = defineProps<{ conversationId?: string | null; hasMessage: boolean; submitting?: boolean; silent?: boolean }>()
@@ -18,7 +18,7 @@ watch(() => [props.conversationId, props.hasMessage, props.submitting] as const,
   let observed = false
   async function refresh() {
     try {
-      const values = await localAssistantApi.titles(id!)
+      const values = await localTitlesApi.titles(id!)
       if (token !== generation) return
       failures = 0
       task.value = values[0]?.task || null
@@ -37,3 +37,18 @@ onBeforeUnmount(() => { generation++; if (timer) clearTimeout(timer) })
 </script>
 
 <template><span v-if="!silent && task" class="local-title-status" :title="task.error || (task.title_applied ? '本地模型已更新标题，人工改名始终优先' : '自动命名只使用首条问题的有限前缀')" role="status">{{ task.title_applied ? '本地命名' : ['queued', 'running'].includes(task.state) ? '正在本地命名' : `命名${localTaskLabels[task.state]}` }}</span></template>
+
+<style scoped>
+.local-title-status {
+  flex: none;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-2);
+  color: var(--muted);
+  font-size: 11px;
+}
+</style>

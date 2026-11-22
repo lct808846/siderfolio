@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { prepareCsrf, resetCsrf, sessionFetch, setCsrf } from './session-http'
+import { APPEARANCE_STORAGE_KEY } from './stores/appearance'
 
 export interface IdentityUser { id: string; email: string; username?: string; avatar_url?: string; admin: boolean; totp_enabled: boolean; mfa_verified: boolean }
 export const identityUser = ref<IdentityUser | null>(null)
@@ -20,9 +21,15 @@ export function safeReturn(value: unknown): string {
   } catch { return '/' }
 }
 
+const preservedDeviceKeys = new Set([APPEARANCE_STORAGE_KEY])
+
 export function clearPrivateBrowserData() {
   for (const storage of [localStorage, sessionStorage]) {
-    try { for (const key of Object.keys(storage)) if (key.startsWith('astroagent.')) storage.removeItem(key) } catch { /* Memory is discarded by full navigation. */ }
+    try {
+      for (const key of Object.keys(storage)) {
+        if (key.startsWith('astroagent.') && !preservedDeviceKeys.has(key)) storage.removeItem(key)
+      }
+    } catch { /* Memory is discarded by full navigation. */ }
   }
 }
 

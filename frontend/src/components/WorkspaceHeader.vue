@@ -19,23 +19,18 @@ watch(() => route.params.projectId, projectId => {
 }, { immediate: true })
 const projectPath = computed(() => typeof route.params.projectId === 'string' && route.params.projectId
   ? `/projects/${encodeURIComponent(route.params.projectId)}` : '')
-const activeProjectPrefix = computed(() => {
-  const id = (typeof route.params.projectId === 'string' && route.params.projectId && route.params.projectId !== projectsStore.defaultProjectId)
-    ? route.params.projectId
-    : projectsStore.activeCustomProjectId
-  return id ? `/projects/${encodeURIComponent(id)}` : ''
+const projectSections = computed(() => {
+  const encodedId = encodeURIComponent(String(route.params.projectId || ''))
+  return [
+    { label: '项目对话', path: `/?project=${encodedId}` },
+    { label: '指令与快照', path: `/?project=${encodedId}&manage=context` },
+    { label: '来源关联', path: `${projectPath.value}/overview` },
+    { label: '科研流程', path: `${projectPath.value}/workflows` },
+    { label: '计算任务', path: `${projectPath.value}/compute` },
+    { label: '本地知识库', path: `${projectPath.value}/knowledge` },
+    { label: '文献问答', path: `${projectPath.value}/rag` },
+  ]
 })
-const knowledgeNavTo = computed(() => activeProjectPrefix.value ? `${activeProjectPrefix.value}/knowledge` : '/knowledge')
-const workflowsNavTo = computed(() => activeProjectPrefix.value ? `${activeProjectPrefix.value}/workflows` : '/workflows')
-const projectSections = computed(() => [
-  { label: '项目主页', path: projectPath.value },
-  { label: '来源关联', path: `${projectPath.value}/overview` },
-  { label: '科研流程', path: `${projectPath.value}/workflows` },
-  { label: '计算任务', path: `${projectPath.value}/compute` },
-  { label: '数据绘图', path: `/?mode=plot&plot_project=${encodeURIComponent(String(route.params.projectId || ''))}` },
-  { label: '本地知识库', path: `${projectPath.value}/knowledge` },
-  { label: '文献问答', path: `${projectPath.value}/rag` },
-])
 function current(path: string, descendants = false) {
   return route.path === path || (descendants && route.path.startsWith(`${path}/`))
 }
@@ -52,15 +47,12 @@ function current(path: string, descendants = false) {
           </svg>
         </span>
         <b>AstroAgent</b>
-        <span class="version">1.7</span>
+        <span class="version">1.8</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">
         <RouterLink to="/" :aria-current="route.path === '/' || route.path.startsWith('/conversations/') || route.path === '/profile' ? 'page' : undefined">查询工作台</RouterLink>
-        <RouterLink :to="knowledgeNavTo" :aria-current="route.path === '/knowledge' || route.path.startsWith('/knowledge/') || route.path === '/rag' || route.path.includes('/knowledge') || route.path.endsWith('/rag') ? 'page' : undefined">知识库与问答</RouterLink>
-        <RouterLink :to="workflowsNavTo" :aria-current="route.path === '/workflows' || route.path.startsWith('/workflows/') || route.path.includes('/workflows') ? 'page' : undefined">科研流程</RouterLink>
-        <RouterLink to="/local-assistant" :aria-current="route.path === '/local-assistant' ? 'page' : undefined">本地助手</RouterLink>
-        <a v-if="identityUser?.admin && identityUser.mfa_verified" href="/openapi.json" target="_blank" rel="noopener noreferrer">接口定义 ↗</a>
+        <a v-if="identityUser?.admin && identityUser.mfa_verified" class="workspace-openapi-link" href="/openapi.json" target="_blank" rel="noopener noreferrer">接口定义 ↗</a>
       </nav>
     </div>
     <nav v-if="projectPath" class="workspace-project-nav" aria-label="当前项目导航">

@@ -7,15 +7,15 @@ test('production build: conversation, follow-up, complete table, preview, downlo
   testInfo.annotations.push({ type: 'browser_version', description: browser.version() })
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message))
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: '天文数据与文献检索' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '天文数据、绘图与数值实验工作台' })).toBeVisible()
   if (process.env.ASTROAGENT_RECORD_DIR) { mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-empty.png`) }) }
   await page.getByRole('button', { name: '新建会话', exact: true }).click()
   const question = page.getByRole('textbox', { name: '天文问题' })
   await question.fill('合成验收：查询Gaia圆锥100个位置候选源。')
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()
-  await expect(page.getByRole('button', { name: '核查本轮结果与导出' })).toBeVisible()
-  await page.getByRole('button', { name: '核查本轮结果与导出' }).click()
+  await expect(page.getByRole('button', { name: '核查与导出查询结果' })).toBeVisible()
+  await page.getByRole('button', { name: '核查与导出查询结果' }).click()
   await page.getByText('查看完整交付表格（100 行）').click()
   await expect(page.getByRole('cell', { name: '5853498713190525696', exact: true })).toBeVisible()
   await page.getByRole('button', { name: '下一页' }).click()
@@ -32,10 +32,10 @@ test('production build: conversation, follow-up, complete table, preview, downlo
   if (process.env.ASTROAGENT_RECORD_DIR) await file.saveAs(path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-download.zip`))
   await question.fill('只保留 RUWE≤1.4，其他条件不变，重新查询。')
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
-  await expect(page.getByText('使用了 1 轮历史上下文')).toBeVisible()
-  const url = page.url(); await page.reload(); await expect(page.getByText('使用了 1 轮历史上下文')).toBeVisible()
+  await expect(page.getByText('使用了历史上下文')).toBeVisible()
+  const url = page.url(); await page.reload(); await expect(page.getByText('使用了历史上下文')).toBeVisible()
   expect(page.url()).toBe(url)
-  await page.getByRole('button', { name: '核查本轮结果与导出' }).first().click()
+  await page.getByRole('button', { name: '核查与导出查询结果' }).first().click()
   await expect(page.getByLabel('结果核查').getByText('历史结果', { exact: true })).toBeVisible()
   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-full.png`) })
   expect(errors).toEqual([]); expect(browserName).toBe('chromium')
@@ -67,10 +67,10 @@ test('narrow viewport has usable panel navigation and no page overflow', async (
   await page.getByRole('button', { name: '展开会话列表' }).click(); await page.getByRole('button', { name: '新建会话', exact: true }).click()
   const input = page.getByRole('textbox', { name: '天文问题' }); await input.fill('合成Gaia圆锥查询')
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
-  await expect(page.getByRole('heading', { name: '第 1 轮结果' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '查询结果' })).toBeVisible()
   await page.getByRole('button', { name: '收起结果面板' }).click()
   await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()
-  await page.getByRole('button', { name: '核查本轮结果与导出' }).click(); await expect(page.getByRole('heading', { name: '第 1 轮结果' })).toBeVisible()
+  await page.getByRole('button', { name: '核查与导出查询结果' }).click(); await expect(page.getByRole('heading', { name: '查询结果' })).toBeVisible()
   const width = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: innerWidth })); expect(width.body).toBeLessThanOrEqual(width.viewport)
   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${testInfo.project.name}-mobile.png`) })
 })
@@ -80,21 +80,27 @@ test('backend connection error is explicit', async ({ page }) => {
   await page.goto('/'); await expect(page.getByRole('alert')).toContainText('连接已断开')
 })
 
-test('a rejected send preserves the question and only retries on explicit action', async ({ page }) => {
+test('a rejected send clears the composer and retries the original question on explicit action', async ({ page }) => {
   await page.goto('/'); await page.getByRole('button', { name: '新建会话', exact: true }).click()
-  let calls = 0
+  const sent: string[] = []
+  const originalQuestion = '合成Gaia查询，验证重试'
+  const nextDraft = '尚未发送的新草稿'
   await page.route('**/api/v1/conversations/*/turns', async route => {
-    calls++
-    if (calls === 1) return route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) })
+    sent.push(route.request().postDataJSON().message)
+    if (sent.length === 1) return route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两个请求正在处理', retryable: true } }) })
     return route.continue()
   })
   const question = page.getByRole('textbox', { name: '天文问题' })
-  await question.fill('合成Gaia查询，验证重试')
+  await question.fill(originalQuestion)
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
-  await expect(page.getByRole('alert')).toContainText('已有两轮正在处理')
-  await expect(question).toHaveValue('合成Gaia查询，验证重试'); expect(calls).toBe(1)
+  await expect(page.getByRole('alert')).toContainText('已有两个请求正在处理')
+  await expect(question).toHaveValue('')
+  expect(sent).toEqual([originalQuestion])
+  await question.fill(nextDraft)
   await page.getByRole('button', { name: '重新发送', exact: true }).click()
-  await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible(); expect(calls).toBe(2)
+  await expect(page.getByText('合成验收结果已返回。', { exact: false })).toBeVisible()
+  expect(sent).toEqual([originalQuestion, originalQuestion])
+  await expect(question).toHaveValue(nextDraft)
 })
 
 test('a late initial list does not clear a send error after navigation', async ({ page, request }) => {
@@ -109,14 +115,14 @@ test('a late initial list does not clear a send error after navigation', async (
   try {
     await page.goto(`/conversations/${created.id}`); await waiting
     await expect(page).toHaveURL(/conversations\/[0-9a-f-]+/)
-    await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两轮正在处理', retryable: true } }) }))
+    await page.route('**/api/v1/conversations/*/turns', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'conversation_service_busy', message: '已有两个请求正在处理', retryable: true } }) }))
     await page.getByRole('textbox', { name: '天文问题' }).fill('测试异步加载')
     await page.getByRole('button', { name: '发送问题', exact: true }).click()
-    await expect(page.getByRole('alert')).toContainText('已有两轮正在处理')
+    await expect(page.getByRole('alert')).toContainText('已有两个请求正在处理')
     const initialList = page.waitForResponse(response => response.request().method() === 'GET' && response.url().endsWith('/api/v1/conversations'))
     release()
     await initialList
-    await expect(page.getByRole('alert')).toContainText('已有两轮正在处理')
+    await expect(page.getByRole('alert')).toContainText('已有两个请求正在处理')
   } finally { release() }
 })
 

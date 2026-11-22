@@ -42,7 +42,7 @@ body, button, input, textarea, select { font-family: var(--font-ui); }
 body { line-height: 1.65; letter-spacing: .01em; }
 button, input, textarea, select { letter-spacing: .015em; }
 button { font-weight: 450; }
-h1, h2, h3 { font-family: var(--font-ui); font-weight: 600; letter-spacing: .015em; }
+h1, h2, h3 { font-family: var(--font-ui); font-weight: 600; letter-spacing: -0.015em; }
 
 /* A compact wordmark and quiet labels contrast with the editorial page titles. */
 .workspace-header .brand b {
@@ -66,11 +66,11 @@ h1, h2, h3 { font-family: var(--font-ui); font-weight: 600; letter-spacing: .015
 .welcome h2, .project-heading h1, .project-empty h1, .workflow-intro h1, .settings-main > h1 {
   font-family: var(--font-editorial);
   font-size: clamp(27px, 2.3vw, 35px);
-  font-weight: 550;
-  letter-spacing: .015em;
-  line-height: 1.55;
+  font-weight: 560;
+  letter-spacing: -0.025em;
+  line-height: 1.28;
 }
-.welcome-copy > p:last-child { font-size: 14px; line-height: 1.9; letter-spacing: .025em; }
+.welcome-copy > p:last-child { font-size: 14px; line-height: 1.72; letter-spacing: 0.01em; max-width: 60ch; margin-inline: auto; }
 .chat-heading h1 { font-size: 19px; font-weight: 550; letter-spacing: .01em; line-height: 1.6; }
 .pane-heading h2, .knowledge-evidence > h2, .overview-evidence > h2 { font-size: 19px; font-weight: 550; }
 .rag-question h1, .rag-evidence h2, .rag-answer h2 { font-size: 21px; font-weight: 550; line-height: 1.65; }
@@ -84,10 +84,10 @@ h1, h2, h3 { font-family: var(--font-ui); font-weight: 600; letter-spacing: .015
 .panel-switcher button[aria-pressed="true"] { font-weight: 600; }
 
 /* Keep long scientific prose spacious; reserve monospacing for code and identifiers. */
-.answer-text, .user-message { font-size: 14px; line-height: 1.95; letter-spacing: .015em; }
-.composer textarea { font-size: 14px; line-height: 1.85; }
-.composer > p { font-size: 11px; line-height: 1.75; letter-spacing: .015em; }
-code, pre, .mono, time { font-family: var(--font-mono); letter-spacing: 0; font-variant-ligatures: none; }
+.answer-text, .user-message { font-size: 14px; line-height: 1.78; letter-spacing: .008em; }
+.composer textarea { font-size: 14px; line-height: 1.72; }
+.composer > p { font-size: 11px; line-height: 1.65; letter-spacing: .01em; }
+code, pre, .mono, time { font-family: var(--font-mono); letter-spacing: 0; font-variant-ligatures: none; font-variant-numeric: tabular-nums lining-nums; }
 pre { line-height: 1.85; }
 .rag-workspace pre, .knowledge-hit pre, .knowledge-evidence pre, .rag-answer-text {
   font-family: var(--font-ui);

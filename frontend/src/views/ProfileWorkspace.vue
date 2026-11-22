@@ -74,7 +74,7 @@ function channelTags(entry: ModelUsageEntry) {
   if (entry.chat_calls > 0) tags.push(`对话 ${entry.chat_calls}`)
   if (entry.plot_calls > 0) tags.push(`绘图 ${entry.plot_calls}`)
   if (entry.rag_calls > 0) tags.push(`文献问答 ${entry.rag_calls}`)
-  if (entry.local_calls > 0) tags.push(`本地助手 ${entry.local_calls}`)
+  if (entry.local_calls > 0) tags.push(`会话命名 ${entry.local_calls}`)
   return tags
 }
 
@@ -282,7 +282,7 @@ onMounted(() => { void loadSummary() })
         <div class="profile-stat-cell">
           <b>{{ summary?.known_total_tokens != null ? summary.known_total_tokens.toLocaleString('zh-CN') : '—' }}</b>
           <span class="profile-stat-label">已记录 Token</span>
-          <small>绘图与本地助手记录</small>
+          <small>绘图与会话命名记录</small>
         </div>
         <div class="profile-stat-cell">
           <b>{{ summary ? totalResearchQueries.toLocaleString('zh-CN') : '—' }}</b>
@@ -357,7 +357,7 @@ onMounted(() => { void loadSummary() })
           <RouterLink to="/" class="settings-action-link">前往查询工作台开始提问 →</RouterLink>
         </div>
         <p v-else class="settings-loading" role="status">正在读取模型使用情况…</p>
-        <p class="settings-footnote">注：按已完成、失败或中断的模型请求记录统计，等待中、执行中与跳过的任务不计入；不等于服务商计费调用数。Token 明细仅汇总已记录的科研绘图方案与本地助手用量，缺失值显示“—”。</p>
+        <p class="settings-footnote">注：按已完成、失败或中断的模型请求记录统计，等待中、执行中与跳过的任务不计入；不等于服务商计费调用数。Token 明细仅汇总已记录的科研绘图方案与会话命名用量，缺失值显示“—”。</p>
       </section>
 
       <section class="settings-group profile-section" aria-labelledby="profile-workspace-title">
@@ -366,14 +366,14 @@ onMounted(() => { void loadSummary() })
             <h2 id="profile-workspace-title">科研工作区资产概览</h2>
             <p class="profile-section-sub">统计范围仅限当前登录账号的独立数据空间</p>
           </div>
-          <RouterLink to="/projects" class="settings-action-link">管理科研项目 ↗</RouterLink>
+          <RouterLink to="/settings?section=data" class="settings-action-link">管理科研项目与备份 ↗</RouterLink>
         </div>
 
         <div v-if="summary" class="profile-asset-grid">
           <div class="profile-asset-item">
-            <span>对话与轮次</span>
-            <strong>{{ summary.workspace.conversations_count }} 个会话 · {{ summary.workspace.turns_count }} 轮</strong>
-            <small>完成 {{ summary.workspace.completed_turns }} 轮<template v-if="summary.workspace.failed_turns > 0"> · 未完成 {{ summary.workspace.failed_turns }} 轮</template></small>
+            <span>会话与消息</span>
+            <strong>{{ summary.workspace.conversations_count }} 个会话 · {{ summary.workspace.turns_count }} 条消息</strong>
+            <small>完成 {{ summary.workspace.completed_turns }} 条<template v-if="summary.workspace.failed_turns > 0"> · 未完成 {{ summary.workspace.failed_turns }} 条</template></small>
           </div>
           <div class="profile-asset-item">
             <span>项目与快照</span>
@@ -386,7 +386,7 @@ onMounted(() => { void loadSummary() })
             <small>仅包含上传至本账号的科研材料</small>
           </div>
           <div class="profile-asset-item">
-            <span>科研绘图与本地助手</span>
+            <span>科研绘图与会话命名</span>
             <strong>{{ summary.workspace.plot_datasets_count }} 份数据集 · {{ summary.workspace.plot_operations_count }} 次绘图</strong>
             <small>本地轻量助手任务 {{ summary.workspace.local_tasks_count }} 次</small>
           </div>

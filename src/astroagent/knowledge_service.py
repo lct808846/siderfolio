@@ -431,8 +431,8 @@ class KnowledgeService:
                 ],
             }
 
-    def chat_context(self, conversation_id, query, *, max_bytes=16384, max_hits=6):
-        """Read-only bounded excerpts from the conversation's research project sources."""
+    def chat_context(self, conversation_id, query, *, max_bytes=20480, max_hits=6):
+        """Read-only bounded project instructions and excerpts from a project's sources."""
         repo = self.repository.repo
         with repo.connection() as db:
             row = db.execute(
@@ -444,6 +444,8 @@ class KnowledgeService:
                 return None
             project_id = row[0]
             project = json.loads(row[1])
+            project_name = (project.get("name") or "").strip()
+            project_instructions = (project.get("description") or "").strip()[:2000]
             doc_rows = db.execute(
                 "SELECT record FROM knowledge_documents WHERE project_id=?",
                 (project_id,),
@@ -453,23 +455,46 @@ class KnowledgeService:
                 doc = KnowledgeDocument.model_validate_json(doc_row[0])
                 if doc.state in ("ready", "partial") and doc.current_version_id:
                     ready_docs[doc.id] = doc
-            if not ready_docs:
-                return None
             ordered_docs = sorted(
                 ready_docs.values(),
                 key=lambda item: (item.updated_at, item.id),
                 reverse=True,
             )
-            version_ids = [doc.current_version_id for doc in ordered_docs]
-            placeholders = ",".join("?" for _ in version_ids)
-            unit_rows = db.execute(
-                f"SELECT record, normalized FROM knowledge_units "
-                f"WHERE project_id=? AND version_id IN ({placeholders}) LIMIT 2000",
-                (project_id, *version_ids),
-            ).fetchall()
+            unit_rows = []
+            if ordered_docs:
+                version_ids = [doc.current_version_id for doc in ordered_docs]
+                placeholders = ",".join("?" for _ in version_ids)
+                unit_rows = db.execute(
+                    f"SELECT record, normalized FROM knowledge_units "
+                    f"WHERE project_id=? AND version_id IN ({placeholders}) LIMIT 2000",
+                    (project_id, *version_ids),
+                ).fetchall()
 
-        if not unit_rows:
-            return None
+        doc_summaries = [
+            {
+                "title": doc.metadata.title,
+                "filename": doc.filename,
+                "state": doc.state,
+            }
+            for doc in ordered_docs[:20]
+        ]
+        instructions_only = (
+            {
+                "project_id": project_id,
+                "project_name": project_name,
+                "project_instructions": project_instructions,
+                "document_count": len(ordered_docs),
+                "documents": doc_summaries,
+                "retrieval_mode": "instructions_only",
+                "excerpts": [],
+                "truncated": False,
+            }
+            if project_instructions
+            else None
+        )
+
+        if not ordered_docs or not unit_rows:
+            return instructions_only
 
         normalized_query = normalize(query or "").strip()
         latin_terms, cjk_terms = _chat_query_tokens(normalized_query)
@@ -496,7 +521,7 @@ class KnowledgeService:
                 scored.append((score, unit))
 
         if total_valid == 0:
-            return None
+            return instructions_only
 
         for doc_units in units_by_doc.values():
             doc_units.sort(key=lambda u: (u.source_position, u.ordinal, u.char_start, u.id))
@@ -549,17 +574,10 @@ class KnowledgeService:
 
         payload = {
             "project_id": project_id,
-            "project_name": project.get("name", ""),
-            "project_description": (project.get("description") or "")[:300],
+            "project_name": project_name,
+            "project_instructions": project_instructions,
             "document_count": len(ordered_docs),
-            "documents": [
-                {
-                    "title": doc.metadata.title,
-                    "filename": doc.filename,
-                    "state": doc.state,
-                }
-                for doc in ordered_docs[:20]
-            ],
+            "documents": doc_summaries,
             "retrieval_mode": retrieval_mode,
             "excerpts": [],
             "truncated": False,
@@ -589,7 +607,7 @@ class KnowledgeService:
                 break
 
         if not payload["excerpts"]:
-            return None
+            return instructions_only
         if total_valid > len(payload["excerpts"]):
             payload["truncated"] = True
         return payload

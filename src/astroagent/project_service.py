@@ -77,7 +77,7 @@ class ProjectService:
                 raise ServiceError(
                     503,
                     "conversation_service_busy",
-                    "已有两轮任务正在处理，请稍后重试。",
+                    "已有两个任务正在处理，请稍后重试。",
                     retryable=True,
                 )
             try:

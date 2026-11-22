@@ -100,10 +100,8 @@ class PlotService:
                 raise ServiceError(409, "plot_request_conflict", "此数据集编号已用于其他来源。")
         turn = self.conversations.repository.turn(request.conversation_id, request.turn_id)
         if turn.execution_status != "completed" or turn.response is None:
-            raise ServiceError(422, "plot_turn_unavailable", "请等待本轮完整结果返回后再绘图。")
-        frozen = self.store.projects.make_snapshot(
-            project_id, f"第{turn.revision}轮 Gaia 数据", turn
-        )
+            raise ServiceError(422, "plot_turn_unavailable", "请等待查询结果完整返回后再绘图。")
+        frozen = self.store.projects.make_snapshot(project_id, "Gaia DR3 查询数据", turn)
         frozen["id"] = identifier
         frozen["created_at"] = turn.completed_at or turn.received_at
         with self.store.repo.connection() as db:
@@ -141,6 +139,35 @@ class PlotService:
             value.update(state="failed", error=exc.error.message)
         except Exception:
             value.update(state="failed", error="方案生成失败，未执行脚本；不会自动重试。")
+        return self.store.finish(value)
+
+    def save_proposal(self, project_id, identifier, request):
+        with self.store.repo.connection() as db:
+            info, _, _ = self.store.dataset(db, project_id, request.dataset_id)
+        known = {column["name"]: column for column in info["columns"]}
+        missing_cols = [col for col in request.proposal.columns if col not in known]
+        if missing_cols:
+            raise ServiceError(
+                422,
+                "plot_columns_invalid",
+                f"绘图方案包含数据集中不存在的列：{', '.join(missing_cols)}。",
+            )
+        if not any(known[col]["kind"] == "number" for col in request.proposal.columns):
+            raise ServiceError(
+                422, "plot_columns_invalid", "绘图方案至少需要包含一个数值型数据列。"
+            )
+        value, fresh = self.store.reserve(
+            project_id, identifier, "plan", request.model_dump(), request.dataset_id
+        )
+        if not fresh:
+            return value
+        proposal_dict = request.proposal.model_dump()
+        value.update(
+            state="completed",
+            proposal=proposal_dict,
+            script_sha256=digest(proposal_dict["script"].encode()),
+            model_usage={},
+        )
         return self.store.finish(value)
 
     def run(self, project_id, identifier, request):

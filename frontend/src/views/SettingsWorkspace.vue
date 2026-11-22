@@ -3,11 +3,13 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import AppearanceSettings from '../components/AppearanceSettings.vue'
-import LocalAssistantSettings from '../components/LocalAssistantSettings.vue'
+import LocalTitleSettings from '../components/LocalTitleSettings.vue'
 import ModelProvidersSettings from '../components/ModelProvidersSettings.vue'
 import AccountWorkspace from './AccountWorkspace.vue'
 import StatusNotice from '../components/StatusNotice.vue'
 import SuccessToast from '../components/SuccessToast.vue'
+import CreateProjectDialog from '../components/CreateProjectDialog.vue'
+import ProjectManageDrawer, { type DrawerTab } from '../components/ProjectManageDrawer.vue'
 import { api, ApiError } from '../api'
 import { importProject } from '../api/projects'
 import { useModels } from '../stores/models'
@@ -15,7 +17,7 @@ import { useProjects } from '../stores/projects'
 import { useWorkbench } from '../stores/workbench'
 import { identityUser } from '../identity-state'
 import { setupApi } from '../api/rag'
-import type { ArchivedConversation, SetupStatus } from '../types'
+import type { ArchivedConversation, Project, SetupStatus } from '../types'
 
 const route = useRoute(), router = useRouter(), models = useModels(), store = useWorkbench(), projectsStore = useProjects()
 const displayName = computed(() => identityUser.value?.username?.trim() || identityUser.value?.email?.split('@')[0] || '科研用户')
@@ -34,10 +36,10 @@ function backToApp() {
 const sections = [
   { id: 'security', group: 'account', label: '账户安全与登录', description: '管理你的登录方式、多因素验证与活动会话。', keywords: '登录 密码 身份 验证器 二维码 双因素 TOTP MFA 恢复码 安全 建议 会话 设备 退出', icon: 'M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4' },
   { id: 'account', group: 'account', label: '账户', description: '查看并管理你的个人资料与账户详情。', keywords: '账户 账号 详情 用户名 邮箱 角色 资料', icon: 'M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5.5 19.2a7 7 0 0 1 13 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z' },
-  { id: 'appearance', group: 'app', label: '外观与主题', description: '自定义配色主题、暗夜护眼模式、界面密度、字号与阅读排版。', keywords: '外观 主题 配色 暗黑 暗夜 深色 浅色 红光 护眼 圆角 密度 字体 字号 排版 毛玻璃 动效', icon: 'M12 3a9 9 0 1 0 0 18 1.5 1.5 0 0 0 1.5-1.5c0-.4-.15-.77-.4-1.05-.25-.28-.4-.65-.4-1.05a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-7.9-9-7.9ZM7.5 10.5h.01M10.5 7.5h.01M14.5 7.5h.01M17 10.5h.01' },
-  { id: 'general', group: 'app', label: '概览', description: '查看当前工作环境与服务状态。', keywords: '常规 状态 环境 版本', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
+  { id: 'appearance', group: 'app', label: '外观与主题', description: '自定义配色主题、天文动态背景、界面密度、字号、排版与视觉性能开关。', keywords: '外观 主题 配色 暗黑 暗夜 深色 浅色 红光 护眼 天文 背景 星空 轨道 动态 圆角 密度 字体 字号 排版 毛玻璃 模糊 阴影 光影 性能 省电 流畅 动效', icon: 'M12 3a9 9 0 1 0 0 18 1.5 1.5 0 0 0 1.5-1.5c0-.4-.15-.77-.4-1.05-.25-.28-.4-.65-.4-1.05a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-7.9-9-7.9ZM7.5 10.5h.01M10.5 7.5h.01M14.5 7.5h.01M17 10.5h.01' },
+  { id: 'general', group: 'app', label: '概览', description: '查看当前工作环境、服务状态与 Astronomy MCP 查询通道。', keywords: '常规 状态 环境 版本 MCP mcp 天文 通道 直连 切换', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
   { id: 'models', group: 'app', label: '模型', description: '管理模型服务商，为工作台选择可用模型。', keywords: '远程 服务商 提供方 千问 deepseek qwen OpenAI API 密钥 默认', icon: 'm12 3 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8' },
-  { id: 'assistant', group: 'app', label: '本地助手', description: '设置本机小模型与会话自动命名。', keywords: '本地 模型 自动 标题 命名 摘要 Ollama', icon: 'M9 3h6M12 3v3M5 6h14v14H5zM8 11h1M15 11h1M9 16h6M2 10v6M22 10v6' },
+  { id: 'assistant', group: 'app', label: '会话命名', description: '设置本地模型自动生成会话标题。', keywords: '本地 模型 自动 标题 命名 Ollama', icon: 'M9 3h6M12 3v3M5 6h14v14H5zM8 11h1M15 11h1M9 16h6M2 10v6M22 10v6' },
   { id: 'storage', group: 'app', label: '检索与存储', description: '查看数据库与语义检索模型的准备情况。', keywords: '数据库 PostgreSQL 嵌入 向量 语义 检索 索引', icon: 'M20 6c0 2-3.6 3-8 3S4 8 4 6s3.6-3 8-3 8 1 8 3ZM4 6v6c0 2 3.6 3 8 3s8-1 8-3V6M4 12v6c0 2 3.6 3 8 3s8-1 8-3v-6' },
   { id: 'data', group: 'app', label: '数据管理', description: '管理已归档会话、科研项目空间与备份迁移包。', keywords: '备份 导入 导出 归档 会话 收纳 恢复 PDF 文献 迁移 项目', icon: 'M3 7V4h7l2 3h9v13H3zM8 12h8M8 16h5' },
 ] as const
@@ -61,9 +63,32 @@ function selectSection(id: SectionId) {
 }
 watch(() => active.value.id, () => { if (content.value) content.value.scrollTop = 0 })
 const state = ref<SetupStatus | null>(null), error = ref(''), busy = ref(false), checkedAt = ref('')
+const mcpBusy = ref(false), mcpError = ref(''), mcpSuccess = ref('')
 const databaseStatus = computed(() => !state.value ? '未确认' : state.value.ready ? '已就绪' : '尚未就绪')
 const embeddingStatus = computed(() => !state.value ? '未确认' : state.value.embedding_configured ? '已配置' : '未配置')
 const answeringStatus = computed(() => !state.value ? '未确认' : state.value.answering_configured ? '已配置' : '未配置')
+const mcpTransportLabel = computed(() => {
+  if (!state.value) return '未确认'
+  if (state.value.astronomy_tool_transport !== 'mcp') return '直连模式'
+  if (state.value.mcp_status === 'ready') return 'MCP 已就绪'
+  if (state.value.mcp_status === 'error') return 'MCP 异常'
+  return 'MCP 已启用'
+})
+const mcpTransportPillClass = computed(() => {
+  if (!state.value) return 'ui-pill-warning'
+  if (state.value.astronomy_tool_transport !== 'mcp') return 'ui-pill-neutral'
+  if (state.value.mcp_status === 'ready') return 'ui-pill-success'
+  if (state.value.mcp_status === 'error') return 'ui-pill-danger'
+  return 'ui-pill-accent'
+})
+const mcpTransportDescription = computed(() => {
+  if (!state.value || state.value.astronomy_tool_transport !== 'mcp') {
+    return '聊天中的 SIMBAD、ADS、Gaia 查询使用进程内直连服务（direct）'
+  }
+  const version = state.value.mcp_protocol_version ? ` · 协议 ${state.value.mcp_protocol_version}` : ''
+  const tools = state.value.mcp_tools?.length ? ` · ${state.value.mcp_tools.join(' / ')}` : ''
+  return `本地 Astronomy MCP Server（stdio${version}${tools}）`
+})
 const databaseUsagePercent = computed(() => {
   if (!state.value?.business_budget_bytes || state.value.database_used_bytes == null) return 0
   return Math.min(100, Math.round((state.value.database_used_bytes / state.value.business_budget_bytes) * 100))
@@ -90,17 +115,68 @@ async function load() {
         : e instanceof Error ? e.message : '暂时无法读取配置状态，请稍后重试。'
   } finally { busy.value = false }
 }
+async function toggleAstronomyTransport(event: Event) {
+  const input = event.target as HTMLInputElement
+  const target: 'direct' | 'mcp' = input.checked ? 'mcp' : 'direct'
+  if (mcpBusy.value || busy.value || !state.value) {
+    input.checked = state.value?.astronomy_tool_transport === 'mcp'
+    return
+  }
+  mcpBusy.value = true; mcpError.value = ''; mcpSuccess.value = ''
+  try {
+    state.value = await setupApi.setAstronomyTransport(target)
+    checkedAt.value = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
+    mcpSuccess.value = target === 'mcp'
+      ? `已切换至本地 MCP 查询通道（${state.value.mcp_protocol_version || '2026-07-28'}），后续聊天查询立即生效。`
+      : '已切换回进程内直连查询模式（direct），已回收 MCP 子进程。'
+  } catch (e) {
+    mcpError.value = e instanceof Error ? e.message : '切换天文查询通道失败，请稍后重试。'
+  } finally {
+    input.checked = state.value?.astronomy_tool_transport === 'mcp'
+    mcpBusy.value = false
+  }
+}
 watch(canManage, allowed => { if (allowed) { void load(); void models.load() } }, { immediate: true })
 
 const archivedLoading = ref(false), archivedBusy = ref(false), archivedError = ref(''), archivedMessage = ref('')
 const deletingArchived = ref<ArchivedConversation | null>(null)
 const deleteArchiveDialog = ref<HTMLDialogElement | null>(null)
+const createProjectDialog = ref<InstanceType<typeof CreateProjectDialog> | null>(null)
+const projectManageDrawer = ref<InstanceType<typeof ProjectManageDrawer> | null>(null)
 async function loadArchived() {
   if (archivedLoading.value) return
   archivedLoading.value = true; archivedError.value = ''
-  try { await store.refreshArchived() }
-  catch (e) { archivedError.value = e instanceof Error ? e.message : '暂时无法读取已归档会话。' }
+  try {
+    await Promise.all([
+      store.refreshArchived(),
+      projectsStore.load(true),
+    ])
+  }
+  catch (e) { archivedError.value = e instanceof Error ? e.message : '暂时无法读取数据管理记录。' }
   finally { archivedLoading.value = false }
+}
+function openSettingsProjectManager(projectId: string, tab: DrawerTab = 'context') {
+  void projectManageDrawer.value?.open(projectId, tab)
+}
+async function onSettingsProjectCreated(payload: { project: Project; uploadedCount: number; startChat: boolean }) {
+  await projectsStore.load(true).catch(() => undefined)
+  const note = payload.uploadedCount ? `，已解析 ${payload.uploadedCount} 份参考知识` : ''
+  archivedMessage.value = `已创建科研项目「${payload.project.name}」${note}。`
+  if (payload.startChat) {
+    try {
+      const created = await projectsStore.startConversationDetail(payload.project.id)
+      store.preparedConversation = { ...created, turns: [] }
+      void store.refreshList().catch(() => undefined)
+      await router.push(`/conversations/${created.id}`)
+      return
+    } catch (e) {
+      archivedError.value = e instanceof Error ? e.message : '项目已创建，但开启对话失败。'
+    }
+  }
+}
+function onSettingsProjectDeleted() {
+  archivedMessage.value = '已删除该科研项目；关联会话已保留并恢复为未归属项目。'
+  void projectsStore.load(true).catch(() => undefined)
 }
 async function restoreArchived(item: ArchivedConversation) {
   if (archivedBusy.value) return
@@ -139,8 +215,8 @@ async function handleImportZip(event: Event) {
   try {
     const result = await importProject(file)
     await projectsStore.load(true)
-    archivedMessage.value = `已从备份包恢复为独立科研项目「${result.project.name}」。`
-    await router.push(`/projects/${result.project.id}`)
+    archivedMessage.value = `已恢复为独立科研项目「${result.project.name}」；归档哈希只证明包内一致性，来源未经认证。`
+    void projectManageDrawer.value?.open(result.project.id, 'context')
   } catch (e) { archivedError.value = e instanceof Error ? e.message : '导入项目备份包失败。' }
   finally { archivedBusy.value = false }
 }
@@ -252,6 +328,31 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
               <div class="settings-row"><div><h4>语义检索</h4><p>本地多语言嵌入模型配置状态</p></div><span class="ui-pill" :class="state?.embedding_configured ? 'ui-pill-success' : 'ui-pill-warning'"><span class="ui-dot" aria-hidden="true" />{{ embeddingStatus }}</span></div>
               <p class="settings-footnote">配置状态不代表已通过外部服务连通性或回答质量验收；详细参数可在左侧对应分类中查看。</p>
             </section>
+            <section class="settings-group" aria-labelledby="settings-mcp-transport">
+              <div class="settings-group-head">
+                <h3 id="settings-mcp-transport">Astronomy MCP 通道</h3>
+                <span class="ui-pill" :class="mcpTransportPillClass"><span class="ui-dot" aria-hidden="true" />{{ mcpTransportLabel }}</span>
+              </div>
+              <SuccessToast v-model:message="mcpSuccess" />
+              <StatusNotice v-if="mcpError" class="settings-load-error" title="天文查询通道切换未完成" :message="mcpError" />
+              <label class="settings-row settings-switch-row">
+                <div>
+                  <h4>通过本地 MCP 执行天文查询</h4>
+                  <p>{{ mcpTransportDescription }}</p>
+                </div>
+                <input
+                  class="settings-switch"
+                  type="checkbox"
+                  role="switch"
+                  aria-label="通过本地 MCP 执行天文查询"
+                  :checked="state?.astronomy_tool_transport === 'mcp'"
+                  :disabled="!state || busy || mcpBusy"
+                  @change="toggleAstronomyTransport($event)"
+                />
+              </label>
+              <p v-if="mcpBusy" class="settings-loading" role="status">正在切换并核验天文查询通道…</p>
+              <p class="settings-footnote">仅影响聊天中的 SIMBAD、ADS 与 Gaia DR3 查询。开启时会在服务端启动并核验固定本机 MCP 子进程（协议 2026-07-28），关闭后立即切回直连并回收子进程；对话执行期间不允许切换。项目重跑与固定科研流程不受影响。</p>
+            </section>
           </div>
 
           <div v-show="active.id === 'models'">
@@ -259,7 +360,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
             <section class="settings-group"><h3>文本与文献发送</h3><p>每个会话可在输入区切换模型，保留已有上下文。文献问答会先展示本次问题、引用片段及所选历史，确认后再发送给所选服务商。</p><p class="settings-footnote">上传文档、构建索引和取消预览不会自动发送文献。打开模型设置不会调用回答模型。</p></section>
           </div>
 
-          <div v-show="active.id === 'assistant'" class="settings-assistant-section"><LocalAssistantSettings /></div>
+          <div v-show="active.id === 'assistant'" class="settings-assistant-section"><LocalTitleSettings /></div>
 
           <div v-show="active.id === 'storage'">
             <section class="settings-group">
@@ -312,7 +413,6 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
                   <div>
                     <h4>{{ item.title }}</h4>
                     <div class="ui-pill-list" style="margin-top: 6px;">
-                      <span class="ui-pill ui-pill-accent">{{ item.revision }} 轮对话</span>
                       <span class="ui-pill ui-pill-neutral">归档于 {{ new Date(item.archived_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) }}</span>
                     </div>
                   </div>
@@ -330,18 +430,56 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
               </div>
             </section>
             <section class="settings-group" aria-labelledby="settings-projects-backup">
-              <h3 id="settings-projects-backup">科研项目与备份迁移</h3>
-              <div class="settings-row">
-                <div><h4>科研项目空间</h4><p>按课题组织会话、知识库、文献问答、科研流程与命名快照</p></div>
-                <RouterLink to="/projects" class="settings-action-link">管理科研项目 ↗</RouterLink>
+              <div class="settings-group-head">
+                <div>
+                  <h3 id="settings-projects-backup">科研项目与备份迁移</h3>
+                  <p class="small muted">按课题集中管理项目指令、参考知识、命名快照、离线 ZIP 导出与恢复。</p>
+                </div>
+                <div class="settings-archive-actions">
+                  <button type="button" class="button-primary" :disabled="archivedBusy || projectsStore.customProjects.length >= 20" @click="createProjectDialog?.open()">＋ 新建项目</button>
+                  <label class="settings-upload-btn" :class="{ disabled: archivedBusy }">
+                    <span>{{ archivedBusy ? '正在导入…' : '导入 ZIP 备份' }}</span>
+                    <input type="file" class="sr-only" accept=".zip,application/zip" :disabled="archivedBusy" @change="handleImportZip" />
+                  </label>
+                </div>
               </div>
-              <div class="settings-row">
-                <div><h4>导入项目备份包 (ZIP)</h4><p>从本地 ZIP 备份恢复为独立科研项目（上限 32 MiB，不覆盖现有数据）</p></div>
-                <label class="settings-upload-btn" :class="{ disabled: archivedBusy }">
-                  <span>{{ archivedBusy ? '正在导入…' : '选择 ZIP 导入' }}</span>
-                  <input type="file" class="sr-only" accept=".zip,application/zip" :disabled="archivedBusy" @change="handleImportZip" />
-                </label>
+              <div class="settings-archive-list">
+                <div v-if="projectsStore.defaultProject" class="settings-row">
+                  <div>
+                    <h4>个人空间（默认）</h4>
+                    <div class="ui-pill-list" style="margin-top: 6px;">
+                      <span class="ui-pill ui-pill-neutral">默认工作区</span>
+                      <span class="ui-pill ui-pill-accent">{{ projectsStore.conversationCountFor(projectsStore.defaultProject.id) }} 个对话</span>
+                      <span class="ui-pill ui-pill-neutral">r{{ projectsStore.defaultProject.revision }}</span>
+                    </div>
+                  </div>
+                  <div class="settings-archive-actions">
+                    <RouterLink to="/knowledge" class="settings-action-link">知识库</RouterLink>
+                    <RouterLink to="/workflows" class="settings-action-link">科研流程</RouterLink>
+                    <button type="button" :disabled="archivedBusy" @click="openSettingsProjectManager(projectsStore.defaultProject.id, 'snapshots')">快照</button>
+                    <button type="button" :disabled="archivedBusy" @click="openSettingsProjectManager(projectsStore.defaultProject.id, 'context')">管理与备份</button>
+                  </div>
+                </div>
+                <div v-for="project in projectsStore.customProjects" :key="project.id" class="settings-row">
+                  <div>
+                    <h4>{{ project.name }}</h4>
+                    <div class="ui-pill-list" style="margin-top: 6px;">
+                      <span v-if="project.provenance === 'imported_unverified'" class="ui-pill ui-pill-warning">导入 · 未认证</span>
+                      <span v-else-if="(project.description || '').trim()" class="ui-pill ui-pill-success">已设指令</span>
+                      <span class="ui-pill ui-pill-accent">{{ projectsStore.conversationCountFor(project.id) }} 个对话</span>
+                      <span class="ui-pill ui-pill-neutral">r{{ project.revision }}</span>
+                    </div>
+                  </div>
+                  <div class="settings-archive-actions">
+                    <RouterLink :to="`/?project=${encodeURIComponent(project.id)}`" class="settings-action-link">进入对话</RouterLink>
+                    <RouterLink :to="`/projects/${encodeURIComponent(project.id)}/knowledge`" class="settings-action-link">知识库</RouterLink>
+                    <RouterLink :to="`/projects/${encodeURIComponent(project.id)}/workflows`" class="settings-action-link">科研流程</RouterLink>
+                    <button type="button" :disabled="archivedBusy" @click="openSettingsProjectManager(project.id, 'context')">管理与备份</button>
+                  </div>
+                </div>
+                <p v-if="!projectsStore.customProjects.length && !projectsStore.defaultProject && !archivedLoading" class="small muted">尚未建立课题项目，点击右上角「新建项目」或导入本地 ZIP 备份包（上限 32 MiB，不覆盖现有数据）。</p>
               </div>
+              <p class="settings-footnote">导入 ZIP 备份包上限 32 MiB，恢复为独立科研项目且不覆盖现有数据；归档哈希仅证明包内完整性，来源未经认证。</p>
             </section>
             <section v-if="canManage" class="settings-group">
               <h3>服务器备份与保留</h3>
@@ -357,11 +495,13 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
         <h2 id="delete-archived-title">永久删除已归档会话？</h2>
         <button type="button" class="account-dialog-close" aria-label="关闭" :disabled="archivedBusy" @click="deleteArchiveDialog?.close()">×</button>
       </header>
-      <p>将删除「{{ deletingArchived?.title }}」及全部对话轮次，无法恢复。已经保存的项目快照与下载文件不受影响。</p>
+      <p>将删除「{{ deletingArchived?.title }}」及其中的消息，无法恢复。已经保存的项目快照与下载文件不受影响。</p>
       <div class="project-actions">
         <button type="button" :disabled="archivedBusy" @click="deleteArchiveDialog?.close()">取消</button>
         <button type="button" class="button-danger" :disabled="archivedBusy" @click="confirmDeleteArchived">{{ archivedBusy ? '正在删除…' : '确认永久删除' }}</button>
       </div>
     </dialog>
+    <CreateProjectDialog ref="createProjectDialog" :default-start-chat="false" @created="onSettingsProjectCreated" />
+    <ProjectManageDrawer ref="projectManageDrawer" @deleted="onSettingsProjectDeleted" />
   </div>
 </template>

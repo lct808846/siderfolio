@@ -13,6 +13,7 @@ from astroagent.api.conversations import Service
 from astroagent.errors import ServiceError
 from astroagent.plot_data import MAX_DATA
 from astroagent.plot_schemas import (
+    PlotCustomPlanRequest,
     PlotDataPreview,
     PlotDataset,
     PlotInitialize,
@@ -119,6 +120,11 @@ def data_file(project_id: UUID, dataset_id: UUID, service: Plotting):
 @router.put(ROOT + "/plans/{plan_id}", response_model=PlotOperation)
 def plan(project_id: UUID, plan_id: UUID, request: PlotPlanRequest, service: Plotting):
     return service.plan(str(project_id), str(plan_id), request)
+
+
+@router.put(ROOT + "/plans/{plan_id}/custom", response_model=PlotOperation)
+def custom_plan(project_id: UUID, plan_id: UUID, request: PlotCustomPlanRequest, service: Plotting):
+    return service.save_proposal(str(project_id), str(plan_id), request)
 
 
 @router.put(ROOT + "/runs/{run_id}", response_model=PlotOperation)

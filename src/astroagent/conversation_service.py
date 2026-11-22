@@ -14,7 +14,7 @@ class ConversationService:
         self.gate = threading.RLock()
         self.slots = MODEL_TASK_SLOTS
         self.artifacts = None
-        self.local_assistant = None
+        self.local_titles = None
 
     def delete(self, identifier):
         with self.gate:
@@ -31,7 +31,7 @@ class ConversationService:
                 raise ServiceError(
                     503,
                     "conversation_service_busy",
-                    "已有两轮正在处理，请稍后重试。",
+                    "已有两个请求正在处理，请稍后重试。",
                     retryable=True,
                 )
             try:
@@ -41,9 +41,9 @@ class ConversationService:
                 self.slots.release()
                 raise
         title_completion = None
-        if self.local_assistant is not None:
+        if self.local_titles is not None:
             try:
-                title_completion = self.local_assistant.schedule_title(turn)
+                title_completion = self.local_titles.schedule_title(turn)
             except Exception:
                 pass
         failure = None
@@ -60,6 +60,7 @@ class ConversationService:
                 request.message,
                 attachments=request.attachments,
                 project_sources=project_sources,
+                tool_mode=request.tool_mode,
             )
             turn.context = context.record
             agent = agent_factory()
@@ -76,14 +77,14 @@ class ConversationService:
             turn.error = exc.error
         except Exception:
             failure = ServiceError(
-                502, "conversation_execution_failed", "本轮未能完成，请查看已保存状态。"
+                502, "conversation_execution_failed", "回答未能完成，请查看已保存的状态。"
             )
             turn.execution_status = "failed"
             turn.error = failure.error
         finally:
             if title_completion is not None:
                 try:
-                    self.local_assistant.settle_title(
+                    self.local_titles.settle_title(
                         title_completion, wait=turn.execution_status == "completed"
                     )
                 except Exception:

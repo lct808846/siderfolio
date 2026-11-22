@@ -64,7 +64,7 @@ class ArtifactCache:
                 else self.service.repository.turn(conversation_id, turn_id).response
             )
             if response is None:
-                raise ServiceError(422, "invalid_export_snapshot", "这轮没有可导出的完整查询响应。")
+                raise ServiceError(422, "invalid_export_snapshot", "此记录没有可导出的完整结果。")
             snapshot = response.model_dump(mode="json")
         plots = sorted(
             [p.model_dump() for p in request.plots],
@@ -77,7 +77,7 @@ class ArtifactCache:
             validated = validate_json(raw)
         except (ValueError, TypeError) as exc:
             raise ServiceError(
-                422, "invalid_export_snapshot", "该轮与当前导出契约不兼容。"
+                422, "invalid_export_snapshot", "此记录与当前导出格式不兼容。"
             ) from exc
         digest = hashlib.sha256(encode(snapshot).encode()).hexdigest()
         cache_key = (owner or (conversation_id, turn_id), digest, encode(plots), __version__)
@@ -169,7 +169,7 @@ class ArtifactCache:
         with self.lock:
             self.purge()
             if identifier in self.expired:
-                raise ServiceError(410, "artifact_expired", "产物已过期，请回到原轮次重新生成。")
+                raise ServiceError(410, "artifact_expired", "产物已过期，请回到原始结果重新生成。")
             if identifier not in self.items:
                 raise ServiceError(
                     404, "artifact_not_found", "产物不存在或服务已重启，请重新生成。"

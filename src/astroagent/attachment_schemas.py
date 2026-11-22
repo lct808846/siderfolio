@@ -17,6 +17,7 @@ class ChatAttachment(BaseModel):
         "text/plain",
         "text/markdown",
         "text/csv",
+        "text/tab-separated-values",
         "application/json",
     ]
     size: int = Field(gt=0, le=MAX_FILE_BYTES)

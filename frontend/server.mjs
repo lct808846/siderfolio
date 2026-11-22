@@ -29,7 +29,7 @@ async function clientAddress(req) {
 async function signedIn(req) {
   const address = containerMode ? await clientAddress(req) : ''
   return new Promise(resolve => {
-    const check = http.request(new URL('/api/v1/auth/session', backend), { headers: { host: '127.0.0.1:8000', cookie: req.headers.cookie || '', ...(containerMode ? { 'x-astroagent-proxy': proxyToken, 'x-astroagent-client-address': address } : {}) } }, reply => { reply.resume(); resolve(reply.statusCode || 503) })
+    const check = http.request(new URL('/api/v1/auth/session', backend), { agent: false, headers: { host: '127.0.0.1:8000', cookie: req.headers.cookie || '', ...(containerMode ? { 'x-astroagent-proxy': proxyToken, 'x-astroagent-client-address': address } : {}) } }, reply => { reply.resume(); resolve(reply.statusCode || 503) })
     check.setTimeout(5000, () => check.destroy())
     check.on('error', () => resolve(503)); check.end()
   })
@@ -56,7 +56,7 @@ const server = http.createServer(async (req, res) => {
     for (const name of ['x-astroagent-proxy', 'x-astroagent-client-address', 'x-astroagent-edge-client', 'forwarded', 'x-forwarded-host', 'x-forwarded-for', 'x-forwarded-proto', 'proxy-authorization', 'connection', 'upgrade']) delete headers[name]
     if (containerMode) headers['x-astroagent-proxy'] = proxyToken
     if (containerMode) headers['x-astroagent-client-address'] = await clientAddress(req)
-    const upstream = http.request(new URL(url.pathname + url.search, backend), { method: req.method, headers }, reply => {
+    const upstream = http.request(new URL(url.pathname + url.search, backend), { agent: false, method: req.method, headers }, reply => {
       res.writeHead(reply.statusCode || 502, reply.headers); reply.pipe(res)
     })
     upstream.on('error', () => { if (!res.headersSent) res.writeHead(502, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { code: 'backend_unavailable', message: '后端未连接，请启动本机服务。', retryable: true } })) })

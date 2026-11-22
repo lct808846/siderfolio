@@ -148,7 +148,7 @@ def test_profile_summary_counts_private_assets_and_known_model_usage(identity_cl
             }
             db.execute(
                 "INSERT INTO local_assistant_tasks(id,kind,state,record) VALUES (?,?,?,?)",
-                (str(uuid4()), "manual", state, json.dumps(record)),
+                (str(uuid4()), "automatic_title", state, json.dumps(record)),
             )
     response = client.get("/api/v1/profile/summary")
     assert response.status_code == 200, response.text

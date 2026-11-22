@@ -151,7 +151,7 @@ def _build_package(request):
             raise _too_large()
         files[path] = content
 
-    snapshot = request.snapshot.model_dump(mode="json")
+    snapshot = request.snapshot.model_dump(mode="json", exclude_unset=True)
     add("snapshot.json", json_bytes(snapshot))
     for family, results in (
         ("simbad", request.snapshot.results),

@@ -329,7 +329,8 @@ class PostgresRepository(ConversationRepository):
                         turn = Turn.model_validate_json(row[0])
                         turn.execution_status, turn.completed_at = "interrupted", utc_now()
                         turn.error = ErrorInfo(
-                            code="turn_interrupted", message="服务重启中断该轮；未自动重发。"
+                            code="turn_interrupted",
+                            message="服务重启时中断了请求。系统不会自动重发。",
                         )
                         self._save(db, turn)
                     ProjectRepository.recover(db)

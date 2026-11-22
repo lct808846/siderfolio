@@ -14,8 +14,8 @@ const server = http.createServer((request, response) => {
     response.writeHead(local ? 200 : 404); response.end(local ? 'ok' : ''); return
   }
   const headers = { ...request.headers, 'x-astroagent-edge-client': request.socket.remoteAddress || '' }
-  delete headers['x-astroagent-client-address']
-  const upstream = http.request({ hostname: 'frontend', port: 5173, method: request.method, path: request.url, headers }, reply => {
+  for (const name of ['x-astroagent-client-address', 'connection', 'keep-alive', 'proxy-connection', 'upgrade']) delete headers[name]
+  const upstream = http.request({ hostname: 'frontend', port: 5173, agent: false, method: request.method, path: request.url, headers }, reply => {
     response.writeHead(reply.statusCode || 502, reply.headers)
     reply.pipe(response)
   })
@@ -25,6 +25,7 @@ const server = http.createServer((request, response) => {
   })
   upstream.setTimeout(360000, () => upstream.destroy())
   request.on('aborted', () => upstream.destroy())
+  response.on('close', () => { if (!response.writableEnded) upstream.destroy() })
   request.pipe(upstream)
 })
 server.listen(5173, '0.0.0.0')

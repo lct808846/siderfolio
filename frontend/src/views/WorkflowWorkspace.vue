@@ -9,7 +9,6 @@ import { ApiError, apiUrl } from '../api'
 import { projectsApi } from '../api/projects'
 import { useProjects } from '../stores/projects'
 import { downloadWorkflowOutput, outputPath, workflowsApi } from '../api/workflows'
-import { takeWorkflowHandoff } from '../research-handoff'
 import ResultPanel from '../components/ResultPanel.vue'
 import type { AdsEvidenceParameters, ChatResponse, GaiaFieldParameters, ProjectDetail, Turn, WorkflowCreate, WorkflowDetail, WorkflowExecute, WorkflowOutput, WorkflowSummary, WorkflowTemplate } from '../types'
 
@@ -165,6 +164,11 @@ async function executePending() {
   })
 }
 async function download(output: WorkflowOutput) { await act(() => downloadWorkflowOutput(output)) }
+async function startNewWorkflow() {
+  await router.push(workflowBase.value)
+  editing.value = true
+  mobilePanel.value = 'steps'
+}
 async function copyParameters() {
   const r = run.value
   if (!r) return
@@ -193,23 +197,6 @@ watch(() => route.fullPath, () => {
   navigation++; run.value = null; project.value = null; pending.value = null; error.value = ''; message.value = ''
   editing.value = !route.params.runId
   mobilePanel.value = 'steps'
-  const handed = takeWorkflowHandoff()
-  if (handed) {
-    editing.value = true
-    templateId.value = handed.templateId
-    if (handed.name) name.value = handed.name
-    if (handed.templateId === 'gaia_field') {
-      if (handed.ra && handed.dec) { mode.value = 'coordinates'; ra.value = handed.ra; dec.value = handed.dec }
-      else if (handed.objectName) { mode.value = 'name'; objectName.value = handed.objectName }
-      if (handed.radius) radius.value = handed.radius
-      if (handed.limit) limit.value = handed.limit
-      if (handed.ruwe) ruwe.value = handed.ruwe
-      if (handed.snr) snr.value = handed.snr
-    } else if (handed.query) {
-      query.value = handed.query
-    }
-    message.value = '已从本地助手填入参数草稿，请核对后点击「创建待执行记录」。'
-  }
   const path = route.fullPath
   void refresh().catch(e => { if (route.fullPath === path) { report(e); mobilePanel.value = 'steps' } })
 }, { immediate: true })
@@ -223,7 +210,7 @@ watch(() => route.fullPath, () => {
       <WorkspacePaneHeader :level="2" title="科研流程" :subtitle="`${runs.length}/50`" />
       <div class="workspace-pane-body">
         <div class="compact-space-bar"><WorkspaceSpaceBar section="workflows" :project-id="activeProjectId" /></div>
-        <button type="button" class="plot-primary" :disabled="busy" @click="router.push(workflowBase); editing = true; mobilePanel = 'steps'">新建科研流程</button>
+        <button type="button" class="plot-primary" :disabled="busy" @click="startNewWorkflow">新建科研流程</button>
         <RouterLink v-for="item in runs" :key="item.id" class="project-item" :class="{selected:item.id===run?.id}" :to="`${workflowBase}/${item.id}`"><b>{{ item.name }}</b><div class="ui-pill-list" style="margin-top: 6px;"><span class="ui-pill" :class="statePill(item.state)">{{ state(item.state) }}</span><span class="ui-pill ui-pill-neutral">r{{ item.revision }}</span><span v-if="item.provenance!=='local'" class="ui-pill ui-pill-warning">导入只读</span></div></RouterLink>
       </div>
     </aside>
@@ -298,7 +285,7 @@ watch(() => route.fullPath, () => {
           <div class="ui-progress" role="progressbar" :aria-valuenow="run.steps.length ? Math.round((completed / run.steps.length) * 100) : 0" aria-valuemin="0" aria-valuemax="100"><div class="ui-progress-fill" :style="{ width: `${run.steps.length ? Math.round((completed / run.steps.length) * 100) : 0}%` }" /></div>
           <p v-if="run.provenance==='imported_unverified'" class="notice">导入只读 · 来源未经认证。包内哈希不证明来源真实性；需要重新查询时，复制参数并建立本机新运行。</p>
           <p v-if="run.error" class="notice danger">{{ run.error.message }} <code>{{ run.error.code }}</code><span v-if="run.error.code === 'gaia_timeout'"> 本次未取得数据；已完成步骤保留。等待服务恢复后，可核对并继续，不会自动重复执行。</span></p>
-          <div class="project-actions"><button v-if="canExecute" class="button-primary" :disabled="busy" @click="confirm('execute')">{{ run.state==='pending' ? '核对并启动' : '核对并继续' }}</button><button :disabled="busy" @click="copyParameters">复制参数，新建运行</button><RouterLink :to="{path:`/projects/${run.project_id}/overview`,query:{target_type:'workflow_run',target_id:run.id}}">关联本地原文证据 →</RouterLink><RouterLink v-if="snapshotId" :to="`/projects/${run.project_id}?snapshot=${snapshotId}`">查看保存快照 →</RouterLink><button :disabled="busy || run.state==='running' || !!pending" class="button-danger" @click="confirm('delete')">删除流程</button></div>
+          <div class="project-actions"><button v-if="canExecute" class="button-primary" :disabled="busy" @click="confirm('execute')">{{ run.state==='pending' ? '核对并启动' : '核对并继续' }}</button><button :disabled="busy" @click="copyParameters">复制参数，新建运行</button><RouterLink :to="{path:`/projects/${run.project_id}/overview`,query:{target_type:'workflow_run',target_id:run.id}}">关联本地原文证据 →</RouterLink><RouterLink v-if="snapshotId" :to="`/?project=${encodeURIComponent(run.project_id)}&snapshot=${encodeURIComponent(snapshotId)}`">查看保存快照 →</RouterLink><button :disabled="busy || run.state==='running' || !!pending" class="button-danger" @click="confirm('delete')">删除流程</button></div>
           <div v-if="pending" class="notice"><p>此请求还未确认结束。刷新只读取状态；下方按钮使用原请求编号核对，不会自动重放步骤。</p><code>{{ pending.client_request_id }}</code><button :disabled="busy" @click="executePending">用原请求编号核对</button></div>
           <dl class="ui-param-grid"><div v-for="(value, parameterKey) in run.parameters" :key="parameterKey" class="ui-param-tile"><dt>{{ parameterNames[parameterKey] || parameterKey }}</dt><dd>{{ parameterValue(String(parameterKey), value) }}</dd></div></dl>
           <details><summary>原始参数 JSON · 不随继续操作改变</summary><pre>{{ print(run.parameters) }}</pre></details>

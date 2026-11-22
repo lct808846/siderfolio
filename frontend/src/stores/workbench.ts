@@ -1,15 +1,20 @@
 import { defineStore } from 'pinia'
 import { api, ApiError } from '../api'
-import type { ArchivedConversation, ChatAttachment, Conversation, ConversationDetail, Turn } from '../types'
+import type { ArchivedConversation, ChatAttachment, ChatToolMode, Conversation, ConversationDetail, Turn } from '../types'
 
 export const useWorkbench = defineStore('workbench', {
-  state: () => ({ conversations: [] as Conversation[], archived: [] as ArchivedConversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[] } }),
+  state: () => ({ conversations: [] as Conversation[], archived: [] as ArchivedConversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, pendingTurn: null as null | { conversationId: string; message: string; attachments: ChatAttachment[]; toolMode?: ChatToolMode; sentAt: string }, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', errorTurnId: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[]; toolMode?: ChatToolMode } }),
   getters: {
     selectedTurn: state => state.turns.find(t => t.turn_id === state.selectedTurnId) || null,
     running: state => state.pending || state.turns.some(t => t.execution_status === 'running'),
   },
   actions: {
-    report(error: unknown) { this.error = error instanceof Error ? error.message : '操作未完成，请重试。'; this.errorCode = error instanceof ApiError ? error.code : 'unexpected_error' },
+    clearError() { this.error = ''; this.errorCode = ''; this.errorTurnId = '' },
+    report(error: unknown) {
+      this.error = error instanceof Error ? error.message : '操作未完成，请重试。'
+      this.errorCode = error instanceof ApiError ? error.code : 'unexpected_error'
+      this.errorTurnId = error instanceof ApiError ? error.turnId || '' : ''
+    },
     async refreshList() {
       const values = await api.list()
       const previous = new Map(this.conversations.map(value => [value.id, value]))
@@ -51,7 +56,7 @@ export const useWorkbench = defineStore('workbench', {
     async load(id: string) {
       const token = ++this.loadToken
       if (id !== this.current?.id) { this.current = null; this.turns = []; this.selectedTurnId = '' }
-      this.loading = true; this.error = ''; this.errorCode = ''
+      this.loading = true; this.clearError()
       try {
         const detail = await api.detail(id)
         const turns = await Promise.all(detail.turns.map(t => api.turn(id, t.turn_id)))
@@ -104,7 +109,7 @@ export const useWorkbench = defineStore('workbench', {
             return detail.id
           }
           this.current = detail; this.turns = []; this.selectedTurnId = ''; this.panel = 'chat'
-          this.error = ''; this.errorCode = ''
+          this.clearError()
           return detail.id
         }
         if (!persist) {
@@ -117,7 +122,7 @@ export const useWorkbench = defineStore('workbench', {
         if (token === this.loadToken) {
           this.current = { ...conversation, turns: [] }
           this.turns = []; this.selectedTurnId = ''; this.panel = 'chat'
-          this.error = ''; this.errorCode = ''
+          this.clearError()
         }
         await this.refreshList()
         return createdId
@@ -126,30 +131,36 @@ export const useWorkbench = defineStore('workbench', {
         return createdId
       } finally { if (persist) this.creating = false }
     },
-    async send(message: string, expectedConversationId?: string, model?: string, attachments: ChatAttachment[] = []) {
+    async send(message: string, expectedConversationId?: string, model?: string, attachments: ChatAttachment[] = [], toolMode?: ChatToolMode) {
       if (!this.current || this.running || this.creating || this.loading || !message.trim()) return
       if (expectedConversationId && this.current.id !== expectedConversationId) return
-      if (this.disconnectedRequest) { this.error = '上一条请求的状态尚未核对，请先恢复会话。'; return }
-      this.pending = true; this.error = ''; this.errorCode = ''
+      if (this.disconnectedRequest) { this.report(new ApiError('connection_lost', '上一条请求的状态尚未核对，请先恢复会话。')); return }
+      this.pending = true; this.clearError()
       const id = this.current.id
-      const request = { id, message: message.trim(), requestId: crypto.randomUUID(), revision: this.current.revision, model, attachments: attachments.map(item => ({ ...item, warnings: [...(item.warnings || [])] })) }
+      const request = { id, message: message.trim(), requestId: crypto.randomUUID(), revision: this.current.revision, model, attachments: attachments.map(item => ({ ...item, warnings: [...(item.warnings || [])] })), toolMode }
+      this.pendingTurn = { conversationId: id, message: request.message, attachments: request.attachments, toolMode: request.toolMode, sentAt: new Date().toISOString() }
+      let submitted = false
       try {
-        const turn = await api.submit(id, request.message, request.requestId, request.revision, request.model, request.attachments)
+        const turn = await api.submit(id, request.message, request.requestId, request.revision, request.model, request.attachments, request.toolMode)
+        submitted = true
         this.archived = this.archived.filter(item => item.id !== id)
         if (this.current?.id === id) { this.selectedTurnId = turn.turn_id; await this.load(id) }
         await this.refreshList()
       } catch (error) {
-        if (error instanceof ApiError && error.code === 'connection_lost') this.disconnectedRequest = request
+        const unconfirmed = !submitted && error instanceof ApiError && error.code === 'connection_lost'
+        if (unconfirmed) this.disconnectedRequest = request
         if (this.current?.id === id) {
           if (error instanceof ApiError && error.turnId) this.selectedTurnId = error.turnId
           await this.load(id)
         }
+        if (unconfirmed && !this.disconnectedRequest) return
         this.report(error)
-      } finally { this.pending = false }
+        if (!submitted && !unconfirmed) return 'rejected'
+      } finally { this.pending = false; this.pendingTurn = null }
     },
     async recover() {
       const id = this.disconnectedRequest?.id || this.current?.id
-      this.error = ''; this.errorCode = ''
+      this.clearError()
       if (id) await this.load(id)
       try { await this.refreshList() } catch (error) { this.report(error) }
     },
@@ -157,11 +168,12 @@ export const useWorkbench = defineStore('workbench', {
       const saved = this.disconnectedRequest
       if (!saved || this.pending) return
       this.pending = true
+      this.pendingTurn = { conversationId: saved.id, message: saved.message, attachments: saved.attachments || [], toolMode: saved.toolMode, sentAt: new Date().toISOString() }
       try {
         // Explicit user action reuses the original key and revision, never generates a duplicate.
-        const turn = await api.submit(saved.id, saved.message, saved.requestId, saved.revision, saved.model, saved.attachments)
+        const turn = await api.submit(saved.id, saved.message, saved.requestId, saved.revision, saved.model, saved.attachments, saved.toolMode)
         this.selectedTurnId = turn.turn_id; this.disconnectedRequest = null; await this.load(saved.id)
-      } catch (error) { this.report(error) } finally { this.pending = false }
+      } catch (error) { this.report(error) } finally { this.pending = false; this.pendingTurn = null }
     },
     async rename(title: string) {
       if (!this.current) return

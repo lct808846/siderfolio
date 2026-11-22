@@ -1,0 +1,45 @@
+[WebServer] (node:1788) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:35048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (7.8s)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Error: apiRequestContext.get: connect ECONNREFUSED 127.0.0.1:5289
+    Call log:
+      - → GET http://127.0.0.1:5289/api/v1/projects/7106ca36-0120-41c1-93cb-5efcff387e18
+        - user-agent: Playwright/1.64.1 (x64; windows 10.0) node/24.15
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+
+
+      133 |   } finally {
+      134 |     for (const id of ownedProjects) {
+    > 135 |       const response = await request.get(`/api/v1/projects/${id}`)
+          |                                      ^
+      136 |       if (response.ok()) { const p = await response.json(); await request.delete(`/api/v1/projects/${id}`, { data: { expected_revision: p.revision, confirm: true } }) }
+      137 |     }
+      138 |     for (const id of ownedConversations) await request.delete(`/api/v1/conversations/${id}`)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:135:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-roundtrip-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-roundtrip-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-roundtrip-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-roundtrip-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 

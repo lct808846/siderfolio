@@ -4,12 +4,23 @@ import type { ChatAttachment } from '../types'
 
 export interface AttachmentDraft { id: string; file: File; state: 'reading' | 'ready' | 'error'; error: string; data?: ChatAttachment }
 const requests = new Map<string, AbortController>()
+const rawFilesBySha = new Map<string, File>()
+function rememberRawFile(sha256: string, file: File) {
+  rawFilesBySha.delete(sha256)
+  rawFilesBySha.set(sha256, file)
+  while (rawFilesBySha.size > 24) {
+    const oldest = rawFilesBySha.keys().next().value
+    if (oldest === undefined) break
+    rawFilesBySha.delete(oldest)
+  }
+}
 export const useAttachments = defineStore('attachments', {
   state: () => ({ drafts: new Map<string, AttachmentDraft[]>(), notices: new Map<string, string>() }),
   getters: {
     rows: state => (scope: string): AttachmentDraft[] => state.drafts.get(scope) || [],
     ready: state => (scope: string): ChatAttachment[] => (state.drafts.get(scope) || []).flatMap(item => item.state === 'ready' && item.data ? [item.data] : []),
     blocked: state => (scope: string): boolean => (state.drafts.get(scope) || []).some(item => item.state !== 'ready'),
+    rawFile: () => (sha256: string): File | undefined => rawFilesBySha.get(sha256),
   },
   actions: {
     async add(scope: string, files: File[]) {
@@ -19,9 +30,9 @@ export const useAttachments = defineStore('attachments', {
       for (const file of files) {
         const rows = this.drafts.get(scope) || []
         if (rows.some(row => row.file.name === file.name && row.file.size === file.size && row.file.lastModified === file.lastModified)) continue
-        if (rows.length >= 3) { problems.push('每轮最多添加 3 个附件。'); break }
+        if (rows.length >= 3) { problems.push('每条消息最多添加 3 个附件。'); break }
         const extension = '.' + (file.name.split('.').at(-1) || '').toLowerCase()
-        if (!attachmentExtensions.has(extension)) { problems.push(`${file.name}：支持 PDF、DOCX、TXT、Markdown、CSV、JSON。`); continue }
+        if (!attachmentExtensions.has(extension)) { problems.push(`${file.name}：支持 PDF、DOCX、TXT、Markdown、CSV、TSV、JSON。`); continue }
         if (!file.size || file.size > attachmentFileLimit) { problems.push(`${file.name}：文件不能为空，单个最多 10 MiB。`); continue }
         const id = crypto.randomUUID()
         this.drafts.set(scope, [...rows, { id, file, state: 'reading', error: '' }])
@@ -40,7 +51,11 @@ export const useAttachments = defineStore('attachments', {
       try {
         const data = await parseAttachment(row.file, controller.signal)
         const latest = this.drafts.get(scope)?.find(item => item.id === id)
-        if (latest && !controller.signal.aborted) { latest.data = data; latest.state = 'ready' }
+        if (latest && !controller.signal.aborted) {
+          latest.data = data
+          latest.state = 'ready'
+          rememberRawFile(data.sha256, latest.file)
+        }
       } catch (error) {
         const latest = this.drafts.get(scope)?.find(item => item.id === id)
         if (latest && !controller.signal.aborted) { latest.state = 'error'; latest.error = error instanceof Error ? error.message : '附件解析失败。' }

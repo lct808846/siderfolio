@@ -15,7 +15,53 @@ def secret(name):
     return path.read_text(encoding="utf-8").strip()
 
 
+def _run_mcp_server():
+    """仅向独立 MCP Server 进程注入天文查询所需配置，排除数据库、认证、模型与代理凭据。"""
+    query_keys = {
+        "ADS_API_TOKEN",
+        "SIMBAD_TIMEOUT_SECONDS",
+        "ADS_TIMEOUT_SECONDS",
+        "GAIA_TIMEOUT_SECONDS",
+    }
+    try:
+        if Path("/run/secrets/backend_settings").is_file():
+            remote = json.loads(secret("backend_settings"))
+            if not isinstance(remote, dict):
+                raise ValueError("Unexpected backend settings")
+            for key in query_keys:
+                value = remote.get(key)
+                if value is None:
+                    continue
+                if not isinstance(value, str) or "\x00" in value:
+                    raise ValueError("Invalid query setting")
+                if value.strip():
+                    os.environ[key] = value
+                else:
+                    os.environ.pop(key, None)
+        for key in list(os.environ):
+            if key.upper().startswith(
+                (
+                    "DEEPSEEK_",
+                    "OPENAI_",
+                    "ANTHROPIC_",
+                    "GEMINI_",
+                    "ASTROAGENT_DATABASE_",
+                    "ASTROAGENT_AUTH_",
+                    "ASTROAGENT_PROXY_",
+                    "ASTROAGENT_PLOT_",
+                )
+            ):
+                os.environ.pop(key, None)
+    except Exception:
+        raise SystemExit(
+            "Container MCP configuration is invalid; check mounted query settings."
+        ) from None
+    os.execvp("python", ["python", "-m", "astroagent.mcp_server"])
+
+
 def main():
+    if sys.argv[1:] == ["mcp-server"]:
+        _run_mcp_server()
     try:
         password, proxy = secret("database_password"), secret("proxy_token")
         if not re.fullmatch(r"[0-9a-f]{64}", password) or not re.fullmatch(r"[0-9a-f]{64}", proxy):

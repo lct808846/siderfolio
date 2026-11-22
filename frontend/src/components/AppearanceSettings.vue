@@ -101,24 +101,58 @@ onMounted(() => {
             <span>科研流程</span>
           </div>
         </div>
-        <div class="appearance-live-body">
-          <div class="ui-pill-list">
-            <span class="ui-pill ui-pill-gaia">Gaia DR3 · ϖ = 7.36 mas</span>
-            <span class="ui-pill ui-pill-ads">ADS · 2024 A&amp;A</span>
-            <span class="ui-pill ui-pill-simbad">SIMBAD · M45</span>
-            <span class="ui-pill ui-pill-compute">REBOUND · IAS15</span>
-          </div>
-          <p class="appearance-live-reading">
-            昴星团（M45）核心区域 Gaia DR3 视差中位数约 7.36 mas，自行分布高度集中；可结合视差信噪比与 RUWE 筛选候选源，并在隔离环境中绘制观测色—星等图。
-          </p>
-          <div class="appearance-live-footer">
-            <div class="appearance-live-metric">
-              <span>样本能量精度 ΔE/|E₀|</span>
-              <b>1.42 × 10⁻¹⁴</b>
+        <div class="appearance-live-body" :class="{ 'has-astro-preview': appearance.astroBackdrop }">
+          <svg
+            v-if="appearance.astroBackdrop"
+            class="appearance-live-astro"
+            :class="{ 'is-static': !appearance.astroMotion || appearance.reducedMotion }"
+            viewBox="0 0 560 180"
+            fill="none"
+            preserveAspectRatio="xMidYMid slice"
+            aria-hidden="true"
+          >
+            <g transform="translate(468 62)">
+              <circle r="76" class="preview-astro-ring" stroke-dasharray="3 6" />
+              <circle r="48" class="preview-astro-ring-solid" />
+              <ellipse rx="106" ry="38" transform="rotate(-22)" class="preview-astro-ring-solid" />
+              <circle r="4.5" class="preview-astro-dot-secondary" />
+              <g class="preview-astro-orbit">
+                <circle cx="48" cy="0" r="3" class="preview-astro-dot-primary" />
+              </g>
+              <g class="preview-astro-orbit-ccw">
+                <g transform="translate(76 0)">
+                  <ellipse rx="8.5" ry="2.8" transform="rotate(-24)" class="preview-astro-ring-solid" />
+                  <circle r="3.4" class="preview-astro-dot-secondary" />
+                </g>
+              </g>
+            </g>
+            <path d="M 38 30 A 9 9 0 1 0 44 43 A 7 7 0 1 1 38 30 Z" class="preview-astro-dot-secondary" />
+            <polyline points="26,134 72,152 118,128 164,148 214,120" class="preview-astro-line" />
+            <circle cx="26" cy="134" r="2.2" class="preview-astro-dot-primary" />
+            <circle cx="72" cy="152" r="2.8" class="preview-astro-dot-secondary" />
+            <circle cx="118" cy="128" r="2.2" class="preview-astro-dot-primary" />
+            <circle cx="164" cy="148" r="2.5" class="preview-astro-dot-tertiary" />
+            <circle cx="214" cy="120" r="2.2" class="preview-astro-dot-primary" />
+          </svg>
+          <div class="appearance-live-glass-card">
+            <div class="ui-pill-list">
+              <span class="ui-pill ui-pill-gaia">Gaia DR3 · ϖ = 7.36 mas</span>
+              <span class="ui-pill ui-pill-ads">ADS · 2024 A&amp;A</span>
+              <span class="ui-pill ui-pill-simbad">SIMBAD · M45</span>
+              <span class="ui-pill ui-pill-compute">REBOUND · IAS15</span>
             </div>
-            <div class="appearance-live-actions">
-              <span class="appearance-demo-btn-secondary">次要操作</span>
-              <span class="appearance-demo-btn-primary">主要操作</span>
+            <p class="appearance-live-reading">
+              昴星团（M45）核心区域 Gaia DR3 视差中位数约 7.36 mas，自行分布高度集中；可结合视差信噪比与 RUWE 筛选候选源，并在隔离环境中绘制观测色—星等图。
+            </p>
+            <div class="appearance-live-footer">
+              <div class="appearance-live-metric">
+                <span>样本能量精度 ΔE/|E₀|</span>
+                <b>1.42 × 10⁻¹⁴</b>
+              </div>
+              <div class="appearance-live-actions">
+                <span class="appearance-demo-btn-secondary">次要操作</span>
+                <span class="appearance-demo-btn-primary">主要操作</span>
+              </div>
             </div>
           </div>
         </div>
@@ -326,12 +360,58 @@ onMounted(() => {
     </section>
 
     <section class="settings-group" aria-labelledby="appearance-surface-heading">
-      <h3 id="appearance-surface-heading">视觉质感与动效</h3>
+      <div class="settings-group-head">
+        <div>
+          <h3 id="appearance-surface-heading">视觉质感与性能控制</h3>
+          <p class="small muted">所有可能影响 GPU 渲染、合成层或电量消耗的视觉特效均支持独立开关，也可一键切换轻量性能模式。</p>
+        </div>
+        <div class="appearance-perf-actions">
+          <button
+            type="button"
+            class="appearance-perf-btn"
+            @click="appearance.setPerformanceMode(!appearance.isPerformanceMode)"
+          >
+            {{ appearance.isPerformanceMode ? '恢复全部视觉质感' : '一键性能模式' }}
+          </button>
+        </div>
+      </div>
 
       <label class="settings-row settings-switch-row">
         <div>
-          <h4>柔和背景氛围</h4>
-          <p>工作区外层画布呈现轻盈柔和的多点径向色彩过渡；关闭后切换为纯净单色底。</p>
+          <h4 class="appearance-effect-title">天文背景元素 <span class="appearance-perf-tag">SVG 渲染</span></h4>
+          <p>在页面整体背景呈现天球轨道、星座连线与星点，自动适配当前主题；关闭后直接卸载矢量背景层并恢复纯面板底面。</p>
+        </div>
+        <input
+          class="settings-switch"
+          type="checkbox"
+          role="switch"
+          :checked="appearance.astroBackdrop"
+          @change="appearance.update('astroBackdrop', ($event.target as HTMLInputElement).checked)"
+        />
+      </label>
+
+      <label class="settings-row settings-switch-row appearance-sub-switch" :class="{ 'is-muted': !appearance.astroBackdrop || appearance.reducedMotion }">
+        <div>
+          <h4 class="appearance-effect-title">背景动态效果 <span class="appearance-perf-tag">持续动画</span></h4>
+          <p>
+            开启轨道公转、星点呼吸与流星微光；关闭后保留静止星图并释放合成层。
+            <template v-if="appearance.astroBackdrop && appearance.reducedMotion">（已开启“减少界面动效”，当前已暂停）</template>
+          </p>
+        </div>
+        <input
+          class="settings-switch"
+          type="checkbox"
+          role="switch"
+          :checked="appearance.astroMotion"
+          :disabled="!appearance.astroBackdrop || appearance.reducedMotion"
+          @change="appearance.update('astroMotion', ($event.target as HTMLInputElement).checked)"
+        />
+      </label>
+
+      <label class="settings-row settings-switch-row">
+        <div>
+          <h4 class="appearance-effect-title">柔和背景氛围 <span class="appearance-perf-tag">渐变绘制</span></h4>
+          <p>工作区外层画布与银河光晕呈现多点径向色彩过渡；关闭后切换为纯净单色底，减少大面积渐变重绘。</p>
         </div>
         <input
           class="settings-switch"
@@ -344,8 +424,8 @@ onMounted(() => {
 
       <label class="settings-row settings-switch-row">
         <div>
-          <h4>侧栏与弹窗毛玻璃效果</h4>
-          <p>开启半透明背景模糊提升空间层次；若希望更低 GPU 负载或更锐利底色可关闭。</p>
+          <h4 class="appearance-effect-title">毛玻璃模糊效果 <span class="appearance-perf-tag">GPU 模糊</span></h4>
+          <p>为顶栏、侧栏、悬浮输入舱、下拉菜单、提示气泡与弹窗遮罩启用实时背景模糊；关闭后全局零 backdrop-filter 开销。</p>
         </div>
         <input
           class="settings-switch"
@@ -358,8 +438,22 @@ onMounted(() => {
 
       <label class="settings-row settings-switch-row">
         <div>
-          <h4>减少界面动效</h4>
-          <p>关闭卡片微抬升、淡入与光泽过渡动画，同时始终尊重系统级减弱动态设置。</p>
+          <h4 class="appearance-effect-title">物理光影与扩散阴影 <span class="appearance-perf-tag">阴影光栅</span></h4>
+          <p>为卡片、导航栏、输入舱与弹窗呈现多层扩散阴影、顶部 1px 物理内高光及微光扫线；关闭后切换为极简平面边框以降低绘制开销。</p>
+        </div>
+        <input
+          class="settings-switch"
+          type="checkbox"
+          role="switch"
+          :checked="appearance.surfaceShadows"
+          @change="appearance.update('surfaceShadows', ($event.target as HTMLInputElement).checked)"
+        />
+      </label>
+
+      <label class="settings-row settings-switch-row">
+        <div>
+          <h4 class="appearance-effect-title">减少界面动效 <span class="appearance-perf-tag">过渡动画</span></h4>
+          <p>关闭全部界面过渡、微光骨架屏、进度闪光、悬停与按压缩放动画，同时始终尊重系统级减弱动态设置。</p>
         </div>
         <input
           class="settings-switch"
@@ -370,7 +464,7 @@ onMounted(() => {
         />
       </label>
 
-      <p class="settings-footnote">外观偏好仅保存在当前浏览器本机存储中，即刻生效，不会上传或影响任何科研数据。</p>
+      <p class="settings-footnote">外观与性能偏好仅保存在当前浏览器本机存储中，即刻生效，不会上传或影响任何科研数据。</p>
     </section>
   </div>
 </template>
@@ -405,20 +499,36 @@ onMounted(() => {
 }
 
 .appearance-live-stage {
-  border: 1px solid var(--line);
+  position: relative;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-surface);
-  background: var(--paper);
+  background: var(--workspace-scene);
   overflow: hidden;
   box-shadow: var(--shadow-card);
 }
+.appearance-live-stage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1.5px;
+  background: var(--specular-sheen);
+  pointer-events: none;
+  z-index: 2;
+}
 
 .appearance-live-topbar {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 9px 14px;
   background: var(--topbar-bg);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   color: var(--topbar-ink);
   font-size: 12px;
 }
@@ -457,9 +567,138 @@ onMounted(() => {
 }
 
 .appearance-live-body {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  background: var(--workspace-scene);
+}
+
+.appearance-live-body > :not(.appearance-live-astro) {
+  position: relative;
+  z-index: 1;
+}
+
+.appearance-live-glass-card {
+  position: relative;
   display: grid;
   gap: 12px;
   padding: 16px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-card);
+  background: var(--specular-spot), var(--surface-glass-card);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: var(--shadow-card);
+}
+
+.appearance-live-astro {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.88;
+}
+
+.preview-astro-ring {
+  stroke: var(--astro-primary, var(--accent));
+  stroke-width: 1.25;
+  stroke-opacity: 0.72;
+}
+
+.preview-astro-ring-solid {
+  stroke: var(--astro-primary, var(--accent));
+  stroke-width: 1.45;
+  stroke-opacity: 0.85;
+}
+
+.preview-astro-line {
+  stroke: var(--astro-primary, var(--accent));
+  stroke-width: 1.25;
+  stroke-opacity: 0.68;
+  stroke-dasharray: 2 3;
+}
+
+.preview-astro-dot-primary {
+  fill: var(--astro-primary, var(--accent));
+  opacity: 0.94;
+}
+
+.preview-astro-dot-secondary {
+  fill: var(--astro-secondary, var(--accent));
+  opacity: 0.98;
+}
+
+.preview-astro-dot-tertiary {
+  fill: var(--astro-tertiary, var(--accent));
+  opacity: 0.95;
+}
+
+.preview-astro-orbit {
+  transform-origin: 0 0;
+  animation: preview-astro-spin 10s linear infinite;
+}
+
+.preview-astro-orbit-ccw {
+  transform-origin: 0 0;
+  animation: preview-astro-spin 18s linear infinite reverse;
+}
+
+.appearance-live-astro.is-static .preview-astro-orbit,
+.appearance-live-astro.is-static .preview-astro-orbit-ccw {
+  animation: none;
+}
+
+@keyframes preview-astro-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.appearance-sub-switch > div {
+  padding-left: 14px;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+}
+
+.appearance-sub-switch.is-muted > div {
+  opacity: 0.58;
+}
+
+.appearance-perf-actions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.appearance-perf-btn {
+  min-height: 32px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 550;
+}
+
+.appearance-effect-title {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.appearance-perf-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: var(--surface-tint);
+  color: var(--ink-tertiary, var(--muted));
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .appearance-live-reading {
@@ -522,6 +761,7 @@ onMounted(() => {
   border: 1px solid var(--button-primary-border);
   background: var(--button-primary-bg);
   color: #fff;
+  box-shadow: var(--button-primary-shadow);
 }
 
 .appearance-theme-grid {
@@ -536,27 +776,30 @@ onMounted(() => {
   display: grid;
   gap: 10px;
   align-content: start;
-  padding: 11px;
-  border: 1.5px solid var(--line);
+  padding: 12px;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-card);
-  background: var(--paper);
+  background: var(--specular-spot), var(--surface-glass-card);
   box-shadow: var(--shadow-card);
   color: var(--ink);
   text-align: left;
   cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
 }
 
 .theme-card:hover {
   transform: translateY(-2px);
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--line-strong));
   box-shadow: var(--shadow-card-hover);
-  background: var(--paper);
+}
+
+.theme-card:active {
+  transform: scale(0.98);
 }
 
 .theme-card.is-active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent), var(--shadow-card);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-card);
 }
 
 .theme-mockup {

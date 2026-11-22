@@ -1,0 +1,51 @@
+[WebServer] (node:39292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:7008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (14.2s)
+(node:34852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\browser\workflows.spec.ts:19:1 › fixed workflows create, confirm, execute, display outputs and restore after refresh (6.5s)
+  ok 3 [chromium] › tests\browser\workflows.spec.ts:68:1 › failed workflow resumes only after confirmation and retains attempts (3.5s)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Error: locator.click: Error: strict mode violation: locator('.settings-row').filter({ has: getByRole('heading', { name: '候选源复核项目', exact: true }) }).getByRole('button', { name: '管理与备份' }) resolved to 2 elements:
+        1) <button type="button">管理与备份</button> aka getByRole('button', { name: '管理与备份' }).first()
+        2) <button type="button">管理与备份</button> aka getByRole('button', { name: '管理与备份' }).nth(1)
+
+    Call log:
+      - waiting for locator('.settings-row').filter({ has: getByRole('heading', { name: '候选源复核项目', exact: true }) }).getByRole('button', { name: '管理与备份' })
+
+
+      11 |   const openManager = async (name: string) => {
+      12 |     const row = page.locator('.settings-row').filter({ has: page.getByRole('heading', { name, exact: true }) })
+    > 13 |     await row.getByRole('button', { name: '管理与备份' }).click()
+         |                                                      ^
+      14 |     const drawer = page.getByRole('dialog', { name: `管理项目：${name}` })
+      15 |     await expect(drawer).toBeVisible()
+      16 |     return drawer
+        at openManager (D:\project\astroagent\frontend\tests\browser\projects.spec.ts:13:54)
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:112:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-drawer-workflow-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-drawer-workflow-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-drawer-workflow-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-drawer-workflow-final\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+  2 passed (27.4s)

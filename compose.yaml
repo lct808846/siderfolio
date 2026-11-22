@@ -51,7 +51,7 @@ services:
     cpus: 0.5
     pids_limit: 64
     depends_on:
-      frontend: { condition: service_healthy }
+      frontend: { condition: service_healthy, restart: true }
     healthcheck:
       test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 20s
@@ -81,6 +81,7 @@ services:
       ASTROAGENT_RAG_MODEL_SHA256: "${EMBEDDING_MODEL_SHA256:-}"
       ASTROAGENT_RAG_SEMANTIC_ENABLED: "${RAG_SEMANTIC_ENABLED:-false}"
       ASTROAGENT_PLOT_EXECUTION_ENABLED: "false"
+      ASTROAGENT_ASTRONOMY_TOOL_TRANSPORT: "${ASTRONOMY_TOOL_TRANSPORT:-direct}"
     secrets: [database_password, proxy_token, backend_settings]
     volumes:
       - type: bind

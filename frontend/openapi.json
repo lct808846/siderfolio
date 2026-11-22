@@ -6,7 +6,7 @@
         "description": "年份等条件由用户写在实际检索式中，服务端不静默改写。",
         "properties": {
           "query": {
-            "description": "ADS 检索式",
+            "description": "ADS 检索式（URL 编码后至多 1000 字符，固定限定 database:astronomy）",
             "maxLength": 1000,
             "minLength": 1,
             "title": "Query",
@@ -14,6 +14,7 @@
           },
           "rows": {
             "default": 5,
+            "description": "单页返回文献数量，范围 1–10，默认 5；须满足 start + rows <= 100",
             "maximum": 10.0,
             "minimum": 1.0,
             "title": "Rows",
@@ -21,6 +22,7 @@
           },
           "sort": {
             "default": "relevance",
+            "description": "排序方式：relevance（相关性，默认）、date_desc（发表日期降序）、citation_count_desc（被引次数降序）",
             "enum": [
               "relevance",
               "date_desc",
@@ -31,6 +33,7 @@
           },
           "start": {
             "default": 0,
+            "description": "分页起始偏移（0 起），范围 0–90，默认 0；须满足 start + rows <= 100",
             "maximum": 90.0,
             "minimum": 0.0,
             "title": "Start",
@@ -174,6 +177,24 @@
         "title": "ArtifactRequest",
         "type": "object"
       },
+      "AstronomyTransportUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "transport": {
+            "enum": [
+              "direct",
+              "mcp"
+            ],
+            "title": "Transport",
+            "type": "string"
+          }
+        },
+        "required": [
+          "transport"
+        ],
+        "title": "AstronomyTransportUpdate",
+        "type": "object"
+      },
       "AvatarResponse": {
         "properties": {
           "avatar_url": {
@@ -251,6 +272,7 @@
               "text/plain",
               "text/markdown",
               "text/csv",
+              "text/tab-separated-values",
               "application/json"
             ],
             "title": "Media Type",
@@ -409,6 +431,20 @@
               "$ref": "#/components/schemas/LiteratureSearchResult"
             },
             "title": "Literature Results",
+            "type": "array"
+          },
+          "nbody_proposals": {
+            "items": {
+              "$ref": "#/components/schemas/NBodyProposalResult"
+            },
+            "title": "Nbody Proposals",
+            "type": "array"
+          },
+          "plot_proposals": {
+            "items": {
+              "$ref": "#/components/schemas/PlotProposalResult"
+            },
+            "title": "Plot Proposals",
             "type": "array"
           },
           "results": {
@@ -2030,6 +2066,20 @@
             "title": "Literature Results",
             "type": "array"
           },
+          "nbody_proposals": {
+            "items": {
+              "$ref": "#/components/schemas/ExportNBodyProposalResult"
+            },
+            "title": "Nbody Proposals",
+            "type": "array"
+          },
+          "plot_proposals": {
+            "items": {
+              "$ref": "#/components/schemas/ExportPlotProposalResult"
+            },
+            "title": "Plot Proposals",
+            "type": "array"
+          },
           "results": {
             "items": {
               "$ref": "#/components/schemas/ExportQueryResult"
@@ -2962,6 +3012,116 @@
         "title": "ExportManifest",
         "type": "object"
       },
+      "ExportNBodyParticleInput": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "粒子唯一编号，仅含英文字母、数字、下划线或连字符，如 Sun、Earth、Jupiter、A、B",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "mass": {
+            "description": "粒子质量，单位太阳质量 M_sun，范围 [1e-9, 1e6]",
+            "maximum": 1000000.0,
+            "minimum": 1e-09,
+            "title": "Mass",
+            "type": "number"
+          },
+          "position": {
+            "description": "三维初始位置 [x, y, z]，单位 AU",
+            "items": {
+              "maximum": 1000000.0,
+              "minimum": -1000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "velocity": {
+            "description": "三维初始速度 [vx, vy, vz]，单位 AU/yr（引力常数 G = 4*pi^2）",
+            "items": {
+              "maximum": 1000000.0,
+              "minimum": -1000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Velocity",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "mass",
+          "position",
+          "velocity"
+        ],
+        "title": "ExportNBodyParticleInput",
+        "type": "object"
+      },
+      "ExportNBodyProposalResult": {
+        "additionalProperties": false,
+        "properties": {
+          "duration": {
+            "title": "Duration",
+            "type": "number"
+          },
+          "engine": {
+            "enum": [
+              "rebound",
+              "petar"
+            ],
+            "title": "Engine",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "particles": {
+            "items": {
+              "$ref": "#/components/schemas/ExportNBodyParticleInput"
+            },
+            "title": "Particles",
+            "type": "array"
+          },
+          "samples": {
+            "title": "Samples",
+            "type": "integer"
+          },
+          "status": {
+            "const": "proposed",
+            "title": "Status",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "name",
+          "engine",
+          "duration",
+          "samples",
+          "particles",
+          "explanation",
+          "warnings"
+        ],
+        "title": "ExportNBodyProposalResult",
+        "type": "object"
+      },
       "ExportObjectData": {
         "additionalProperties": false,
         "properties": {
@@ -3142,6 +3302,140 @@
           "source"
         ],
         "title": "ExportPaperData",
+        "type": "object"
+      },
+      "ExportPlotProposalResult": {
+        "additionalProperties": false,
+        "properties": {
+          "attachment_filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Filename"
+          },
+          "axes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Axes",
+            "type": "object"
+          },
+          "chart": {
+            "enum": [
+              "scatter",
+              "line",
+              "histogram",
+              "errorbar"
+            ],
+            "title": "Chart",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "data_source_kind": {
+            "enum": [
+              "current_turn_gaia",
+              "history_turn_gaia",
+              "attachment_csv",
+              "project_dataset"
+            ],
+            "title": "Data Source Kind",
+            "type": "string"
+          },
+          "dataset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Id"
+          },
+          "engine": {
+            "enum": [
+              "python",
+              "gnuplot"
+            ],
+            "title": "Engine",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Filters",
+            "type": "array"
+          },
+          "gaia_query_index": {
+            "title": "Gaia Query Index",
+            "type": "integer"
+          },
+          "script": {
+            "title": "Script",
+            "type": "string"
+          },
+          "source_turn_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Turn Id"
+          },
+          "status": {
+            "const": "proposed",
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "data_source_kind",
+          "source_turn_id",
+          "gaia_query_index",
+          "attachment_filename",
+          "dataset_id",
+          "engine",
+          "chart",
+          "title",
+          "columns",
+          "axes",
+          "filters",
+          "explanation",
+          "warnings",
+          "script"
+        ],
+        "title": "ExportPlotProposalResult",
         "type": "object"
       },
       "ExportQueryResult": {
@@ -5058,36 +5352,6 @@
         "title": "LiteratureSearchResult",
         "type": "object"
       },
-      "LocalClear": {
-        "additionalProperties": false,
-        "properties": {
-          "confirm_clear_records": {
-            "const": true,
-            "title": "Confirm Clear Records",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "confirm_clear_records"
-        ],
-        "title": "LocalClear",
-        "type": "object"
-      },
-      "LocalInitialize": {
-        "additionalProperties": false,
-        "properties": {
-          "confirm_create_tables": {
-            "const": true,
-            "title": "Confirm Create Tables",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "confirm_create_tables"
-        ],
-        "title": "LocalInitialize",
-        "type": "object"
-      },
       "LocalPreferenceUpdate": {
         "additionalProperties": false,
         "properties": {
@@ -5245,16 +5509,12 @@
         "additionalProperties": false,
         "properties": {
           "action": {
-            "enum": [
-              "title",
-              "summary",
-              "format",
-              "extract"
-            ],
+            "const": "title",
             "title": "Action",
             "type": "string"
           },
           "automatic": {
+            "const": true,
             "title": "Automatic",
             "type": "boolean"
           },
@@ -5434,53 +5694,11 @@
         "title": "LocalTask",
         "type": "object"
       },
-      "LocalTaskRequest": {
-        "additionalProperties": false,
-        "properties": {
-          "action": {
-            "enum": [
-              "title",
-              "summary",
-              "format",
-              "extract"
-            ],
-            "title": "Action",
-            "type": "string"
-          },
-          "output_format": {
-            "default": "bullets",
-            "enum": [
-              "paragraph",
-              "bullets",
-              "markdown"
-            ],
-            "title": "Output Format",
-            "type": "string"
-          },
-          "text": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Text",
-            "type": "string"
-          }
-        },
-        "required": [
-          "action",
-          "text"
-        ],
-        "title": "LocalTaskRequest",
-        "type": "object"
-      },
       "LocalTaskView": {
         "additionalProperties": false,
         "properties": {
           "task": {
             "$ref": "#/components/schemas/LocalTask"
-          },
-          "warning": {
-            "default": "本地助手结果可能遗漏信息，请自行核对；文本按原文重建，建议不会自动执行工具。",
-            "title": "Warning",
-            "type": "string"
           }
         },
         "required": [
@@ -5663,6 +5881,114 @@
           "failed"
         ],
         "title": "ModelUsageEntry",
+        "type": "object"
+      },
+      "NBodyParticleInput": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "粒子唯一编号，仅含英文字母、数字、下划线或连字符，如 Sun、Earth、Jupiter、A、B",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "mass": {
+            "description": "粒子质量，单位太阳质量 M_sun，范围 [1e-9, 1e6]",
+            "maximum": 1000000.0,
+            "minimum": 1e-09,
+            "title": "Mass",
+            "type": "number"
+          },
+          "position": {
+            "description": "三维初始位置 [x, y, z]，单位 AU",
+            "items": {
+              "maximum": 1000000.0,
+              "minimum": -1000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "velocity": {
+            "description": "三维初始速度 [vx, vy, vz]，单位 AU/yr（引力常数 G = 4*pi^2）",
+            "items": {
+              "maximum": 1000000.0,
+              "minimum": -1000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Velocity",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "mass",
+          "position",
+          "velocity"
+        ],
+        "title": "NBodyParticleInput",
+        "type": "object"
+      },
+      "NBodyProposalResult": {
+        "properties": {
+          "duration": {
+            "title": "Duration",
+            "type": "number"
+          },
+          "engine": {
+            "default": "rebound",
+            "enum": [
+              "rebound",
+              "petar"
+            ],
+            "title": "Engine",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "particles": {
+            "items": {
+              "$ref": "#/components/schemas/NBodyParticleInput"
+            },
+            "title": "Particles",
+            "type": "array"
+          },
+          "samples": {
+            "title": "Samples",
+            "type": "integer"
+          },
+          "status": {
+            "const": "proposed",
+            "default": "proposed",
+            "title": "Status",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "duration",
+          "samples",
+          "particles",
+          "explanation"
+        ],
+        "title": "NBodyProposalResult",
         "type": "object"
       },
       "ObjectData": {
@@ -6140,6 +6466,39 @@
         "title": "PlotAppearance",
         "type": "object"
       },
+      "PlotCustomPlanRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "model_id": {
+            "default": "chat-proposal",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Model Id",
+            "type": "string"
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/PlotProposal"
+          },
+          "question": {
+            "default": "对话内绘图方案",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "proposal"
+        ],
+        "title": "PlotCustomPlanRequest",
+        "type": "object"
+      },
       "PlotDataPreview": {
         "additionalProperties": false,
         "properties": {
@@ -6591,6 +6950,133 @@
           "script"
         ],
         "title": "PlotProposal",
+        "type": "object"
+      },
+      "PlotProposalResult": {
+        "properties": {
+          "attachment_filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Filename"
+          },
+          "axes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Axes",
+            "type": "object"
+          },
+          "chart": {
+            "enum": [
+              "scatter",
+              "line",
+              "histogram",
+              "errorbar"
+            ],
+            "title": "Chart",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "data_source_kind": {
+            "enum": [
+              "current_turn_gaia",
+              "history_turn_gaia",
+              "attachment_csv",
+              "project_dataset"
+            ],
+            "title": "Data Source Kind",
+            "type": "string"
+          },
+          "dataset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Id"
+          },
+          "engine": {
+            "default": "python",
+            "enum": [
+              "python",
+              "gnuplot"
+            ],
+            "title": "Engine",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Filters",
+            "type": "array"
+          },
+          "gaia_query_index": {
+            "default": 0,
+            "title": "Gaia Query Index",
+            "type": "integer"
+          },
+          "script": {
+            "title": "Script",
+            "type": "string"
+          },
+          "source_turn_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Turn Id"
+          },
+          "status": {
+            "const": "proposed",
+            "default": "proposed",
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "data_source_kind",
+          "chart",
+          "title",
+          "columns",
+          "explanation",
+          "script"
+        ],
+        "title": "PlotProposalResult",
         "type": "object"
       },
       "PlotRunRequest": {
@@ -8739,6 +9225,15 @@
             "title": "Answering Provider",
             "type": "string"
           },
+          "astronomy_tool_transport": {
+            "default": "direct",
+            "enum": [
+              "direct",
+              "mcp"
+            ],
+            "title": "Astronomy Tool Transport",
+            "type": "string"
+          },
           "business_budget_bytes": {
             "title": "Business Budget Bytes",
             "type": "integer"
@@ -8810,6 +9305,46 @@
           "embedding_model": {
             "title": "Embedding Model",
             "type": "string"
+          },
+          "mcp_protocol_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Protocol Version"
+          },
+          "mcp_server_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Server Version"
+          },
+          "mcp_status": {
+            "default": "disabled",
+            "enum": [
+              "disabled",
+              "ready",
+              "configured",
+              "error"
+            ],
+            "title": "Mcp Status",
+            "type": "string"
+          },
+          "mcp_tools": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Mcp Tools",
+            "type": "array"
           },
           "message": {
             "title": "Message",
@@ -9856,6 +10391,22 @@
               }
             ],
             "title": "Model"
+          },
+          "tool_mode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "auto",
+                  "plot",
+                  "compute"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Mode"
           }
         },
         "required": [
@@ -10725,7 +11276,7 @@
   },
   "info": {
     "title": "AstroAgent",
-    "version": "1.7.0"
+    "version": "1.8.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -13083,7 +13634,7 @@
         },
         "summary": "Title State",
         "tags": [
-          "local-assistant"
+          "local-titles"
         ]
       }
     },
@@ -13518,9 +14069,9 @@
         ]
       }
     },
-    "/api/v1/local-assistant": {
+    "/api/v1/local-titles": {
       "get": {
-        "operationId": "status_api_v1_local_assistant_get",
+        "operationId": "status_api_v1_local_titles_get",
         "responses": {
           "200": {
             "content": {
@@ -13585,349 +14136,13 @@
         },
         "summary": "Status",
         "tags": [
-          "local-assistant"
+          "local-titles"
         ]
       }
     },
-    "/api/v1/local-assistant/clear": {
-      "post": {
-        "operationId": "clear_api_v1_local_assistant_clear_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocalClear"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LocalStatus"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Not Found"
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Conflict"
-          },
-          "413": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Request Entity Too Large"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Service Unavailable"
-          }
-        },
-        "summary": "Clear",
-        "tags": [
-          "local-assistant"
-        ]
-      }
-    },
-    "/api/v1/local-assistant/initialize": {
-      "post": {
-        "operationId": "initialize_api_v1_local_assistant_initialize_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocalInitialize"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LocalStatus"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Not Found"
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Conflict"
-          },
-          "413": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Request Entity Too Large"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Service Unavailable"
-          }
-        },
-        "summary": "Initialize",
-        "tags": [
-          "local-assistant"
-        ]
-      }
-    },
-    "/api/v1/local-assistant/jobs/{task_id}": {
-      "get": {
-        "operationId": "task_api_v1_local_assistant_jobs__task_id__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "task_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Task Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LocalTaskView"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Not Found"
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Conflict"
-          },
-          "413": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Request Entity Too Large"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Service Unavailable"
-          }
-        },
-        "summary": "Task",
-        "tags": [
-          "local-assistant"
-        ]
-      },
+    "/api/v1/local-titles/preferences": {
       "put": {
-        "operationId": "submit_api_v1_local_assistant_jobs__task_id__put",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "task_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Task Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocalTaskRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LocalTaskView"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Not Found"
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Conflict"
-          },
-          "413": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Request Entity Too Large"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Service Unavailable"
-          }
-        },
-        "summary": "Submit",
-        "tags": [
-          "local-assistant"
-        ]
-      }
-    },
-    "/api/v1/local-assistant/preferences": {
-      "put": {
-        "operationId": "preferences_api_v1_local_assistant_preferences_put",
+        "operationId": "preferences_api_v1_local_titles_preferences_put",
         "requestBody": {
           "content": {
             "application/json": {
@@ -14002,13 +14217,13 @@
         },
         "summary": "Preferences",
         "tags": [
-          "local-assistant"
+          "local-titles"
         ]
       }
     },
-    "/api/v1/local-assistant/probe": {
+    "/api/v1/local-titles/probe": {
       "post": {
-        "operationId": "probe_api_v1_local_assistant_probe_post",
+        "operationId": "probe_api_v1_local_titles_probe_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -14083,7 +14298,7 @@
         },
         "summary": "Probe",
         "tags": [
-          "local-assistant"
+          "local-titles"
         ]
       }
     },
@@ -19896,6 +20111,109 @@
         ]
       }
     },
+    "/api/v1/projects/{project_id}/plotting/plans/{plan_id}/custom": {
+      "put": {
+        "operationId": "custom_plan_api_v1_projects__project_id__plotting_plans__plan_id__custom_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Plan Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlotCustomPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlotOperation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Custom Plan",
+        "tags": [
+          "plotting"
+        ]
+      }
+    },
     "/api/v1/projects/{project_id}/plotting/runs/{run_id}": {
       "put": {
         "operationId": "run_api_v1_projects__project_id__plotting_runs__run_id__put",
@@ -22481,6 +22799,47 @@
         "summary": "Output",
         "tags": [
           "workflows"
+        ]
+      }
+    },
+    "/api/v1/setup/astronomy-transport": {
+      "put": {
+        "operationId": "update_astronomy_transport_api_v1_setup_astronomy_transport_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AstronomyTransportUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Astronomy Transport",
+        "tags": [
+          "setup"
         ]
       }
     },

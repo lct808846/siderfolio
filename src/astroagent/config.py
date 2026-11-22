@@ -97,6 +97,13 @@ class LocalSettings(BaseSettings):
     local_model_timeout_seconds: int = Field(default=120, ge=5, le=120)
     local_model_threads: int = Field(default=4, ge=1, le=8)
     local_model_queue_size: int = Field(default=2, ge=0, le=4)
+    astronomy_tool_transport: Literal["direct", "mcp"] = "direct"
+    mcp_startup_timeout_seconds: float = Field(default=15.0, ge=1.0, le=60.0)
+    mcp_call_timeout_seconds: float = Field(default=60.0, ge=1.0, le=180.0)
+    mcp_max_message_bytes: int = Field(default=8 * 1024 * 1024, ge=64 * 1024, le=16 * 1024 * 1024)
+    mcp_max_request_bytes: int = Field(default=256 * 1024, ge=4 * 1024, le=1024 * 1024)
+    mcp_pool_size: int = Field(default=2, ge=1, le=4)
+    mcp_acquire_timeout_seconds: float = Field(default=5.0, ge=0.1, le=60.0)
 
     @field_validator("local_model_url")
     @classmethod

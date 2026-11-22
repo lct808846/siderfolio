@@ -1,0 +1,15 @@
+{
+  "version": "1.8.0",
+  "acceptance_base": "b1c0cc4a878ab72f8db91f19bda865d3d264e967",
+  "acceptance_fingerprint": "7a7b027505b43905fa5c87812ebe9b67b668413cb20d87a5c29f68ce002c5657",
+  "accepted_files_rechecked": 139,
+  "release_documentation": [
+    "README.md",
+    "docs/ROADMAP.md",
+    "docs/PROJECT_PLAN_V1.8.md",
+    "docs/development/v1.8.0/RELEASE.md"
+  ],
+  "metadata_consistent": true,
+  "whitespace_check": "passed",
+  "credential_check": "passed"
+}

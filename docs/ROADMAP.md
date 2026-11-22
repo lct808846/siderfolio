@@ -1,8 +1,10 @@
 # AstroAgent 版本路线图
 
-**更新日期** 2026-11-21
+**更新日期** 2026-11-22
 
-当前正式源码版本为 V1.7.0，支持项目后台计算和 REBOUND、PeTar 小规模 N 体模拟。 [发布说明](development/v1.7.0/RELEASE.md) · [增量验收](test-records/v1.7.0/changed-parts/20261121T092707Z/README.md)
+V1.8.0 提供独立 Astronomy MCP Server、对话内绘图及 N 体模拟。AstroAgent 与独立客户端均已实测 SIMBAD、ADS、Gaia。 [发布说明](development/v1.8.0/RELEASE.md) · [增量验收](test-records/v1.8.0/changed-parts/20261122T082958Z/README.md)
+
+V1.7.0 引入项目后台计算和 REBOUND、PeTar 小规模 N 体模拟。 [V1.7 发布说明](development/v1.7.0/RELEASE.md)
 
 V1.6.0 的身份、模型服务商和个人资料见[发布说明](development/v1.6.0/RELEASE.md)。V1.5 及更早版本的开发和验收状态见下文历史记录。
 
@@ -39,7 +41,7 @@ V1.6.0 的身份、模型服务商和个人资料见[发布说明](development/v
 | **V1.1** | 观测日志界面重构 | 统一全局/项目导航、可切换面板、证据阅读层级和明确的设置状态 | 各工作区桌面/窄屏/错误状态、键盘和原业务回归；本轮源码已写入，待用户安排验收 |
 | **V1.6** | 邮箱注册登录与后台管理 | 邮箱激活、强制登录、管理员后台和用户数据隔离 | V1.6.0 正式源码已发布，实际覆盖见[发布说明](development/v1.6.0/RELEASE.md) |
 | **V1.7** | 科研计算任务中心 | 后台任务、REBOUND 与 PeTar 小规模模拟、可视化与可复现实验记录 | [发布说明](development/v1.7.0/RELEASE.md) · [增量验收](test-records/v1.7.0/changed-parts/20261121T092707Z/README.md) |
-| **V1.8** | Astronomy MCP Server | 首批开放 SIMBAD、Gaia、ADS 查询工具 | 待验证 AstroAgent 和另一个独立 MCP 客户端 |
+| **V1.8** | Astronomy MCP Server | 通过本地 MCP 服务提供 SIMBAD、ADS、Gaia 三项只读查询，将绘图和 N 体模拟接入对话 | [开发文档](PROJECT_PLAN_V1.8.md) · [增量验收](test-records/v1.8.0/changed-parts/20261122T082958Z/README.md) |
 | **V1.9** | 评估与追踪 | 评估集、模型及工具调用跟踪、任务监控 | 待核对证据质量、失败诊断、延迟、成本与资源统计 |
 | **V1.x** | 经验证的扩展 | 按需求增加单项数据源、交叉匹配或文献管理集成；每项另立契约 | 科学误差、范围、质量/性能边界及兼容性均有独立验收 |
 | **V2.0** | 生产部署与多用户能力增强 | 在 V1.6 身份权限及用户隔离基础上，扩展服务端异步任务、配额、审计/Tracing、运行评估、备份与部署 | 跨用户数据/任务隔离、安全与压力测试、故障恢复和运维验收 |
@@ -115,7 +117,9 @@ V1.1以既定 UI 重构为重点，范围见 [观测日志界面重构](PROJECT_
 
 V1.7 完成用户确认、后台队列、取消和恢复、REBOUND 与 PeTar、轨迹与能量诊断，以及可重跑的实验记录。两种程序共享小规模孤立点质量系统的输入范围。[V1.7 开发文档](PROJECT_PLAN_V1.7.md)
 
-V1.8 独立交付查询类 MCP 工具。V1.9 扩展评估集与运行追踪，为后续架构决策提供质量、延迟和成本证据。V2.x 再按实际需求验证 Multi-Agent。
+V1.8 规划可独立启动的 MCP 服务及 AstroAgent 客户端接入，首版使用本地 `stdio`。 [V1.8 开发文档](PROJECT_PLAN_V1.8.md)
+
+V1.9 扩展评估集与运行追踪，为后续架构决策提供质量、延迟和成本证据。V2.x 再按实际需求验证 Multi-Agent。
 
 ### V2.0：生产运行
 

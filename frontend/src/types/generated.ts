@@ -794,7 +794,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/local-assistant": {
+    "/api/v1/local-titles": {
         parameters: {
             query?: never;
             header?: never;
@@ -802,7 +802,7 @@ export interface paths {
             cookie?: never;
         };
         /** Status */
-        get: operations["status_api_v1_local_assistant_get"];
+        get: operations["status_api_v1_local_titles_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -811,59 +811,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/local-assistant/clear": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Clear */
-        post: operations["clear_api_v1_local_assistant_clear_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/local-assistant/initialize": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Initialize */
-        post: operations["initialize_api_v1_local_assistant_initialize_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/local-assistant/jobs/{task_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Task */
-        get: operations["task_api_v1_local_assistant_jobs__task_id__get"];
-        /** Submit */
-        put: operations["submit_api_v1_local_assistant_jobs__task_id__put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/local-assistant/preferences": {
+    "/api/v1/local-titles/preferences": {
         parameters: {
             query?: never;
             header?: never;
@@ -872,7 +820,7 @@ export interface paths {
         };
         get?: never;
         /** Preferences */
-        put: operations["preferences_api_v1_local_assistant_preferences_put"];
+        put: operations["preferences_api_v1_local_titles_preferences_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -880,7 +828,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/local-assistant/probe": {
+    "/api/v1/local-titles/probe": {
         parameters: {
             query?: never;
             header?: never;
@@ -890,7 +838,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Probe */
-        post: operations["probe_api_v1_local_assistant_probe_post"];
+        post: operations["probe_api_v1_local_titles_probe_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1659,6 +1607,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects/{project_id}/plotting/plans/{plan_id}/custom": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Custom Plan */
+        put: operations["custom_plan_api_v1_projects__project_id__plotting_plans__plan_id__custom_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects/{project_id}/plotting/runs/{run_id}": {
         parameters: {
             query?: never;
@@ -1989,6 +1954,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/setup/astronomy-transport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Astronomy Transport */
+        put: operations["update_astronomy_transport_api_v1_setup_astronomy_transport_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/setup/initialize": {
         parameters: {
             query?: never;
@@ -2089,22 +2071,25 @@ export interface components {
         AdsEvidenceParameters: {
             /**
              * Query
-             * @description ADS 检索式
+             * @description ADS 检索式（URL 编码后至多 1000 字符，固定限定 database:astronomy）
              */
             query: string;
             /**
              * Rows
+             * @description 单页返回文献数量，范围 1–10，默认 5；须满足 start + rows <= 100
              * @default 5
              */
             rows: number;
             /**
              * Sort
+             * @description 排序方式：relevance（相关性，默认）、date_desc（发表日期降序）、citation_count_desc（被引次数降序）
              * @default relevance
              * @enum {string}
              */
             sort: "relevance" | "date_desc" | "citation_count_desc";
             /**
              * Start
+             * @description 分页起始偏移（0 起），范围 0–90，默认 0；须满足 start + rows <= 100
              * @default 0
              */
             start: number;
@@ -2164,6 +2149,14 @@ export interface components {
             /** Plots */
             plots?: components["schemas"]["PlotSpec"][];
         };
+        /** AstronomyTransportUpdate */
+        AstronomyTransportUpdate: {
+            /**
+             * Transport
+             * @enum {string}
+             */
+            transport: "direct" | "mcp";
+        };
         /** AvatarResponse */
         AvatarResponse: {
             /** Avatar Url */
@@ -2202,7 +2195,7 @@ export interface components {
              * Media Type
              * @enum {string}
              */
-            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "application/json";
+            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "text/tab-separated-values" | "application/json";
             /** Sha256 */
             sha256: string;
             /** Size */
@@ -2253,6 +2246,10 @@ export interface components {
             gaia_results?: components["schemas"]["GaiaQueryResult"][];
             /** Literature Results */
             literature_results?: components["schemas"]["LiteratureSearchResult"][];
+            /** Nbody Proposals */
+            nbody_proposals?: components["schemas"]["NBodyProposalResult"][];
+            /** Plot Proposals */
+            plot_proposals?: components["schemas"]["PlotProposalResult"][];
             /** Results */
             results?: components["schemas"]["QueryResult"][];
             /** Sources */
@@ -2850,6 +2847,10 @@ export interface components {
             gaia_results: components["schemas"]["ExportGaiaQueryResult"][];
             /** Literature Results */
             literature_results: components["schemas"]["ExportLiteratureSearchResult"][];
+            /** Nbody Proposals */
+            nbody_proposals?: components["schemas"]["ExportNBodyProposalResult"][];
+            /** Plot Proposals */
+            plot_proposals?: components["schemas"]["ExportPlotProposalResult"][];
             /** Results */
             results: components["schemas"]["ExportQueryResult"][];
             /** Sources */
@@ -3185,6 +3186,54 @@ export interface components {
              */
             source_authenticity_verified: false;
         };
+        /** ExportNBodyParticleInput */
+        ExportNBodyParticleInput: {
+            /**
+             * Id
+             * @description 粒子唯一编号，仅含英文字母、数字、下划线或连字符，如 Sun、Earth、Jupiter、A、B
+             */
+            id: string;
+            /**
+             * Mass
+             * @description 粒子质量，单位太阳质量 M_sun，范围 [1e-9, 1e6]
+             */
+            mass: number;
+            /**
+             * Position
+             * @description 三维初始位置 [x, y, z]，单位 AU
+             */
+            position: number[];
+            /**
+             * Velocity
+             * @description 三维初始速度 [vx, vy, vz]，单位 AU/yr（引力常数 G = 4*pi^2）
+             */
+            velocity: number[];
+        };
+        /** ExportNBodyProposalResult */
+        ExportNBodyProposalResult: {
+            /** Duration */
+            duration: number;
+            /**
+             * Engine
+             * @enum {string}
+             */
+            engine: "rebound" | "petar";
+            /** Explanation */
+            explanation: string;
+            /** Name */
+            name: string;
+            /** Particles */
+            particles: components["schemas"]["ExportNBodyParticleInput"][];
+            /** Samples */
+            samples: number;
+            /**
+             * Status
+             * @constant
+             */
+            status: "proposed";
+            /** Warnings */
+            warnings: string[];
+        };
         /** ExportObjectData */
         ExportObjectData: {
             /** Coordinate Bibcode */
@@ -3224,6 +3273,53 @@ export interface components {
             title: string | null;
             /** Year */
             year: number | null;
+        };
+        /** ExportPlotProposalResult */
+        ExportPlotProposalResult: {
+            /** Attachment Filename */
+            attachment_filename: string | null;
+            /** Axes */
+            axes: {
+                [key: string]: string;
+            };
+            /**
+             * Chart
+             * @enum {string}
+             */
+            chart: "scatter" | "line" | "histogram" | "errorbar";
+            /** Columns */
+            columns: string[];
+            /**
+             * Data Source Kind
+             * @enum {string}
+             */
+            data_source_kind: "current_turn_gaia" | "history_turn_gaia" | "attachment_csv" | "project_dataset";
+            /** Dataset Id */
+            dataset_id: string | null;
+            /**
+             * Engine
+             * @enum {string}
+             */
+            engine: "python" | "gnuplot";
+            /** Explanation */
+            explanation: string;
+            /** Filters */
+            filters: string[];
+            /** Gaia Query Index */
+            gaia_query_index: number;
+            /** Script */
+            script: string;
+            /** Source Turn Id */
+            source_turn_id: string | null;
+            /**
+             * Status
+             * @constant
+             */
+            status: "proposed";
+            /** Title */
+            title: string;
+            /** Warnings */
+            warnings: string[];
         };
         /** ExportQueryResult */
         ExportQueryResult: {
@@ -3894,22 +3990,6 @@ export interface components {
             /** Total Found */
             total_found?: number | null;
         };
-        /** LocalClear */
-        LocalClear: {
-            /**
-             * Confirm Clear Records
-             * @constant
-             */
-            confirm_clear_records: true;
-        };
-        /** LocalInitialize */
-        LocalInitialize: {
-            /**
-             * Confirm Create Tables
-             * @constant
-             */
-            confirm_create_tables: true;
-        };
         /** LocalPreferenceUpdate */
         LocalPreferenceUpdate: {
             /** Auto Titles */
@@ -3983,11 +4063,14 @@ export interface components {
         LocalTask: {
             /**
              * Action
-             * @enum {string}
+             * @constant
              */
-            action: "title" | "summary" | "format" | "extract";
-            /** Automatic */
-            automatic: boolean;
+            action: "title";
+            /**
+             * Automatic
+             * @constant
+             */
+            automatic: true;
             /** Baseline Title */
             baseline_title?: string | null;
             /** Completed At */
@@ -4044,30 +4127,9 @@ export interface components {
                 [key: string]: unknown;
             };
         };
-        /** LocalTaskRequest */
-        LocalTaskRequest: {
-            /**
-             * Action
-             * @enum {string}
-             */
-            action: "title" | "summary" | "format" | "extract";
-            /**
-             * Output Format
-             * @default bullets
-             * @enum {string}
-             */
-            output_format: "paragraph" | "bullets" | "markdown";
-            /** Text */
-            text: string;
-        };
         /** LocalTaskView */
         LocalTaskView: {
             task: components["schemas"]["LocalTask"];
-            /**
-             * Warning
-             * @default 本地助手结果可能遗漏信息，请自行核对；文本按原文重建，建议不会自动执行工具。
-             */
-            warning: string;
         };
         /** LoginInput */
         LoginInput: {
@@ -4137,6 +4199,56 @@ export interface components {
             succeeded: number;
             /** Total Tokens */
             total_tokens?: number | null;
+        };
+        /** NBodyParticleInput */
+        NBodyParticleInput: {
+            /**
+             * Id
+             * @description 粒子唯一编号，仅含英文字母、数字、下划线或连字符，如 Sun、Earth、Jupiter、A、B
+             */
+            id: string;
+            /**
+             * Mass
+             * @description 粒子质量，单位太阳质量 M_sun，范围 [1e-9, 1e6]
+             */
+            mass: number;
+            /**
+             * Position
+             * @description 三维初始位置 [x, y, z]，单位 AU
+             */
+            position: number[];
+            /**
+             * Velocity
+             * @description 三维初始速度 [vx, vy, vz]，单位 AU/yr（引力常数 G = 4*pi^2）
+             */
+            velocity: number[];
+        };
+        /** NBodyProposalResult */
+        NBodyProposalResult: {
+            /** Duration */
+            duration: number;
+            /**
+             * Engine
+             * @default rebound
+             * @enum {string}
+             */
+            engine: "rebound" | "petar";
+            /** Explanation */
+            explanation: string;
+            /** Name */
+            name: string;
+            /** Particles */
+            particles: components["schemas"]["NBodyParticleInput"][];
+            /** Samples */
+            samples: number;
+            /**
+             * Status
+             * @default proposed
+             * @constant
+             */
+            status: "proposed";
+            /** Warnings */
+            warnings?: string[];
         };
         /** ObjectData */
         ObjectData: {
@@ -4313,6 +4425,22 @@ export interface components {
              */
             y_label: string;
         };
+        /** PlotCustomPlanRequest */
+        PlotCustomPlanRequest: {
+            /** Dataset Id */
+            dataset_id: string;
+            /**
+             * Model Id
+             * @default chat-proposal
+             */
+            model_id: string;
+            proposal: components["schemas"]["PlotProposal"];
+            /**
+             * Question
+             * @default 对话内绘图方案
+             */
+            question: string;
+        };
         /** PlotDataPreview */
         PlotDataPreview: {
             /** Columns */
@@ -4475,6 +4603,58 @@ export interface components {
             title: string;
             /** Warnings */
             warnings: string[];
+        };
+        /** PlotProposalResult */
+        PlotProposalResult: {
+            /** Attachment Filename */
+            attachment_filename?: string | null;
+            /** Axes */
+            axes?: {
+                [key: string]: string;
+            };
+            /**
+             * Chart
+             * @enum {string}
+             */
+            chart: "scatter" | "line" | "histogram" | "errorbar";
+            /** Columns */
+            columns: string[];
+            /**
+             * Data Source Kind
+             * @enum {string}
+             */
+            data_source_kind: "current_turn_gaia" | "history_turn_gaia" | "attachment_csv" | "project_dataset";
+            /** Dataset Id */
+            dataset_id?: string | null;
+            /**
+             * Engine
+             * @default python
+             * @enum {string}
+             */
+            engine: "python" | "gnuplot";
+            /** Explanation */
+            explanation: string;
+            /** Filters */
+            filters?: string[];
+            /**
+             * Gaia Query Index
+             * @default 0
+             */
+            gaia_query_index: number;
+            /** Script */
+            script: string;
+            /** Source Turn Id */
+            source_turn_id?: string | null;
+            /**
+             * Status
+             * @default proposed
+             * @constant
+             */
+            status: "proposed";
+            /** Title */
+            title: string;
+            /** Warnings */
+            warnings?: string[];
         };
         /** PlotRunRequest */
         PlotRunRequest: {
@@ -5262,6 +5442,12 @@ export interface components {
             answering_model: string;
             /** Answering Provider */
             answering_provider: string;
+            /**
+             * Astronomy Tool Transport
+             * @default direct
+             * @enum {string}
+             */
+            astronomy_tool_transport: "direct" | "mcp";
             /** Business Budget Bytes */
             business_budget_bytes: number;
             /** Code */
@@ -5292,6 +5478,18 @@ export interface components {
             embedding_dimension: number;
             /** Embedding Model */
             embedding_model: string;
+            /** Mcp Protocol Version */
+            mcp_protocol_version?: string | null;
+            /** Mcp Server Version */
+            mcp_server_version?: string | null;
+            /**
+             * Mcp Status
+             * @default disabled
+             * @enum {string}
+             */
+            mcp_status: "disabled" | "ready" | "configured" | "error";
+            /** Mcp Tools */
+            mcp_tools?: string[];
             /** Message */
             message: string;
             /** Ready */
@@ -5615,6 +5813,8 @@ export interface components {
             message: string;
             /** Model */
             model?: string | null;
+            /** Tool Mode */
+            tool_mode?: ("auto" | "plot" | "compute") | null;
         };
         /** TurnSummary */
         TurnSummary: {
@@ -8203,7 +8403,7 @@ export interface operations {
             };
         };
     };
-    status_api_v1_local_assistant_get: {
+    status_api_v1_local_titles_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -8268,283 +8468,7 @@ export interface operations {
             };
         };
     };
-    clear_api_v1_local_assistant_clear_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LocalClear"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LocalStatus"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Request Entity Too Large */
-            413: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unprocessable Entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Service Unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    initialize_api_v1_local_assistant_initialize_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LocalInitialize"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LocalStatus"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Request Entity Too Large */
-            413: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unprocessable Entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Service Unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    task_api_v1_local_assistant_jobs__task_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                task_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LocalTaskView"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Request Entity Too Large */
-            413: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unprocessable Entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Service Unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    submit_api_v1_local_assistant_jobs__task_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                task_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LocalTaskRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LocalTaskView"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Request Entity Too Large */
-            413: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unprocessable Entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Service Unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    preferences_api_v1_local_assistant_preferences_put: {
+    preferences_api_v1_local_titles_preferences_put: {
         parameters: {
             query?: never;
             header?: never;
@@ -8613,7 +8537,7 @@ export interface operations {
             };
         };
     };
-    probe_api_v1_local_assistant_probe_post: {
+    probe_api_v1_local_titles_probe_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -12949,6 +12873,78 @@ export interface operations {
             };
         };
     };
+    custom_plan_api_v1_projects__project_id__plotting_plans__plan_id__custom_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlotCustomPlanRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlotOperation"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     run_api_v1_projects__project_id__plotting_runs__run_id__put: {
         parameters: {
             query?: never;
@@ -14851,6 +14847,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_astronomy_transport_api_v1_setup_astronomy_transport_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AstronomyTransportUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

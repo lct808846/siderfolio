@@ -1,0 +1,49 @@
+[WebServer] (node:26376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:26716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations (16.1s)
+
+
+  1) [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator: getByRole('dialog', { name: '管理项目：候选源复核项目' }).getByRole('button', { name: '导出项目备份 ZIP' })
+    Expected: enabled
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeEnabled" getByRole('dialog', { name: '管理项目：候选源复核项目' }).getByRole('button', { name: '导出项目备份 ZIP' }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: '管理项目：候选源复核项目' }).getByRole('button', { name: '导出项目备份 ZIP' })
+
+
+      88 |     const raw = readFileSync((await file.path())!)
+      89 |     if (process.env.ASTROAGENT_RECORD_DIR) await file.saveAs(path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-project.zip`))
+    > 90 |     await expect(exportControl).toBeEnabled()
+         |                                 ^
+      91 |     await drawer.getByRole('button', { name: '关闭项目管理面板' }).click()
+      92 |     await expect(drawer).not.toBeVisible()
+      93 |     const importControl = page.getByLabel('导入 ZIP 备份', { exact: true })
+        at D:\project\astroagent\frontend\tests\browser\projects.spec.ts:90:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-verified\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-verified\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-verified\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\.astroagent\temp\v18-qa-20261122T082958Z\output-browser-project-verified\projects-projects-full-sna-759f0-and-preserved-conversations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\browser\projects.spec.ts:5:1 › projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations 

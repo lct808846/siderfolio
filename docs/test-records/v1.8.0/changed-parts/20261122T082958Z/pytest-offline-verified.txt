@@ -1,0 +1,17 @@
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+........................................................................ [ 43%]
+........................................................................ [ 54%]
+..........ss.s............s............................................. [ 64%]
+........................................................................ [ 75%]
+........................................................................ [ 86%]
+.........................................................s.............. [ 97%]
+..................                                                       [100%]
+=========================== short test summary info ============================
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:160: Windows Job Object-specific failure path
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:186: Windows Job Object-specific memory limit
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:261: public PDF acceptance requires explicit local fixture
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:524: explicit opt-in for 256 MiB disk acceptance
+SKIPPED [1] D:\project\astroagent\tests\test_windows_tcp_listeners.py:9: Windows IP Helper API
+661 passed, 5 skipped, 106 deselected in 157.89s (0:02:37)

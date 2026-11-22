@@ -106,7 +106,7 @@ def _label_map(identity, local_settings) -> dict[str, str]:
         pass
     local_name = getattr(local_settings, "local_model_name", "")
     if local_name:
-        labels.setdefault(local_name, f"{local_name} (本地助手)")
+        labels.setdefault(local_name, f"{local_name}（会话命名）")
     return labels
 
 
@@ -272,7 +272,9 @@ def build_profile_summary(identity, user, service) -> ProfileSummary:
                     )
 
             if local_ready(db):
-                for row in db.execute("SELECT record FROM local_assistant_tasks"):
+                for row in db.execute(
+                    "SELECT record FROM local_assistant_tasks WHERE kind='automatic_title'"
+                ):
                     local_tasks_count += 1
                     task = json.loads(row[0])
                     if task.get("state") not in {"completed", "failed", "interrupted"}:

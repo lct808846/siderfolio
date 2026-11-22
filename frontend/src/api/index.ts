@@ -1,5 +1,5 @@
 import { sessionFetch } from '../session-http'
-import type { ArchivedConversation, ArtifactInfo, ChatAttachment, ChatModelCatalog, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
+import type { ArchivedConversation, ArtifactInfo, ChatAttachment, ChatModelCatalog, ChatToolMode, Conversation, ConversationDetail, Manifest, PlotSpec, Turn } from '../types'
 
 const configured = import.meta.env.VITE_API_BASE_URL || ''
 export function validateApiOrigin(value: string): string {
@@ -44,7 +44,7 @@ export const api = {
   archive: (id: string) => request<ArchivedConversation>(`/api/v1/conversations/${id}/archive`, 'POST'),
   unarchive: (id: string) => request<Conversation>(`/api/v1/conversations/${id}/archive`, 'DELETE'),
   delete: (id: string) => request<void>(`/api/v1/conversations/${id}`, 'DELETE'),
-  submit: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[]) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision, model, attachments }),
+  submit: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[], tool_mode?: ChatToolMode) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision, model, attachments, ...(tool_mode && tool_mode !== 'auto' ? { tool_mode } : {}) }),
   turn: (id: string, turn: string) => request<Turn>(`/api/v1/conversations/${id}/turns/${turn}`),
   artifact: (id: string, turn: string, plots: PlotSpec[]) => request<ArtifactInfo>(`/api/v1/conversations/${id}/turns/${turn}/artifacts`, 'POST', { plots }),
   manifest: (path: string) => request<Manifest>(path),

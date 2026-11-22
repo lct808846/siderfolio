@@ -2,7 +2,7 @@ import { sessionFetch } from '../session-http'
 import { apiUrl, ApiError, assertApiConfiguration } from './index'
 import type { ChatAttachment } from '../types'
 
-export const attachmentAccept = '.pdf,.docx,.txt,.md,.markdown,.csv,.json'
+export const attachmentAccept = '.pdf,.docx,.txt,.md,.markdown,.csv,.tsv,.json'
 export const attachmentExtensions = new Set(attachmentAccept.split(','))
 export const attachmentFileLimit = 10 * 1024 * 1024
 export async function parseAttachment(file: File, signal?: AbortSignal): Promise<ChatAttachment> {

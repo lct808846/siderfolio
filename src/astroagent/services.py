@@ -20,5 +20,5 @@ def compose(repository, settings):
     service.links = ProjectLinks(service)
     service.rag = RagService(service)
     service.plotting = PlotService(service, settings)
-    service.local_assistant = LocalModelService(service, settings)
+    service.local_titles = LocalModelService(service, settings)
     return service

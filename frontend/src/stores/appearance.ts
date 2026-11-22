@@ -38,7 +38,10 @@ export interface AppearancePreferences {
   readingWidth: ReadingWidth
   readingFont: ReadingFont
   ambientBg: boolean
+  astroBackdrop: boolean
+  astroMotion: boolean
   glassBlur: boolean
+  surfaceShadows: boolean
   reducedMotion: boolean
 }
 
@@ -147,7 +150,8 @@ export const THEME_PRESETS: readonly ThemePreset[] = [
   },
 ] as const
 
-const STORAGE_KEY = 'astroagent.appearance.v1'
+export const APPEARANCE_STORAGE_KEY = 'astroagent.appearance.v1'
+const STORAGE_KEY = APPEARANCE_STORAGE_KEY
 const LIGHT_THEMES: readonly LightThemeId[] = ['emerald', 'celestial', 'parchment', 'nebula']
 const DARK_THEMES: readonly DarkThemeId[] = ['obsidian', 'dome']
 
@@ -162,7 +166,10 @@ export const DEFAULT_APPEARANCE: AppearancePreferences = {
   readingWidth: 'standard',
   readingFont: 'sans',
   ambientBg: true,
+  astroBackdrop: true,
+  astroMotion: true,
   glassBlur: true,
+  surfaceShadows: true,
   reducedMotion: false,
 }
 
@@ -197,7 +204,10 @@ export function loadSavedAppearance(): AppearancePreferences {
       readingFont: parsed.readingFont === 'sans' || parsed.readingFont === 'serif'
         ? parsed.readingFont : DEFAULT_APPEARANCE.readingFont,
       ambientBg: typeof parsed.ambientBg === 'boolean' ? parsed.ambientBg : DEFAULT_APPEARANCE.ambientBg,
+      astroBackdrop: typeof parsed.astroBackdrop === 'boolean' ? parsed.astroBackdrop : DEFAULT_APPEARANCE.astroBackdrop,
+      astroMotion: typeof parsed.astroMotion === 'boolean' ? parsed.astroMotion : DEFAULT_APPEARANCE.astroMotion,
       glassBlur: typeof parsed.glassBlur === 'boolean' ? parsed.glassBlur : DEFAULT_APPEARANCE.glassBlur,
+      surfaceShadows: typeof parsed.surfaceShadows === 'boolean' ? parsed.surfaceShadows : DEFAULT_APPEARANCE.surfaceShadows,
       reducedMotion: typeof parsed.reducedMotion === 'boolean' ? parsed.reducedMotion : DEFAULT_APPEARANCE.reducedMotion,
     }
   } catch {
@@ -232,7 +242,10 @@ export function applyAppearanceToDom(prefs: AppearancePreferences, preferDark = 
   root.dataset.readingWidth = prefs.readingWidth
   root.dataset.readingFont = prefs.readingFont
   root.dataset.ambient = prefs.ambientBg ? 'on' : 'off'
+  root.dataset.astroBackdrop = prefs.astroBackdrop ? 'on' : 'off'
+  root.dataset.astroMotion = prefs.astroBackdrop && prefs.astroMotion && !prefs.reducedMotion ? 'on' : 'off'
   root.dataset.glass = prefs.glassBlur ? 'on' : 'off'
+  root.dataset.shadows = prefs.surfaceShadows ? 'on' : 'off'
   root.dataset.motion = prefs.reducedMotion ? 'reduced' : 'normal'
 }
 
@@ -272,6 +285,19 @@ export const useAppearance = defineStore('appearance', {
       return (Object.keys(DEFAULT_APPEARANCE) as (keyof AppearancePreferences)[])
         .every(key => this[key] === DEFAULT_APPEARANCE[key])
     },
+    isPerformanceMode(): boolean {
+      return !this.astroBackdrop && !this.ambientBg && !this.glassBlur && !this.surfaceShadows && this.reducedMotion
+    },
+    activeEffectCount(): number {
+      return [
+        this.astroBackdrop,
+        this.astroBackdrop && this.astroMotion && !this.reducedMotion,
+        this.ambientBg,
+        this.glassBlur,
+        this.surfaceShadows,
+        !this.reducedMotion,
+      ].filter(Boolean).length
+    },
   },
   actions: {
     syncSystem() {
@@ -290,7 +316,10 @@ export const useAppearance = defineStore('appearance', {
         readingWidth: this.readingWidth,
         readingFont: this.readingFont,
         ambientBg: this.ambientBg,
+        astroBackdrop: this.astroBackdrop,
+        astroMotion: this.astroMotion,
         glassBlur: this.glassBlur,
+        surfaceShadows: this.surfaceShadows,
         reducedMotion: this.reducedMotion,
       }
       persistAppearance(prefs)
@@ -320,6 +349,24 @@ export const useAppearance = defineStore('appearance', {
     },
     update<K extends keyof AppearancePreferences>(key: K, value: AppearancePreferences[K]) {
       ;(this as AppearancePreferences)[key] = value
+      this.apply()
+    },
+    setPerformanceMode(enabled: boolean) {
+      if (enabled) {
+        this.astroBackdrop = false
+        this.astroMotion = false
+        this.ambientBg = false
+        this.glassBlur = false
+        this.surfaceShadows = false
+        this.reducedMotion = true
+      } else {
+        this.astroBackdrop = true
+        this.astroMotion = true
+        this.ambientBg = true
+        this.glassBlur = true
+        this.surfaceShadows = true
+        this.reducedMotion = false
+      }
       this.apply()
     },
     resetDefaults() {

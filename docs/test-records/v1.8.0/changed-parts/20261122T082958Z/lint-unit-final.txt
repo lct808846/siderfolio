@@ -1,0 +1,19 @@
+All checks passed!
+193 files already formatted
+
+> astroagent-workbench@1.8.0 lint
+> eslint . --max-warnings 0
+
+
+> astroagent-workbench@1.8.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/project/astroagent/frontend
+
+
+ Test Files  10 passed (10)
+      Tests  47 passed (47)
+   Start at  17:04:46
+   Duration  4.23s (transform 2.48s, setup 0ms, import 5.37s, tests 394ms, environment 24.36s)
+

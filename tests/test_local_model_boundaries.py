@@ -9,14 +9,7 @@ from pydantic import ValidationError
 
 from astroagent.config import LocalSettings
 from astroagent.errors import ServiceError
-from astroagent.local_model_client import (
-    LocalModelClient,
-    expand_conditions,
-    strict_json,
-    validate_conditions,
-    validate_title,
-)
-from astroagent.local_model_schemas import CompactConditionResult, ConditionResult, SourceCondition
+from astroagent.local_model_client import LocalModelClient, strict_json, validate_title
 
 
 @pytest.mark.parametrize("raw", ['{"title":"a","title":"b"}', '{"value":NaN}'])
@@ -50,146 +43,8 @@ def test_long_identifier_cannot_be_truncated_by_title_decoding(monkeypatch):
         }
 
     monkeypatch.setattr(client, "request", response)
-    output, _ = client.generate("title", "Query Gaia DR3 source_id 65225812899613312", "bullets")
-    assert output["title"] == "Gaia源编号查询"
-
-
-@pytest.mark.parametrize("unit", ["null", "", "radian", "arcseconds"])
-def test_units_are_constrained_before_generation_and_validation(unit):
-    with pytest.raises(ValidationError):
-        SourceCondition(
-            field="radius",
-            status="explicit",
-            value="5",
-            unit=unit,
-            comparison="unspecified",
-            evidence="5角分",
-        )
-
-
-def test_comparison_is_grounded_in_its_own_value_not_another_field():
-    source = "半径30角分，RUWE不超过1.2"
-    result = ConditionResult(
-        conditions=[
-            SourceCondition(
-                field="radius",
-                status="explicit",
-                value="30",
-                unit="arcmin",
-                comparison="lte",
-                evidence=source,
-            ),
-            SourceCondition(
-                field="ruwe_max",
-                status="explicit",
-                value="1.2",
-                unit=None,
-                comparison="eq",
-                evidence=source,
-            ),
-        ],
-        suggestions=[{"kind": "gaia_query", "evidence": "Gaia"}],
-        missing=[],
-        clarification=[],
-    )
-    validated = validate_conditions(result, "Gaia " + source)
-    assert validated.conditions[0].comparison == "unspecified"
-    assert validated.conditions[1].comparison == "lte"
-
-
-def test_unrecognized_relation_is_rejected_instead_of_silently_dropped():
-    source = "Gaia 半径不小于5角分"
-    result = ConditionResult(
-        conditions=[
-            SourceCondition(
-                field="radius",
-                status="explicit",
-                value="5",
-                unit="arcmin",
-                comparison="gte",
-                evidence=source,
-            )
-        ],
-        suggestions=[{"kind": "gaia_query", "evidence": "Gaia"}],
-        missing=[],
-        clarification=[],
-    )
-    with pytest.raises(ValueError):
-        validate_conditions(result, source)
-
-
-def test_compact_transport_rebuilds_only_original_evidence_and_missing_fields():
-    source = "Gaia: RA 0 deg, Dec -89.5 deg, radius 0.1 deg"
-    compact = CompactConditionResult(
-        conditions=[
-            ("ra", "0", "deg", "eq"),
-            ("dec", "-89.5", "deg", "eq"),
-            ("radius", "0.1", "deg", "eq"),
-        ],
-        suggestions=["gaia_query"],
-    )
-    result = validate_conditions(expand_conditions(compact, source), source)
-    assert result.missing == []
-    assert all(item.evidence in source for item in result.conditions)
-    assert {item.field: item.value for item in result.conditions} == {
-        "ra": "0",
-        "dec": "-89.5",
-        "radius": "0.1",
-    }
-
-
-@pytest.mark.parametrize("field,value", [("object_name", "M45"), ("source_id", "1")])
-def test_compact_transport_cannot_turn_negation_or_script_numbers_into_conditions(field, value):
-    source = "只查M67，不要把 M45 混进来；<script>alert(1)</script>"
-    compact = CompactConditionResult(
-        conditions=[(field, value, None, "eq")], suggestions=["other_or_unclear"]
-    )
-    with pytest.raises(ValueError):
-        validate_conditions(expand_conditions(compact, source), source)
-
-
-def test_ambiguous_null_has_no_meaningful_comparison_or_unit():
-    result = ConditionResult(
-        conditions=[
-            SourceCondition(
-                field="source_id",
-                status="ambiguous",
-                value=None,
-                unit=None,
-                comparison="eq",
-                evidence="Gaia",
-            )
-        ],
-        suggestions=[{"kind": "gaia_query", "evidence": "Gaia"}],
-        missing=["source_id"],
-        clarification=[],
-    )
-    assert validate_conditions(result, "Gaia").conditions[0].comparison == "unspecified"
-
-
-def test_multiple_original_objects_are_allowed_but_duplicate_and_truncated_ids_are_not():
-    source = "查询NGC 869和NGC 884"
-    conditions = [
-        SourceCondition(
-            field="object_name",
-            status="explicit",
-            value=value,
-            unit=None,
-            comparison="eq",
-            evidence=source,
-        )
-        for value in ("NGC 869", "NGC 884")
-    ]
-    result = ConditionResult(
-        conditions=conditions,
-        suggestions=[{"kind": "object_query", "evidence": source}],
-        missing=[],
-        clarification=[],
-    )
-    assert len(validate_conditions(result, source).conditions) == 2
-    result.conditions.append(conditions[0])
-    with pytest.raises(ValueError):
-        validate_conditions(result, source)
+    output, _ = client.generate_title("Query Gaia DR3 source_id 65225812899613312")
+    assert output == "Gaia源编号查询"
 
 
 @pytest.mark.parametrize(
@@ -236,7 +91,7 @@ def test_invalid_titles_and_tool_bearing_responses_are_rejected(monkeypatch, out
 
     monkeypatch.setattr(client, "request", response)
     with pytest.raises(ServiceError) as caught:
-        client.generate("title", "查询M45的坐标", "bullets")
+        client.generate_title("查询M45的坐标")
     assert caught.value.error.code == "local_model_invalid_output"
     assert calls == ["/api/tags", "/api/chat"]
 
@@ -257,7 +112,7 @@ def test_missing_or_wrong_model_never_starts_generation(monkeypatch, case):
 
     monkeypatch.setattr(client, "request", response)
     with pytest.raises(ServiceError):
-        client.generate("title", "查询M45", "bullets")
+        client.generate_title("查询M45")
     assert calls == ["/api/tags"]
 
 

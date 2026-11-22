@@ -21,8 +21,8 @@ const querySucceeded = computed(() => gaia.value?.status === 'success' || gaia.v
 const hasPlotData = computed(() => gaia.value?.status === 'success' && !!gaia.value.data?.length)
 const plotDestination = computed(() => {
   const snapshot = props.artifactPath?.match(/^\/api\/v1\/projects\/([^/]+)\/snapshots\/([^/]+)\/artifacts$/)
-  return snapshot ? { path: '/', query: { mode: 'plot', plot_project: snapshot[1], plot_snapshot: snapshot[2], plot_query: String(index.value) } }
-    : { path: `/conversations/${props.turn?.conversation_id}`, query: { mode: 'plot', plot_turn: props.turn?.turn_id, plot_query: String(index.value) } }
+  return snapshot ? { path: '/', query: { tool: 'plot', project: snapshot[1], plot_snapshot: snapshot[2], plot_query: String(index.value) } }
+    : { path: `/conversations/${props.turn?.conversation_id}`, query: { tool: 'plot', plot_turn: props.turn?.turn_id, plot_query: String(index.value) } }
 })
 const fields = computed(() => gaia.value?.data?.[0] ? Object.keys(gaia.value.data[0]) : [])
 const rows = computed(() => gaia.value?.data?.slice(page.value * 20, (page.value + 1) * 20) || [])
@@ -106,9 +106,9 @@ async function save() { if (!artifact.value) return; try { await download(artifa
 
 <template>
   <aside class="results-panel" aria-label="结果核查">
-    <header class="pane-heading workspace-pane-header"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ heading || (turn ? `第 ${turn.revision} 轮结果` : '查询结果') }}</h2></div><span v-if="historical" class="tag">历史结果</span><button v-if="dismissible" class="result-close" aria-label="收起结果面板" @click="$emit('close')">×</button></header>
+    <header class="pane-heading workspace-pane-header"><div><span class="eyebrow">RESULTS / 数据核查</span><h2>{{ heading || '查询结果' }}</h2></div><span v-if="historical" class="tag">历史结果</span><button v-if="dismissible" class="result-close" aria-label="收起结果面板" @click="$emit('close')">×</button></header>
     <div class="workspace-pane-body">
-    <p v-if="pending" class="notice" role="status">{{ turn ? '本轮正在查询；下方为此前保存的结果，返回后会自动切换到本轮。' : '本轮正在查询，返回后将在这里展示实际结果。' }}</p>
+    <p v-if="pending" class="notice" role="status">{{ turn ? '查询进行中。新结果返回前继续显示已保存的结果。' : '正在查询，结果返回后会显示在这里。' }}</p>
     <div v-if="!turn" class="results-empty">
       <slot name="empty">
         <h3>暂无查询结果</h3>
@@ -118,17 +118,18 @@ async function save() { if (!artifact.value) return; try { await download(artifa
     <template v-else>
       <p class="small muted">{{ artifactPath ? "快照保存时间（UTC）" : "接收时间（UTC）" }}<br><time>{{ turn.received_at }}</time></p>
       <p v-if="turn.error" class="notice danger">{{ turn.error.message }} <code>{{ turn.error.code }}</code></p>
-      <p v-if="!response" class="notice">这一轮暂时没有可核查的完整响应。</p>
+      <p v-if="!response" class="notice">此记录没有可核查的完整结果。</p>
       <template v-if="response">
+        <p v-for="item in response.warnings || []" :key="`${item.code}:${item.message}`" class="notice warning" role="status">{{ item.message }} <code>{{ item.code }}</code></p>
         <div class="result-tabs" role="tablist" aria-label="数据源"><button v-for="item in (['gaia','ads','simbad'] as const)" :key="item" role="tab" :aria-selected="tab === item" :class="{ active: tab === item }" @click="tab = item">{{ item === 'gaia' ? 'Gaia DR3' : item.toUpperCase() }} <span>{{ item === 'gaia' ? response.gaia_results?.length : item === 'ads' ? response.literature_results?.length : response.results?.length }}</span></button></div>
         <section v-if="tab === 'gaia'" class="source-section">
-          <p v-if="!response.gaia_results?.length" class="muted">本轮未执行 Gaia 查询。</p>
+          <p v-if="!response.gaia_results?.length" class="muted">没有 Gaia 查询记录。</p>
           <template v-else>
-            <label class="field-label" for="query-index">本轮 Gaia 查询</label><select id="query-index" v-model="index"><option v-for="(result, i) in response.gaia_results" :key="i" :value="i">第 {{ i + 1 }} 次 · {{ result.status === 'success' ? `${result.returned_count} 行 · 成功` : result.status === 'not_found' ? '0 行 · 条件下无匹配' : '未取得数据' }}</option></select>
+            <label class="field-label" for="query-index">Gaia 查询</label><select id="query-index" v-model="index"><option v-for="(result, i) in response.gaia_results" :key="i" :value="i">第 {{ i + 1 }} 次 · {{ result.status === 'success' ? `${result.returned_count} 行 · 成功` : result.status === 'not_found' ? '0 行 · 条件下无匹配' : '未取得数据' }}</option></select>
             <template v-if="gaia">
               <p v-if="gaia.error" class="notice" :class="{ danger: !querySucceeded }">{{ gaia.error.message }} <code>{{ gaia.error.code }}</code></p>
               <p v-if="!querySucceeded" class="notice" role="status">本次未取得可用数据，不能据此判断视场中没有天体。交付数量和截断状态不适用；可核对条件后手动重试，旧记录保留。</p>
-              <div v-if="hasPlotData && !disableExport" class="result-plot-actions"><RouterLink class="plot-primary" :to="plotDestination">用本轮结果绘图</RouterLink><button type="button" @click="quickCharts?.scrollIntoView({ behavior: 'smooth', block: 'start' })">快速图表</button><p class="small muted">自定义图形会保留完整数据、单位和来源；快速图表可直接预览。</p></div>
+              <div v-if="hasPlotData && !disableExport" class="result-plot-actions"><RouterLink class="plot-primary" :to="plotDestination">用此结果绘图</RouterLink><button type="button" @click="quickCharts?.scrollIntoView({ behavior: 'smooth', block: 'start' })">快速图表</button><p class="small muted">自定义图形会保留完整数据、单位和来源；快速图表可直接预览。</p></div>
               <div class="data-metrics"><span><b>{{ querySucceeded ? gaia.returned_count : '未取得' }}</b>交付行</span><span><b>未知</b>总命中数</span><span><b>{{ !querySucceeded ? '不适用' : gaia.truncated ? '已截断' : '未截断' }}</b>交付范围</span></div>
               <p v-if="gaia.truncated || gaia.archive_overflow" class="notice">仅描述交付样本{{ gaia.archive_overflow ? ' · Archive 报告溢出' : '' }}，不能代表视场总体。</p>
               <div class="result-stats-card">
@@ -162,21 +163,31 @@ async function save() { if (!artifact.value) return; try { await download(artifa
               <details><summary>原始条件、单位与统计 JSON</summary><pre>{{ text({ release: gaia.release, table: gaia.table, query: gaia.query, units: gaia.units, analysis: gaia.analysis }) }}</pre></details>
               <details><summary>实际 ADQL</summary><pre>{{ gaia.adql }}</pre></details>
               <details v-if="querySucceeded"><summary>查看完整交付表格（{{ (gaia.data?.length || 0) }} 行）</summary><div class="table-scroll" tabindex="0" aria-label="Gaia 完整数据表"><table><thead><tr><th v-for="field in fields" :key="field">{{ field }}<small>{{ gaia.units?.[field] }}</small></th></tr></thead><tbody><tr v-for="row in rows" :key="row.source_id"><td v-for="field in fields" :key="field">{{ text((row as unknown as Record<string, unknown>)[field]) }}</td></tr></tbody></table></div><div class="pagination"><button :disabled="page === 0" @click="page--">上一页</button><span>{{ page + 1 }} / {{ Math.max(1, Math.ceil((gaia.data?.length || 0) / 20)) }}</span><button :disabled="(page + 1) * 20 >= (gaia.data?.length || 0)" @click="page++">下一页</button></div></details>
+              <div class="ui-card-head">
+                <a v-if="safeLink(gaia.source.url)" :href="safeLink(gaia.source.url)!" class="ui-pill ui-pill-gaia" target="_blank" rel="noopener noreferrer">{{ gaia.status === 'error' ? 'Gaia 查询目标 ↗' : 'Gaia 来源 ↗' }}</a>
+                <span v-else class="small muted">{{ gaia.source.url }}</span>
+                <span class="small muted">UTC {{ gaia.source.retrieved_at }}</span>
+              </div>
               <p v-for="warning in gaia.warnings" :key="warning" class="small muted">{{ warning }}</p>
             </template>
           </template>
         </section>
         <section v-if="tab === 'ads'" class="source-section">
-          <p v-if="!response.literature_results?.length" class="muted">本轮未执行 ADS 检索。</p>
+          <p v-if="!response.literature_results?.length" class="muted">没有 ADS 检索记录。</p>
           <article v-for="(result, i) in response.literature_results" :key="i" class="paper-query">
             <div class="ui-pill-list">
               <span class="ui-pill ui-pill-ads">ADS 检索 {{ i + 1 }}</span>
-              <span class="ui-pill" :class="result.status === 'success' ? 'ui-pill-success' : 'ui-pill-warning'">{{ result.status }}</span>
+              <span class="ui-pill" :class="result.status === 'success' ? 'ui-pill-success' : result.status === 'not_found' ? 'ui-pill-warning' : 'ui-pill-danger'">{{ result.status }}</span>
               <span class="ui-pill ui-pill-neutral">本页 {{ result.returned_count }} / 总命中 {{ text(result.total_found) }}</span>
               <span class="ui-pill ui-pill-neutral">{{ result.sort }}</span>
             </div>
             <pre>{{ result.query }}</pre>
-            <p v-if="result.error" class="notice danger">{{ result.error.message }}</p>
+            <p v-if="result.error" class="notice danger">{{ result.error.message }} <code>{{ result.error.code }}</code></p>
+            <div class="ui-card-head">
+              <a v-if="safeLink(result.source.url)" :href="safeLink(result.source.url)!" class="ui-pill ui-pill-ads" target="_blank" rel="noopener noreferrer">{{ result.status === 'error' ? 'ADS 查询目标 ↗' : 'ADS 检索来源 ↗' }}</a>
+              <span v-else class="small muted">{{ result.source.url }}</span>
+              <span class="small muted">UTC {{ result.source.retrieved_at }}</span>
+            </div>
             <article v-for="paper in result.papers" :key="paper.bibcode" class="paper">
               <div class="ui-pill-list">
                 <span class="ui-pill ui-pill-ads">{{ paper.year || '年份未知' }}</span>
@@ -199,13 +210,13 @@ async function save() { if (!artifact.value) return; try { await download(artifa
           </article>
         </section>
         <section v-if="tab === 'simbad'" class="source-section">
-          <p v-if="!response.results?.length" class="muted">本轮未执行 SIMBAD 查询。</p>
+          <p v-if="!response.results?.length" class="muted">没有 SIMBAD 查询记录。</p>
           <article v-for="(result, i) in response.results" :key="i" class="object-result">
             <div class="ui-card-head">
               <h3>{{ result.object_name }}</h3>
-              <span class="ui-pill" :class="result.status === 'success' ? 'ui-pill-simbad' : 'ui-pill-warning'">{{ result.status }}</span>
+              <span class="ui-pill" :class="result.status === 'success' ? 'ui-pill-simbad' : result.status === 'not_found' ? 'ui-pill-warning' : 'ui-pill-danger'">{{ result.status }}</span>
             </div>
-            <p v-if="result.error" class="notice danger">{{ result.error.message }} <code>{{ result.error.code }}</code></p>
+            <p v-if="result.error" class="notice" :class="{ danger: result.status === 'error' }">{{ result.error.message }} <code>{{ result.error.code }}</code></p>
             <dl v-if="result.data" class="ui-param-grid">
               <div v-for="(value, field) in result.data" :key="field" class="ui-param-tile">
                 <dt>{{ field }}</dt>
@@ -213,13 +224,13 @@ async function save() { if (!artifact.value) return; try { await download(artifa
               </div>
             </dl>
             <div class="ui-card-head">
-              <a v-if="safeLink(result.source.url)" :href="safeLink(result.source.url)!" class="ui-pill ui-pill-simbad" target="_blank" rel="noopener noreferrer">SIMBAD 来源 ↗</a>
+              <a v-if="safeLink(result.source.url)" :href="safeLink(result.source.url)!" class="ui-pill ui-pill-simbad" target="_blank" rel="noopener noreferrer">{{ result.status === 'error' ? 'SIMBAD 查询目标 ↗' : 'SIMBAD 来源 ↗' }}</a>
               <span v-else class="small muted">{{ result.source.url }}</span>
               <span class="small muted">UTC {{ result.source.retrieved_at }}</span>
             </div>
           </article>
         </section>
-        <section v-if="!disableExport" ref="quickCharts" class="export-section ui-card-subtle" aria-label="图表与下载"><h3>快速图表与数据包</h3><p class="small muted">{{ artifactPath ? "基于保存的完整快照。" : `基于第 ${turn.revision} 轮完整响应。` }}图表只描述交付样本。</p><div v-if="response.gaia_results?.length" class="plot-options"><label v-for="(name, kind) in names" :key="kind" class="ui-chip-toggle"><input v-model="kinds" type="checkbox" :value="kind" :disabled="busy || !hasPlotData">{{ name }}</label></div><div class="export-actions"><button :disabled="busy" class="button-secondary" @click="generate">{{ busy ? '正在生成…' : '生成预览与数据包' }}</button><button v-if="artifact" class="button-primary" @click="save">下载 ZIP</button></div><p v-if="error" class="notice danger" role="alert">{{ error }}</p><template v-if="artifact"><p class="small muted">导出{{ artifact.export_status === 'partial' ? '部分完成' : '完成' }} · {{ artifact.exporter_version }}<br>有效期至 {{ artifact.expires_at }}</p><figure v-for="picture in artifact.figures" :key="picture.figure_id"><img :src="apiUrl(picture.url)" :alt="names[picture.kind] || picture.kind" @error="error = '图片已过期或不可用，请重新生成。'"><figcaption>{{ names[picture.kind] }} · <a :href="apiUrl(picture.url)" target="_blank" rel="noopener noreferrer">原尺寸 ↗</a></figcaption></figure><template v-if="manifest"><p v-for="(plot, i) in manifest.plots" :key="i" class="small">{{ names[String(plot.kind)] }}：{{ plot.status === 'success' ? '已生成' : reasons[String(plot.reason)] || '未生成' }}</p></template></template></section>
+        <section v-if="!disableExport" ref="quickCharts" class="export-section ui-card-subtle" aria-label="图表与下载"><h3>快速图表与数据包</h3><p class="small muted">{{ artifactPath ? "基于保存的完整快照。" : '基于完整查询结果。' }}图表只描述交付样本。</p><div v-if="response.gaia_results?.length" class="plot-options"><label v-for="(name, kind) in names" :key="kind" class="ui-chip-toggle"><input v-model="kinds" type="checkbox" :value="kind" :disabled="busy || !hasPlotData">{{ name }}</label></div><div class="export-actions"><button :disabled="busy" class="button-secondary" @click="generate">{{ busy ? '正在生成…' : '生成预览与数据包' }}</button><button v-if="artifact" class="button-primary" @click="save">下载 ZIP</button></div><p v-if="error" class="notice danger" role="alert">{{ error }}</p><template v-if="artifact"><p class="small muted">导出{{ artifact.export_status === 'partial' ? '部分完成' : '完成' }} · {{ artifact.exporter_version }}<br>有效期至 {{ artifact.expires_at }}</p><figure v-for="picture in artifact.figures" :key="picture.figure_id"><img :src="apiUrl(picture.url)" :alt="names[picture.kind] || picture.kind" @error="error = '图片已过期或不可用，请重新生成。'"><figcaption>{{ names[picture.kind] }} · <a :href="apiUrl(picture.url)" target="_blank" rel="noopener noreferrer">原尺寸 ↗</a></figcaption></figure><template v-if="manifest"><p v-for="(plot, i) in manifest.plots" :key="i" class="small">{{ names[String(plot.kind)] }}：{{ plot.status === 'success' ? '已生成' : reasons[String(plot.reason)] || '未生成' }}</p></template></template></section>
       </template>
     </template>
     </div>

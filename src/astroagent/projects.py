@@ -388,7 +388,7 @@ class ProjectRepository:
             ).fetchone()
             turn = Turn.model_validate_json(row[0]) if row else None
             if turn is None or turn.response is None:
-                raise ServiceError(422, "snapshot_unavailable", "该轮没有可交付的完整响应。")
+                raise ServiceError(422, "snapshot_unavailable", "此记录没有可保存的完整结果。")
             value = self.make_snapshot(identifier, request.name, turn)
             imported = db.execute(
                 "SELECT record FROM imported_turn_origins WHERE turn_id=?", (turn.turn_id,)

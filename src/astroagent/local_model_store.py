@@ -46,7 +46,7 @@ def used(db):
         "rd)) FROM local_assistant_meta),0)+COALESCE(("
         "SELECT SUM(octet_length(record)) FROM local_a"
         "ssistant_tasks),0)+COALESCE((SELECT SUM(CASE "
-        "WHEN state IN ('queued','running') THEN 4096 "
+        "WHEN kind='automatic_title' AND state IN ('queued','running') THEN 4096 "
         "ELSE 0 END) FROM local_assistant_tasks),0)"
     ).fetchone()[0]
 
@@ -129,14 +129,15 @@ class LocalModelStore:
             raise ServiceError(
                 409,
                 "local_assistant_storage_unavailable",
-                "请先在本机设置中确认准备本地助手记录表。",
+                "会话命名记录暂不可用。",
             )
 
     def recover(self):
         with self.repo.connection() as db, self.repo.transaction(db):
             if ready(db):
                 for row in db.execute(
-                    "SELECT record FROM local_assistant_tasks WHERE state IN ('queued','running')"
+                    "SELECT record FROM local_assistant_tasks WHERE kind='automatic_title' "
+                    "AND state IN ('queued','running')"
                 ):
                     value = json.loads(row[0])
                     value.update(
@@ -159,12 +160,11 @@ class LocalModelStore:
         with self.repo.connection() as db:
             self.require(db)
             row = db.execute(
-                "SELECT record FROM local_assistant_tasks WHERE id=?", (identifier,)
+                "SELECT record FROM local_assistant_tasks WHERE id=? AND kind='automatic_title'",
+                (identifier,),
             ).fetchone()
             if row is None:
-                raise ServiceError(
-                    404, "local_assistant_task_not_found", "本地助手任务不存在或已清理。"
-                )
+                raise ServiceError(404, "local_assistant_task_not_found", "自动命名记录不存在。")
             return json.loads(row[0])
 
     def create(self, value):
@@ -180,25 +180,29 @@ class LocalModelStore:
                         409, "local_assistant_request_conflict", "同一请求编号不能用于不同输入。"
                     )
                 return old, False
-            if (
-                value["automatic"]
-                and db.execute(
-                    (
-                        "SELECT 1 FROM local_assistant_tasks WHERE kin"
-                        "d='automatic_title' AND conversation_id=?"
-                    ),
-                    (value["conversation_id"],),
-                ).fetchone()
-            ):
+            if db.execute(
+                (
+                    "SELECT 1 FROM local_assistant_tasks WHERE kin"
+                    "d='automatic_title' AND conversation_id=?"
+                ),
+                (value["conversation_id"],),
+            ).fetchone():
                 return None, False
             prefs = self.preferences(db)
-            if not prefs["enabled"] or prefs["revision"] != value["preferences_revision"]:
-                raise ServiceError(409, "local_assistant_disabled", "本地助手未启用或设置已变化。")
-            if db.execute("SELECT count(*) FROM local_assistant_tasks").fetchone()[0] >= 500:
+            if (
+                not prefs["enabled"]
+                or not prefs["auto_titles"]
+                or prefs["revision"] != value["preferences_revision"]
+            ):
+                raise ServiceError(409, "local_assistant_disabled", "自动命名未启用或设置已变化。")
+            count = db.execute(
+                "SELECT count(*) FROM local_assistant_tasks WHERE kind='automatic_title'"
+            ).fetchone()[0]
+            if count >= 500:
                 raise ServiceError(
                     409,
                     "local_assistant_task_limit",
-                    "本地任务记录已达500条，请在设置中清理已结束记录。",
+                    "自动命名记录已达上限，保留规则标题。",
                 )
             if value["conversation_id"]:
                 current = self.repo._conversation(db, value["conversation_id"])
@@ -213,7 +217,7 @@ class LocalModelStore:
                 ),
                 (
                     value["id"],
-                    "automatic_title" if value["automatic"] else value["action"],
+                    "automatic_title",
                     value["conversation_id"],
                     value["state"],
                     encode(value),
@@ -225,7 +229,8 @@ class LocalModelStore:
     def finish(self, value, title=None):
         with self.repo.connection() as db, self.repo.transaction(db):
             row = db.execute(
-                "SELECT record FROM local_assistant_tasks WHERE id=?", (value["id"],)
+                "SELECT record FROM local_assistant_tasks WHERE id=? AND kind='automatic_title'",
+                (value["id"],),
             ).fetchone()
             if row is None:
                 return None
@@ -234,8 +239,8 @@ class LocalModelStore:
                 return old
             prefs = self.preferences(db)
             if not prefs["enabled"] or prefs["revision"] != value["preferences_revision"]:
-                value.update(state="superseded", error="本地助手设置已变化，任务结果已丢弃。")
-            elif title is not None and value["automatic"]:
+                value.update(state="superseded", error="自动命名设置已变化，保留当前标题。")
+            elif title is not None:
                 conversation = db.execute(
                     "SELECT * FROM conversations WHERE id=?", (value["conversation_id"],)
                 ).fetchone()
@@ -299,15 +304,10 @@ class LocalModelStore:
                 )
             ]
 
-    def clear(self):
-        with self.repo.connection() as db, self.repo.transaction(db):
-            self.require(db)
-            db.execute("DELETE FROM local_assistant_tasks WHERE state NOT IN ('queued','running')")
-
     def budget(self, db):
         if self.repo._used(db) > self.repo.settings.storage_bytes:
             raise ServiceError(
-                409, "local_assistant_storage_limit", "本地助手任务超过业务存储预算。"
+                409, "local_assistant_storage_limit", "自动命名记录超过业务存储预算。"
             )
 
     def title_source(self, conversation_id):

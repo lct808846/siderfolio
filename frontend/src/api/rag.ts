@@ -5,6 +5,7 @@ const root = (project: string) => `/api/v1/projects/${project}/rag`
 export const setupApi = {
   status: () => request<SetupStatus>('/api/v1/setup/status'),
   initialize: () => request<SetupStatus>('/api/v1/setup/initialize', 'POST', { confirmed: true }),
+  setAstronomyTransport: (transport: 'direct' | 'mcp') => request<SetupStatus>('/api/v1/setup/astronomy-transport', 'PUT', { transport }),
 }
 export const ragApi = {
   status: (project: string) => request<RagStatus>(`${root(project)}/status`),

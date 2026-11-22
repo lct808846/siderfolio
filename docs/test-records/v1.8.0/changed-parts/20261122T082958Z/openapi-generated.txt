@@ -1,0 +1,6 @@
+✨ openapi-typescript 7.13.0
+🚀 D:\project\astroagent\.astroagent\temp\v18-qa-20261122T082958Z\contract\tmpuc0dtd81\openapi.json → D:\project\astroagent\.astroagent\temp\v18-qa-20261122T082958Z\contract\tmpuc0dtd81\generated.ts [477.2ms]
+Generated OpenAPI / TypeScript files; validation was not run
+✨ openapi-typescript 7.13.0
+🚀 D:\project\astroagent\.astroagent\temp\v18-qa-20261122T082958Z\contract\tmpyvv45ivh\openapi.json → D:\project\astroagent\.astroagent\temp\v18-qa-20261122T082958Z\contract\tmpyvv45ivh\generated.ts [748.1ms]
+OpenAPI / TypeScript contract matches

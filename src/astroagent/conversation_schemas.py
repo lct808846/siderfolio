@@ -27,6 +27,7 @@ class TurnRequest(BaseModel):
     expected_revision: StrictInt = Field(ge=0)
     model: str | None = Field(default=None, min_length=1, max_length=128)
     attachments: list[ChatAttachment] = Field(default_factory=list, max_length=3)
+    tool_mode: Literal["auto", "plot", "compute"] | None = Field(default=None)
 
     @field_validator("client_request_id")
     @classmethod

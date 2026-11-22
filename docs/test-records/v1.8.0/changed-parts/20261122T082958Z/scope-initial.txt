@@ -1,0 +1,127 @@
+ M .env.example
+ M README.md
+ M compose.yaml
+ M containers/application/requirements-runtime.lock
+ M containers/frontend/ingress.mjs
+ M docs/ROADMAP.md
+ M docs/UI_DESIGN_SPEC.md
+ M frontend/openapi.json
+ M frontend/package-lock.json
+ M frontend/package.json
+ M frontend/server.mjs
+ M frontend/src/api/attachments.ts
+ M frontend/src/api/index.ts
+ D frontend/src/api/local-assistant.ts
+ M frontend/src/api/plotting.ts
+ M frontend/src/api/rag.ts
+ M frontend/src/attachments.css
+ M frontend/src/components/AppearanceSettings.vue
+ M frontend/src/components/AttachmentButton.vue
+ M frontend/src/components/ContextNotice.vue
+ M frontend/src/components/ConversationErrorNotice.vue
+ M frontend/src/components/ConversationSidebar.vue
+ M frontend/src/components/CreateProjectDialog.vue
+ D frontend/src/components/LocalAssistantSettings.vue
+ M frontend/src/components/LocalTitleStatus.vue
+ M frontend/src/components/ModelProvidersSettings.vue
+ M frontend/src/components/ResultPanel.vue
+ M frontend/src/components/UserMessage.vue
+ D frontend/src/components/WorkbenchPlot.vue
+ M frontend/src/components/WorkspaceHeader.vue
+ M frontend/src/conversation-layout.css
+ M frontend/src/conversation-sidebar.css
+ M frontend/src/identity-state.ts
+ M frontend/src/identity.css
+ M frontend/src/interaction-surfaces.css
+ D frontend/src/local-assistant.css
+ M frontend/src/main.ts
+ M frontend/src/model-selector.css
+ M frontend/src/observation-log.css
+ D frontend/src/research-handoff.ts
+ M frontend/src/stores/appearance.ts
+ M frontend/src/stores/attachments.ts
+ M frontend/src/stores/projects.ts
+ M frontend/src/stores/workbench.ts
+ M frontend/src/style.css
+ M frontend/src/types/generated.ts
+ M frontend/src/types/index.ts
+ M frontend/src/typography.css
+ M frontend/src/views/AdminWorkspace.vue
+ M frontend/src/views/App.vue
+ M frontend/src/views/IdentityRoot.vue
+ M frontend/src/views/IdentityWorkspace.vue
+ D frontend/src/views/LocalAssistantWorkspace.vue
+ D frontend/src/views/PlotWorkspace.vue
+ M frontend/src/views/ProfileWorkspace.vue
+ M frontend/src/views/ProjectOverview.vue
+ D frontend/src/views/ProjectWorkspace.vue
+ M frontend/src/views/SettingsWorkspace.vue
+ M frontend/src/views/WorkflowWorkspace.vue
+ M frontend/src/workbench-plot.css
+ M frontend/src/workspace-theme.css
+ M frontend/tests/browser/current-changes.spec.ts
+ M frontend/tests/browser/model-settings.spec.ts
+ M frontend/tests/browser/remaining-acceptance.spec.ts
+ M frontend/tests/browser/workbench.spec.ts
+ M frontend/tests/unit/user-message.test.ts
+ M pyproject.toml
+ M scripts/containers.ps1
+ M src/astroagent/__init__.py
+ M src/astroagent/agent.py
+ M src/astroagent/api/chat.py
+ D src/astroagent/api/local_assistant.py
+ M src/astroagent/api/plotting.py
+ M src/astroagent/api/setup.py
+ M src/astroagent/artifacts.py
+ M src/astroagent/attachment_schemas.py
+ M src/astroagent/attachments.py
+ M src/astroagent/auth_access.py
+ M src/astroagent/config.py
+ M src/astroagent/container_entrypoint.py
+ M src/astroagent/context.py
+ M src/astroagent/conversation_schemas.py
+ M src/astroagent/conversation_service.py
+ M src/astroagent/conversations.py
+ M src/astroagent/identity.py
+ M src/astroagent/knowledge_service.py
+ M src/astroagent/local_access.py
+ M src/astroagent/local_model_client.py
+ M src/astroagent/local_model_schemas.py
+ M src/astroagent/local_model_service.py
+ M src/astroagent/local_model_store.py
+ D src/astroagent/local_text_grounding.py
+ M src/astroagent/main.py
+ M src/astroagent/model_providers.py
+ M src/astroagent/plot_schemas.py
+ M src/astroagent/plot_service.py
+ M src/astroagent/postgres.py
+ M src/astroagent/profile_service.py
+ M src/astroagent/project_archives.py
+ M src/astroagent/project_links.py
+ M src/astroagent/project_service.py
+ M src/astroagent/projects.py
+ M src/astroagent/rag_schemas.py
+ M src/astroagent/schemas.py
+ M src/astroagent/services.py
+ M src/astroagent/workflows.py
+ M tests/test_local_assistant_postgres.py
+ M tests/test_local_model_boundaries.py
+ D tests/test_local_text_grounding.py
+ M tests/test_profile_postgres.py
+?? compose.mcp.yaml
+?? docs/PROJECT_PLAN_V1.8.md
+?? docs/development/v1.8.0/
+?? frontend/src/api/local-titles.ts
+?? frontend/src/components/AstroBackdrop.vue
+?? frontend/src/components/ChatNBodyCard.vue
+?? frontend/src/components/ChatPlotCard.vue
+?? frontend/src/components/ComposerProjectPicker.vue
+?? frontend/src/components/LocalTitleSettings.vue
+?? frontend/src/components/ProjectManageDrawer.vue
+?? src/astroagent/api/local_titles.py
+?? src/astroagent/mcp_client.py
+?? src/astroagent/mcp_contract.py
+?? src/astroagent/mcp_server.py
+?? src/astroagent/mcp_stdio.py
+?? tests/test_mcp_client.py
+?? tests/test_mcp_server.py

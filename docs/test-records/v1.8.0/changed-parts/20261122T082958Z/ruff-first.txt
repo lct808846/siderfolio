@@ -1,0 +1,401 @@
+E501 Line too long (443 > 100)
+  --> src\astroagent\agent.py:89:65
+   |
+87 | …
+88 | …
+89 | … 量 M_sun、位置 AU、速度 AU/yr、时长 yr，引力常数 G=4*pi^2；适当取质心静止系，确保粒子 ID 唯一且两两距离 > 1e-5 AU）。少体/行星/双星默认选 rebound（IAS15），多体星团或近接问题可选 petar；用户指定引擎时遵从用户。调用后在回复中清晰列出参数与物理假设，明确询问用户是否按此参数运行（并提示可在卡片中直接修改或继续对话调整）；不得编造未运行的模拟结果。
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^…^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+90 | … 历史轮次的 Gaia 数据（history_turn_gaia 并填 source_turn_id）或用户 CSV/TSV 附件（attachment_csv 并填 attachment_filename）；若用户要求绘制某天体/视场且对话尚无数据，可先调用 query_simbad / query_gaia，再在同轮调用 prepare_scientific_plot。脚本固定只读 /input/data.csv，输出 /output/figure.png 与 /output/figure.pdf，不要 markdown 代码围栏；Python 仅…
+91 | …
+   |
+
+E501 Line too long (974 > 100)
+  --> src\astroagent\agent.py:90:75
+   |
+88 | …
+89 | … 量 M_sun、位置 AU、速度 AU/yr、时长 yr，引力常数 G=4*pi^2；适当取质心静止系，确保粒子 ID 唯一且两两距离 > 1e-5 AU）。少体/行星/双星默认选 rebound（IAS15），多体星团或近接问题可选 petar；用户指定引擎时遵从用户。调用后在回复中清晰列出参数与物理假设，明确询问用户是否按此参数运行（并提示可在卡片中直接修改或继续对话调整）；不得编造未运行的模拟结果。
+90 | … 历史轮次的 Gaia 数据（history_turn_gaia 并填 source_turn_id）或用户 CSV/TSV 附件（attachment_csv 并填 attachment_filename）；若用户要求绘制某天体/视场且对话尚无数据，可先调用 query_simbad / query_gaia，再在同轮调用 prepare_scientific_plot。脚本固定只读 /input/data.csv，输出 /output/figure.png 与 /output/figure.pdf，不要 markdown 代码围栏；Python 仅用标准库/numpy/matplotlib(Agg)，中文使用 WenQuanYi Zen Hei 字体并预留底部注记留白（subplots_adjust(bottom=0.20, top=0.90)），Gnuplot 使用 set datafile separator comma 与 font "WenQuanYi Zen Hei,14"；Gaia 常用列名含 source_id, ra, dec, parallax, parallax_error, pmra, pmra_error, pmdec, pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity, ruwe, separation_arcsec。仅使用真实列，不编造数据或未要求的科学筛选；调用后向用户说明配色/坐标轴/数据范围，并提示核对或修改脚本后确认在隔离容器中执行。
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^…^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+91 | …
+   |
+
+E501 Line too long (191 > 100)
+  --> src\astroagent\context.py:21:79
+   |
+19 | …
+20 | …
+21 | …lation 工具生成可审阅的参数或脚本方案，交由用户在对话内核对、修改并确认执行；不得虚构尚未执行的模拟或绘图结果。
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22 | …
+23 | …
+   |
+
+E501 Line too long (104 > 100)
+  --> src\astroagent\context.py:92:65
+   |
+90 |             parts.append(
+91 |                 "[工具模式提示：用户已选中「N 体模拟」工具] "
+92 |                 "请根据用户需求自动计算并填写完整的 N 体初始条件与模拟参数（单位：质量 M_sun、位置 AU、"
+   |                                                                                                     ^^^^
+93 |                 "速度 AU/yr、时间 yr，G = 4π²），调用 prepare_nbody_simulation 生成方案；"
+94 |                 "在回答中清晰列出所设参数、物理依据与假设，并询问用户是否按此参数运行或直接修改。"
+   |
+
+E501 Line too long (112 > 100)
+   --> src\astroagent\context.py:101:74
+    |
+ 99 |                 "请优先基于本轮或历史轮次的 Gaia 查询数据，或用户提供的 CSV/TSV 附件数据，"
+100 |                 "调用 prepare_scientific_plot 生成完整可审阅的绘图方案与脚本；"
+101 |                 "若用户指定了具体天体/视场但对话中尚无数据，可先调用 query_simbad / query_gaia 再生成绘图方案。"
+    |                                                                                                      ^^^^^^^^^^^
+102 |                 "在回答中清晰说明绘图配置与所用列，询问用户是否确认在隔离容器中执行绘图或继续调整。"
+103 |             )
+    |
+
+E501 Line too long (106 > 100)
+   --> src\astroagent\local_model_client.py:187:83
+    |
+185 |             return title, usage
+186 |         except Exception as exc:
+187 |             raise fail("local_model_invalid_output", "生成的标题未通过校验，保留当前标题。", 502) from exc
+    |                                                                                                     ^^^^^^
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\astroagent\local_model_schemas.py:3:1
+   |
+ 1 |   """Automatic conversation naming using the local model."""
+ 2 |
+ 3 | / from typing import Literal
+ 4 | |
+ 5 | | from pydantic import Field
+ 6 | |
+ 7 | | from astroagent.conversation_titles import TITLE_MAX_CHARACTERS, TITLE_MIN_CHARACTERS
+ 8 | | from astroagent.project_schemas import Contract, Digest, Identifier
+   | |___________________________________________________________________^
+ 9 |
+10 |   class LocalPreferences(Contract):
+   |
+help: Organize imports
+   |
+9  |
+10 +
+11 | class LocalPreferences(Contract):
+   |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\mcp_client.py:689:101
+    |
+687 |                             retryable=True,
+688 |                         ) from exc
+689 |                     if code in (types.INVALID_PARAMS, types.METHOD_NOT_FOUND, types.INVALID_REQUEST):
+    |                                                                                                     ^
+690 |                         raise ServiceError(
+691 |                             502,
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\postgres.py:332:82
+    |
+330 |                         turn.execution_status, turn.completed_at = "interrupted", utc_now()
+331 |                         turn.error = ErrorInfo(
+332 |                             code="turn_interrupted", message="服务重启时中断了请求。系统不会自动重发。"
+    |                                                                                                     ^^^
+333 |                         )
+334 |                         self._save(db, turn)
+    |
+
+E501 Line too long (101 > 100)
+   --> src\astroagent\schemas.py:427:71
+    |
+425 |     id: str = Field(
+426 |         pattern=r"^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$",
+427 |         description="粒子唯一编号，仅含英文字母、数字、下划线或连字符，如 Sun、Earth、Jupiter、A、B",
+    |                                                                                                     ^
+428 |     )
+429 |     mass: float = Field(
+    |
+
+E501 Line too long (105 > 100)
+   --> src\astroagent\schemas.py:450:85
+    |
+448 |     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+449 |
+450 |     name: str = Field(min_length=1, max_length=120, description="实验名称，如「太阳-地球-木星三体演化」")
+    |                                                                                                      ^^^^
+451 |     engine: Literal["rebound", "petar"] = Field(
+452 |         default="rebound",
+    |
+
+E501 Line too long (123 > 100)
+   --> src\astroagent\schemas.py:453:75
+    |
+451 |     engine: Literal["rebound", "petar"] = Field(
+452 |         default="rebound",
+453 |         description="模拟程序：rebound（高精度 IAS15，适合双星/三星/行星系统）或 petar（树算法+SDAR，适合多体星团与近接）",
+    |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^
+454 |     )
+455 |     duration: float = Field(
+    |
+
+E501 Line too long (102 > 100)
+   --> src\astroagent\schemas.py:477:92
+    |
+475 |         description="物理参数设定、初始轨道速度计算依据与关键假设说明",
+476 |     )
+477 |     warnings: list[str] = Field(default_factory=list, max_length=12, description="物理近似与注意事项")
+    |                                                                                                     ^^
+478 |
+479 |     @model_validator(mode="after")
+    |
+
+E501 Line too long (103 > 100)
+   --> src\astroagent\schemas.py:572:85
+    |
+570 |         max_length=24000,
+571 |         description=(
+572 |             "完整独立可执行脚本（读取 /input/data.csv，输出 /output/figure.png 和 /output/figure.pdf，"
+    |                                                                                                     ^^^
+573 |             "不要包含 markdown 代码围栏）"
+574 |         ),
+    |
+
+E501 Line too long (103 > 100)
+   --> tests\test_mcp_client.py:268:101
+    |
+266 |             else:
+267 |                 result = {"resultType": "complete"}
+268 |             sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": req["id"], "result": result}) + "\\n")
+    |                                                                                                     ^^^
+269 |             sys.stdout.flush()
+270 |         """,
+    |
+
+Found 15 errors.
+[*] 1 fixable with `--fix`.
+unformatted: File would be reformatted
+  --> src\astroagent\api\local_titles.py:44:24
+   |
+43 |     return [
+   -         {"task": value}
+   -         for value in service.local_titles.store.latest_title(str(conversation_id))
+44 +         {"task": value} for value in service.local_titles.store.latest_title(str(conversation_id))
+45 |     ]
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\config.py:103:40
+    |
+102 |     mcp_call_timeout_seconds: float = Field(default=60.0, ge=1.0, le=180.0)
+    -     mcp_max_message_bytes: int = Field(
+    -         default=8 * 1024 * 1024, ge=64 * 1024, le=16 * 1024 * 1024
+    -     )
+103 +     mcp_max_message_bytes: int = Field(default=8 * 1024 * 1024, ge=64 * 1024, le=16 * 1024 * 1024)
+104 |     mcp_max_request_bytes: int = Field(default=256 * 1024, ge=4 * 1024, le=1024 * 1024)
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\context.py:152:37
+    |
+151 |         if self.record.omitted_turn_ids:
+    -             self.record.warnings = [
+    -                 "部分较早的对话未纳入上下文，请按需补充条件。"
+    -             ]
+152 +             self.record.warnings = ["部分较早的对话未纳入上下文，请按需补充条件。"]
+153 |         return text
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\local_model_client.py:187:24
+    |
+186 |         except Exception as exc:
+    -             raise fail("local_model_invalid_output", "生成的标题未通过校验，保留当前标题。", 502) from exc
+187 +             raise fail(
+188 +                 "local_model_invalid_output", "生成的标题未通过校验，保留当前标题。", 502
+189 +             ) from exc
+190 |
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\local_model_schemas.py:10:1
+   |
+9  |
+10 +
+11 | class LocalPreferences(Contract):
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\local_model_store.py:167:36
+    |
+166 |             if row is None:
+    -                 raise ServiceError(
+    -                     404, "local_assistant_task_not_found", "自动命名记录不存在。"
+    -                 )
+167 +                 raise ServiceError(404, "local_assistant_task_not_found", "自动命名记录不存在。")
+168 |             return json.loads(row[0])
+--------------------------------------------------------------------------------
+182 |                 return old, False
+    -             if (
+    -                 db.execute(
+    -                     (
+    -                         "SELECT 1 FROM local_assistant_tasks WHERE kin"
+    -                         "d='automatic_title' AND conversation_id=?"
+    -                     ),
+    -                     (value["conversation_id"],),
+    -                 ).fetchone()
+    -             ):
+183 +             if db.execute(
+184 +                 (
+185 +                     "SELECT 1 FROM local_assistant_tasks WHERE kin"
+186 +                     "d='automatic_title' AND conversation_id=?"
+187 +                 ),
+188 +                 (value["conversation_id"],),
+189 +             ).fetchone():
+190 |                 return None, False
+191 |             prefs = self.preferences(db)
+192 |             if (
+    -                 not prefs["enabled"] or not prefs["auto_titles"]
+193 +                 not prefs["enabled"]
+194 +                 or not prefs["auto_titles"]
+195 |                 or prefs["revision"] != value["preferences_revision"]
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\mcp_client.py:287:68
+    |
+286 |                     params = (
+    -                         types.PaginatedRequestParams(cursor=cursor)
+    -                         if cursor is not None
+    -                         else None
+287 +                         types.PaginatedRequestParams(cursor=cursor) if cursor is not None else None
+288 |                     )
+--------------------------------------------------------------------------------
+526 |     ) -> _McpConnection:
+    -         if (
+    -             slot.conn is not None
+    -             and not slot.conn.closed
+    -             and slot.conn.fingerprint == fingerprint
+    -         ):
+527 +         if slot.conn is not None and not slot.conn.closed and slot.conn.fingerprint == fingerprint:
+528 |             return slot.conn
+--------------------------------------------------------------------------------
+682 |                         ) from exc
+    -                     if code in (types.INVALID_PARAMS, types.METHOD_NOT_FOUND, types.INVALID_REQUEST):
+683 +                     if code in (
+684 +                         types.INVALID_PARAMS,
+685 +                         types.METHOD_NOT_FOUND,
+686 +                         types.INVALID_REQUEST,
+687 +                     ):
+688 |                         raise ServiceError(
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\mcp_contract.py:28:26
+   |
+27 | MCP_SERVER_TITLE = "AstroAgent Astronomy MCP Server"
+   - MCP_SERVER_DESCRIPTION = (
+   -     "Read-only astronomical query tools for SIMBAD, NASA ADS, and Gaia DR3."
+   - )
+28 + MCP_SERVER_DESCRIPTION = "Read-only astronomical query tools for SIMBAD, NASA ADS, and Gaia DR3."
+29 | MCP_SERVER_INSTRUCTIONS = (
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\mcp_server.py:60:41
+    |
+59  |     gaia_timeout_seconds: float = Field(default=45.0, gt=0, le=120)
+    -     call_timeout_seconds: float = Field(
+    -         default=DEFAULT_MCP_CALL_TIMEOUT_SECONDS, ge=1.0, le=180.0
+    -     )
+60  +     call_timeout_seconds: float = Field(default=DEFAULT_MCP_CALL_TIMEOUT_SECONDS, ge=1.0, le=180.0)
+61  |     max_message_bytes: int = Field(
+--------------------------------------------------------------------------------
+166 |     )
+    -     gaia_service = (
+    -         gaia if gaia is not None else GaiaService(resolved_config.gaia_timeout_seconds)
+    -     )
+167 +     gaia_service = gaia if gaia is not None else GaiaService(resolved_config.gaia_timeout_seconds)
+168 |
+--------------------------------------------------------------------------------
+322 |
+    -         thread = threading.Thread(
+    -             target=worker, name=f"astroagent-mcp-{tool_name}", daemon=True
+    -         )
+323 +         thread = threading.Thread(target=worker, name=f"astroagent-mcp-{tool_name}", daemon=True)
+324 |         started_thread = False
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\mcp_stdio.py:252:73
+    |
+251 |
+    -     read_stream_writer, read_stream = anyio.create_memory_object_stream[
+    -         SessionMessage | Exception
+    -     ](0)
+252 +     read_stream_writer, read_stream = anyio.create_memory_object_stream[SessionMessage | Exception](
+253 +         0
+254 +     )
+255 |     write_stream, write_stream_reader = anyio.create_memory_object_stream[SessionMessage](0)
+--------------------------------------------------------------------------------
+351 |                         sink.record(
+    -                             McpRequestTooLargeError(
+    -                                 "MCP request exceeds maximum byte size"
+    -                             )
+352 +                             McpRequestTooLargeError("MCP request exceeds maximum byte size")
+353 |                         )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\postgres.py:332:53
+    |
+331 |                         turn.error = ErrorInfo(
+    -                             code="turn_interrupted", message="服务重启时中断了请求。系统不会自动重发。"
+332 +                             code="turn_interrupted",
+333 +                             message="服务重启时中断了请求。系统不会自动重发。",
+334 |                         )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\schemas.py:166:42
+    |
+165 |         description=(
+    -             "圆锥检索半径，单位 arcmin，范围 (0, 30]；"
+    -             "仅 mode=cone 必填，与 mode=source_id 互斥"
+166 +             "圆锥检索半径，单位 arcmin，范围 (0, 30]；仅 mode=cone 必填，与 mode=source_id 互斥"
+167 |         ),
+--------------------------------------------------------------------------------
+173 |         description=(
+    -             "圆锥查询最多返回源行数，范围 1–500，默认 20；"
+    -             "仅 mode=cone 使用，与 mode=source_id 互斥"
+174 +             "圆锥查询最多返回源行数，范围 1–500，默认 20；仅 mode=cone 使用，与 mode=source_id 互斥"
+175 |         ),
+--------------------------------------------------------------------------------
+447 |
+    -     name: str = Field(min_length=1, max_length=120, description="实验名称，如「太阳-地球-木星三体演化」")
+448 +     name: str = Field(
+449 +         min_length=1, max_length=120, description="实验名称，如「太阳-地球-木星三体演化」"
+450 +     )
+451 |     engine: Literal["rebound", "petar"] = Field(
+--------------------------------------------------------------------------------
+476 |     )
+    -     warnings: list[str] = Field(default_factory=list, max_length=12, description="物理近似与注意事项")
+477 +     warnings: list[str] = Field(
+478 +         default_factory=list, max_length=12, description="物理近似与注意事项"
+479 +     )
+480 |
+--------------------------------------------------------------------------------
+591 |         if any(
+    -             len(v) > 500
+    -             for v in [*self.axes, *self.axes.values(), *self.filters, *self.warnings]
+592 +             len(v) > 500 for v in [*self.axes, *self.axes.values(), *self.filters, *self.warnings]
+593 |         ):
+    |
+
+unformatted: File would be reformatted
+   --> tests\test_local_assistant_postgres.py:208:66
+    |
+207 |     assert caught.value.error.code == "local_assistant_not_configured"
+    -     assert repo.detail(turn.conversation_id)["title"] == baseline
+208 +     assert repo.detail(turn.conversation_id)["title"] == baseline
+    |
+
+13 files would be reformatted, 179 files already formatted

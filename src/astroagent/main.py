@@ -21,7 +21,7 @@ from astroagent.api.exports import router as exports_router
 from astroagent.api.health import router as health_router
 from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
-from astroagent.api.local_assistant import router as local_assistant_router
+from astroagent.api.local_titles import router as local_titles_router
 from astroagent.api.model_providers import router as model_providers_router
 from astroagent.api.models import router as models_router
 from astroagent.api.plotting import router as plotting_router
@@ -31,11 +31,17 @@ from astroagent.api.rag import router as rag_router
 from astroagent.api.setup import router as setup_router
 from astroagent.api.workflows import router as workflows_router
 from astroagent.auth_access import IdentityAccess
-from astroagent.config import LocalSettings
+from astroagent.config import LocalSettings, Settings
 from astroagent.errors import ServiceError
 from astroagent.export_schemas import ExportRequest
 from astroagent.knowledge_schemas import DocumentUpload
 from astroagent.local_access import LocalAccess
+from astroagent.mcp_client import (
+    close_mcp_runtime,
+    effective_astronomy_transport,
+    initialize_mcp_runtime,
+    load_persisted_astronomy_transport,
+)
 
 
 @asynccontextmanager
@@ -44,14 +50,26 @@ async def lifespan(app):
     app.state.repository = None
     app.state.identity = None
     dispatcher = None
+    local = None
     try:
+        local = LocalSettings()
         from astroagent.identity import IdentityRuntime
 
-        app.state.identity = IdentityRuntime(LocalSettings())
+        app.state.identity = IdentityRuntime(local)
     except Exception as exc:
         app.state.storage_code = (
             exc.error.code if isinstance(exc, ServiceError) else "database_configuration_invalid"
         )
+    if app.state.identity is not None:
+        try:
+            load_persisted_astronomy_transport(app.state.identity.store)
+        except Exception:
+            pass
+    if local is not None and effective_astronomy_transport(local) == "mcp":
+        try:
+            initialize_mcp_runtime(local, Settings())
+        except Exception:
+            pass
     try:
         from astroagent.compute_tasks import Dispatcher, enabled
 
@@ -60,6 +78,7 @@ async def lifespan(app):
             dispatcher.start()
         yield
     finally:
+        close_mcp_runtime()
         if dispatcher is not None:
             dispatcher.close()
         identity = app.state.identity
@@ -90,7 +109,7 @@ app.include_router(rag_router)
 app.include_router(setup_router)
 app.include_router(models_router)
 app.include_router(plotting_router)
-app.include_router(local_assistant_router)
+app.include_router(local_titles_router)
 app.include_router(profile_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
@@ -165,7 +184,7 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
             "/api/v1/artifacts",
             "/api/v1/projects",
             "/api/v1/setup",
-            "/api/v1/local-assistant",
+            "/api/v1/local-titles",
             "/api/v1/profile",
         )
     ):

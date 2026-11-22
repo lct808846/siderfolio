@@ -7,6 +7,7 @@ export type PlotOperation = components['schemas']['PlotOperation']
 export type PlotPage = components['schemas']['PlotPage']
 export type PlotStatus = components['schemas']['PlotStatus']
 export type PlotPlanRequest = components['schemas']['PlotPlanRequest']
+export type PlotCustomPlanRequest = components['schemas']['PlotCustomPlanRequest']
 export type PlotRunRequest = components['schemas']['PlotRunRequest']
 export type DatasetPreview = components['schemas']['PlotDataPreview']
 const root = (project: string) => `/api/v1/projects/${encodeURIComponent(project)}/plotting`
@@ -36,6 +37,7 @@ export const plottingApi = {
   turn: (project: string, id: string, source: { conversation_id: string; turn_id: string; query_index: number }) => request<PlotDataset>(`${root(project)}/datasets/${id}/turn`, 'PUT', source),
   preview: (project: string, id: string) => request<DatasetPreview>(`${root(project)}/datasets/${id}/preview`),
   plan: (project: string, id: string, payload: PlotPlanRequest) => request<PlotOperation>(`${root(project)}/plans/${id}`, 'PUT', payload),
+  customPlan: (project: string, id: string, payload: PlotCustomPlanRequest) => request<PlotOperation>(`${root(project)}/plans/${id}/custom`, 'PUT', payload),
   run: (project: string, id: string, payload: PlotRunRequest) => request<PlotOperation>(`${root(project)}/runs/${id}`, 'PUT', payload),
   output: async (project: string, id: string, name: string) => (await binary(`${root(project)}/runs/${id}/files/${encodeURIComponent(name)}`)).blob(),
   data: async (project: string, id: string) => (await binary(`${root(project)}/datasets/${id}/data.csv`)).blob(),

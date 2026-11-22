@@ -145,7 +145,7 @@ def test_model_failure_or_limit_retains_all_three_results(final):
     ).json()
     assert body["status"] == "partial" and body["warnings"]
     assert len(body["results"]) == len(body["literature_results"]) == len(body["gaia_results"]) == 1
-    assert "gaia_results" in body["answer"]
+    assert "请查看已执行的查询结果" in body["answer"]
 
 
 def test_gaia_sources_deduplicate_keep_first_success():

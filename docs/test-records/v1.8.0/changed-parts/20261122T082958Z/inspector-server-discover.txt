@@ -1,0 +1,1 @@
+{"error":{"code":"error","message":"Unsupported method: server/discover. Supported --cli methods: initialize, tools/list, tools/call, resources/list, resources/read, resources/templates/list, prompts/list, prompts/get, logging/setLevel, skills/list, skills/get, resources/directory/read, servers/list, servers/show, servers/add, servers/edit, servers/remove."}}

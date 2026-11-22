@@ -22,8 +22,13 @@ def _strict_type(annotation):
             fields = {}
             for name, original in annotation.model_fields.items():
                 field = deepcopy(original)
-                field.default = ...
-                field.default_factory = None
+                # These fields were introduced in V1.8. Earlier snapshot manifests omit them.
+                if annotation is not ChatResponse or name not in (
+                    "nbody_proposals",
+                    "plot_proposals",
+                ):
+                    field.default = ...
+                    field.default_factory = None
                 fields[name] = (_strict_type(original.annotation), field)
             # A configured subclass also works on the minimum supported Pydantic;
             # older releases disallow create_model(__base__=..., __config__=...).

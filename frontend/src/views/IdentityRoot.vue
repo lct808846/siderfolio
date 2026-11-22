@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import App from './App.vue'
 import IdentityWorkspace from './IdentityWorkspace.vue'
 import SettingsWorkspace from './SettingsWorkspace.vue'
 import InteractionHints from '../components/InteractionHints.vue'
+import AstroBackdrop from '../components/AstroBackdrop.vue'
 import AdminWorkspace from './AdminWorkspace.vue'
 import { clearPrivateBrowserData, identityReady, identityUser, isIdentityPage } from '../identity-state'
+import { useAppearance } from '../stores/appearance'
 const route = useRoute()
+const appearance = useAppearance()
+const showAstroBackdrop = computed(() => identityReady.value && !!identityUser.value && !isIdentityPage(route.path) && appearance.astroBackdrop)
 function expired() {
   identityUser.value = null
   clearPrivateBrowserData()
@@ -20,6 +24,7 @@ onMounted(() => { window.addEventListener('astroagent:session-expired', expired)
 onBeforeUnmount(() => { window.removeEventListener('astroagent:session-expired', expired); window.removeEventListener('storage', changed) })
 </script>
 <template>
+  <AstroBackdrop v-if="showAstroBackdrop" />
   <main v-if="!identityReady" class="identity-loading" role="status">正在验证登录状态…</main>
   <IdentityWorkspace v-else-if="!identityUser || isIdentityPage(route.path)" />
   <template v-else-if="route.path === '/settings' || route.path === '/account'"><InteractionHints /><SettingsWorkspace /></template>

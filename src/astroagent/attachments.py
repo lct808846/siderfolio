@@ -18,6 +18,7 @@ MEDIA = {
     ".md": "text/markdown",
     ".markdown": "text/markdown",
     ".csv": "text/csv",
+    ".tsv": "text/tab-separated-values",
     ".json": "application/json",
 }
 
@@ -49,7 +50,7 @@ def parse_attachment(filename, content):
     media = MEDIA.get(PurePosixPath(name).suffix.lower())
     if not media:
         raise ServiceError(
-            415, "attachment_type_unsupported", "支持 PDF、DOCX、TXT、Markdown、CSV 和 JSON。"
+            415, "attachment_type_unsupported", "支持 PDF、DOCX、TXT、Markdown、CSV、TSV 和 JSON。"
         )
     if not content or len(content) > MAX_FILE_BYTES:
         raise ServiceError(413, "attachment_size_limit", "附件不能为空，单个文件最多 10 MiB。")
@@ -91,7 +92,7 @@ def parse_attachment(filename, content):
         truncated = len(raw) > MAX_TEXT_BYTES
         if truncated:
             text = raw[:MAX_TEXT_BYTES].decode("utf-8", errors="ignore")
-            warnings.append("内容较长，本轮仅发送前 16 KiB 文本；不能据此声称已阅读完整文件。")
+            warnings.append("内容较长，这次仅发送前 16 KiB 文本。请以实际阅读范围为准。")
         return ChatAttachment(
             filename=name,
             media_type=media,

@@ -1,0 +1,81 @@
+
+Running 6 tests using 1 worker
+
+(node:41968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\mail-navigation\email-links.spec.ts:80:1 › real email navigation loads activation without consuming the link until confirmation (937ms)
+  ok 2 [chromium] › tests\mail-navigation\email-links.spec.ts:95:1 › real email navigation opens reset page without changing a password (632ms)
+  ok 3 [chromium] › tests\mail-navigation\email-links.spec.ts:105:1 › cross-site APIs, writes, embeds and private pages stay rejected (181ms)
+  ok 4 [chromium] › tests\mail-navigation\email-links.spec.ts:123:1 › current two-step email flow opens password and optional verification step (1.9s)
+  x  5 [chromium] › tests\mail-navigation\email-links.spec.ts:146:1 › new email continuation displays activation notice and resend cooldown (5.9s)
+(node:38228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  6 [chromium] › tests\mail-navigation\email-links.spec.ts:156:1 › activation username and password confirmation notify the waiting login tab (5.8s)
+
+
+  1) [chromium] › tests\mail-navigation\email-links.spec.ts:146:1 › new email continuation displays activation notice and resend cooldown 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: '检查你的收件箱', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: '检查你的收件箱', exact: true }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: '检查你的收件箱', exact: true })
+
+
+      148 |   await page.getByLabel('邮箱', { exact: true }).fill('new@example.org')
+      149 |   await page.getByRole('button', { name: '继续', exact: true }).click()
+    > 150 |   await expect(page.getByRole('heading', { name: '检查你的收件箱', exact: true })).toBeVisible()
+          |                                                                             ^
+      151 |   await expect(page.getByRole('status')).toContainText('new@example.org')
+      152 |   await expect(page.getByRole('button', { name: /^重新发送电子邮件/ })).toBeDisabled()
+      153 |   expect(posts.filter(value => value.path === '/api/v1/auth/continue')).toHaveLength(1)
+        at D:\project\astroagent\frontend\tests\mail-navigation\email-links.spec.ts:150:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\mail-navigation-output\email-links-new-email-cont-d9c78--notice-and-resend-cooldown-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\mail-navigation-output\email-links-new-email-cont-d9c78--notice-and-resend-cooldown-chromium\error-context.md
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\mail-navigation-output\email-links-new-email-cont-d9c78--notice-and-resend-cooldown-chromium\error-context.md
+
+  2) [chromium] › tests\mail-navigation\email-links.spec.ts:156:1 › activation username and password confirmation notify the waiting login tab 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: '检查你的收件箱', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: '检查你的收件箱', exact: true }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: '检查你的收件箱', exact: true })
+
+
+      158 |   await page.getByLabel('邮箱', { exact: true }).fill('new@example.org')
+      159 |   await page.getByRole('button', { name: '继续', exact: true }).click()
+    > 160 |   await expect(page.getByRole('heading', { name: '检查你的收件箱', exact: true })).toBeVisible()
+          |                                                                             ^
+      161 |   const activation = await context.newPage()
+      162 |   await activation.goto('/activate#token=' + token)
+      163 |   await activation.getByRole('button', { name: '确认邮箱并继续', exact: true }).click()
+        at D:\project\astroagent\frontend\tests\mail-navigation\email-links.spec.ts:160:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\.astroagent\temp\v18-qa-20261122T082958Z\mail-navigation-output\email-links-activation-use-fc613-otify-the-waiting-login-tab-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\mail-navigation-output\email-links-activation-use-fc613-otify-the-waiting-login-tab-chromium\error-context.md
+
+    Error Context: ..\.astroagent\temp\v18-qa-20261122T082958Z\mail-navigation-output\email-links-activation-use-fc613-otify-the-waiting-login-tab-chromium\error-context.md
+
+  2 failed
+    [chromium] › tests\mail-navigation\email-links.spec.ts:146:1 › new email continuation displays activation notice and resend cooldown 
+    [chromium] › tests\mail-navigation\email-links.spec.ts:156:1 › activation username and password confirmation notify the waiting login tab 
+  4 passed (18.5s)

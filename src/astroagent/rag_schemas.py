@@ -12,6 +12,10 @@ class Confirm(Contract):
     confirmed: StrictBool
 
 
+class AstronomyTransportUpdate(Contract):
+    transport: Literal["direct", "mcp"]
+
+
 class IndexRequest(Revision):
     client_request_id: Identifier
     confirmed: StrictBool
@@ -191,4 +195,9 @@ class SetupStatus(Contract):
     answering_configured: bool
     answering_provider: str
     answering_model: str
+    astronomy_tool_transport: Literal["direct", "mcp"] = "direct"
+    mcp_status: Literal["disabled", "ready", "configured", "error"] = "disabled"
+    mcp_protocol_version: str | None = None
+    mcp_server_version: str | None = None
+    mcp_tools: list[str] = Field(default_factory=list)
     credentials_location: Literal["server_environment_only"] = "server_environment_only"

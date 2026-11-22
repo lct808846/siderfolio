@@ -67,7 +67,7 @@ def provider_url(value):
             raise ValueError("请使用公共模型服务域名。") from None
     else:
         if not address.is_global or address.is_multicast:
-            raise ValueError("此入口仅支持公共 HTTPS 服务，本地助手使用独立配置。")
+            raise ValueError("此入口仅支持公共 HTTPS 服务。")
     if parsed.port is not None and not 1 <= parsed.port <= 65535:
         raise ValueError("API 端口无效。")
     return value.rstrip("/")

@@ -88,6 +88,41 @@ test('provider editor, directory, default, key omission, conflict and removal', 
   expect(await page.evaluate(() => JSON.stringify(localStorage) + JSON.stringify(sessionStorage))).not.toContain('synthetic-not-a-credential')
 })
 
+test('MCP switch shows the saved transport and rolls back a rejected change', async ({ page }) => {
+  let transport = 'direct'
+  let writes = 0
+  const status = () => ({
+    configured: true, ready: true,
+    astronomy_tool_transport: transport,
+    mcp_status: transport === 'mcp' ? 'ready' : 'disabled',
+    mcp_protocol_version: transport === 'mcp' ? '2026-07-28' : null,
+    mcp_tools: transport === 'mcp' ? ['query_simbad', 'search_ads', 'query_gaia'] : [],
+  })
+  await page.route('**/api/v1/setup/status', route => route.fulfill({ json: status() }))
+  await page.route('**/api/v1/setup/astronomy-transport', route => {
+    expect(route.request().method()).toBe('PUT')
+    if (++writes === 1) {
+      return route.fulfill({ status: 409, json: { error: { code: 'transport_switch_busy', message: '合成查询正在执行' } } })
+    }
+    transport = route.request().postDataJSON().transport
+    return route.fulfill({ json: status() })
+  })
+  await page.goto('/settings?section=general')
+  const toggle = page.getByRole('switch', { name: '通过本地 MCP 执行天文查询' })
+  await expect(toggle).toBeEnabled()
+  await toggle.click()
+  await expect(page.getByRole('alert').filter({ hasText: '合成查询正在执行' })).toBeVisible()
+  await expect(toggle).not.toBeChecked()
+  await toggle.click()
+  await expect(page.getByText('MCP 已就绪', { exact: true })).toBeVisible()
+  await expect(page.getByText(/协议 2026-07-28 · query_simbad \/ search_ads \/ query_gaia/)).toBeVisible()
+  await expect(toggle).toBeChecked()
+  await toggle.click()
+  await expect(page.getByText('直连模式', { exact: true })).toBeVisible()
+  await expect(toggle).not.toBeChecked()
+  expect(writes).toBe(3)
+})
+
 test('ordinary user settings expose only account controls and no admin link', async ({ page }) => {
   let privilegedReads = 0
   await page.route('**/api/v1/**', async route => {
@@ -105,24 +140,24 @@ test('ordinary user settings expose only account controls and no admin link', as
   expect(privilegedReads).toBe(0)
 })
 
-test('RAG and local assistant failures remain readable without starting model jobs', async ({ page, request }, info) => {
+test('RAG and automatic naming failures remain readable without starting model jobs', async ({ page, request }, info) => {
   const created = await request.post('/api/v1/projects', { data: { name: 'Synthetic status layout' } })
   expect(created.status()).toBe(201)
   const project = await created.json()
   let jobs = 0
   page.on('request', value => { if (value.method() !== 'GET' && /\/jobs\/|\/rag\/answers/.test(value.url())) jobs++ })
   await page.route('**/api/v1/projects/*/rag/**', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'synthetic_unavailable', message: 'Synthetic RAG status unavailable' } }) }))
-  await page.route('**/api/v1/local-assistant', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'synthetic_unavailable', message: 'Synthetic local status unavailable' } }) }))
-  for (const [url, message] of [[`/projects/${project.id}/rag`, 'Synthetic RAG status unavailable'], ['/local-assistant', 'Synthetic local status unavailable']]) {
+  await page.route('**/api/v1/local-titles', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { code: 'synthetic_unavailable', message: 'Synthetic local status unavailable' } }) }))
+  for (const [url, message] of [[`/projects/${project.id}/rag`, 'Synthetic RAG status unavailable'], ['/settings?section=assistant', 'Synthetic local status unavailable']]) {
     await page.goto(url!)
-    await expect(page.getByRole('alert')).toContainText(message!)
+    await expect(page.getByRole('alert').filter({ hasText: message! })).toBeVisible()
     for (const width of [1440, 1024, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 900 })
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     }
     if (process.env.ASTROAGENT_RECORD_DIR) {
       mkdirSync(process.env.ASTROAGENT_RECORD_DIR, { recursive: true })
-      await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, info.project.name + (url!.includes('/rag') ? '-rag-error.png' : '-assistant-error.png')), fullPage: true })
+      await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, info.project.name + (url!.includes('/rag') ? '-rag-error.png' : '-local-titles-error.png')), fullPage: true })
     }
   }
   expect(jobs).toBe(0)

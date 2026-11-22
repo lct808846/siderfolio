@@ -78,7 +78,7 @@ class TenantServices:
                 service.identity_generation = user["generation"]
                 # These are private tenant tables, not global operational settings.
                 service.plotting.store.initialize()
-                service.local_assistant.store.initialize()
+                service.local_titles.store.initialize()
             except BaseException:
                 repository.close()
                 raise
@@ -88,7 +88,7 @@ class TenantServices:
     def _close(self, identifier):
         service = self.services.pop(identifier, None)
         if service:
-            service.local_assistant.close()
+            service.local_titles.close()
             service.repository.close()
 
     def invalidate(self, identifier, generation):

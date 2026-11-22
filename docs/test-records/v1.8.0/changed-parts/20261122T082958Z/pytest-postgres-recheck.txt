@@ -1,0 +1,10 @@
+..........................................F.......................       [100%]
+=================================== FAILURES ===================================
+_____________ test_automatic_title_preserves_user_actions[delete] ______________
+tests/test_local_assistant_postgres.py:96: in test_automatic_title_preserves_user_actions
+    with pytest.raises(ServiceError):
+                       ^^^^^^^^^^^^
+E   NameError: name 'ServiceError' is not defined
+=========================== short test summary info ============================
+FAILED tests/test_local_assistant_postgres.py::test_automatic_title_preserves_user_actions[delete]
+1 failed, 65 passed in 65.34s (0:01:05)

@@ -248,13 +248,13 @@ defineExpose({ open, close })
         </div>
 
         <div class="dialog-field">
-          <label :for="`${dialogId}-description`">项目说明 <span class="field-optional">可选</span></label>
+          <label :for="`${dialogId}-description`">项目指令与说明 <span class="field-optional">可选</span></label>
           <textarea
             :id="`${dialogId}-description`"
             v-model="description"
             maxlength="2000"
             rows="3"
-            placeholder="简述研究目标、目标天体、样本条件或分析范围…"
+            placeholder="写明课题目标、目标天体、筛选口径或回答侧重；项目内所有对话将自动携带此指令…"
             :disabled="busy || !!createdProject"
           />
         </div>

@@ -1,0 +1,3 @@
+tests\test_local_assistant_postgres.py:49:19: F821 Undefined name `ServiceError`
+tests\test_local_assistant_postgres.py:96:28: F821 Undefined name `ServiceError`
+Found 2 errors.

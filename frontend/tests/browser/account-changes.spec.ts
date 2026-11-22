@@ -81,7 +81,7 @@ test('username propagates to sidebar, menu closes and logout clears private brow
   await trigger.press('Escape')
   await expect(page.getByRole('menu', { name: '账号菜单' })).toHaveCount(0)
   await trigger.click()
-  await page.getByRole('heading', { name: '天文数据与文献检索' }).click()
+  await page.getByRole('textbox', { name: '天文问题' }).click()
   await expect(page.getByRole('menu', { name: '账号菜单' })).toHaveCount(0)
   await page.setViewportSize({ width: 390, height: 740 })
   await page.getByRole('button', { name: '展开会话列表', exact: true }).click()

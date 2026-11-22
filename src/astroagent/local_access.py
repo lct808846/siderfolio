@@ -153,7 +153,7 @@ class LocalAccess:
                 "/api/v1/conversations",
                 "/api/v1/projects",
                 "/api/v1/setup",
-                "/api/v1/local-assistant",
+                "/api/v1/local-titles",
             )
         ) and scope["method"] in {
             "POST",

@@ -9,10 +9,20 @@ import { useProjects } from '../stores/projects'
 import { useWorkbench } from '../stores/workbench'
 import type { Conversation, Project } from '../types'
 import CreateProjectDialog from './CreateProjectDialog.vue'
+import SuccessToast from './SuccessToast.vue'
 
-const emit = defineEmits<{ create: []; removed: [ids: string[]] }>()
+const props = defineProps<{ activeProjectId?: string }>()
+const emit = defineEmits<{
+  create: []
+  removed: [ids: string[]]
+  'select-project': [projectId: string]
+  'manage-project': [projectId: string, tab: 'context' | 'snapshots' | 'manage', promptDelete?: boolean]
+}>()
 const store = useWorkbench(), projectsStore = useProjects(), router = useRouter(), route = useRoute()
-const projectsOpen = ref(true)
+const projectsOpen = ref(true), recentOpen = ref(true)
+const expandedProjects = ref<Record<string, boolean>>({})
+const expandedAllProjects = ref<Record<string, boolean>>({})
+const startingProjectId = ref('')
 const userMenuOpen = ref(false)
 const userMenuTrigger = ref<HTMLButtonElement | null>(null)
 const userMenuRef = ref<HTMLElement | null>(null)
@@ -28,8 +38,10 @@ const avatarUrl = computed(() => (
 ))
 const userRoleLabel = computed(() => identityUser.value?.admin ? '管理员' : '科研工作台')
 const pins = ref<string[]>(readPinnedConversations()), selecting = ref(false), selected = ref<string[]>([])
+const recentVisible = computed(() => recentOpen.value || selecting.value)
 const selectionToggle = ref<HTMLButtonElement | null>(null), selectionExit = ref<HTMLButtonElement | null>(null)
 const busy = ref(false), message = ref(''), error = ref('')
+const deletionMessage = ref('')
 const scrolling = ref(false)
 const listScroller = ref<HTMLElement | null>(null), listContent = ref<HTMLElement | null>(null)
 const scrollMetrics = ref({ height: 0, content: 0, offset: 0 }), draggingScrollbar = ref(false)
@@ -84,13 +96,16 @@ function endScrollDrag(event: PointerEvent) {
   revealScrollbar()
 }
 const menuId = ref(''), menu = ref<HTMLElement | null>(null), menuPosition = ref({ left: '0px', top: '0px' })
+const projectMenuId = ref(''), projectMenu = ref<HTMLElement | null>(null), projectMenuPosition = ref({ left: '0px', top: '0px' })
 const dialog = ref<HTMLDialogElement | null>(null), action = ref<'' | 'rename' | 'delete' | 'export' | 'assign-project'>('')
 const createProjectDialog = ref<InstanceType<typeof CreateProjectDialog> | null>(null)
 const targets = ref<Conversation[]>([]), title = ref('')
 const assignProjectId = ref('')
 let menuTrigger: HTMLButtonElement | null = null
+let projectMenuTrigger: HTMLButtonElement | null = null
 const conversations = computed(() => orderedConversations(store.conversations, pins.value))
 const menuTarget = computed(() => store.conversations.find(item => item.id === menuId.value))
+const projectMenuTarget = computed(() => projectsStore.customProjects.find(item => item.id === projectMenuId.value))
 const locked = computed(() => busy.value || store.creating)
 
 function closeMenu(focus = true) {
@@ -98,7 +113,13 @@ function closeMenu(focus = true) {
   menuId.value = ''
   if (focus && trigger?.isConnected) trigger.focus()
 }
+function closeProjectMenu(focus = true) {
+  const trigger = projectMenuTrigger
+  projectMenuId.value = ''
+  if (focus && trigger?.isConnected) trigger.focus()
+}
 async function openMenu(event: MouseEvent, id: string) {
+  closeProjectMenu(false)
   if (menuId.value === id) { closeMenu(); return }
   menuTrigger = event.currentTarget as HTMLButtonElement
   menuId.value = id
@@ -106,6 +127,16 @@ async function openMenu(event: MouseEvent, id: string) {
   menuPosition.value = { left: `${Math.max(8, Math.min(rect.right - 210, window.innerWidth - 218))}px`, top: `${Math.max(8, Math.min(rect.bottom + 6, window.innerHeight - 300))}px` }
   await nextTick()
   menu.value?.querySelector<HTMLElement>('button:not(:disabled), a')?.focus()
+}
+async function openProjectMenu(event: MouseEvent, id: string) {
+  closeMenu(false)
+  if (projectMenuId.value === id) { closeProjectMenu(); return }
+  projectMenuTrigger = event.currentTarget as HTMLButtonElement
+  projectMenuId.value = id
+  const rect = projectMenuTrigger.getBoundingClientRect()
+  projectMenuPosition.value = { left: `${Math.max(8, Math.min(rect.right - 216, window.innerWidth - 224))}px`, top: `${Math.max(8, Math.min(rect.bottom + 6, window.innerHeight - 400))}px` }
+  await nextTick()
+  projectMenu.value?.querySelector<HTMLElement>('button:not(:disabled), a')?.focus()
 }
 function menuKey(event: KeyboardEvent) {
   if (event.key === 'Escape') { event.preventDefault(); closeMenu(); return }
@@ -117,16 +148,31 @@ function menuKey(event: KeyboardEvent) {
     items[position]?.focus()
   }
 }
+function projectMenuKey(event: KeyboardEvent) {
+  if (event.key === 'Escape') { event.preventDefault(); closeProjectMenu(); return }
+  const items = Array.from(projectMenu.value?.querySelectorAll<HTMLElement>('button:not(:disabled), a') || [])
+  const index = items.indexOf(document.activeElement as HTMLElement)
+  if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+    event.preventDefault()
+    const position = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length
+    items[position]?.focus()
+  }
+}
 function outside(event: PointerEvent) {
   if (event.target instanceof Node && !menu.value?.contains(event.target) && !menuTrigger?.contains(event.target)) closeMenu(false)
+  if (event.target instanceof Node && !projectMenu.value?.contains(event.target) && !projectMenuTrigger?.contains(event.target)) closeProjectMenu(false)
   if (event.target instanceof Node && !userMenuRef.value?.contains(event.target) && !userMenuTrigger.value?.contains(event.target)) userMenuOpen.value = false
 }
 function dismissMenu(event: Event) {
-  if (event.target instanceof Node && menu.value?.contains(event.target)) return
+  if (event.target instanceof Node && (menu.value?.contains(event.target) || projectMenu.value?.contains(event.target))) return
   closeMenu(false)
+  closeProjectMenu(false)
 }
 function menuBlur(event: FocusEvent) {
   if (!(event.relatedTarget instanceof Node) || !menu.value?.contains(event.relatedTarget)) closeMenu(false)
+}
+function projectMenuBlur(event: FocusEvent) {
+  if (!(event.relatedTarget instanceof Node) || !projectMenu.value?.contains(event.relatedTarget)) closeProjectMenu(false)
 }
 function persistPins(value: string[]) {
   pins.value = value
@@ -150,6 +196,7 @@ async function openDialog(kind: 'rename' | 'delete' | 'export' | 'assign-project
     assignProjectId.value = currentProject === projectsStore.defaultProjectId ? '' : currentProject
   }
   action.value = kind; error.value = ''; message.value = ''
+  if (kind === 'delete') deletionMessage.value = ''
   closeMenu()
   await nextTick()
   dialog.value?.showModal()
@@ -166,15 +213,58 @@ async function onProjectCreated(payload: { project: Project; uploadedCount: numb
   message.value = `已创建科研项目「${payload.project.name}」${sourceNote}。`
   if (payload.startChat) {
     try {
-      const conversationId = await projectsStore.startConversation(payload.project.id)
+      const created = await projectsStore.startConversationDetail(payload.project.id)
+      store.preparedConversation = { ...created, turns: [] }
       await store.refreshList().catch(() => undefined)
-      await router.push(`/conversations/${conversationId}`)
+      await router.push(`/conversations/${created.id}`)
       return
     } catch (reason) {
       error.value = reason instanceof Error ? reason.message : '项目已创建，但开启新对话失败。'
     }
   }
-  await router.push(`/projects/${payload.project.id}`)
+  emit('select-project', payload.project.id)
+}
+function chooseProject(projectId: string) {
+  closeProjectMenu(false)
+  if (projectConversations(projectId).length) {
+    expandedProjects.value = { ...expandedProjects.value, [projectId]: true }
+  }
+  emit('select-project', projectId)
+}
+function manageProjectFromMenu(tab: 'context' | 'snapshots' | 'manage', promptDelete = false) {
+  const id = projectMenuId.value
+  if (!id) return
+  closeProjectMenu(false)
+  emit('manage-project', id, tab, promptDelete)
+}
+function visibleProjectConversations(projectId: string) {
+  const all = projectConversations(projectId)
+  return expandedAllProjects.value[projectId] ? all : all.slice(0, 6)
+}
+function projectConversations(projectId: string) {
+  return conversations.value.filter(item => projectsStore.memberships[item.id] === projectId)
+}
+function toggleProjects() {
+  projectsOpen.value = !projectsOpen.value
+  if (!projectsOpen.value) closeProjectMenu(false)
+}
+function toggleProjectExpand(projectId: string) {
+  expandedProjects.value = { ...expandedProjects.value, [projectId]: !expandedProjects.value[projectId] }
+}
+async function startProjectChat(projectId: string) {
+  if (locked.value || store.running || store.loading || !!store.disconnectedRequest || startingProjectId.value) return
+  startingProjectId.value = projectId
+  error.value = ''; message.value = ''
+  try {
+    const created = await projectsStore.startConversationDetail(projectId)
+    store.preparedConversation = { ...created, turns: [] }
+    void store.refreshList().catch(() => undefined)
+    await router.push(`/conversations/${created.id}`)
+  } catch (reason) {
+    error.value = reason instanceof Error ? reason.message : '在项目中新建对话失败，请稍后重试。'
+  } finally {
+    startingProjectId.value = ''
+  }
 }
 async function archiveOne(id = menuId.value) {
   if (locked.value || !id) return
@@ -221,6 +311,10 @@ function startSelection() { void enterSelection(menuId.value ? [menuId.value] : 
 function stopSelection() {
   selecting.value = false; selected.value = []
   void nextTick(() => selectionToggle.value?.focus({ preventScroll: true }))
+}
+function toggleRecent() {
+  recentOpen.value = !recentOpen.value
+  if (!recentOpen.value) closeMenu(false)
 }
 function chooseConversation(id: string) {
   if (selecting.value) selected.value = selected.value.includes(id) ? selected.value.filter(value => value !== id) : [...selected.value, id]
@@ -295,7 +389,7 @@ async function execute() {
       persistPins(pins.value.filter(id => !removed.includes(id)))
       selected.value = targets.value.filter(value => !removed.includes(value.id)).map(value => value.id)
       if (!selected.value.length) selecting.value = false
-      message.value = `已删除 ${removed.length} 个会话。`
+      if (removed.length) deletionMessage.value = `已删除 ${removed.length} 个会话。`
       error.value = failures.join('\n')
       emit('removed', removed)
     }
@@ -304,7 +398,7 @@ async function execute() {
   } catch (e) { error.value = e instanceof Error ? e.message : '操作未确认，请刷新核对。' }
   finally { busy.value = false }
 }
-watch(() => route.fullPath, () => { closeMenu(false); userMenuOpen.value = false; if (!busy.value) dialog.value?.close() })
+watch(() => route.fullPath, () => { closeMenu(false); closeProjectMenu(false); userMenuOpen.value = false; if (!busy.value) dialog.value?.close() })
 watch(() => store.conversations, items => {
   selected.value = selected.value.filter(id => items.some(item => item.id === id))
   const remainingPins = pins.value.filter(id => items.some(item => item.id === id))
@@ -344,42 +438,125 @@ onBeforeUnmount(() => {
       <div ref="listScroller" class="history-scroll" tabindex="0" aria-label="滚动浏览会话" @scroll.passive="revealScrollbar">
         <div ref="listContent" class="history-scroll-content">
           <section v-if="!selecting" class="sidebar-projects" aria-label="科研项目">
-            <div class="history-list-heading">
-              <button type="button" class="sidebar-section-toggle" :aria-expanded="projectsOpen" @click="projectsOpen = !projectsOpen">
-                <svg class="sidebar-chevron" :class="{ open: projectsOpen }" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="history-list-heading sidebar-projects-head">
+              <button type="button" class="sidebar-section-toggle" :aria-expanded="projectsOpen" aria-controls="sidebar-project-list" @click="toggleProjects">
+                <span class="sidebar-section-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" /><path d="m3 12 9 4.5 9-4.5" /><path d="m3 16.5 9 4.5 9-4.5" /></svg>
+                </span>
                 <span class="history-label">项目</span>
+                <svg class="sidebar-chevron sidebar-section-chevron" :class="{ open: projectsOpen }" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
               </button>
-              <button type="button" class="history-icon-button" :disabled="locked || projectsStore.customProjects.length >= 20" aria-label="新建科研项目" data-tooltip="新建科研项目" @click="openCreateProject">
+              <button type="button" class="history-icon-button sidebar-projects-add" :disabled="locked || projectsStore.customProjects.length >= 20" aria-label="新建科研项目" data-tooltip="新建科研项目" @click="openCreateProject">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
               </button>
             </div>
-            <div v-if="projectsOpen" class="sidebar-project-list">
-              <RouterLink
-                v-for="project in projectsStore.customProjects"
-                :key="project.id"
-                :to="`/projects/${project.id}`"
-                class="sidebar-project-item"
-                :class="{ selected: route.path === `/projects/${project.id}` || route.path.startsWith(`/projects/${project.id}/`) }"
-                data-tooltip-truncated
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
-                <span data-tooltip-source>{{ project.name }}</span>
-              </RouterLink>
-              <p v-if="!projectsStore.customProjects.length" class="sidebar-project-hint">按课题归类会话与来源</p>
-              <RouterLink v-else to="/projects" class="sidebar-project-manage">管理全部项目 →</RouterLink>
+            <div id="sidebar-project-list" class="sidebar-disclosure" :inert="!projectsOpen">
+              <div class="sidebar-disclosure-body">
+                <div class="sidebar-project-list">
+                  <div v-for="project in projectsStore.customProjects" :key="project.id">
+                    <div
+                      class="sidebar-project-row"
+                      :class="{
+                        selected: props.activeProjectId === project.id || route.path.startsWith(`/projects/${project.id}/`),
+                        'has-active-chat': !!store.current && projectsStore.memberships[store.current.id] === project.id,
+                      }"
+                    >
+                      <button
+                        v-if="projectConversations(project.id).length"
+                        type="button"
+                        class="sidebar-project-expand"
+                        :aria-expanded="!!expandedProjects[project.id]"
+                        :aria-controls="`sidebar-project-conversations-${project.id}`"
+                        :aria-label="expandedProjects[project.id] ? `收起「${project.name}」的对话` : `展开「${project.name}」的对话`"
+                        @click="toggleProjectExpand(project.id)"
+                      >
+                        <svg class="sidebar-chevron" :class="{ open: !!expandedProjects[project.id] }" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="sidebar-project-item"
+                        :class="{ 'is-unindented': !projectConversations(project.id).length }"
+                        data-tooltip-truncated
+                        @click="chooseProject(project.id)"
+                      >
+                        <span class="sidebar-project-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
+                        </span>
+                        <span class="sidebar-project-name" data-tooltip-source>{{ project.name }}</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="sidebar-project-quick-add"
+                        :disabled="locked || store.running || store.loading || !!store.disconnectedRequest || !!startingProjectId"
+                        :aria-label="`在「${project.name}」中新建对话`"
+                        :data-tooltip="`在「${project.name}」中新建对话`"
+                        @click="startProjectChat(project.id)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="sidebar-project-quick-add"
+                        :disabled="locked"
+                        :aria-label="`项目操作：${project.name}`"
+                        aria-haspopup="menu"
+                        :aria-expanded="projectMenuId === project.id"
+                        data-tooltip="项目指令、知识、快照与管理"
+                        @click="openProjectMenu($event, project.id)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none" /></svg>
+                      </button>
+                    </div>
+                    <div
+                      :id="`sidebar-project-conversations-${project.id}`"
+                      class="sidebar-disclosure"
+                      :inert="!expandedProjects[project.id] || !projectConversations(project.id).length"
+                    >
+                      <div class="sidebar-disclosure-body">
+                        <div class="sidebar-project-chats">
+                          <RouterLink
+                            v-for="chat in visibleProjectConversations(project.id)"
+                            :key="chat.id"
+                            :to="`/conversations/${chat.id}`"
+                            class="sidebar-project-chat-link"
+                            :class="{ selected: store.current?.id === chat.id }"
+                            data-tooltip-truncated
+                          >
+                            <span data-tooltip-source>{{ chat.title }}</span>
+                          </RouterLink>
+                          <button
+                            v-if="projectConversations(project.id).length > 6 && !expandedAllProjects[project.id]"
+                            type="button"
+                            class="sidebar-project-chat-more"
+                            @click="expandedAllProjects = { ...expandedAllProjects, [project.id]: true }"
+                          >
+                            展开全部 {{ projectConversations(project.id).length }} 个对话
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p v-if="!projectsStore.customProjects.length" class="sidebar-project-hint">按课题归类指令、知识与对话</p>
+                </div>
+              </div>
             </div>
           </section>
           <div class="history-list-heading">
-            <p class="history-label">最近会话</p>
+            <button type="button" class="sidebar-section-toggle sidebar-recent-toggle" :aria-expanded="recentVisible" aria-controls="recent-conversations" :disabled="selecting" @click="toggleRecent">
+              <span class="history-label">最近会话</span>
+              <svg class="sidebar-chevron sidebar-section-chevron" :class="{ open: recentVisible }" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+            </button>
             <Transition name="history-control"><button v-if="store.conversations.length && !selecting" ref="selectionToggle" class="history-icon-button history-manage" :inert="selecting" :disabled="locked" aria-label="多选管理会话" data-tooltip="多选管理会话" @click="enterSelection()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="1.5" /><circle cx="5" cy="12" r="1.5" /><circle cx="5" cy="18" r="1.5" /><path d="M11 6h9M11 12h9M11 18h9" /></svg></button></Transition>
           </div>
           <p v-if="message" class="sidebar-feedback" role="status">{{ message }}</p>
           <p v-if="error && !dialog?.open" class="sidebar-feedback danger" role="alert">{{ error }}</p>
-          <nav class="conversation-list" aria-label="本地会话">
+          <Transition name="history-mode">
+            <div v-show="recentVisible" id="recent-conversations" :inert="!recentVisible">
+              <nav class="conversation-list" aria-label="本地会话">
             <div v-for="conversation in conversations" :key="conversation.id" class="conversation-row" :class="{selected:selecting ? selected.includes(conversation.id) : store.current?.id===conversation.id}">
               <div class="conversation-choice-slot" :inert="!selecting" :aria-hidden="!selecting"><input v-model="selected" type="checkbox" :value="conversation.id" :aria-label="`选择会话 ${conversation.title}`" :disabled="locked || !selecting"></div>
               <button class="conversation-item" :class="{selected:!selecting && store.current?.id===conversation.id}" :aria-current="!selecting && store.current?.id===conversation.id ? 'page' : undefined" :aria-pressed="selecting ? selected.includes(conversation.id) : undefined" :disabled="locked" data-tooltip-truncated @click="chooseConversation(conversation.id)">
-                <span><b data-tooltip-source>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span><span v-if="projectsStore.projectNameFor(conversation.id)" class="conversation-project-tag">{{ projectsStore.projectNameFor(conversation.id) }} · </span>{{ conversation.revision }} 轮 · {{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
+                <span><b data-tooltip-source>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span><span v-if="projectsStore.projectNameFor(conversation.id)" class="conversation-project-tag">{{ projectsStore.projectNameFor(conversation.id) }} · </span>{{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
               </button>
               <div class="conversation-more-slot" :inert="selecting" :aria-hidden="selecting">
                 <button class="conversation-more" data-tooltip="" :aria-label="`会话操作：${conversation.title}`" aria-haspopup="menu" :aria-expanded="menuId===conversation.id" :disabled="locked || selecting" @click="openMenu($event, conversation.id)">
@@ -387,8 +564,10 @@ onBeforeUnmount(() => {
                 </button>
               </div>
             </div>
-          </nav>
-          <p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p>
+              </nav>
+              <p v-if="!store.conversations.length" class="small muted empty-history">会话保存在本机，<br>从一个问题开始。</p>
+            </div>
+          </Transition>
         </div>
       </div>
       <div v-if="listScrollable" class="history-scrollbar" aria-hidden="true" @pointerdown="beginScrollDrag" @pointermove="moveScrollDrag" @pointerup="endScrollDrag" @pointercancel="endScrollDrag" @lostpointercapture="endScrollDrag"><span class="history-scroll-thumb" :style="{ height: `${thumbHeight}px`, transform: `translateY(${thumbTop}px)` }"></span></div>
@@ -473,8 +652,20 @@ onBeforeUnmount(() => {
         <button role="menuitem" @click="startSelection"><span aria-hidden="true">☷</span>多选整理</button>
         <button role="menuitem" class="danger" :disabled="store.running && store.current?.id===menuId" @click="openDialog('delete')"><span aria-hidden="true">×</span>删除会话</button>
       </div>
+      <div v-if="projectMenuTarget" ref="projectMenu" class="conversation-menu" role="menu" :aria-label="`项目操作：${projectMenuTarget.name}`" :style="projectMenuPosition" @keydown="projectMenuKey" @focusout="projectMenuBlur">
+        <button role="menuitem" @click="manageProjectFromMenu('context')"><span aria-hidden="true">✎</span>指令与项目知识</button>
+        <button role="menuitem" @click="manageProjectFromMenu('snapshots')"><span aria-hidden="true">◈</span>快照与复核</button>
+        <button role="menuitem" @click="manageProjectFromMenu('manage')"><span aria-hidden="true">▤</span>会话与备份导出</button>
+        <div class="conversation-menu-divider" role="separator"></div>
+        <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/knowledge`" @click="closeProjectMenu(false)"><span aria-hidden="true">⊞</span>本地知识库</RouterLink>
+        <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/rag`" @click="closeProjectMenu(false)"><span aria-hidden="true">◎</span>文献知识问答</RouterLink>
+        <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/workflows`" @click="closeProjectMenu(false)"><span aria-hidden="true">▷</span>科研流程</RouterLink>
+        <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/compute`" @click="closeProjectMenu(false)"><span aria-hidden="true">◌</span>N 体计算记录</RouterLink>
+        <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/overview`" @click="closeProjectMenu(false)"><span aria-hidden="true">☍</span>来源关联</RouterLink>
+        <button role="menuitem" class="danger" @click="manageProjectFromMenu('manage', true)"><span aria-hidden="true">×</span>删除项目</button>
+      </div>
     </Teleport>
-    <CreateProjectDialog ref="createProjectDialog" :default-start-chat="true" @created="onProjectCreated" />
+    <CreateProjectDialog ref="createProjectDialog" :default-start-chat="false" @created="onProjectCreated" />
     <dialog ref="dialog" class="project-dialog conversation-dialog" :aria-label="action==='rename' ? '重命名会话' : action==='assign-project' ? '移入科研项目' : action==='export' ? '导出会话' : '删除会话'" @cancel="busy && $event.preventDefault()" @close="action=''">
       <div class="dialog-header">
         <div class="dialog-header-copy">
@@ -501,11 +692,11 @@ onBeforeUnmount(() => {
         <template v-else-if="action==='export'">
           <p><strong>{{ targets[0]?.title }}</strong></p>
           <p>将下载包含问题、回答、来源和保存结果的 JSON，可能含私人内容。请核对后自行分享。</p>
-          <p class="small muted">此文件是会话副本；完整课题备份请到对应项目导出 ZIP 备份包。运行中的会话需等待完成。</p>
+          <p class="small muted">此文件是会话副本；完整课题备份可在项目菜单或「设置 → 数据管理」导出 ZIP 备份包。运行中的会话需等待完成。</p>
         </template>
         <template v-else>
-          <ul><li v-for="target in targets" :key="target.id">{{ target.title }} · {{ target.revision }} 轮</li></ul>
-          <p>将删除所选会话及全部轮次，无法在页面撤销。已经保存的项目快照和下载文件保留。</p>
+          <ul><li v-for="target in targets" :key="target.id">{{ target.title }}</li></ul>
+          <p>将删除所选会话及其中的消息，无法在页面撤销。已经保存的项目快照和下载文件保留。</p>
         </template>
         <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
         <div class="project-actions">
@@ -514,6 +705,7 @@ onBeforeUnmount(() => {
         </div>
       </form>
     </dialog>
+    <SuccessToast v-model:message="deletionMessage" />
   </aside>
 </template>
 
@@ -530,23 +722,231 @@ aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200m
 .history-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .history-list-heading { min-height: 30px; margin: 2px 0 6px; padding-inline: 8px 3px; }
 .history-list-heading .history-label { margin: 0; font-size: 11.5px; font-weight: 550; letter-spacing: 0.03em; color: var(--muted); line-height: 1; }
-.sidebar-projects { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
-.sidebar-projects .history-list-heading { justify-content: space-between; }
-.sidebar-section-toggle { display: inline-flex; flex: 1; min-width: 0; align-items: center; justify-content: flex-start; gap: 5px; min-height: 28px; padding: 3px 6px 3px 2px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); box-shadow: none; transform: none; }
-.sidebar-section-toggle:hover:not(:disabled) { background: var(--accent-soft); color: var(--ink); border: 0; box-shadow: none; }
-.sidebar-section-toggle .history-label { flex: 0 1 auto; }
-.sidebar-chevron { width: 13px; height: 13px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 140ms ease; }
+.sidebar-projects {
+  margin-bottom: 14px;
+  padding: 8px 7px 7px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--surface-card) 52%, transparent);
+  box-shadow: inset 0 1px 0 var(--inset-highlight);
+}
+.sidebar-projects .sidebar-projects-head {
+  min-height: 30px;
+  margin: 0;
+  padding-inline: 2px;
+  justify-content: space-between;
+}
+.sidebar-section-toggle {
+  display: inline-flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  min-height: 28px;
+  padding: 3px 6px 3px 3px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+  transform: none;
+}
+.sidebar-section-toggle:hover:not(:disabled),
+.sidebar-section-toggle:active:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--ink);
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+.sidebar-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 7px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.sidebar-section-icon svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sidebar-section-toggle .history-label {
+  flex: 0 1 auto;
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.sidebar-recent-toggle { padding-inline-start: 0; }
+.sidebar-recent-toggle .history-label { font-size: 11.5px; font-weight: 550; color: var(--muted); }
+.sidebar-section-chevron {
+  margin-left: 1px;
+  color: var(--muted);
+  opacity: 0.8;
+}
+.sidebar-projects-add {
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  padding: 4px;
+  border-radius: 7px;
+}
+.sidebar-chevron { width: 12px; height: 12px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 140ms ease; }
 .sidebar-chevron.open { transform: rotate(90deg); }
-.sidebar-project-list { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
-.sidebar-project-item { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 33px; padding: 5px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font-size: 12.5px; font-weight: 500; text-decoration: none; text-align: left; box-shadow: none; transform: none; transition: background-color 140ms ease, color 140ms ease; }
-.sidebar-project-item svg { width: 15px; height: 15px; flex: 0 0 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; color: var(--accent); }
-.sidebar-project-item span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sidebar-project-item:hover { background: var(--accent-soft); color: var(--ink); border: 0; box-shadow: none; text-decoration: none; }
-.sidebar-project-item.selected { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.sidebar-project-item.selected svg { color: var(--accent); }
-.sidebar-project-hint { margin: 2px 0 0; padding: 4px 10px 2px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
-.sidebar-project-manage { display: block; padding: 5px 10px 2px; color: var(--muted); font-size: 11.5px; text-decoration: none; }
-.sidebar-project-manage:hover { color: var(--accent); text-decoration: none; }
+.sidebar-disclosure {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--selection-duration) var(--selection-easing),
+    opacity var(--selection-duration) ease,
+    visibility var(--selection-duration);
+}
+.sidebar-disclosure:not([inert]) {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: inherit;
+}
+.sidebar-disclosure-body {
+  min-block-size: 0;
+  overflow: hidden;
+}
+.sidebar-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+}
+.sidebar-project-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 36px;
+  min-height: 36px;
+  padding-inline: 5px 4px;
+  border-radius: 9px;
+  transition: background-color 140ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.sidebar-project-row:not(.selected):hover {
+  background: color-mix(in srgb, var(--surface-card) 78%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.sidebar-project-row.selected {
+  background: linear-gradient(155deg, rgb(255 255 255 / 92%) 0%, color-mix(in srgb, var(--accent) 8%, rgb(255 255 255 / 80%)) 100%);
+  box-shadow:
+    0 4px 12px -4px color-mix(in srgb, var(--accent) 22%, rgb(16 32 54 / 10%)),
+    0 1px 2px rgb(0 0 0 / 5%),
+    inset 0 1px 0 0 #fff,
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.sidebar-project-row.selected:hover {
+  background: linear-gradient(155deg, rgb(255 255 255 / 96%) 0%, color-mix(in srgb, var(--accent) 11%, rgb(255 255 255 / 86%)) 100%);
+}
+.sidebar-project-row.has-active-chat:not(.selected) {
+  background: color-mix(in srgb, var(--accent-soft) 50%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.sidebar-project-expand { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 24px; min-height: 24px; flex: 0 0 18px; padding: 0; margin: 0; border: 0; border-radius: 6px; background: transparent; box-shadow: none; color: var(--muted); transform: none; }
+.sidebar-project-expand:hover:not(:disabled),
+.sidebar-project-expand:active:not(:disabled) { background: transparent; border: 0; box-shadow: none; color: var(--accent); transform: none; }
+.sidebar-project-item,
+.sidebar-project-item:hover:not(:disabled),
+.sidebar-project-item:active:not(:disabled) {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  padding: 3px 4px;
+  padding-inline-start: var(--project-item-inset, 4px);
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: left;
+  box-shadow: none;
+  transform: none;
+  transition: color 140ms ease;
+}
+.sidebar-project-item.is-unindented { --project-item-inset: 10px; }
+.sidebar-project-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.sidebar-project-icon svg { width: 13px; height: 13px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.sidebar-project-row.selected .sidebar-project-icon {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 76%, #fff) 0%, var(--accent) 100%);
+  color: #fff;
+  box-shadow: 0 2px 6px -2px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.sidebar-project-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-project-row.selected .sidebar-project-item,
+.sidebar-project-row.selected .sidebar-project-item:hover:not(:disabled) { color: var(--accent); font-weight: 600; }
+.sidebar-project-quick-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  flex: 0 0 24px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  opacity: 0;
+  pointer-events: none;
+  transform: none;
+  transition: opacity 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+.sidebar-project-quick-add svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.sidebar-project-row:hover .sidebar-project-quick-add,
+.sidebar-project-row:focus-within .sidebar-project-quick-add,
+.sidebar-project-row:has(.sidebar-project-quick-add[aria-expanded="true"]) .sidebar-project-quick-add { opacity: 1; pointer-events: auto; }
+.sidebar-project-quick-add:hover:not(:disabled),
+.sidebar-project-quick-add:active:not(:disabled) { background: color-mix(in srgb, var(--accent) 16%, transparent); border: 0; box-shadow: none; color: var(--accent); transform: none; }
+@media (hover: none) {
+  .sidebar-project-quick-add { opacity: 1; pointer-events: auto; }
+}
+.sidebar-project-chats { display: flex; flex-direction: column; gap: 1px; margin: 4px 0 4px 22px; padding-left: 9px; border-left: 1px solid var(--line-strong); }
+.sidebar-project-chat-link { display: flex; align-items: center; height: 28px; min-height: 28px; padding: 0 8px; border-radius: 7px; color: var(--muted); font-size: 12px; text-decoration: none; transition: background-color 140ms ease, color 140ms ease; }
+.sidebar-project-chat-link span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-project-chat-link:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--ink); text-decoration: none; }
+.sidebar-project-chat-link.selected { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); font-weight: 550; }
+.sidebar-project-chat-more { width: 100%; padding: 4px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--accent); font-size: 11px; text-align: left; box-shadow: none; transform: none; }
+.sidebar-project-chat-more:hover:not(:disabled),
+.sidebar-project-chat-more:active:not(:disabled) { background: var(--accent-soft); border: 0; box-shadow: none; transform: none; }
+.sidebar-project-hint { margin: 2px 0 0; padding: 4px 8px 2px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
 .conversation-project-tag { color: var(--accent); font-weight: 500; }
 .history-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; min-height: 28px; padding: 5px; margin: 0; border: 0; border-radius: 7px; background: transparent; box-shadow: none; color: var(--muted); transform: none; }
 .history-icon-button:hover:not(:disabled), .history-icon-button:active:not(:disabled) { color: var(--accent); background: var(--accent-soft); border: 0; box-shadow: none; transform: none; }
@@ -639,7 +1039,7 @@ aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200m
 .sidebar-user-role {
   margin-top: 2px;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-tertiary, var(--muted));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -652,13 +1052,24 @@ aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200m
   z-index: 40;
   padding: 6px;
   border: 1px solid var(--line-strong);
-  border-radius: var(--radius-surface, 14px);
-  background: color-mix(in srgb, var(--surface-card) 96%, transparent);
-  backdrop-filter: blur(18px);
-  box-shadow: var(--shadow-card-hover);
+  border-radius: calc(var(--radius-control, 8px) + 6px);
+  background: var(--specular-spot, none), var(--surface-glass-float, var(--surface-float));
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: var(--shadow-float, var(--shadow-card-hover));
   color: var(--ink);
-  animation: menu-pop-in 150ms var(--ease-out);
+  animation: menu-pop-in 160ms var(--ease-out);
   transform-origin: bottom left;
+}
+.sidebar-user-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1.5px;
+  background: var(--specular-sheen);
+  pointer-events: none;
 }
 .sidebar-user-menu-header {
   display: flex;
@@ -682,7 +1093,7 @@ aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200m
 }
 .sidebar-user-menu-meta small {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-tertiary, var(--muted));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -762,6 +1173,7 @@ aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200m
 .history-scrollbar:hover .history-scroll-thumb { background: var(--scrollbar-hover); }
 .is-dragging-scrollbar .history-scroll-thumb { background: var(--scrollbar-active); }
 @media (prefers-reduced-motion: reduce) {
+  .sidebar-disclosure, .sidebar-chevron, .sidebar-project-quick-add,
   .history-scrollbar, .conversation-row, .conversation-choice-slot, .conversation-more-slot,
   .conversation-choice-slot > input, .history-mode-enter-active, .history-mode-leave-active,
   .history-control-enter-active, .history-control-leave-active { transition: none; }

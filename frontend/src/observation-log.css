@@ -104,9 +104,6 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
 .project-section, .snapshot-row, .project-row { border-color: #dfe7dd; }
 .notice { border-left-color: #b78550; background: #faf5e9; }
 .notice.danger { color: #873e36; background: #fff1ee; border-left-color: #ad5148; }
-.global-error { padding-block: 9px; }
-.global-error details { padding: 4px 0; }
-.global-error button { margin-top: 4px; }
 
 @media (max-width: 1150px) and (min-width: 761px) {
   .workbench { grid-template-columns: 180px minmax(340px, 1fr) 350px; }
