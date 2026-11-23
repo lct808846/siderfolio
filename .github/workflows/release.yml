@@ -230,7 +230,7 @@ jobs:
           )
           remote_script=$(cat <<'REMOTE'
           set -euo pipefail
-          export GIT_TERMINAL_PROMPT=0
+          export GIT_TERMINAL_PROMPT=0 GIT_TRACE_REDACT=1
           cd -- "$1"
           [[ "$(git rev-parse --show-toplevel)" == "$(pwd -P)" &&
              "$(git remote get-url origin)" == "https://github.com/$4.git" &&
@@ -244,10 +244,17 @@ jobs:
             exit 1
           }
           docker info >/dev/null
-          git fetch --no-tags origin "refs/tags/$2:refs/tags/$2" </dev/null
+          IFS= read -r github_token
+          [[ -n "$github_token" ]]
+          git_auth=$(printf 'x-access-token:%s' "$github_token" | base64 -w0)
+          GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader \
+            GIT_CONFIG_VALUE_0="Authorization: Basic $git_auth" \
+            git -c credential.helper= fetch --no-tags origin "refs/tags/$2:refs/tags/$2" </dev/null
+          unset git_auth
           [[ "$(git rev-parse "refs/tags/$2^{commit}")" == "$3" ]]
           git checkout --detach "$3" </dev/null
-          exec python3 scripts/release_assets.py deploy-ssh "$2" "$3" "${4,,}" "$5"
+          { printf '%s\n' "$github_token"; cat; } | \
+            python3 scripts/release_assets.py deploy-ssh "$2" "$3" "${4,,}" "$5"
           REMOTE
           )
           command="bash -c $(printf '%q' "$remote_script") bash $(printf '%q ' \
