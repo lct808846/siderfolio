@@ -3,6 +3,7 @@
 import hashlib
 import ipaddress
 import json
+import math
 import socket
 from typing import Literal
 from urllib.parse import urlsplit
@@ -42,6 +43,16 @@ class ProviderModel(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True, hide_input_in_errors=True)
     id: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:/-]*$")
     label: str = Field(min_length=1, max_length=80)
+    input_price_per_1m: float | None = Field(default=None, ge=0, le=10000)
+    output_price_per_1m: float | None = Field(default=None, ge=0, le=10000)
+    price_currency: Literal["USD", "CNY"] = "USD"
+
+    @field_validator("input_price_per_1m", "output_price_per_1m")
+    @classmethod
+    def finite_price(cls, value: float | None) -> float | None:
+        if value is not None and not math.isfinite(value):
+            raise ValueError("模型单价必须为有效非负数字。")
+        return value
 
 
 def provider_url(value):
@@ -175,18 +186,33 @@ class ProviderRegistry:
         return ChatModelCatalog(configured=bool(options), default_model=default, models=options)
 
     def public(self, value=None):
+        from astroagent.trace_runtime import lookup_reference_pricing
+
         value = value if value is not None else self.read()
+        providers = []
+        for provider in value["providers"]:
+            models_out = []
+            for model in provider["models"]:
+                ref = lookup_reference_pricing([str(model.get("id") or ""), str(model.get("label") or "")])
+                entry = {**model, "selection_id": model_key(provider, model)}
+                if ref is not None:
+                    entry["reference_input_price_per_1m"] = ref["input_per_1m"]
+                    entry["reference_output_price_per_1m"] = ref["output_per_1m"]
+                    entry["reference_price_currency"] = (
+                        ref["currency"] if ref.get("currency") in ("USD", "CNY") else "USD"
+                    )
+                models_out.append(entry)
+            providers.append(
+                {
+                    **{k: v for k, v in provider.items() if k != "api_key"},
+                    "key_configured": bool(provider["api_key"]),
+                    "models": models_out,
+                }
+            )
         return {
             "revision": value["revision"],
             "default_model": self.catalog(value).default_model,
-            "providers": [
-                {
-                    **{k: v for k, v in p.items() if k != "api_key"},
-                    "key_configured": bool(p["api_key"]),
-                    "models": [{**m, "selection_id": model_key(p, m)} for m in p["models"]],
-                }
-                for p in value["providers"]
-            ],
+            "providers": providers,
         }
 
     def save(self, db, value, revision):
@@ -232,10 +258,23 @@ class ProviderRegistry:
                 continue
             for model in provider["models"]:
                 if model_key(provider, model) == selected:
+                    raw_in = model.get("input_price_per_1m")
+                    raw_out = model.get("output_price_per_1m")
+                    currency = model.get("price_currency")
                     return self.environment.model_copy(
                         update={
                             "deepseek_model": model["id"],
                             "selected_model_id": selected,
+                            "selected_model_label": model.get("label") or model["id"],
+                            "model_input_price_per_1m": (
+                                float(raw_in) if isinstance(raw_in, (int, float)) else None
+                            ),
+                            "model_output_price_per_1m": (
+                                float(raw_out) if isinstance(raw_out, (int, float)) else None
+                            ),
+                            "model_price_currency": (
+                                currency if currency in ("USD", "CNY") else "USD"
+                            ),
                             "deepseek_api_key": SecretStr(provider["api_key"]),
                             "deepseek_base_url": provider["base_url"],
                             "model_protocol": provider["protocol"],
@@ -245,6 +284,33 @@ class ProviderRegistry:
                         }
                     )
         raise ServiceError(422, "model_not_enabled", "所选模型未启用，请刷新模型列表。")
+
+    def pricing_index(self, value=None) -> tuple[dict[str, dict], dict[str, list[str]]]:
+        value = value if value is not None else self.read()
+        pricing: dict[str, dict] = {}
+        aliases: dict[str, list[str]] = {}
+        for provider in value["providers"]:
+            for model in provider.get("models", []):
+                sel_id = model_key(provider, model)
+                upstream_id = str(model.get("id") or "")
+                label = str(model.get("label") or "")
+                candidates = [c for c in (sel_id, upstream_id, label) if c]
+                for key in candidates:
+                    aliases[key] = candidates
+                raw_in = model.get("input_price_per_1m")
+                raw_out = model.get("output_price_per_1m")
+                if isinstance(raw_in, (int, float)) and isinstance(raw_out, (int, float)):
+                    if raw_in >= 0 and raw_out >= 0:
+                        currency = model.get("price_currency")
+                        entry = {
+                            "input_per_1m": float(raw_in),
+                            "output_per_1m": float(raw_out),
+                            "currency": currency if currency in ("USD", "CNY") else "USD",
+                            "version": "已配置单价",
+                        }
+                        for key in candidates:
+                            pricing[key] = entry
+        return pricing, aliases
 
     def discover(self, body):
         from astroagent.model_client import provider_headers
@@ -305,8 +371,44 @@ class ProviderRegistry:
                     )
                 if isinstance(identifier, str):
                     try:
+                        from astroagent.trace_runtime import lookup_reference_pricing
+
                         label = item.get("displayName") or item.get("display_name") or identifier
-                        model = ProviderModel(id=identifier, label=label[:80])
+                        in_price = None
+                        out_price = None
+                        currency = "USD"
+                        raw_pricing = item.get("pricing")
+                        if isinstance(raw_pricing, dict):
+                            try:
+                                p_in = float(raw_pricing["prompt"])
+                                p_out = float(raw_pricing["completion"])
+                                if (
+                                    math.isfinite(p_in)
+                                    and math.isfinite(p_out)
+                                    and p_in >= 0
+                                    and p_out >= 0
+                                ):
+                                    # OpenRouter / compatible APIs report USD per single token.
+                                    in_price = round(p_in * 1_000_000.0, 6) if p_in < 0.01 else p_in
+                                    out_price = (
+                                        round(p_out * 1_000_000.0, 6) if p_out < 0.01 else p_out
+                                    )
+                            except (KeyError, TypeError, ValueError):
+                                pass
+                        if in_price is None or out_price is None:
+                            ref = lookup_reference_pricing([identifier, str(label)])
+                            if ref is not None:
+                                in_price = ref["input_per_1m"]
+                                out_price = ref["output_per_1m"]
+                                ref_currency = ref.get("currency")
+                                currency = ref_currency if ref_currency in ("USD", "CNY") else "USD"
+                        model = ProviderModel(
+                            id=identifier,
+                            label=label[:80],
+                            input_price_per_1m=in_price,
+                            output_price_per_1m=out_price,
+                            price_currency=currency,
+                        )
                     except ValueError:
                         continue
                     result[model.id] = model.model_dump()
@@ -345,3 +447,15 @@ def configured_registry(environment):
     if not auth.secret.get_secret_value():
         return None
     return ProviderRegistry(AuthStore(LocalSettings(), auth), environment)
+
+
+def configured_pricing_snapshot(environment=None) -> tuple[dict[str, dict], dict[str, list[str]]]:
+    from astroagent.config import Settings
+
+    try:
+        reg = configured_registry(environment or Settings())
+        if reg is None:
+            return {}, {}
+        return reg.pricing_index()
+    except Exception:
+        return {}, {}

@@ -26,11 +26,33 @@ const projectSections = computed(() => {
     { label: '指令与快照', path: `/?project=${encodedId}&manage=context` },
     { label: '来源关联', path: `${projectPath.value}/overview` },
     { label: '科研流程', path: `${projectPath.value}/workflows` },
-    { label: '计算任务', path: `${projectPath.value}/compute` },
+    { label: 'N 体记录', path: `/?project=${encodedId}&result=compute` },
     { label: '本地知识库', path: `${projectPath.value}/knowledge` },
     { label: '文献问答', path: `${projectPath.value}/rag` },
   ]
 })
+const WORKBENCH_RETURN_KEY = 'astroagent.last_workbench_path.v1'
+function readLastWorkbenchPath() {
+  try {
+    const value = sessionStorage.getItem(WORKBENCH_RETURN_KEY)
+    if (value && (value === '/' || value.startsWith('/?') || value.startsWith('/conversations/'))) {
+      return value
+    }
+  } catch { /* Ignore storage unavailability. */ }
+  return '/'
+}
+const lastWorkbenchPath = computed(() => {
+  void route.fullPath
+  return readLastWorkbenchPath()
+})
+watch(() => route.fullPath, fullPath => {
+  if (route.path === '/' || route.path.startsWith('/conversations/')) {
+    try { sessionStorage.setItem(WORKBENCH_RETURN_KEY, fullPath) } catch { /* Ignore storage unavailability. */ }
+  }
+}, { immediate: true })
+const isWorkbenchRoute = computed(() => route.path === '/' || route.path.startsWith('/conversations/') || route.path === '/profile')
+const isLiteratureRoute = computed(() => route.path === '/literature' || route.path.startsWith('/literature/'))
+const workbenchTarget = computed(() => (isWorkbenchRoute.value ? '/' : lastWorkbenchPath.value))
 function current(path: string, descendants = false) {
   return route.path === path || (descendants && route.path.startsWith(`${path}/`))
 }
@@ -47,11 +69,12 @@ function current(path: string, descendants = false) {
           </svg>
         </span>
         <b>AstroAgent</b>
-        <span class="version">1.8</span>
+        <span class="version">1.9</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">
-        <RouterLink to="/" :aria-current="route.path === '/' || route.path.startsWith('/conversations/') || route.path === '/profile' ? 'page' : undefined">查询工作台</RouterLink>
+        <RouterLink :to="workbenchTarget" :aria-current="isWorkbenchRoute ? 'page' : undefined">查询工作台</RouterLink>
+        <RouterLink to="/literature" :aria-current="isLiteratureRoute ? 'page' : undefined">文献管理</RouterLink>
         <a v-if="identityUser?.admin && identityUser.mfa_verified" class="workspace-openapi-link" href="/openapi.json" target="_blank" rel="noopener noreferrer">接口定义 ↗</a>
       </nav>
     </div>

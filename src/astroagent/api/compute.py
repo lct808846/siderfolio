@@ -133,19 +133,19 @@ def describe(project_id: UUID, body: ComputeDescribe, request: Request, service:
 @router.post("", response_model=ComputeTask, status_code=201)
 def create(project_id: UUID, body: ComputeDraft, request: Request, service: Service):
     with access(request, project_id, mutation=True) as (db, owner):
-        return queue.create(db, owner, body)
+        return queue.with_timing(queue.create(db, owner, body))
 
 
 @router.get("/{task_id}", response_model=ComputeTask)
 def detail(project_id: UUID, task_id: UUID, request: Request, service: Service):
     with access(request, project_id) as (db, owner):
-        return queue.task(db, owner, task_id)
+        return queue.with_timing(queue.task(db, owner, task_id))
 
 
 @router.patch("/{task_id}", response_model=ComputeTask)
 def edit(project_id: UUID, task_id: UUID, body: ComputeEdit, request: Request, service: Service):
     with access(request, project_id, mutation=True) as (db, owner):
-        return queue.edit(db, queue.task(db, owner, task_id, update=True), body)
+        return queue.with_timing(queue.edit(db, queue.task(db, owner, task_id, update=True), body))
 
 
 @router.post("/{task_id}/confirm", response_model=ComputeTask)
@@ -153,28 +153,32 @@ def confirm(
     project_id: UUID, task_id: UUID, body: ComputeConfirm, request: Request, service: Service
 ):
     with access(request, project_id, mutation=True) as (db, owner):
-        return queue.confirm(db, queue.task(db, owner, task_id, update=True), body)
+        return queue.with_timing(
+            queue.confirm(db, queue.task(db, owner, task_id, update=True), body)
+        )
 
 
 @router.post("/{task_id}/cancel", response_model=ComputeTask)
 def cancel(project_id: UUID, task_id: UUID, request: Request, service: Service):
     with access(request, project_id, mutation=True) as (db, owner):
-        return queue.cancel(db, queue.task(db, owner, task_id, update=True))
+        return queue.with_timing(queue.cancel(db, queue.task(db, owner, task_id, update=True)))
 
 
 @router.post("/{task_id}/copy", response_model=ComputeTask, status_code=201)
 def copy(project_id: UUID, task_id: UUID, request: Request, service: Service):
     with access(request, project_id, mutation=True) as (db, owner):
         row = queue.task(db, owner, task_id, update=True)
-        return queue.create(
-            db,
-            owner,
-            ComputeDraft(
-                name=row["name"],
-                source=row["source"],
-                parameters=row["parameters"],
-            ),
-            origin=task_id,
+        return queue.with_timing(
+            queue.create(
+                db,
+                owner,
+                ComputeDraft(
+                    name=row["name"],
+                    source=row["source"],
+                    parameters=row["parameters"],
+                ),
+                origin=task_id,
+            )
         )
 
 

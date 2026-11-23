@@ -126,6 +126,59 @@ def event(state):
     return Jsonb([{"state": state, "at": datetime.now(UTC).isoformat()}])
 
 
+def _parse_ts(value) -> datetime | None:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value if value.tzinfo is not None else value.replace(tzinfo=UTC)
+    if isinstance(value, str):
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
+        except ValueError:
+            return None
+    return None
+
+
+def with_timing(row: dict) -> dict:
+    """Attach measured queue/execution/total timing breakdown without fabricating missing spans."""
+    events = row.get("events") or []
+    queued_at = None
+    running_at = None
+    for item in events:
+        if not isinstance(item, dict):
+            continue
+        state = item.get("state")
+        ts = _parse_ts(item.get("at"))
+        if ts is None:
+            continue
+        if state == "queued" and queued_at is None:
+            queued_at = ts
+        elif state == "running" and running_at is None:
+            running_at = ts
+    started_at = _parse_ts(row.get("started_at")) or running_at
+    finished_at = _parse_ts(row.get("finished_at"))
+    created_at = _parse_ts(row.get("created_at"))
+
+    queue_wait = None
+    if queued_at is not None and started_at is not None:
+        queue_wait = round(max(0.0, (started_at - queued_at).total_seconds()), 3)
+    execution = None
+    if started_at is not None and finished_at is not None:
+        execution = round(max(0.0, (finished_at - started_at).total_seconds()), 3)
+    total = None
+    if created_at is not None and finished_at is not None:
+        total = round(max(0.0, (finished_at - created_at).total_seconds()), 3)
+    return {
+        **row,
+        "timing": {
+            "queue_wait_seconds": queue_wait,
+            "execution_seconds": execution,
+            "total_seconds": total,
+        },
+    }
+
+
 def create(db, owner, draft, origin=None):
     count = db.execute(
         f"SELECT count(*) AS count FROM {TABLE} WHERE account_id=%s",

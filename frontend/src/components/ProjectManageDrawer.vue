@@ -118,6 +118,7 @@ const snapshotTurn = computed<Turn | null>(() => snapshot.value ? {
   message: snapshot.value.name,
   received_at: snapshot.value.created_at,
   execution_status: 'completed',
+  trace_status: 'not_recorded',
   response: snapshot.value.response,
 } : null)
 

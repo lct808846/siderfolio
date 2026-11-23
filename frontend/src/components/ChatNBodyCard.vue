@@ -4,6 +4,14 @@ import { computeApi, type ComputeParameters, type ComputeResult, type ComputeSta
 import { centerOfMassReset, systemDiagnostics } from '../compute-presets'
 import { useProjects } from '../stores/projects'
 import type { NBodyProposalResult } from '../types'
+import NBodyProgressVisual from './NBodyProgressVisual.vue'
+
+export interface ComputeResultPayload {
+  kind: 'compute'
+  projectId: string
+  taskId: string
+  title: string
+}
 
 const props = defineProps<{
   proposal: NBodyProposalResult
@@ -12,7 +20,10 @@ const props = defineProps<{
   projectId?: string
   computeStatus?: ComputeStatus | null
 }>()
-const emit = defineEmits<{ refine: [prompt: string] }>()
+const emit = defineEmits<{
+  refine: [prompt: string]
+  'open-result': [payload: ComputeResultPayload]
+}>()
 
 const projectsStore = useProjects()
 const storageKey = computed(() => `astroagent.chat_nbody.${props.turnId}.${props.proposalIndex}`)
@@ -78,6 +89,8 @@ const engineAvailable = computed(() => {
   const engine = draftParams.value.engine || 'rebound'
   return props.computeStatus.engines.includes(engine)
 })
+const proposalNotes = computed(() => (props.proposal.warnings || []).filter(item => item && item.trim()))
+
 const validationError = computed(() => {
   if (!draftName.value.trim()) return '请填写实验名称。'
   const d = Number(draftParams.value.duration)
@@ -143,11 +156,6 @@ const plotSrc = computed(() => {
     selectedPlot.value === 'snapshot' ? selectedSample.value : undefined,
   )
 })
-const computeDetailPath = computed(() => {
-  if (!task.value || !taskProjectId.value) return '/compute'
-  if (taskProjectId.value === projectsStore.defaultProjectId) return `/compute/${task.value.id}`
-  return `/projects/${taskProjectId.value}/compute/${task.value.id}`
-})
 
 function fmtNum(v: number, digits = 4) {
   if (!Number.isFinite(v)) return '—'
@@ -212,7 +220,7 @@ async function fetchResult(projectId: string, taskId: string) {
   }
 }
 
-async function pollTask(projectId: string, taskId: string) {
+async function pollTask(projectId: string, taskId: string, notifyOnComplete = false) {
   clearTimeout(pollTimer)
   try {
     const latest = await computeApi.detail(projectId, taskId)
@@ -220,10 +228,13 @@ async function pollTask(projectId: string, taskId: string) {
     task.value = latest
     if (latest.state === 'succeeded') {
       await fetchResult(projectId, taskId)
+      if (notifyOnComplete) {
+        emit('open-result', { kind: 'compute', projectId, taskId, title: latest.name || draftName.value })
+      }
       return
     }
     if (['queued', 'running', 'cancelling'].includes(latest.state)) {
-      pollTimer = setTimeout(() => void pollTask(projectId, taskId), 1500)
+      pollTimer = setTimeout(() => void pollTask(projectId, taskId, notifyOnComplete), 1100)
     }
   } catch (e) {
     if (alive) error.value = e instanceof Error ? e.message : '查询模拟状态失败。'
@@ -258,10 +269,16 @@ async function confirmAndRun() {
     taskProjectId.value = targetProject
     task.value = confirmed
     persistTask(targetProject, confirmed.id)
+    emit('open-result', {
+      kind: 'compute',
+      projectId: targetProject,
+      taskId: confirmed.id,
+      title: confirmed.name || draftName.value,
+    })
     if (confirmed.state === 'succeeded') {
       await fetchResult(targetProject, confirmed.id)
     } else if (['queued', 'running', 'cancelling'].includes(confirmed.state)) {
-      pollTimer = setTimeout(() => void pollTask(targetProject, confirmed.id), 1200)
+      pollTimer = setTimeout(() => void pollTask(targetProject, confirmed.id, true), 900)
     }
   } catch (e) {
     error.value = e instanceof Error ? e.message : '提交模拟任务失败，请稍后重试。'
@@ -310,7 +327,7 @@ onMounted(() => {
       const parsed = JSON.parse(saved) as { projectId?: string; taskId?: string }
       if (parsed.projectId && parsed.taskId) {
         taskProjectId.value = parsed.projectId
-        void pollTask(parsed.projectId, parsed.taskId)
+        void pollTask(parsed.projectId, parsed.taskId, false)
       }
     }
   } catch { /* Ignore invalid session cache. */ }
@@ -335,18 +352,18 @@ onBeforeUnmount(() => {
       </div>
       <div class="tool-card-head-actions">
         <button type="button" class="tool-card-ghost" :disabled="busy || isActive" @click="editing = !editing">
-          {{ editing ? '收起编辑' : '手动修改参数' }}
+          {{ editing ? '收起编辑' : '编辑参数' }}
         </button>
         <button type="button" class="tool-card-ghost" @click="askModelToAdjust">让模型调整</button>
       </div>
     </header>
 
-    <div class="tool-metrics-strip">
-      <span><small>粒子数</small><b>{{ draftParams.particles.length }} 个</b></span>
-      <span><small>总时长</small><b>{{ fmtNum(draftParams.duration) }} yr</b></span>
-      <span><small>采样帧数</small><b>{{ draftParams.samples }} 帧</b></span>
-      <span><small>总质量</small><b>{{ fmtNum(diagnostics.totalMass) }} M☉</b></span>
-      <span><small>体系总能量</small><b>{{ fmtNum(diagnostics.totalEnergy, 3) }}</b></span>
+    <div class="tool-kpi-bar">
+      <div class="tool-kpi-cell"><small>粒子数</small><b>{{ draftParams.particles.length }} 个</b></div>
+      <div class="tool-kpi-cell"><small>总时长</small><b>{{ fmtNum(draftParams.duration) }} yr</b></div>
+      <div class="tool-kpi-cell"><small>采样帧数</small><b>{{ draftParams.samples }} 帧</b></div>
+      <div class="tool-kpi-cell"><small>总质量</small><b>{{ fmtNum(diagnostics.totalMass) }} M☉</b></div>
+      <div class="tool-kpi-cell"><small>总能量</small><b>{{ fmtNum(diagnostics.totalEnergy, 3) }}</b></div>
     </div>
 
     <!-- Inline Editable Parameter Form -->
@@ -374,16 +391,16 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="tool-table-head">
-        <span>粒子初始条件（单位：M_sun、AU、AU/yr）</span>
+        <span>粒子初始条件 <em class="unit-tag">M☉ · AU · AU/yr</em></span>
         <div class="tool-table-actions">
           <button type="button" class="tool-card-ghost" :disabled="busy || isActive" @click="applyComReset">归零质心系</button>
           <button type="button" class="tool-card-ghost" :disabled="busy || isActive || draftParams.particles.length >= 128" @click="addParticle">＋ 添加粒子</button>
-          <button type="button" class="tool-card-ghost" :disabled="busy || isActive" @click="resetProposal">恢复模型建议</button>
+          <button type="button" class="tool-card-ghost" :disabled="busy || isActive" @click="resetProposal">恢复建议</button>
         </div>
       </div>
 
-      <div class="table-scroll compute-table">
-        <table>
+      <div class="sheet-scroll">
+        <table class="particle-sheet">
           <thead>
             <tr>
               <th>ID</th>
@@ -399,7 +416,7 @@ onBeforeUnmount(() => {
           </thead>
           <tbody>
             <tr v-for="(p, idx) in draftParams.particles" :key="idx">
-              <td><input v-model="p.id" maxlength="32" :disabled="busy || isActive" aria-label="粒子 ID"></td>
+              <td class="cell-id"><input v-model="p.id" maxlength="32" :disabled="busy || isActive" aria-label="粒子 ID"></td>
               <td><input v-model.number="p.mass" type="number" step="any" :disabled="busy || isActive" aria-label="质量"></td>
               <td><input v-model.number="p.position[0]" type="number" step="any" :disabled="busy || isActive" aria-label="x"></td>
               <td><input v-model.number="p.position[1]" type="number" step="any" :disabled="busy || isActive" aria-label="y"></td>
@@ -407,7 +424,7 @@ onBeforeUnmount(() => {
               <td><input v-model.number="p.velocity[0]" type="number" step="any" :disabled="busy || isActive" aria-label="vx"></td>
               <td><input v-model.number="p.velocity[1]" type="number" step="any" :disabled="busy || isActive" aria-label="vy"></td>
               <td><input v-model.number="p.velocity[2]" type="number" step="any" :disabled="busy || isActive" aria-label="vz"></td>
-              <td>
+              <td class="cell-del">
                 <button type="button" class="tool-row-del" :disabled="busy || isActive || draftParams.particles.length <= 2" aria-label="删除粒子" @click="removeParticle(idx)">×</button>
               </td>
             </tr>
@@ -417,8 +434,8 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Compact Read-Only Summary Table -->
-    <div v-else class="table-scroll tool-summary-table">
-      <table>
+    <div v-else class="sheet-scroll tool-summary-sheet">
+      <table class="particle-sheet readonly">
         <thead>
           <tr>
             <th>粒子 ID</th>
@@ -430,52 +447,67 @@ onBeforeUnmount(() => {
         <tbody>
           <tr v-for="p in draftParams.particles.slice(0, 12)" :key="p.id">
             <td><strong>{{ p.id }}</strong></td>
-            <td>{{ fmtNum(p.mass) }}</td>
-            <td>({{ fmtNum(p.position[0]) }}, {{ fmtNum(p.position[1]) }}, {{ fmtNum(p.position[2]) }})</td>
-            <td>({{ fmtNum(p.velocity[0]) }}, {{ fmtNum(p.velocity[1]) }}, {{ fmtNum(p.velocity[2]) }})</td>
+            <td class="mono">{{ fmtNum(p.mass) }}</td>
+            <td class="mono">({{ fmtNum(p.position[0]) }}, {{ fmtNum(p.position[1]) }}, {{ fmtNum(p.position[2]) }})</td>
+            <td class="mono">({{ fmtNum(p.velocity[0]) }}, {{ fmtNum(p.velocity[1]) }}, {{ fmtNum(p.velocity[2]) }})</td>
           </tr>
         </tbody>
       </table>
-      <p v-if="draftParams.particles.length > 12" class="small muted tool-more-note">
-        共 {{ draftParams.particles.length }} 个粒子，点击上方「手动修改参数」可查看或编辑全部粒子。
+      <p v-if="draftParams.particles.length > 12" class="tool-more-note">
+        共 {{ draftParams.particles.length }} 个粒子，点击上方「编辑参数」可查看或修改全部粒子。
       </p>
     </div>
 
-    <p v-if="validationError" class="notice danger" role="alert">{{ validationError }}</p>
-    <p v-if="computeDisabled" class="notice warning" role="status">当前服务端暂未启用 N 体计算执行器；仍可审阅并调整参数。</p>
-    <p v-else-if="!engineAvailable" class="notice warning" role="status">当前计算服务暂未就绪所选引擎「{{ draftParams.engine }}」，请切换引擎或检查 compute-worker 容器。</p>
-    <p v-for="w in proposal.warnings || []" :key="w" class="notice warning">{{ w }}</p>
-    <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
-    <p v-if="task?.error" class="notice danger" role="alert">{{ task.error }}</p>
+    <!-- Compact Collapsible Assumptions & Notes (Replaces stacked yellow warning boxes) -->
+    <details v-if="proposalNotes.length" class="tool-notes-disclosure">
+      <summary>
+        <span class="notes-badge">物理假设与说明 · {{ proposalNotes.length }} 条</span>
+        <span class="notes-preview">{{ proposalNotes[0] }}</span>
+      </summary>
+      <ul class="tool-notes-list">
+        <li v-for="note in proposalNotes" :key="note">{{ note }}</li>
+      </ul>
+    </details>
 
-    <!-- Live Progress -->
-    <div v-if="isActive && task" class="tool-progress-box" role="status">
-      <div class="tool-progress-row">
-        <span>正在隔离计算容器中积分：{{ task.samples_completed }} / {{ task.sample_count }} 帧…</span>
-        <button type="button" class="button-danger tool-mini-btn" :disabled="busy || task.state === 'cancelling'" @click="cancelRun">取消运行</button>
-      </div>
-      <div class="ui-progress">
-        <div class="ui-progress-fill" :style="{ width: `${Math.min(100, Math.round((task.samples_completed / Math.max(1, task.sample_count)) * 100))}%` }" />
-      </div>
-    </div>
+    <p v-if="validationError" class="tool-inline-alert is-danger" role="alert">{{ validationError }}</p>
+    <p v-if="computeDisabled" class="tool-inline-alert is-info" role="status">当前服务端暂未启用 N 体计算执行器；仍可审阅并调整参数。</p>
+    <p v-else-if="!engineAvailable" class="tool-inline-alert is-info" role="status">当前计算服务暂未就绪所选引擎「{{ draftParams.engine }}」，请切换引擎或检查 compute-worker 容器。</p>
+    <p v-if="error" class="tool-inline-alert is-danger" role="alert">{{ error }}</p>
+    <p v-if="task?.error" class="tool-inline-alert is-danger" role="alert">{{ task.error }}</p>
+
+    <!-- Visual N-Body Progress -->
+    <NBodyProgressVisual
+      v-if="isActive && task"
+      :state="task.state"
+      :engine="task.parameters.engine"
+      :samples-completed="task.samples_completed"
+      :sample-count="task.sample_count"
+      :started-at="task.started_at"
+      :created-at="task.created_at"
+      :particle-count="task.parameters.particles.length"
+      :duration-yr="task.parameters.duration"
+      compact
+      can-cancel
+      :cancelling="busy"
+      @cancel="cancelRun"
+    />
 
     <!-- Action Bar -->
     <footer class="tool-card-footer">
-      <span class="small muted">保存空间：<b>{{ spaceLabel }}</b> · 单位 AU / yr / M☉</span>
+      <span class="tool-space-meta">空间 <b>{{ spaceLabel }}</b> · AU / yr / M☉</span>
       <div class="tool-card-actions">
-        <RouterLink v-if="task" :to="computeDetailPath" class="tool-subtle-link">查看实验详情 →</RouterLink>
         <button
           type="button"
           class="button-primary"
           :disabled="busy || isActive || !!validationError || computeDisabled || !engineAvailable"
           @click="confirmAndRun"
         >
-          {{ busy ? '正在提交…' : task?.state === 'succeeded' ? '按当前参数再跑一次' : '确认按此参数运行模拟' }}
+          {{ busy ? '正在提交…' : task?.state === 'succeeded' ? '按当前参数再跑一次' : '确认运行模拟' }}
         </button>
       </div>
     </footer>
 
-    <!-- Inline Simulation Results Viewer -->
+    <!-- Compact Inline Result Preview -->
     <div v-if="task?.state === 'succeeded'" class="tool-result-section">
       <div class="tool-result-header">
         <div class="ui-segmented" role="tablist" aria-label="N 体模拟图表">
@@ -484,8 +516,8 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <div class="tool-result-downloads">
-          <button type="button" class="tool-card-ghost" @click="downloadCsv">下载快照 CSV</button>
-          <button type="button" class="tool-card-ghost" @click="downloadZip">下载实验 ZIP</button>
+          <button type="button" class="tool-card-ghost" @click="downloadCsv">快照 CSV</button>
+          <button type="button" class="tool-card-ghost" @click="downloadZip">实验 ZIP</button>
         </div>
       </div>
 
@@ -499,25 +531,42 @@ onBeforeUnmount(() => {
       <figure v-if="plotSrc && !plotFailed" class="tool-figure">
         <img :src="plotSrc" :alt="`${draftName} - ${selectedPlot}`" @error="plotFailed = true">
       </figure>
-      <p v-else-if="plotFailed" class="notice warning">图像暂未能加载，可点击上方下载实验 ZIP 或进入实验详情查看。</p>
+      <p v-else-if="plotFailed" class="tool-inline-alert is-info">图像暂未能加载，可打开右上角结果栏或下载实验 ZIP 查看。</p>
 
-      <div v-if="result" class="tool-conservation-strip">
-        <span><small>积分器</small><b>{{ result.integrator }}</b></span>
-        <span><small>计算耗时</small><b>{{ result.wall_seconds.toFixed(2) }} s</b></span>
-        <span><small>最大相对能量漂移</small><b>{{ fmtSci(maxEnergyRel) }}</b></span>
-        <span><small>最大相对角动量漂移</small><b>{{ fmtSci(maxAngularRel) }}</b></span>
+      <div v-if="result" class="tool-kpi-bar is-conservation">
+        <div class="tool-kpi-cell"><small>积分器</small><b>{{ result.integrator }}</b></div>
+        <div class="tool-kpi-cell"><small>计算耗时</small><b>{{ result.wall_seconds.toFixed(2) }} s</b></div>
+        <div class="tool-kpi-cell"><small>最大能量漂移</small><b>{{ fmtSci(maxEnergyRel) }}</b></div>
+        <div class="tool-kpi-cell"><small>最大角动量漂移</small><b>{{ fmtSci(maxAngularRel) }}</b></div>
       </div>
-      <p v-if="resultError" class="notice warning">{{ resultError }}</p>
+      <p v-if="resultError" class="tool-inline-alert is-info">{{ resultError }}</p>
     </div>
   </section>
 </template>
 
 <style scoped>
 .chat-tool-card {
+  position: relative;
   margin-top: 14px;
   padding: 16px 18px;
   gap: 12px;
-  border-color: color-mix(in srgb, var(--accent) 24%, var(--line));
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border-subtle));
+  background: var(--surface-glass-card);
+  backdrop-filter: blur(18px) saturate(145%);
+  box-shadow:
+    inset 0 1.5px 0 var(--surface-specular),
+    0 12px 30px -18px rgba(15, 23, 42, 0.24);
+  overflow: hidden;
+}
+
+.chat-tool-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 18px auto 18px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, var(--surface-specular)), transparent);
+  pointer-events: none;
 }
 
 .tool-card-head {
@@ -539,8 +588,9 @@ onBeforeUnmount(() => {
 .tool-card-title-row h3 {
   margin: 0;
   font-size: 14.5px;
-  font-weight: 600;
-  color: var(--ink);
+  font-weight: 680;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
   overflow-wrap: anywhere;
 }
 
@@ -552,68 +602,118 @@ onBeforeUnmount(() => {
 }
 
 .tool-card-ghost {
-  min-height: 30px;
-  padding: 4px 10px;
+  min-height: 29px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 90%, transparent);
+  background: color-mix(in srgb, var(--surface-card) 72%, transparent);
+  color: var(--text-secondary);
   font-size: 12px;
+  font-weight: 560;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
 }
 
-.tool-metrics-strip,
-.tool-conservation-strip {
+.tool-card-ghost:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border-strong));
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-card));
+}
+
+.tool-kpi-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 56%, transparent);
+  overflow: hidden;
 }
 
-.tool-metrics-strip > span,
-.tool-conservation-strip > span {
+.tool-kpi-bar.is-conservation {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tool-kpi-cell {
   display: grid;
   gap: 2px;
   padding: 8px 10px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: var(--surface-subtle);
+  position: relative;
+  min-width: 0;
 }
 
-.tool-metrics-strip small,
-.tool-conservation-strip small {
-  color: var(--muted);
+.tool-kpi-cell b {
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-weight: 660;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .tool-kpi-bar,
+  .tool-kpi-bar.is-conservation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tool-kpi-cell + .tool-kpi-cell::before {
+    display: none;
+  }
+}
+
+.tool-kpi-cell + .tool-kpi-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+  background: color-mix(in srgb, var(--border-subtle) 85%, transparent);
+}
+
+.tool-kpi-cell small {
+  color: var(--text-muted);
   font-size: 11px;
 }
 
-.tool-metrics-strip b,
-.tool-conservation-strip b {
-  color: var(--ink);
+.tool-kpi-cell b {
+  color: var(--text-primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 660;
   font-variant-numeric: tabular-nums;
 }
 
 .tool-edit-panel {
   display: grid;
   gap: 12px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface-subtle);
+  padding: 13px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 90%, transparent);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--surface-muted) 50%, transparent);
 }
 
 .tool-edit-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
 
 .tool-edit-grid label {
   display: grid;
   gap: 4px;
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--text-muted);
 }
 
 .tool-edit-grid input,
 .tool-edit-grid select {
-  min-height: 34px;
-  padding: 5px 9px;
+  min-height: 33px;
+  padding: 5px 10px;
+  border-radius: 9px;
+  border: 1px solid color-mix(in srgb, var(--border-strong) 65%, transparent);
+  background: color-mix(in srgb, var(--surface-card) 86%, transparent);
+  color: var(--text-primary);
   font-size: 12.5px;
 }
 
@@ -624,7 +724,18 @@ onBeforeUnmount(() => {
   gap: 8px;
   flex-wrap: wrap;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-secondary);
+}
+
+.unit-tag {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--surface-card) 85%, transparent);
+  color: var(--text-muted);
 }
 
 .tool-table-actions {
@@ -633,48 +744,222 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
 }
 
-.tool-row-del {
-  min-height: 28px;
-  width: 28px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--danger);
-  font-size: 16px;
+.sheet-scroll {
+  overflow-x: auto;
+  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
+  background: color-mix(in srgb, var(--surface-card) 74%, transparent);
 }
 
-.tool-summary-table {
-  margin-top: 0;
+.tool-summary-sheet {
   max-height: 240px;
+  overflow-y: auto;
+}
+
+.particle-sheet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.particle-sheet th {
+  position: sticky;
+  top: 0;
+  padding: 7px 8px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 620;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface-muted) 92%, var(--surface-card));
+  border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 90%, transparent);
+  white-space: nowrap;
+}
+
+.particle-sheet td {
+  padding: 4px 5px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 55%, transparent);
+  vertical-align: middle;
+}
+
+.particle-sheet.readonly td {
+  padding: 7px 10px;
+}
+
+.particle-sheet tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.particle-sheet tbody tr:hover {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.particle-sheet input {
+  width: 100%;
+  min-width: 68px;
+  min-height: 28px;
+  padding: 3px 7px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.particle-sheet .cell-id input {
+  min-width: 56px;
+  font-family: inherit;
+  font-weight: 650;
+}
+
+.particle-sheet input:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--border-strong) 75%, transparent);
+  background: color-mix(in srgb, var(--surface-card) 80%, transparent);
+}
+
+.particle-sheet input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface-card);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.cell-del {
+  width: 32px;
+  text-align: center;
+}
+
+.tool-row-del {
+  min-height: 26px;
+  width: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-muted);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.tool-row-del:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger-bg) 70%, transparent);
+  color: var(--danger-text);
 }
 
 .tool-more-note {
+  margin: 0;
   padding: 8px 12px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 65%, transparent);
 }
 
-.tool-progress-box {
-  display: grid;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: var(--surface-subtle);
-  font-size: 12.5px;
+.tool-notes-disclosure {
+  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 82%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 48%, transparent);
+  padding: 0;
+  overflow: hidden;
 }
 
-.tool-progress-row {
+.tool-notes-disclosure summary {
+  list-style: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
-  flex-wrap: wrap;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
-.tool-mini-btn {
-  min-height: 28px;
-  padding: 3px 10px;
+.tool-notes-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-notes-disclosure summary::after {
+  content: '▾';
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.tool-notes-disclosure[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.notes-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 620;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.notes-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.8;
+}
+
+.notes-preview {
+  color: var(--text-muted);
   font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.tool-notes-disclosure[open] .notes-preview {
+  display: none;
+}
+
+.tool-notes-list {
+  margin: 0;
+  padding: 4px 14px 10px 26px;
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 65%, transparent);
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.tool-notes-list li::marker {
+  color: color-mix(in srgb, var(--accent) 65%, var(--text-muted));
+}
+
+.tool-inline-alert {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tool-inline-alert.is-danger {
+  border: 1px solid color-mix(in srgb, var(--danger-text) 28%, transparent);
+  background: color-mix(in srgb, var(--danger-bg) 68%, transparent);
+  color: var(--danger-text);
+}
+
+.tool-inline-alert.is-info {
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface-card));
+  color: var(--text-secondary);
 }
 
 .tool-card-footer {
@@ -684,27 +969,31 @@ onBeforeUnmount(() => {
   gap: 12px;
   flex-wrap: wrap;
   padding-top: 10px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 80%, transparent);
+}
+
+.tool-space-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tool-space-meta b {
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .tool-card-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-}
-
-.tool-subtle-link {
-  font-size: 12.5px;
-  font-weight: 550;
-  color: var(--accent);
 }
 
 .tool-result-section {
   display: grid;
   gap: 12px;
   padding-top: 12px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 80%, transparent);
 }
 
 .tool-result-header {
@@ -725,7 +1014,8 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 6px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .tool-frame-slider input[type="range"] {
@@ -736,16 +1026,21 @@ onBeforeUnmount(() => {
 .tool-figure {
   margin: 0;
   padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
+  border-radius: 12px;
+  background: #ffffff;
 }
 
 .tool-figure img {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 460px;
+  max-height: 440px;
   object-fit: contain;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 </style>

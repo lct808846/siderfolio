@@ -1,6 +1,16 @@
 import { request } from './index'
 
-export interface ProviderModel { id: string; label: string; selection_id?: string }
+export interface ProviderModel {
+  id: string
+  label: string
+  selection_id?: string
+  input_price_per_1m?: number | null
+  output_price_per_1m?: number | null
+  price_currency?: 'USD' | 'CNY'
+  reference_input_price_per_1m?: number | null
+  reference_output_price_per_1m?: number | null
+  reference_price_currency?: 'USD' | 'CNY'
+}
 export type ProviderProtocol = 'openai_chat' | 'openai_responses' | 'anthropic' | 'gemini'
 export interface ModelProvider {
   id: string; name: string; base_url: string; protocol: ProviderProtocol; enabled: boolean

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import App from './App.vue'
-import IdentityWorkspace from './IdentityWorkspace.vue'
-import SettingsWorkspace from './SettingsWorkspace.vue'
 import InteractionHints from '../components/InteractionHints.vue'
 import AstroBackdrop from '../components/AstroBackdrop.vue'
-import AdminWorkspace from './AdminWorkspace.vue'
 import { clearPrivateBrowserData, identityReady, identityUser, isIdentityPage } from '../identity-state'
 import { useAppearance } from '../stores/appearance'
+const IdentityWorkspace = defineAsyncComponent(() => import('./IdentityWorkspace.vue'))
+const SettingsWorkspace = defineAsyncComponent(() => import('./SettingsWorkspace.vue'))
+const AdminWorkspace = defineAsyncComponent(() => import('./AdminWorkspace.vue'))
 const route = useRoute()
 const appearance = useAppearance()
 const showAstroBackdrop = computed(() => identityReady.value && !!identityUser.value && !isIdentityPage(route.path) && appearance.astroBackdrop)

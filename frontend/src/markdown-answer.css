@@ -32,12 +32,62 @@
 .markdown-answer blockquote { margin: 14px 0; padding: 10px 16px; border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; background: var(--surface-subtle); color: var(--muted); }
 .markdown-answer blockquote > :last-child { margin-bottom: 0; }
 .markdown-answer hr { margin: 22px 0; border: 0; border-top: 1px solid var(--line); }
-.markdown-answer a { color: var(--accent); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); text-underline-offset: 3px; }
+.markdown-answer a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.markdown-answer a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: currentColor;
+}
+.markdown-answer a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.markdown-answer a.markdown-code-link {
+  text-decoration: none;
+}
+.markdown-answer a.markdown-code-link > code {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  text-underline-offset: 2px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.markdown-answer a.markdown-code-link:hover > code {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--line));
+  color: var(--accent-hover);
+}
 .markdown-answer :not(pre) > code { padding: 2px 5px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-tint); color: var(--accent); font-family: var(--font-mono); font-size: .9em; }
 .markdown-code { margin: 16px 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface-subtle); }
 .markdown-code-label { padding: 6px 12px; border-bottom: 1px solid var(--line); background: var(--surface-tint); color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
 .markdown-answer .markdown-code pre { margin: 0; padding: 14px; max-height: 420px; overflow: auto; border: 0; border-radius: 0; background: var(--surface-subtle); font-family: var(--font-mono); font-size: 12px; line-height: 1.8; white-space: pre; overflow-wrap: normal; }
 .markdown-answer .markdown-code code { font: inherit; color: var(--ink); background: transparent; border: 0; padding: 0; }
+.markdown-answer .markdown-math-inline {
+  display: inline;
+  color: var(--ink);
+}
+.markdown-answer .markdown-math-inline .katex {
+  font-size: 1.03em;
+}
+.markdown-answer .markdown-math-display {
+  margin: 14px 0;
+  padding: 6px 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  color: var(--ink);
+}
+.markdown-answer .markdown-math-display .katex-display {
+  margin: 0;
+}
 .markdown-table { width: 100%; max-width: 100%; margin: 16px 0; overflow: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
 .markdown-table table { border-collapse: collapse; width: 100%; margin: 0; font-size: 12px; line-height: 1.65; background: transparent; }
 .markdown-table th { padding: 10px 12px; background: var(--surface-tint); color: var(--ink); font-family: var(--font-ui); font-weight: 600; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line-strong); border-right: 0; }

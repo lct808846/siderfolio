@@ -1,0 +1,11 @@
+# Append after the V1.6 identity, V1.7 compute and V1.8 MCP overlays.
+# Pins V1.9.0 image tags and passes optional local pricing configuration for trace cost estimation.
+services:
+  backend:
+    image: astroagent-backend:1.9.0
+    environment:
+      ASTROAGENT_MODEL_PRICING_JSON: "${ASTROAGENT_MODEL_PRICING_JSON:-}"
+  frontend:
+    image: astroagent-frontend:1.9.0
+  ingress:
+    image: astroagent-ingress:1.9.0

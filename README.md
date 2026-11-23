@@ -2,9 +2,11 @@
 
 界面开发统一遵循 [UI 设计规范](docs/UI_DESIGN_SPEC.md)，其中规定视觉变量、布局、组件、交互状态、页面族例外及审查清单。
 
+**V1.9.0** 提供个人天文文献库、对话内查找和保存文献、会话与计算运行详情，以及固定科研评估框架。功能与视觉验收安排在 V2.0 开发完成后合并进行。 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.9.0) · [发布说明](docs/development/v1.9.0/RELEASE.md) · [部署说明](docs/development/v1.9.0/OPERATIONS.md)
+
 **V1.8.0** 新增本地 **Astronomy MCP Server** 与 AstroAgent 的 MCP 查询通道，并将绘图与 N 体模拟方案放入对话。天文查询默认直连，管理员可在网页中切换到 MCP。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.8.0)、[发布说明](docs/development/v1.8.0/RELEASE.md)及[操作说明](docs/development/v1.8.0/OPERATIONS.md)。
 
-上一正式源码版本为 **V1.7.0**，新增项目计算任务、可选的 REBOUND 与 PeTar 模拟程序、轨迹和实验归档，并更新科研空间与工作台。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.7.0)、[发布说明](docs/development/v1.7.0/RELEASE.md)及[增量验收记录](docs/test-records/v1.7.0/changed-parts/20261121T092707Z/README.md)。
+**V1.7.0** 新增项目计算任务、可选的 REBOUND 与 PeTar 模拟程序、轨迹和实验归档，并更新科研空间与工作台。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.7.0)、[发布说明](docs/development/v1.7.0/RELEASE.md)及[增量验收记录](docs/test-records/v1.7.0/changed-parts/20261121T092707Z/README.md)。
 
 V1.7.0 计算部署沿用现有身份配置与数据卷。计算功能的镜像构建、启用和更新步骤见[计算任务操作说明](docs/development/v1.7.0/OPERATIONS.md)。首次安装的身份配置和数据操作仍按 [V1.6 部署说明](docs/development/v1.6.0/OPERATIONS.md)准备。
 

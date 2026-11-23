@@ -66,7 +66,7 @@ const response = computed(() => {
 const resultTurn = computed<Turn | null>(() => run.value && response.value ? {
   conversation_id: project.value!.id, turn_id: run.value.id, client_request_id: run.value.id,
   revision: run.value.revision, message: run.value.name, received_at: run.value.created_at,
-  execution_status: 'completed', response: response.value,
+  execution_status: 'completed', trace_status: 'not_recorded', response: response.value,
 } : null)
 const pictures = computed(() => run.value?.outputs.filter(o => o.media_type === 'image/png') || [])
 const evidence = computed(() => run.value?.steps.find(s => s.id === 'evidence_table')?.attempts?.slice().reverse().find(a => a.state === 'succeeded')?.output)

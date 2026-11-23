@@ -133,6 +133,12 @@ class ComputeEvent(BaseModel):
     at: datetime
 
 
+class ComputeTiming(BaseModel):
+    queue_wait_seconds: float | None = Field(default=None, ge=0.0)
+    execution_seconds: float | None = Field(default=None, ge=0.0)
+    total_seconds: float | None = Field(default=None, ge=0.0)
+
+
 class ComputeTask(ComputeSummary):
     source: DraftSource
     parameters: SimulationParameters
@@ -144,6 +150,7 @@ class ComputeTask(ComputeSummary):
     finished_at: datetime | None
     error: str | None
     events: list[ComputeEvent]
+    timing: ComputeTiming | None = None
 
 
 class SimulationOutput(BaseModel):

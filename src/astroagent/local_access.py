@@ -1,6 +1,7 @@
 """本机 Host / Origin 与会话接收边界；不依赖模型配置或数据库可用性。"""
 
 import ipaddress
+import os
 import re
 import secrets
 import tempfile
@@ -15,16 +16,32 @@ CONVERSATION_BODY_LIMIT = 32 * 1024
 class LocalAccess:
     def __init__(self, app):
         self.app = app
+        self._cached_key = None
+        self._cached_settings = None
 
-    async def __call__(self, scope, receive, send):
-        if scope["type"] != "http":
-            return await self.app(scope, receive, send)
+    def _settings(self):
+        key = (
+            os.getenv("ASTROAGENT_DEPLOYMENT_MODE"),
+            os.getenv("ASTROAGENT_ALLOWED_HOSTS"),
+            os.getenv("ASTROAGENT_ALLOWED_ORIGINS"),
+            os.getenv("ASTROAGENT_PROXY_TOKEN"),
+        )
+        if key == self._cached_key and self._cached_settings is not None:
+            return self._cached_settings
         try:
             settings = LocalSettings()
         except Exception:
             settings = LocalSettings.model_construct(
                 allowed_origins=[], allowed_hosts=["127.0.0.1", "localhost", "[::1]"]
             )
+        self._cached_key = key
+        self._cached_settings = settings
+        return settings
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        settings = self._settings()
         headers = {k.lower(): v.decode("latin1") for k, v in scope.get("headers", [])}
         host = headers.get(b"host", "")
         hostname = host.split("]", 1)[0] + "]" if host.startswith("[") else host.split(":", 1)[0]
@@ -154,6 +171,7 @@ class LocalAccess:
                 "/api/v1/projects",
                 "/api/v1/setup",
                 "/api/v1/local-titles",
+                "/api/v1/literature",
             )
         ) and scope["method"] in {
             "POST",
@@ -165,11 +183,18 @@ class LocalAccess:
                 return await self.app(scope, receive, with_headers)
             bodyless_delete = (
                 scope["method"] == "DELETE"
-                and re.fullmatch(
-                    r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
-                    scope["path"],
+                and (
+                    re.fullmatch(
+                        r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
+                        scope["path"],
+                    )
+                    is not None
+                    or re.fullmatch(
+                        r"/api/v1/literature/items/[0-9a-fA-F-]{36}",
+                        scope["path"],
+                    )
+                    is not None
                 )
-                is not None
             )
             bodyless_action = scope["method"] == "POST" and (
                 scope["path"] == "/api/v1/projects/default"
@@ -198,7 +223,7 @@ class LocalAccess:
                 )
             body = bytearray()
             turn_upload = scope["method"] == "POST" and re.fullmatch(
-                r"/api/v1/conversations/[0-9a-fA-F-]{36}/turns", scope["path"]
+                r"/api/v1/conversations/[0-9a-fA-F-]{36}/turns(?:/stream)?", scope["path"]
             )
             body_limit = (
                 32 * 1024**2

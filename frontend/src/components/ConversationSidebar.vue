@@ -521,6 +521,7 @@ onBeforeUnmount(() => {
                             class="sidebar-project-chat-link"
                             :class="{ selected: store.current?.id === chat.id }"
                             data-tooltip-truncated
+                            @pointerenter="store.prefetch(chat.id)"
                           >
                             <span data-tooltip-source>{{ chat.title }}</span>
                           </RouterLink>
@@ -555,7 +556,7 @@ onBeforeUnmount(() => {
               <nav class="conversation-list" aria-label="本地会话">
             <div v-for="conversation in conversations" :key="conversation.id" class="conversation-row" :class="{selected:selecting ? selected.includes(conversation.id) : store.current?.id===conversation.id}">
               <div class="conversation-choice-slot" :inert="!selecting" :aria-hidden="!selecting"><input v-model="selected" type="checkbox" :value="conversation.id" :aria-label="`选择会话 ${conversation.title}`" :disabled="locked || !selecting"></div>
-              <button class="conversation-item" :class="{selected:!selecting && store.current?.id===conversation.id}" :aria-current="!selecting && store.current?.id===conversation.id ? 'page' : undefined" :aria-pressed="selecting ? selected.includes(conversation.id) : undefined" :disabled="locked" data-tooltip-truncated @click="chooseConversation(conversation.id)">
+              <button class="conversation-item" :class="{selected:!selecting && store.current?.id===conversation.id}" :aria-current="!selecting && store.current?.id===conversation.id ? 'page' : undefined" :aria-pressed="selecting ? selected.includes(conversation.id) : undefined" :disabled="locked" data-tooltip-truncated @pointerenter="!selecting && store.prefetch(conversation.id)" @click="chooseConversation(conversation.id)">
                 <span><b data-tooltip-source>{{ conversation.title }}</b><small><span v-if="pins.includes(conversation.id)" class="conversation-pinned">置顶 · </span><span v-if="projectsStore.projectNameFor(conversation.id)" class="conversation-project-tag">{{ projectsStore.projectNameFor(conversation.id) }} · </span>{{ new Date(conversation.updated_at).toLocaleDateString('zh-CN') }}</small></span>
               </button>
               <div class="conversation-more-slot" :inert="selecting" :aria-hidden="selecting">
@@ -660,7 +661,7 @@ onBeforeUnmount(() => {
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/knowledge`" @click="closeProjectMenu(false)"><span aria-hidden="true">⊞</span>本地知识库</RouterLink>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/rag`" @click="closeProjectMenu(false)"><span aria-hidden="true">◎</span>文献知识问答</RouterLink>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/workflows`" @click="closeProjectMenu(false)"><span aria-hidden="true">▷</span>科研流程</RouterLink>
-        <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/compute`" @click="closeProjectMenu(false)"><span aria-hidden="true">◌</span>N 体计算记录</RouterLink>
+        <RouterLink role="menuitem" :to="{ path: '/', query: { project: projectMenuTarget.id, result: 'compute' } }" @click="closeProjectMenu(false)"><span aria-hidden="true">◌</span>N 体计算记录</RouterLink>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/overview`" @click="closeProjectMenu(false)"><span aria-hidden="true">☍</span>来源关联</RouterLink>
         <button role="menuitem" class="danger" @click="manageProjectFromMenu('manage', true)"><span aria-hidden="true">×</span>删除项目</button>
       </div>

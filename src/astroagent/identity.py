@@ -79,6 +79,8 @@ class TenantServices:
                 # These are private tenant tables, not global operational settings.
                 service.plotting.store.initialize()
                 service.local_titles.store.initialize()
+                service.literature.store.initialize()
+                service.traces.initialize()
             except BaseException:
                 repository.close()
                 raise
@@ -163,4 +165,5 @@ class IdentityRuntime:
     def close(self):
         self.mail.close()
         self.tenants.close()
+        self.store.close()
         self.lock_connection.__exit__(None, None, None)

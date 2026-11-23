@@ -2,6 +2,7 @@
 import http from 'node:http'
 const site = new URL(process.env.ASTROAGENT_SITE_ORIGIN || 'http://127.0.0.1:5173')
 if (site.protocol !== 'https:' && !['127.0.0.1', 'localhost'].includes(site.hostname)) throw new Error('Remote site requires HTTPS')
+const frontendAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 30000, maxSockets: 64 })
 
 const server = http.createServer((request, response) => {
   const host = request.headers.host?.split(':')[0]
@@ -15,13 +16,18 @@ const server = http.createServer((request, response) => {
   }
   const headers = { ...request.headers, 'x-astroagent-edge-client': request.socket.remoteAddress || '' }
   for (const name of ['x-astroagent-client-address', 'connection', 'keep-alive', 'proxy-connection', 'upgrade']) delete headers[name]
-  const upstream = http.request({ hostname: 'frontend', port: 5173, agent: false, method: request.method, path: request.url, headers }, reply => {
+  const upstream = http.request({ hostname: 'frontend', port: 5173, agent: frontendAgent, method: request.method, path: request.url, headers }, reply => {
     response.writeHead(reply.statusCode || 502, reply.headers)
+    if (reply.headers['content-type']?.includes('text/event-stream')) response.flushHeaders()
     reply.pipe(response)
   })
   upstream.on('error', () => {
-    if (!response.headersSent) response.writeHead(502, { 'Content-Type': 'text/plain' })
-    response.end('Frontend unavailable')
+    if (!response.headersSent) {
+      response.writeHead(502, { 'Content-Type': 'text/plain' })
+      response.end('Frontend unavailable')
+    } else if (!response.writableEnded) {
+      response.end()
+    }
   })
   upstream.setTimeout(360000, () => upstream.destroy())
   request.on('aborted', () => upstream.destroy())

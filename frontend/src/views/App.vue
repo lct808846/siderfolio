@@ -4,16 +4,17 @@ import InteractionHints from '../components/InteractionHints.vue'
 import ModelSelector from '../components/ModelSelector.vue'
 import ModelChangeNotice from '../components/ModelChangeNotice.vue'
 import ConversationErrorNotice from '../components/ConversationErrorNotice.vue'
-import ContextNotice from '../components/ContextNotice.vue'
 import AttachmentButton from '../components/AttachmentButton.vue'
 import AttachmentTray from '../components/AttachmentTray.vue'
 import ConversationSidebar from '../components/ConversationSidebar.vue'
 import ComposerProjectPicker from '../components/ComposerProjectPicker.vue'
 import CreateProjectDialog from '../components/CreateProjectDialog.vue'
-import ChatNBodyCard from '../components/ChatNBodyCard.vue'
-import ChatPlotCard from '../components/ChatPlotCard.vue'
+import ChatNBodyCard, { type ComputeResultPayload } from '../components/ChatNBodyCard.vue'
+import ChatPlotCard, { type PlotResultPayload } from '../components/ChatPlotCard.vue'
+import LiteratureReceiptCard from '../components/LiteratureReceiptCard.vue'
+import TurnTracePanel from '../components/TurnTracePanel.vue'
 import ProjectManageDrawer, { type DrawerTab } from '../components/ProjectManageDrawer.vue'
-import { onMounted, onBeforeUnmount, provide, ref, watch, computed, nextTick } from 'vue'
+import { defineAsyncComponent, onMounted, onBeforeUnmount, provide, ref, watch, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useWorkbench } from '../stores/workbench'
 import { useModels } from '../stores/models'
@@ -22,18 +23,18 @@ import { useProjects } from '../stores/projects'
 import ResultPanel from '../components/ResultPanel.vue'
 import MarkdownAnswer from '../components/MarkdownAnswer'
 import UserMessage from '../components/UserMessage.vue'
-import WorkflowWorkspace from './WorkflowWorkspace.vue'
-import ComputeWorkspace from './ComputeWorkspace.vue'
-import KnowledgeWorkspace from './KnowledgeWorkspace.vue'
-import ProjectOverview from './ProjectOverview.vue'
-import RagWorkspace from './RagWorkspace.vue'
-import ProfileWorkspace from './ProfileWorkspace.vue'
+const WorkflowWorkspace = defineAsyncComponent(() => import('./WorkflowWorkspace.vue'))
+const KnowledgeWorkspace = defineAsyncComponent(() => import('./KnowledgeWorkspace.vue'))
+const LiteratureWorkspace = defineAsyncComponent(() => import('./LiteratureWorkspace.vue'))
+const ProjectOverview = defineAsyncComponent(() => import('./ProjectOverview.vue'))
+const RagWorkspace = defineAsyncComponent(() => import('./RagWorkspace.vue'))
+const ProfileWorkspace = defineAsyncComponent(() => import('./ProfileWorkspace.vue'))
 import LocalTitleStatus from '../components/LocalTitleStatus.vue'
 import { api, safeLink } from '../api'
 import { computeApi, type ComputeStatus } from '../api/compute'
 import { projectsApi } from '../api/projects'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
-import type { ChatAttachment, ChatToolMode, Project, Snapshot, Turn } from '../types'
+import type { ChatAttachment, ChatToolMode, LiteratureSaveReceipt, Project, Snapshot, Turn } from '../types'
 
 type Submission = {
   message: string
@@ -64,6 +65,7 @@ const inspectedSnapshotTurn = computed<Turn | null>(() => inspectedSnapshot.valu
   message: inspectedSnapshot.value.name,
   received_at: inspectedSnapshot.value.created_at,
   execution_status: 'completed',
+  trace_status: 'not_recorded',
   response: inspectedSnapshot.value.response,
 } : null)
 let pendingDrawerRequest: { projectId: string; tab: DrawerTab; snapshotId?: string; promptDelete?: boolean } | null = null
@@ -112,6 +114,16 @@ const effectiveProject = computed(() => {
   return null
 })
 const activeSpaceProjectId = computed(() => effectiveProject.value?.id || '')
+const resultFocusKind = ref<'turn' | 'compute' | 'plot' | 'files'>('turn')
+const resultFocusNonce = ref(0)
+const resultProjectId = ref('')
+const resultProjectScoped = ref(false)
+const resultComputeTaskId = ref('')
+const resultPlotRunId = ref('')
+const resultPlotTitle = ref('')
+const resultPlotFiles = ref<string[]>([])
+const resultsExpanded = ref(false)
+const effectiveResultProjectId = computed(() => resultProjectId.value || activeSpaceProjectId.value || projectsStore.defaultProjectId || '')
 const defaultSpaceSources = computed(() => projectsStore.defaultProjectId ? projectsStore.sourceCounts[projectsStore.defaultProjectId] : undefined)
 const currentProjectSources = computed(() => effectiveProject.value ? projectsStore.sourceCounts[effectiveProject.value.id] : defaultSpaceSources.value)
 const currentProjectHasInstructions = computed(() => !!(effectiveProject.value?.description || '').trim())
@@ -244,6 +256,18 @@ const conversationTimeline = computed(() => {
     return { turn, modelChange }
   })
 })
+const pendingModelChange = computed(() => {
+  const pending = store.pendingTurn
+  if (!store.pending || !pending || pending.conversationId !== store.current?.id || !pending.model) return null
+  let previous: string | undefined
+  for (const turn of store.turns) {
+    if (turn.execution_status === 'completed' && turn.response && turn.model) {
+      previous = turn.model
+    }
+  }
+  if (!previous || previous === pending.model) return null
+  return { from: previous, to: pending.model }
+})
 function selectModel(id: string) {
   if (id === currentModel.value) return
   models.select(modelScope.value, id)
@@ -295,11 +319,32 @@ function rememberResults(open: boolean) {
 async function openResults(turnId?: string) {
   const id = route.params.id
   inspectedSnapshot.value = null
+  resultProjectId.value = ''
+  resultProjectScoped.value = false
+  resultFocusKind.value = 'turn'
+  resultFocusNonce.value++
   if (turnId) store.selectedTurnId = turnId
   rememberResults(true)
   store.panel = 'results'
   await nextTick()
   if (route.params.id === id && store.panel === 'results') document.getElementById('workbench-results')?.querySelector<HTMLButtonElement>('.result-close')?.focus({ preventScroll: true })
+}
+function handleOpenToolResult(payload: ComputeResultPayload | PlotResultPayload) {
+  inspectedSnapshot.value = null
+  resultProjectId.value = payload.projectId
+  resultProjectScoped.value = false
+  if (payload.kind === 'compute') {
+    resultFocusKind.value = 'compute'
+    resultComputeTaskId.value = payload.taskId
+  } else {
+    resultFocusKind.value = 'plot'
+    resultPlotRunId.value = payload.runId
+    resultPlotTitle.value = payload.title
+    resultPlotFiles.value = payload.files
+  }
+  resultFocusNonce.value++
+  rememberResults(true)
+  store.panel = 'results'
 }
 async function closeResults() {
   const id = route.params.id
@@ -309,6 +354,131 @@ async function closeResults() {
   if (route.params.id === id && store.panel === 'chat') resultsToggle.value?.focus({ preventScroll: true })
 }
 function toggleResults() { if (store.panel === 'results') void closeResults(); else void openResults() }
+function turnReceipts(turn: Turn): LiteratureSaveReceipt[] {
+  const merged: LiteratureSaveReceipt[] = []
+  const seen = new Set<string>()
+  for (const item of [...(turn.literature_receipts || []), ...(turn.response?.literature_receipts || [])]) {
+    if (!seen.has(item.receipt_id)) {
+      seen.add(item.receipt_id)
+      merged.push(item)
+    }
+  }
+  return merged
+}
+interface TurnSourceItem {
+  url: string
+  safeUrl: string | null
+  provider: string
+  badge: string
+  label: string
+  title: string
+  code: string
+}
+const expandedSourceTurns = ref<Record<string, boolean>>({})
+function toggleTurnSources(turnId: string) {
+  expandedSourceTurns.value = {
+    ...expandedSourceTurns.value,
+    [turnId]: !expandedSourceTurns.value[turnId],
+  }
+}
+function firstAuthorSurname(authors?: string[] | null): string {
+  const first = authors?.[0]?.trim() || ''
+  if (!first) return ''
+  if (first.includes(',')) return first.split(',', 1)[0]!.trim()
+  const parts = first.split(/\s+/)
+  return parts[parts.length - 1] || first
+}
+function turnSourceItems(turn: Turn): TurnSourceItem[] {
+  const res = turn.response
+  if (!res?.sources?.length) return []
+  const adsMap = new Map<string, { index: number; bibcode: string; title: string; author: string; year: number | null }>()
+  let paperOrder = 0
+  for (const batch of res.literature_results || []) {
+    for (const paper of batch.papers || []) {
+      paperOrder += 1
+      if (paper.source?.url && !adsMap.has(paper.source.url)) {
+        adsMap.set(paper.source.url, {
+          index: paperOrder,
+          bibcode: paper.bibcode || '',
+          title: paper.title || paper.bibcode || 'ADS 文献',
+          author: firstAuthorSurname(paper.authors),
+          year: paper.year ?? null,
+        })
+      }
+    }
+  }
+  const simbadMap = new Map<string, string>()
+  for (const item of res.results || []) {
+    if (item.source?.url && !simbadMap.has(item.source.url)) {
+      simbadMap.set(item.source.url, item.object_name)
+    }
+  }
+  return res.sources.map(source => {
+    const safeUrl = safeLink(source.url)
+    const ads = adsMap.get(source.url)
+    if (ads) {
+      const citation = [ads.author, ads.year].filter(Boolean).join(' ')
+      return {
+        url: source.url,
+        safeUrl,
+        provider: 'ADS',
+        badge: `#${ads.index}`,
+        label: citation ? `${citation}` : (ads.bibcode || 'ADS 文献'),
+        title: ads.title,
+        code: ads.bibcode,
+      }
+    }
+    const simbadObj = simbadMap.get(source.url)
+    if (simbadObj) {
+      return {
+        url: source.url,
+        safeUrl,
+        provider: 'SIMBAD',
+        badge: 'SIMBAD',
+        label: simbadObj,
+        title: `SIMBAD 天体记录：${simbadObj}`,
+        code: '',
+      }
+    }
+    return {
+      url: source.url,
+      safeUrl,
+      provider: source.name,
+      badge: source.name,
+      label: source.name,
+      title: source.url,
+      code: '',
+    }
+  })
+}
+function turnSourceSummary(items: TurnSourceItem[]): string {
+  if (!items.length) return ''
+  const providers = Array.from(new Set(items.map(item => item.provider)))
+  if (providers.length === 1 && providers[0] === 'ADS') return `原始来源 · ${items.length} 篇 ADS`
+  if (providers.length === 1) return `原始来源 · ${items.length} 条 ${providers[0]}`
+  return `原始来源 · ${items.length} 条`
+}
+function handleTraceJump(turnId: string, target: { type: string; batchIndex?: number; receiptId?: string }) {
+  if (target.type === 'literature') {
+    void router.push('/literature')
+    return
+  }
+  if (target.type === 'compute') {
+    resultFocusKind.value = 'compute'
+    resultFocusNonce.value++
+    rememberResults(true)
+    store.panel = 'results'
+    return
+  }
+  if (target.type === 'plot') {
+    resultFocusKind.value = 'plot'
+    resultFocusNonce.value++
+    rememberResults(true)
+    store.panel = 'results'
+    return
+  }
+  void openResults(turnId)
+}
 function resizeComposer() {
   const field = input.value
   if (!field) return
@@ -486,6 +656,14 @@ async function cancelEdit() {
 watch(() => route.params.id, () => {
   dragDepth.value = 0; editingTurn.value = null; draftBeforeEdit.value = ''; inspectedSnapshot.value = null
   failedSubmission.value = null
+  expandedSourceTurns.value = {}
+  resultFocusKind.value = 'turn'
+  resultComputeTaskId.value = ''
+  resultPlotRunId.value = ''
+  resultPlotTitle.value = ''
+  resultPlotFiles.value = []
+  resultProjectId.value = ''
+  resultProjectScoped.value = false
 })
 watch(() => route.params.id, async id => {
   const revision = ++restoreRevision
@@ -527,12 +705,15 @@ async function applyWorkbenchHandoff() {
   if (route.path !== '/' && !route.path.startsWith('/conversations/')) return
   const q = route.query
   const requestedTool = q.tool === 'plot' || q.mode === 'plot' ? 'plot' : q.tool === 'compute' ? 'compute' : null
+  const requestedResult = q.result === 'compute' || q.result === 'plot' ? q.result : null
+  const requestedComputeTask = typeof q.compute_task === 'string' ? q.compute_task : ''
+  const requestedPlotRun = typeof q.plot_run === 'string' ? q.plot_run : ''
   const requestedProject = typeof q.project === 'string' ? q.project : typeof q.plot_project === 'string' ? q.plot_project : ''
   const requestedManage = q.manage === 'context' || q.manage === 'snapshots' || q.manage === 'manage' ? q.manage : null
   const requestedSnapshotId = typeof q.snapshot === 'string' ? q.snapshot : ''
   const requestedTurn = typeof q.plot_turn === 'string' ? q.plot_turn : ''
   const requestedPlotSnapshot = typeof q.plot_snapshot === 'string' ? q.plot_snapshot : ''
-  const hasToolQuery = !!requestedTool || !!requestedProject || !!requestedManage || !!requestedSnapshotId || !!requestedTurn || !!requestedPlotSnapshot || typeof q.plot_query === 'string' || typeof q.plot_dataset === 'string'
+  const hasToolQuery = !!requestedTool || !!requestedResult || !!requestedComputeTask || !!requestedPlotRun || !!requestedProject || !!requestedManage || !!requestedSnapshotId || !!requestedTurn || !!requestedPlotSnapshot || typeof q.plot_query === 'string' || typeof q.plot_dataset === 'string'
   if (requestedTool) toolMode.value = requestedTool
   if (requestedProject && !conversationId.value && requestedProject !== projectsStore.defaultProjectId) {
     draftProjectId.value = requestedProject
@@ -549,6 +730,9 @@ async function applyWorkbenchHandoff() {
     const cleanQuery = { ...q }
     delete cleanQuery.mode
     delete cleanQuery.tool
+    delete cleanQuery.result
+    delete cleanQuery.compute_task
+    delete cleanQuery.plot_run
     delete cleanQuery.project
     delete cleanQuery.manage
     delete cleanQuery.snapshot
@@ -558,6 +742,25 @@ async function applyWorkbenchHandoff() {
     delete cleanQuery.plot_dataset
     delete cleanQuery.plot_snapshot
     await router.replace({ path: route.path, query: cleanQuery })
+  }
+  if (requestedResult) {
+    let targetProject = requestedProject || activeSpaceProjectId.value || projectsStore.defaultProjectId || ''
+    if (!targetProject) {
+      try {
+        const def = await projectsStore.ensureDefault()
+        targetProject = def.id
+      } catch { /* Fallback to empty if unavailable. */ }
+    }
+    inspectedSnapshot.value = null
+    resultProjectId.value = targetProject
+    resultProjectScoped.value = true
+    resultFocusKind.value = requestedResult
+    if (requestedResult === 'compute') resultComputeTaskId.value = requestedComputeTask
+    if (requestedResult === 'plot') resultPlotRunId.value = requestedPlotRun
+    resultFocusNonce.value++
+    rememberResults(true)
+    store.panel = 'results'
+    return
   }
   const drawerProjectId = requestedProject || effectiveProject.value?.id || ''
   if (drawerProjectId && (requestedManage || requestedSnapshotId)) {
@@ -571,6 +774,15 @@ async function applyWorkbenchHandoff() {
     input.value?.focus()
   }
 }
+watch(() => store.pendingTurn?.streamedText, async value => {
+  if (!value) return
+  const el = chatScroll.value
+  if (!el) return
+  const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 140
+  if (!nearBottom) return
+  await nextTick()
+  el.scrollTop = el.scrollHeight
+})
 watch(() => route.fullPath, () => { void applyWorkbenchHandoff() }, { immediate: true })
 onMounted(async () => {
   layoutQuery = window.matchMedia('(max-width: 980px)')
@@ -600,12 +812,12 @@ onBeforeUnmount(() => {
 
 <template>
   <InteractionHints />
-  <RagWorkspace v-if="route.path.endsWith('/rag')" />
+  <LiteratureWorkspace v-if="route.path === '/literature' || route.path.startsWith('/literature/')" />
+  <RagWorkspace v-else-if="route.path.endsWith('/rag')" />
   <ProjectOverview v-else-if="route.path.endsWith('/overview')" />
   <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />
-  <ComputeWorkspace v-else-if="route.path.includes('/compute')" />
-  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode ? 'chat' : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && store.panel==='results'" :data-results-restoring="restoringResults">
+  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode ? 'chat' : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && store.panel==='results'" :data-results-wide="resultsExpanded && !profileMode && store.panel==='results'" :data-results-restoring="restoringResults">
     <WorkspaceHeader title="本地科研工作台" />
     <ConversationSidebar
       id="conversation-history"
@@ -694,7 +906,7 @@ onBeforeUnmount(() => {
             <div class="turn-label"><time class="ui-pill ui-pill-mono" :datetime="turn.received_at">{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="ui-pill ui-pill-neutral">历史记录</span></div>
             <UserMessage :text="turn.message" :attachments="turn.attachments" :disabled="attachmentDisabled" @edit="editQuestion($event, turn.revision, turn.conversation_id)" />
             <div class="answer">
-              <div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response" class="tag" :class="turn.response.status">{{ turn.response.status === 'success' ? '已完成' : turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div>
+              <div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response && turn.response.status !== 'success'" class="tag" :class="turn.response.status">{{ turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div>
               <p v-if="turn.execution_status==='running'" class="thinking-status"><span class="thinking-shimmer-text">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</span></p>
               <ConversationErrorNotice
                 v-if="turn.error"
@@ -715,6 +927,7 @@ onBeforeUnmount(() => {
                 :project-id="activeSpaceProjectId"
                 :compute-status="computeStatus"
                 @refine="handleInlineRefine('compute', $event)"
+                @open-result="handleOpenToolResult"
               />
               <ChatPlotCard
                 v-for="(proposal, idx) in turn.response?.plot_proposals || []"
@@ -725,17 +938,85 @@ onBeforeUnmount(() => {
                 :proposal-index="idx"
                 :project-id="activeSpaceProjectId"
                 @refine="handleInlineRefine('plot', $event)"
+                @open-result="handleOpenToolResult"
+              />
+              <LiteratureReceiptCard
+                v-for="receipt in turnReceipts(turn)"
+                :key="receipt.receipt_id"
+                :receipt="receipt"
               />
               <ConversationErrorNotice v-for="warning in turn.response?.warnings || []" :key="`${warning.code}:${warning.message}`" :message="warning.message" :code="warning.code" advisory />
-              <ContextNotice v-if="turn.context?.warnings?.length" :messages="turn.context?.warnings || []" />
-              <details v-if="turn.context?.included_turn_ids?.length" class="small"><summary>使用了历史上下文</summary><p>历史数据保留原查询时间。</p><code>{{ turn.context.included_turn_ids.join('\n') }}</code></details>
-              <div v-if="turn.response?.sources?.length" class="source-links"><template v-for="source in turn.response.sources" :key="source.url"><a v-if="safeLink(source.url)" :href="safeLink(source.url)!" target="_blank" rel="noopener noreferrer">{{ source.name }} ↗</a><span v-else>{{ source.url }}</span></template></div>
-              <button v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length" class="view-results" @click="openResults(turn.turn_id)">核查与导出查询结果 <span aria-hidden="true">→</span></button>
+              <div
+                v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.attachments?.length || turn.response?.sources?.length"
+                class="turn-footer-group"
+              >
+                <div class="turn-footer-actions">
+                  <button
+                    v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.attachments?.length"
+                    type="button"
+                    class="view-results"
+                    @click="openResults(turn.turn_id)"
+                  >
+                    {{ (turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length) ? '核查与导出查询结果' : '在右侧栏预览附件' }}
+                    <span aria-hidden="true">→</span>
+                  </button>
+                  <template v-if="turnSourceItems(turn).length === 1">
+                    <a
+                      v-if="turnSourceItems(turn)[0]!.safeUrl"
+                      class="turn-source-pill"
+                      :href="turnSourceItems(turn)[0]!.safeUrl!"
+                      :title="turnSourceItems(turn)[0]!.title"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>{{ turnSourceItems(turn)[0]!.badge }}</span>
+                      <span v-if="turnSourceItems(turn)[0]!.label !== turnSourceItems(turn)[0]!.badge">· {{ turnSourceItems(turn)[0]!.label }}</span>
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                    <span v-else class="turn-source-pill">{{ turnSourceItems(turn)[0]!.url }}</span>
+                  </template>
+                  <button
+                    v-else-if="turnSourceItems(turn).length > 1"
+                    type="button"
+                    class="turn-source-toggle"
+                    :aria-expanded="Boolean(expandedSourceTurns[turn.turn_id])"
+                    @click="toggleTurnSources(turn.turn_id)"
+                  >
+                    <span>{{ turnSourceSummary(turnSourceItems(turn)) }}</span>
+                    <svg class="turn-source-chevron" :class="{ 'is-open': expandedSourceTurns[turn.turn_id] }" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                  </button>
+                </div>
+                <ul v-if="turnSourceItems(turn).length > 1 && expandedSourceTurns[turn.turn_id]" class="turn-source-list">
+                  <li v-for="item in turnSourceItems(turn)" :key="item.url" class="turn-source-row">
+                    <span class="ui-pill ui-pill-mono">{{ item.badge }}</span>
+                    <div class="turn-source-row-copy">
+                      <span class="turn-source-row-title" :title="item.title">{{ item.title }}</span>
+                      <span v-if="item.code" class="turn-source-row-code">{{ item.code }}</span>
+                    </div>
+                    <a
+                      v-if="item.safeUrl"
+                      class="turn-source-row-link"
+                      :href="item.safeUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ item.provider }} ↗
+                    </a>
+                    <span v-else class="small muted">{{ item.url }}</span>
+                  </li>
+                </ul>
+              </div>
+              <TurnTracePanel
+                :trace="turn.run_trace"
+                :trace-status="turn.trace_status"
+                @jump-result="handleTraceJump(turn.turn_id, $event)"
+              />
             </div>
           </article>
         </template>
-        <article v-if="store.pending" class="turn pending-turn" role="status" aria-live="polite">
-          <template v-if="store.pendingTurn && store.pendingTurn.conversationId === store.current?.id">
+        <ModelChangeNotice v-if="pendingModelChange" :from="models.labelFor(pendingModelChange.from)" :to="models.labelFor(pendingModelChange.to)" />
+        <article v-if="store.pending && store.pendingTurn" class="turn pending-turn" role="status" aria-live="polite">
+          <template v-if="store.pendingTurn.conversationId === store.current?.id">
             <div class="turn-label">
               <time class="ui-pill ui-pill-mono" :datetime="store.pendingTurn.sentAt">{{ new Date(store.pendingTurn.sentAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }}</time>
             </div>
@@ -746,8 +1027,12 @@ onBeforeUnmount(() => {
               <span class="mini-star is-thinking" aria-hidden="true">✳</span>
               <b>AstroAgent</b>
             </div>
-            <p class="thinking-status">
-              <span class="thinking-shimmer-text">正在处理，请稍候…</span>
+            <div v-if="store.pendingTurn.streamedText" class="streaming-answer-wrap">
+              <MarkdownAnswer class="answer-text" :text="store.pendingTurn.streamedText" />
+              <span class="streaming-caret" aria-hidden="true" />
+            </div>
+            <p v-else class="thinking-status">
+              <span class="thinking-shimmer-text">{{ store.pendingTurn.statusLabel || '正在处理，请稍候…' }}</span>
             </p>
           </div>
         </article>
@@ -802,10 +1087,26 @@ onBeforeUnmount(() => {
       :aria-hidden="profileMode || store.panel !== 'results'"
       :pending="inspectedSnapshot ? false : store.pending"
       :turn="inspectedSnapshotTurn || store.selectedTurn"
+      :turns="inspectedSnapshot ? [] : store.turns"
+      :conversation-id="conversationId"
       :historical="inspectedSnapshot ? true : (!!store.selectedTurn && store.selectedTurn.turn_id!==newest)"
       :heading="inspectedSnapshot ? `快照：${inspectedSnapshot.name}` : undefined"
       :artifact-path="inspectedSnapshot ? `/api/v1/projects/${inspectedSnapshot.project_id}/snapshots/${inspectedSnapshot.id}/artifacts` : undefined"
+      :project-id="effectiveResultProjectId"
+      :project-scoped-browse="resultProjectScoped"
+      :focus-kind="inspectedSnapshot ? 'turn' : resultFocusKind"
+      :focus-nonce="resultFocusNonce"
+      :compute-task-id="resultComputeTaskId"
+      :plot-run-id="resultPlotRunId"
+      :plot-title="resultPlotTitle"
+      :plot-files="resultPlotFiles"
+      :expanded="resultsExpanded"
+      expandable
       dismissible
+      @toggle-expand="resultsExpanded = !resultsExpanded"
+      @select-turn="store.selectedTurnId = $event"
+      @select-compute-task="resultComputeTaskId = $event"
+      @select-plot-run="resultPlotRunId = $event"
       @close="closeResults"
     />
     <CreateProjectDialog ref="composerCreateProjectDialog" :default-start-chat="false" @created="onComposerProjectCreated" />

@@ -2,10 +2,13 @@
 
 import math
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 from urllib.parse import quote_plus
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator
+
+if TYPE_CHECKING:
+    from astroagent.literature_schemas import LiteratureSaveReceipt
 
 
 class ChatRequest(BaseModel):
@@ -629,5 +632,11 @@ class ChatResponse(BaseModel):
     gaia_results: list[GaiaQueryResult] = Field(default_factory=list)
     nbody_proposals: list[NBodyProposalResult] = Field(default_factory=list)
     plot_proposals: list[PlotProposalResult] = Field(default_factory=list)
+    literature_receipts: list["LiteratureSaveReceipt"] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     warnings: list[ErrorInfo] = Field(default_factory=list)
+
+
+from astroagent.literature_schemas import LiteratureSaveReceipt  # noqa: E402
+
+ChatResponse.model_rebuild()

@@ -2,12 +2,14 @@
 
 from astroagent.artifacts import ArtifactCache
 from astroagent.conversation_service import ConversationService
+from astroagent.literature_service import LiteratureService
 from astroagent.local_model_service import LocalModelService
 from astroagent.plot_service import PlotService
 from astroagent.postgres_knowledge import PostgresKnowledgeService
 from astroagent.project_links import ProjectLinks
 from astroagent.project_service import ProjectService
 from astroagent.rag_service import RagService
+from astroagent.trace_store import TraceStore
 from astroagent.workflow_service import WorkflowService
 
 
@@ -21,4 +23,6 @@ def compose(repository, settings):
     service.rag = RagService(service)
     service.plotting = PlotService(service, settings)
     service.local_titles = LocalModelService(service, settings)
+    service.literature = LiteratureService(service)
+    service.traces = TraceStore(repository)
     return service

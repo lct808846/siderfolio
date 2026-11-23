@@ -7,7 +7,9 @@ from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, StrictInt, field
 
 from astroagent.attachment_schemas import ChatAttachment
 from astroagent.export_schemas import PlotSpec
+from astroagent.literature_schemas import LiteratureSaveReceipt
 from astroagent.schemas import ChatResponse, ErrorInfo
+from astroagent.trace_schemas import RunTrace
 
 
 class ConversationCreate(BaseModel):
@@ -79,6 +81,9 @@ class Turn(BaseModel):
     completed_at: str | None = None
     context: ContextRecord = Field(default_factory=ContextRecord)
     response: ChatResponse | None = None
+    literature_receipts: list[LiteratureSaveReceipt] = Field(default_factory=list)
+    run_trace: RunTrace | None = None
+    trace_status: Literal["available", "unavailable", "not_recorded"] = "not_recorded"
     error: ErrorInfo | None = None
 
 
@@ -95,6 +100,11 @@ class TurnSummary(BaseModel):
 
 class ConversationDetail(Conversation):
     turns: list[TurnSummary]
+
+
+class ConversationBundle(BaseModel):
+    conversation: ConversationDetail
+    turns: list[Turn] = Field(default_factory=list)
 
 
 class ArtifactRequest(BaseModel):

@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     deepseek_api_key: SecretStr = SecretStr("")
     deepseek_model: str = Field(default="deepseek-flash", min_length=1)
     selected_model_id: str = Field(default="", exclude=True, repr=False)
+    selected_model_label: str = Field(default="", exclude=True, repr=False)
+    model_input_price_per_1m: float | None = Field(default=None, exclude=True, repr=False)
+    model_output_price_per_1m: float | None = Field(default=None, exclude=True, repr=False)
+    model_price_currency: Literal["USD", "CNY"] = Field(default="USD", exclude=True, repr=False)
     model_protocol: Literal["openai_chat", "openai_responses", "anthropic", "gemini"] = (
         "openai_chat"
     )

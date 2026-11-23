@@ -862,6 +862,7 @@ class McpClientPool:
     ) -> AstronomyResult:
         assert self._pool is not None
         cid = sanitize_correlation_id(correlation_id)
+        _LAST_MCP_CALL.meta = {"transport": "mcp", "tool": tool_name, "correlation_id": cid}
         return self._submit(
             self._pool.call_tool(
                 tool_name,
@@ -907,6 +908,17 @@ class McpClientPool:
                 future.result(timeout=10.0)
             self._loop.call_soon_threadsafe(self._loop.stop)
         self._thread.join(timeout=10.0)
+
+
+_LAST_MCP_CALL = threading.local()
+
+
+def clear_last_mcp_call_meta() -> None:
+    _LAST_MCP_CALL.meta = None
+
+
+def last_mcp_call_meta() -> dict[str, Any] | None:
+    return getattr(_LAST_MCP_CALL, "meta", None)
 
 
 class McpSimbadAdapter:

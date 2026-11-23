@@ -40,38 +40,58 @@ export async function identityRequest<T = { message: string }>(path: string, met
   return data as T
 }
 
+let lastVerifiedAt = 0
+let inFlightRefresh: Promise<void> | null = null
+
 export async function refreshIdentity() {
-  identityError.value = ''
-  try {
-    const response = await sessionFetch('/api/v1/auth/session')
-    if (response.status === 401) { identityUser.value = null; return }
-    const value = await response.json()
-    if (!response.ok) throw new Error(value.error?.message || '身份服务尚未就绪。')
-    if (identityUser.value && identityUser.value.id !== value.user.id) {
-      identityReady.value = false; identityUser.value = null; clearPrivateBrowserData()
-      window.location.replace('/login')
-      return
-    }
-    identityUser.value = value.user
-    sessionPolicy.value = { idle_seconds: value.idle_seconds, absolute_seconds: value.absolute_seconds }
-    setCsrf(value.csrf_token)
+  if (inFlightRefresh) return inFlightRefresh
+  inFlightRefresh = (async () => {
+    identityError.value = ''
     try {
-      if (localStorage.getItem(ownerKey) !== value.user.id) { clearPrivateBrowserData(); localStorage.setItem(ownerKey, value.user.id) }
-    } catch { /* No private state is restored across a full identity navigation. */ }
-  } catch (error) {
-    identityUser.value = null
-    identityError.value = error instanceof Error ? error.message : '身份服务暂不可用。'
-  }
+      const response = await sessionFetch('/api/v1/auth/session')
+      if (response.status === 401) { identityUser.value = null; lastVerifiedAt = 0; return }
+      const value = await response.json()
+      if (!response.ok) throw new Error(value.error?.message || '身份服务尚未就绪。')
+      if (identityUser.value && identityUser.value.id !== value.user.id) {
+        identityReady.value = false; identityUser.value = null; lastVerifiedAt = 0; clearPrivateBrowserData()
+        window.location.replace('/login')
+        return
+      }
+      identityUser.value = value.user
+      sessionPolicy.value = { idle_seconds: value.idle_seconds, absolute_seconds: value.absolute_seconds }
+      setCsrf(value.csrf_token)
+      lastVerifiedAt = Date.now()
+      try {
+        if (localStorage.getItem(ownerKey) !== value.user.id) { clearPrivateBrowserData(); localStorage.setItem(ownerKey, value.user.id) }
+      } catch { /* No private state is restored across a full identity navigation. */ }
+    } catch (error) {
+      identityUser.value = null
+      lastVerifiedAt = 0
+      identityError.value = error instanceof Error ? error.message : '身份服务暂不可用。'
+    } finally {
+      inFlightRefresh = null
+    }
+  })()
+  return inFlightRefresh
 }
 
 export async function logout() {
   await identityRequest('auth/logout', 'POST', {})
-  identityUser.value = null; resetCsrf(); clearPrivateBrowserData()
+  identityUser.value = null; lastVerifiedAt = 0; resetCsrf(); clearPrivateBrowserData()
   window.location.replace('/login')
 }
 
 export async function identityGuard(to: { path: string; fullPath: string; query: Record<string, unknown> }) {
-  await refreshIdentity()
+  const sensitiveRoute = isIdentityPage(to.path) || to.path.startsWith('/admin') || to.path === '/settings'
+  const verifiedFresh = identityReady.value && Boolean(identityUser.value) && (Date.now() - lastVerifiedAt) < 30000
+  if (!verifiedFresh || sensitiveRoute) {
+    if (identityReady.value && Boolean(identityUser.value) && !sensitiveRoute) {
+      // Allow instant SPA navigation while silently refreshing session state; API calls still enforce auth strictly.
+      void refreshIdentity()
+    } else {
+      await refreshIdentity()
+    }
+  }
   identityReady.value = true
   if (!identityUser.value) {
     if (isIdentityPage(to.path)) { try { await prepareCsrf() } catch { /* Page displays configuration status. */ }; return true }

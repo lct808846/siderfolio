@@ -2,6 +2,8 @@
 
 import hmac
 import json
+import queue
+import time
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
@@ -79,13 +81,32 @@ class AuthStore:
     def __init__(self, local, settings):
         self.local, self.settings = local, settings
         self.crypto = cipher(settings)
+        self._pool: queue.LifoQueue = queue.LifoQueue(maxsize=8)
+        self._closed = False
 
-    @contextmanager
-    def connect(self):
+    def _borrow(self):
         import psycopg
+        from psycopg.pq import TransactionStatus
 
+        now = time.monotonic()
+        while True:
+            try:
+                db, returned_at = self._pool.get_nowait()
+            except queue.Empty:
+                break
+            if (
+                db.closed
+                or (now - returned_at) > 60.0
+                or db.info.transaction_status != TransactionStatus.IDLE
+            ):
+                try:
+                    db.close()
+                except Exception:
+                    pass
+                continue
+            return db
         try:
-            db = psycopg.connect(
+            return psycopg.connect(
                 self.local.database_url.get_secret_value(),
                 row_factory=dict_row,
                 connect_timeout=5,
@@ -95,11 +116,53 @@ class AuthStore:
             raise ServiceError(
                 503, "identity_unavailable", "身份服务暂不可用，请稍后重试。"
             ) from exc
+
+    def _release(self, db, *, healthy: bool) -> None:
+        from psycopg.pq import TransactionStatus
+
+        if (
+            not healthy
+            or self._closed
+            or db.closed
+            or db.info.transaction_status != TransactionStatus.IDLE
+        ):
+            try:
+                db.close()
+            except Exception:
+                pass
+            return
+        try:
+            self._pool.put_nowait((db, time.monotonic()))
+        except queue.Full:
+            try:
+                db.close()
+            except Exception:
+                pass
+
+    def close(self) -> None:
+        self._closed = True
+        while True:
+            try:
+                db, _ = self._pool.get_nowait()
+            except queue.Empty:
+                break
+            try:
+                db.close()
+            except Exception:
+                pass
+
+    @contextmanager
+    def connect(self):
+        db = self._borrow()
+        healthy = True
         try:
             with db:
                 yield db
+        except BaseException:
+            healthy = False
+            raise
         finally:
-            db.close()
+            self._release(db, healthy=healthy)
 
     def check(self):
         with self.connect() as db:
@@ -290,7 +353,8 @@ class AuthStore:
         with self.connect() as db:
             row = db.execute(
                 (
-                    "SELECT u.*,s.hash AS session_hash,s.mfa_at,s.reauth_at,s.created_at AS "
+                    "SELECT u.*,s.hash AS session_hash,s.mfa_at,s.reauth_at,s.last_seen AS "
+                    "session_last_seen,s.created_at AS "
                     "session_created,s.source_hash AS session_source FROM public.auth_sessions s "
                     "JOIN public.auth_users u ON u.id=s.user_id WHERE s.hash=%s AND NOT s.revoked "
                     "AND s.expires_at>now() AND s.last_seen>now()-(%s * interval '1 second') "
@@ -321,7 +385,13 @@ class AuthStore:
                     db, row, "检测到账号在异常网络位置访问，当前登录会话已自动保护性下线。"
                 )
                 return None
-            if touch:
+            last_seen = row.get("session_last_seen")
+            needs_touch = touch and (
+                (source_hash and not row.get("session_source"))
+                or last_seen is None
+                or last_seen < datetime.now(UTC) - timedelta(seconds=60)
+            )
+            if needs_touch:
                 db.execute(
                     (
                         "UPDATE public.auth_sessions SET last_seen=now(), "

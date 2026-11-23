@@ -7,7 +7,9 @@ SQLite is never opened by this runtime. Initial creation is an explicit setup ac
 import json
 import multiprocessing
 import os
+import queue
 import re
+import time
 from contextlib import contextmanager
 
 from astroagent.conversations import ConversationRepository, storage_error
@@ -166,53 +168,68 @@ class PostgresRepository(ConversationRepository):
         self.path = None  # No runtime SQLite pathname, including error fallback.
         self.session = None
         self._session_required = False
+        self._last_session_check = 0.0
+        self._pool: queue.LifoQueue = queue.LifoQueue(maxsize=4)
+        self._closed = False
 
-    def connect(self):
+    def _ensure_lock_session(self):
+        import psycopg
+
+        if not self._session_required:
+            return
+        now = time.monotonic()
+        if (
+            self.session is not None
+            and not self.session.closed
+            and (now - self._last_session_check) < 1.0
+        ):
+            return
+        with self.mutex:
+            if not self._session_required:
+                return
+            try:
+                if self.session is None or self.session.closed:
+                    raise RuntimeError("Lock session was lost")
+                self.session.execute("SELECT 1")
+                self._last_session_check = time.monotonic()
+            except Exception:
+                if self.session is not None:
+                    self.session.close()
+                self.session = None
+                # Reconnect the lock only; never create tables, migrate or replay tasks.
+                replacement = psycopg.connect(
+                    self.settings.database_url.get_secret_value(),
+                    autocommit=True,
+                    connect_timeout=5,
+                    options=f"-c statement_timeout=5000 -c search_path={self.search_path}",
+                )
+                try:
+                    if not replacement.execute(
+                        "SELECT pg_try_advisory_lock(%s)", (self.lock_id,)
+                    ).fetchone()[0]:
+                        raise RuntimeError("Database acquired by another process")
+                    row = replacement.execute(
+                        "SELECT value FROM astroagent_meta WHERE key='schema_version'"
+                    ).fetchone()
+                    extensions = {
+                        r[0]
+                        for r in replacement.execute("SELECT extname FROM pg_extension")
+                    }
+                    if (
+                        not row
+                        or row[0] != str(SCHEMA_VERSION)
+                        or not {"vector", "pg_trgm"} <= extensions
+                    ):
+                        raise RuntimeError("Database identity contract changed")
+                    self.session = replacement
+                    self._last_session_check = time.monotonic()
+                except BaseException:
+                    replacement.close()
+                    raise
+
+    def _open_raw(self):
         try:
             import psycopg
-
-            if self.identity_guard is not None and not self.identity_guard():
-                raise ServiceError(403, "account_unavailable", "账号暂不可用。")
-
-            with self.mutex:
-                if self._session_required:
-                    try:
-                        if self.session is None or self.session.closed:
-                            raise RuntimeError("Lock session was lost")
-                        self.session.execute("SELECT 1")
-                    except Exception:
-                        if self.session is not None:
-                            self.session.close()
-                        self.session = None
-                        # Reconnect the lock only; never create tables, migrate or replay tasks.
-                        replacement = psycopg.connect(
-                            self.settings.database_url.get_secret_value(),
-                            autocommit=True,
-                            connect_timeout=5,
-                            options=f"-c statement_timeout=5000 -c search_path={self.search_path}",
-                        )
-                        try:
-                            if not replacement.execute(
-                                "SELECT pg_try_advisory_lock(%s)", (self.lock_id,)
-                            ).fetchone()[0]:
-                                raise RuntimeError("Database acquired by another process")
-                            row = replacement.execute(
-                                "SELECT value FROM astroagent_meta WHERE key='schema_version'"
-                            ).fetchone()
-                            extensions = {
-                                r[0]
-                                for r in replacement.execute("SELECT extname FROM pg_extension")
-                            }
-                            if (
-                                not row
-                                or row[0] != str(SCHEMA_VERSION)
-                                or not {"vector", "pg_trgm"} <= extensions
-                            ):
-                                raise RuntimeError("Database identity contract changed")
-                            self.session = replacement
-                        except BaseException:
-                            replacement.close()
-                            raise
 
             return psycopg.connect(
                 self.settings.database_url.get_secret_value(),
@@ -225,6 +242,21 @@ class PostgresRepository(ConversationRepository):
                 ),
                 row_factory=row_factory,
             )
+        except ServiceError:
+            raise
+        except Exception as exc:
+            raise ServiceError(
+                503,
+                "database_unavailable",
+                "无法连接本机PostgreSQL，请在设置中核对服务端连接配置。",
+            ) from exc
+
+    def connect(self):
+        try:
+            if self.identity_guard is not None and not self.identity_guard():
+                raise ServiceError(403, "account_unavailable", "账号暂不可用。")
+            self._ensure_lock_session()
+            return self._open_raw()
         except ServiceError:
             raise
         except Exception as exc:
@@ -341,17 +373,75 @@ class PostgresRepository(ConversationRepository):
             self.close()
             raise
 
+    def _borrow_raw(self):
+        from psycopg.pq import TransactionStatus
+
+        if self.identity_guard is not None and not self.identity_guard():
+            raise ServiceError(403, "account_unavailable", "账号暂不可用。")
+        try:
+            self._ensure_lock_session()
+        except ServiceError:
+            raise
+        except Exception as exc:
+            raise ServiceError(
+                503,
+                "database_unavailable",
+                "无法连接本机PostgreSQL，请在设置中核对服务端连接配置。",
+            ) from exc
+        now = time.monotonic()
+        while True:
+            try:
+                raw, returned_at = self._pool.get_nowait()
+            except queue.Empty:
+                break
+            if (
+                raw.closed
+                or (now - returned_at) > 60.0
+                or raw.info.transaction_status != TransactionStatus.IDLE
+            ):
+                try:
+                    raw.close()
+                except Exception:
+                    pass
+                continue
+            return raw
+        return self._open_raw()
+
+    def _release_raw(self, raw, *, healthy: bool) -> None:
+        from psycopg.pq import TransactionStatus
+
+        if (
+            not healthy
+            or self._closed
+            or raw.closed
+            or raw.info.transaction_status != TransactionStatus.IDLE
+        ):
+            try:
+                raw.close()
+            except Exception:
+                pass
+            return
+        try:
+            self._pool.put_nowait((raw, time.monotonic()))
+        except queue.Full:
+            try:
+                raw.close()
+            except Exception:
+                pass
+
     @contextmanager
     def connection(self):
-        raw = self.connect()
+        raw = self._borrow_raw()
+        healthy = True
         try:
             yield Connection(raw, self.namespace, self.identity)
         except ServiceError:
             raise
         except Exception as exc:
+            healthy = False
             raise storage_error() from exc
         finally:
-            raw.close()
+            self._release_raw(raw, healthy=healthy)
 
     @staticmethod
     @contextmanager
@@ -367,14 +457,33 @@ class PostgresRepository(ConversationRepository):
 
     @staticmethod
     def _used(db):
+        from astroagent.literature_store import used as literature_used
         from astroagent.local_model_store import used as local_used
         from astroagent.plot_store import used
         from astroagent.rag_store import used_bytes
+        from astroagent.trace_store import used as trace_used
 
-        return ConversationRepository._used(db) + used_bytes(db) + used(db) + local_used(db)
+        return (
+            ConversationRepository._used(db)
+            + used_bytes(db)
+            + used(db)
+            + local_used(db)
+            + literature_used(db)
+            + trace_used(db)
+        )
 
     def close(self):
+        self._closed = True
         self._session_required = False
+        while True:
+            try:
+                raw, _ = self._pool.get_nowait()
+            except queue.Empty:
+                break
+            try:
+                raw.close()
+            except Exception:
+                pass
         if self.session is not None:
             self.session.close()
             self.session = None

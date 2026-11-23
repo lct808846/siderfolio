@@ -14,6 +14,7 @@ $usingIdentity = $WithIdentity -or (Test-Path -LiteralPath $identityConfiguratio
 $sharedModels = Join-Path $projectRoot '.astroagent\container\compose-v16-shared-model.yaml'
 $computeOverlay = Join-Path $projectRoot 'compose.compute.yaml'
 $mcpOverlay = Join-Path $projectRoot 'compose.mcp.yaml'
+$v19Overlay = Join-Path $projectRoot 'compose.v19.yaml'
 $configuration = if ($usingIdentity) { $identityConfiguration } else { Join-Path $projectRoot '.astroagent\container\deployment.env' }
 if ((Test-Path -LiteralPath (Join-Path $projectRoot 'compose.identity.yaml')) -and -not $usingIdentity) {
     throw 'V1.6 source requires a separate identity deployment configuration. Do not rebuild the V1.5 tags with V1.6 source.'
@@ -42,6 +43,9 @@ if ($usingCompute) {
 }
 if (Test-Path -LiteralPath $mcpOverlay) {
     $composeArguments += @('-f',$mcpOverlay)
+}
+if (Test-Path -LiteralPath $v19Overlay) {
+    $composeArguments += @('-f',$v19Overlay)
 }
 switch ($Action) {
     'up' {

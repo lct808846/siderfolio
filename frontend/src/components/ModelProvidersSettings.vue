@@ -54,19 +54,68 @@ async function run(task: () => Promise<void>) {
   catch (e) { error.value = e instanceof Error ? e.message : '模型服务操作未完成。' }
   finally { busy.value = false }
 }
+function parseOptionalPrice(value: unknown): number | null {
+  if (value === '' || value === null || value === undefined) return null
+  const num = Number(value)
+  return Number.isFinite(num) && num >= 0 ? num : Number.NaN
+}
+function currencySymbol(currency?: 'USD' | 'CNY'): string {
+  return currency === 'CNY' ? '¥' : '$'
+}
+function formatModelPrice(model: ProviderModel): string {
+  if (typeof model.input_price_per_1m === 'number' && typeof model.output_price_per_1m === 'number') {
+    const symbol = currencySymbol(model.price_currency)
+    return `自定义单价 ${symbol}${model.input_price_per_1m} / ${symbol}${model.output_price_per_1m} 每百万`
+  }
+  if (typeof model.reference_input_price_per_1m === 'number' && typeof model.reference_output_price_per_1m === 'number') {
+    const symbol = currencySymbol(model.reference_price_currency)
+    return `参考价 ${symbol}${model.reference_input_price_per_1m} / ${symbol}${model.reference_output_price_per_1m} 每百万`
+  }
+  return ''
+}
+function hasCustomPrice(model: ProviderModel): boolean {
+  return model.input_price_per_1m !== null && model.input_price_per_1m !== undefined
+    && String(model.input_price_per_1m) !== ''
+    && model.output_price_per_1m !== null && model.output_price_per_1m !== undefined
+    && String(model.output_price_per_1m) !== ''
+}
+function clearModelPrice(model: ProviderModel) {
+  model.input_price_per_1m = null
+  model.output_price_per_1m = null
+  model.price_currency = model.reference_price_currency === 'CNY' ? 'CNY' : 'USD'
+}
 async function edit(provider?: ModelProvider) {
   if (busy.value || !catalog.value) return
   error.value = ''; apiKey.value = ''; editing.value = !!provider; storedKey.value = !!provider?.key_configured
   form.value = provider ? {
     revision: catalog.value.revision, id: provider.id, name: provider.name, base_url: provider.base_url,
     protocol: provider.protocol, enabled: provider.enabled, thinking_parameter: provider.thinking_parameter,
-    models: provider.models.map(model => ({ id: model.id, label: model.label })),
+    models: provider.models.map(model => ({
+      id: model.id,
+      label: model.label,
+      input_price_per_1m: model.input_price_per_1m ?? null,
+      output_price_per_1m: model.output_price_per_1m ?? null,
+      price_currency: model.price_currency === 'CNY' ? 'CNY' : (model.reference_price_currency === 'CNY' ? 'CNY' : 'USD'),
+      reference_input_price_per_1m: model.reference_input_price_per_1m ?? null,
+      reference_output_price_per_1m: model.reference_output_price_per_1m ?? null,
+      reference_price_currency: model.reference_price_currency,
+    })),
   } : { ...emptyDraft(), revision: catalog.value.revision }
   await nextTick(); editor.value?.showModal()
 }
 function payload(discover = false): ProviderDraft {
   return { ...form.value, name: form.value.name.trim(), base_url: form.value.base_url.trim(),
-    models: discover ? [] : form.value.models.map(model => ({ id: model.id.trim(), label: model.label.trim() || model.id.trim() })),
+    models: discover ? [] : form.value.models.map(model => {
+      const inPrice = parseOptionalPrice(model.input_price_per_1m)
+      const outPrice = parseOptionalPrice(model.output_price_per_1m)
+      return {
+        id: model.id.trim(),
+        label: model.label.trim() || model.id.trim(),
+        input_price_per_1m: inPrice,
+        output_price_per_1m: outPrice,
+        price_currency: model.price_currency === 'CNY' ? 'CNY' : 'USD',
+      }
+    }),
     thinking_parameter: form.value.protocol === 'openai_chat' ? form.value.thinking_parameter : 'none',
     ...(apiKey.value ? { api_key: apiKey.value } : {}),
   }
@@ -82,8 +131,13 @@ function save() {
   if (new Set(draft.models.map(model => model.id)).size !== draft.models.length) {
     error.value = '同一个服务商的模型 ID 不能重复。'; return
   }
+  if (draft.models.some(model => (model.input_price_per_1m !== null && (Number.isNaN(model.input_price_per_1m) || model.input_price_per_1m! < 0))
+    || (model.output_price_per_1m !== null && (Number.isNaN(model.output_price_per_1m) || model.output_price_per_1m! < 0))
+    || ((model.input_price_per_1m === null) !== (model.output_price_per_1m === null)))) {
+    error.value = '模型单价需同时填写非负的输入与输出单价，或同时留空。'; return
+  }
   void run(async () => {
-    const value = await providersApi.save(payload())
+    const value = await providersApi.save(draft)
     editor.value?.close(); apiKey.value = ''
     await changed(value, '模型服务商已保存。')
   })
@@ -105,7 +159,15 @@ function discover() {
 }
 function applyModels() {
   if (selected.value.length > 32) { error.value = '每个服务商最多选择 32 个模型。'; picker.value?.close(); return }
-  form.value.models = candidates.value.filter(model => selected.value.includes(model.id)).map(model => ({ id: model.id, label: model.label }))
+  form.value.models = candidates.value
+    .filter(model => selected.value.includes(model.id))
+    .map(model => ({
+      id: model.id,
+      label: model.label,
+      input_price_per_1m: model.input_price_per_1m ?? null,
+      output_price_per_1m: model.output_price_per_1m ?? null,
+      price_currency: model.price_currency === 'CNY' ? 'CNY' : 'USD',
+    }))
   picker.value?.close()
 }
 function selectFiltered() {
@@ -157,7 +219,7 @@ onMounted(() => { void load() })
         <p class="provider-address"><span class="ui-pill ui-pill-mono">{{ provider.base_url }}</span></p>
         <details class="provider-models" :open="catalog.providers.length === 1">
           <summary>已选模型清单（{{ provider.models.length }}）</summary>
-          <div v-for="model in provider.models" :key="model.id" class="settings-row"><div><h4>{{ model.label }}</h4><p v-if="model.id !== model.label">{{ model.id }}</p></div><span v-if="model.selection_id === catalog.default_model" class="ui-pill ui-pill-accent"><span class="ui-dot" aria-hidden="true" />默认模型</span><button v-else type="button" :disabled="busy || !provider.enabled || !provider.key_configured" @click="setDefault(model)">设为默认</button></div>
+          <div v-for="model in provider.models" :key="model.id" class="settings-row"><div><h4>{{ model.label }}</h4><p v-if="model.id !== model.label || formatModelPrice(model)">{{ [model.id !== model.label ? model.id : '', formatModelPrice(model)].filter(Boolean).join(' · ') }}</p></div><span v-if="model.selection_id === catalog.default_model" class="ui-pill ui-pill-accent"><span class="ui-dot" aria-hidden="true" />默认模型</span><button v-else type="button" :disabled="busy || !provider.enabled || !provider.key_configured" @click="setDefault(model)">设为默认</button></div>
           <p v-if="!provider.models.length" class="settings-footnote">还未选择模型，编辑服务商后获取目录或手动添加。</p>
         </details>
       </article>
@@ -180,8 +242,77 @@ onMounted(() => { void load() })
         <section class="provider-model-editor">
 <div class="provider-section-heading"><h3>模型目录</h3><button type="button" :disabled="busy" @click="discover">{{ busy ? '正在处理…' : '获取可用模型' }}</button></div>
           <p v-if="!form.models.length" class="settings-footnote">获取目录后勾选要使用的模型，也可手动填写服务商提供的模型 ID。</p>
-          <div v-for="(model, index) in form.models" :key="index" class="provider-model-fields"><label>模型 ID<input v-model="model.id" maxlength="128" required :disabled="busy" /></label><label>显示名称<input v-model="model.label" maxlength="80" :disabled="busy" /></label><button type="button" :disabled="busy" aria-label="移除此模型" @click="form.models.splice(index, 1)">移除</button></div>
-          <button type="button" :disabled="busy || form.models.length >= 32" @click="form.models.push({ id: '', label: '' })">＋ 手动添加模型</button>
+          <div v-for="(model, index) in form.models" :key="index" class="provider-model-entry">
+            <div class="provider-model-fields">
+              <label>模型 ID<input v-model="model.id" maxlength="128" required placeholder="例如 gemini-4-hydrogen" :disabled="busy" /></label>
+              <label>显示名称<input v-model="model.label" maxlength="80" placeholder="工作台展示名" :disabled="busy" /></label>
+              <button type="button" class="provider-model-remove" :disabled="busy" aria-label="移除此模型" title="移除此模型" @click="form.models.splice(index, 1)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+              </button>
+            </div>
+            <div class="provider-model-pricing-row">
+              <label class="provider-price-box">
+                <span class="provider-price-tag">输入</span>
+                <span class="provider-price-sym">{{ currencySymbol(model.price_currency) }}</span>
+                <input
+                  v-model.number="model.input_price_per_1m"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  step="any"
+                  aria-label="输入单价（每百万 tokens）"
+                  :placeholder="model.reference_input_price_per_1m != null ? String(model.reference_input_price_per_1m) : '留空'"
+                  :disabled="busy"
+                />
+                <span class="provider-price-unit">/1M</span>
+              </label>
+              <label class="provider-price-box">
+                <span class="provider-price-tag">输出</span>
+                <span class="provider-price-sym">{{ currencySymbol(model.price_currency) }}</span>
+                <input
+                  v-model.number="model.output_price_per_1m"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  step="any"
+                  aria-label="输出单价（每百万 tokens）"
+                  :placeholder="model.reference_output_price_per_1m != null ? String(model.reference_output_price_per_1m) : '留空'"
+                  :disabled="busy"
+                />
+                <span class="provider-price-unit">/1M</span>
+              </label>
+              <div class="provider-currency-toggle" role="group" aria-label="计价币种">
+                <button
+                  type="button"
+                  :class="{ active: (model.price_currency || 'USD') === 'USD' }"
+                  :aria-pressed="(model.price_currency || 'USD') === 'USD'"
+                  :disabled="busy"
+                  @click="model.price_currency = 'USD'"
+                >
+                  USD
+                </button>
+                <button
+                  type="button"
+                  :class="{ active: model.price_currency === 'CNY' }"
+                  :aria-pressed="model.price_currency === 'CNY'"
+                  :disabled="busy"
+                  @click="model.price_currency = 'CNY'"
+                >
+                  CNY
+                </button>
+              </div>
+            </div>
+            <div v-if="hasCustomPrice(model) || model.reference_input_price_per_1m != null" class="provider-model-price-hint">
+              <template v-if="hasCustomPrice(model)">
+                <span class="ui-pill ui-pill-accent">自定义单价</span>
+                <button type="button" class="provider-price-reset" :disabled="busy" @click="clearModelPrice(model)">恢复默认</button>
+              </template>
+              <span v-else class="provider-price-ref-note">
+                留空自动使用官方参考价：{{ currencySymbol(model.reference_price_currency) }}{{ model.reference_input_price_per_1m }} / {{ currencySymbol(model.reference_price_currency) }}{{ model.reference_output_price_per_1m }} 每百万
+              </span>
+            </div>
+          </div>
+          <button type="button" :disabled="busy || form.models.length >= 32" @click="form.models.push({ id: '', label: '', input_price_per_1m: null, output_price_per_1m: null, price_currency: 'USD' })">＋ 手动添加模型</button>
         </section>
         <div class="project-actions"><button type="button" :disabled="busy" @click="editor?.close()">取消</button><button class="button-primary" :disabled="busy">{{ busy ? '正在处理…' : '保存服务商' }}</button></div>
       </form>

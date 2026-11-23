@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useProjects } from '../stores/projects'
 
 const props = defineProps<{
-  section: 'knowledge' | 'rag' | 'workflows' | 'compute'
+  section: 'knowledge' | 'rag' | 'workflows'
   projectId: string
 }>()
 

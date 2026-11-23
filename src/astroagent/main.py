@@ -21,6 +21,7 @@ from astroagent.api.exports import router as exports_router
 from astroagent.api.health import router as health_router
 from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
+from astroagent.api.literature import router as literature_router
 from astroagent.api.local_titles import router as local_titles_router
 from astroagent.api.model_providers import router as model_providers_router
 from astroagent.api.models import router as models_router
@@ -110,6 +111,7 @@ app.include_router(setup_router)
 app.include_router(models_router)
 app.include_router(plotting_router)
 app.include_router(local_titles_router)
+app.include_router(literature_router)
 app.include_router(profile_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
@@ -174,6 +176,17 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
                 "error": {
                     "code": "invalid_identity_request",
                     "message": "身份请求参数无效，请核对输入。",
+                    "retryable": False,
+                }
+            },
+        )
+    if request.url.path.startswith("/api/v1/literature"):
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "invalid_literature_request",
+                    "message": "文献请求参数无效，请核对条目编号、标签或备注。",
                     "retryable": False,
                 }
             },
