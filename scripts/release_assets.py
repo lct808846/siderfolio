@@ -1,4 +1,4 @@
-"""Check signed source and produce an immutable image manifest for a formal release."""
+"""Verify release source, publish immutable images and deploy a verified manifest."""
 
 import argparse
 import ast
@@ -7,8 +7,10 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tomllib
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 VERSION = re.compile(r"v(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})")
 COMMIT = re.compile(r"[a-f0-9]{40}")
@@ -44,7 +46,7 @@ COMPONENTS = {
 
 
 def capture(command):
-    return subprocess.check_output(command, text=True, timeout=120).strip()
+    return subprocess.check_output(command, encoding="utf-8", timeout=120).strip()
 
 
 def validate_version(version):
@@ -58,6 +60,36 @@ def image_repository(repository, component):
     if not REPOSITORY.fullmatch(repository) or component not in COMPONENTS:
         raise ValueError("Invalid repository or component.")
     return f"ghcr.io/{repository}-{component}"
+
+
+def _verify_tag_commit_and_versions(tag, git=("git",)):
+    validate_version(tag)
+    ref = f"refs/tags/{tag}"
+    sha = capture([*git, "rev-parse", f"{ref}^{{commit}}"])
+    if not COMMIT.fullmatch(sha):
+        raise ValueError("The version tag must resolve to a valid commit.")
+    subprocess.run(
+        [*git, "merge-base", "--is-ancestor", sha, "refs/remotes/origin/main"],
+        check=True,
+        timeout=30,
+    )
+    version_file = ast.parse(capture([*git, "show", f"{sha}:src/astroagent/__init__.py"]))
+    runtime_versions = [
+        ast.literal_eval(node.value)
+        for node in version_file.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "__version__" for target in node.targets
+        )
+    ]
+    versions = (
+        tomllib.loads(capture([*git, "show", f"{sha}:pyproject.toml"]))["project"]["version"],
+        json.loads(capture([*git, "show", f"{sha}:frontend/package.json"]))["version"],
+        json.loads(capture([*git, "show", f"{sha}:frontend/package-lock.json"]))["version"],
+    )
+    if runtime_versions != [tag[1:]] or any(version != tag[1:] for version in versions):
+        raise ValueError("The tag must match the committed Python, frontend and lock versions.")
+    return sha
 
 
 def verified_tag(tag, signers, git=("git",)):
@@ -84,28 +116,11 @@ def verified_tag(tag, signers, git=("git",)):
         check=True,
         timeout=30,
     )
-    subprocess.run(
-        [*git, "merge-base", "--is-ancestor", sha, "refs/remotes/origin/main"],
-        check=True,
-        timeout=30,
-    )
-    version_file = ast.parse(capture([*git, "show", f"{sha}:src/astroagent/__init__.py"]))
-    runtime_versions = [
-        ast.literal_eval(node.value)
-        for node in version_file.body
-        if isinstance(node, ast.Assign)
-        and any(
-            isinstance(target, ast.Name) and target.id == "__version__" for target in node.targets
-        )
-    ]
-    versions = (
-        tomllib.loads(capture([*git, "show", f"{sha}:pyproject.toml"]))["project"]["version"],
-        json.loads(capture([*git, "show", f"{sha}:frontend/package.json"]))["version"],
-        json.loads(capture([*git, "show", f"{sha}:frontend/package-lock.json"]))["version"],
-    )
-    if runtime_versions != [tag[1:]] or any(version != tag[1:] for version in versions):
-        raise ValueError("The tag must match the committed Python, frontend and lock versions.")
-    return sha
+    return _verify_tag_commit_and_versions(tag, git=git)
+
+
+def verified_unsigned_tag(tag, git=("git",)):
+    return _verify_tag_commit_and_versions(tag, git=git)
 
 
 def registry_digest(reference, *, unpublished=False):
@@ -226,12 +241,165 @@ def assemble(version, sha, repository, inputs, output):
     output.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n", "utf-8")
 
 
+def deploy_ssh(version, sha, repository, registry_user):
+    token = sys.stdin.readline(4096).rstrip("\r\n")
+    manifest = json.load(sys.stdin)
+    validate_manifest(manifest, repository)
+    if (manifest["version"], manifest["commit"]) != (version, sha) or not token:
+        raise ValueError("The deployment requires the matching manifest and registry access.")
+
+    directory = Path("containers/gcp").resolve()
+    env_file = directory / ".env"
+    if env_file.is_symlink() or not env_file.is_file() or env_file.stat().st_mode & 0o777 != 0o600:
+        raise ValueError("Prepare the server's containers/gcp/.env with mode 600 before release.")
+    compose = [
+        "docker",
+        "compose",
+        "--project-name",
+        "astroagent-gcp",
+        "--project-directory",
+        str(directory),
+        "--env-file",
+        str(env_file),
+        "-f",
+        str(directory / "docker-compose.yml"),
+    ]
+
+    def compose_config(*options):
+        result = subprocess.run(
+            [*compose, "config", *options], encoding="utf-8", capture_output=True, timeout=30
+        )
+        if result.returncode:
+            raise ValueError("The server's Compose configuration could not be resolved.")
+        return result.stdout
+
+    settings = dict(
+        line.split("=", 1) for line in compose_config("--environment").splitlines() if "=" in line
+    )
+    rag = bool(settings.get("EMBEDDING_MODEL_DIR") and settings.get("EMBEDDING_MODEL_SHA256"))
+    if rag:
+        compose.extend(("-f", str(directory / "docker-compose.rag.yml")))
+    site = subprocess.run(
+        [sys.executable, str(directory / "deploy_env.py"), "verify"],
+        input=compose_config("--format", "json"),
+        encoding="utf-8",
+        capture_output=True,
+        check=False,
+        timeout=30,
+    )
+    if site.returncode:
+        raise ValueError("Server configuration did not pass deploy_env.py verification.")
+    _, compute = site.stdout.split()
+    services = ["backend", "frontend", "ingress"]
+    if compute == "1":
+        compose.extend(("--profile", "compute"))
+        services.append("compute-worker")
+
+    sql = [
+        *compose,
+        "exec",
+        "-T",
+        "postgres",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "astroagent",
+        "-Atq",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+    ]
+    if (
+        not capture([*compose, "ps", "--status", "running", "-q", "postgres"])
+        or capture([*sql, "SELECT to_regclass('public.auth_meta') IS NOT NULL"]) != "t"
+    ):
+        raise ValueError("The server's existing PostgreSQL identity database must be initialized.")
+
+    with TemporaryDirectory(prefix="siderfolio-release-") as temporary:
+        private = Path(temporary)
+        config = os.environ | {"DOCKER_CONFIG": str(private / "docker")}
+        login = subprocess.run(
+            ["docker", "login", "ghcr.io", "-u", registry_user, "--password-stdin"],
+            input=token + "\n",
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=30,
+            env=config,
+        )
+        del token
+        if login.returncode:
+            raise ValueError("GHCR login failed. Check this repository's package read access.")
+        override = private / "images.json"
+        images = manifest["images"]
+        override.write_text(
+            json.dumps({"services": {name: {"image": images[name]} for name in services}}), "utf-8"
+        )
+        pull = [*compose, "-f", str(override)]
+        subprocess.run([*pull, "pull", *services], check=True, timeout=900, env=config)
+        has_compute = capture([*sql, "SELECT to_regclass('public.compute_tasks') IS NOT NULL"])
+        if compute == "1" and has_compute != "t":
+            raise ValueError("Initialize the optional compute schema on the server first.")
+        if (
+            has_compute == "t"
+            and capture(
+                [
+                    *sql,
+                    "SELECT count(*) FROM public.compute_tasks "
+                    "WHERE state IN ('running','cancelling')",
+                ]
+            )
+            != "0"
+        ):
+            raise ValueError("Wait for active compute tasks before replacing the backend.")
+        runtime = os.environ.copy()
+        if compute == "1":
+            runtime["COMPUTE_IMAGE_ID"] = capture(
+                [
+                    "docker",
+                    "image",
+                    "inspect",
+                    "--format",
+                    "{{.Id}}",
+                    images["compute-worker"],
+                ]
+            )
+        subprocess.run(
+            [
+                *pull,
+                "up",
+                "-d",
+                "--no-deps",
+                "--no-build",
+                "--pull",
+                "never",
+                "--wait",
+                "--wait-timeout",
+                "240",
+                *services,
+            ],
+            check=True,
+            timeout=300,
+            env=runtime,
+        )
+        verify = ["bash", str(directory / "deploy.sh")]
+        if rag:
+            verify.append("--rag")
+        subprocess.run([*verify, "verify"], check=True, timeout=240, env=runtime)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     actions = parser.add_subparsers(dest="action", required=True)
     auth = actions.add_parser("authorize")
     auth.add_argument("version")
     auth.add_argument("signers", type=Path)
+    auth_unsigned = actions.add_parser("authorize-unsigned")
+    auth_unsigned.add_argument("version")
+    deploy = actions.add_parser("deploy-ssh")
+    for name in ("version", "sha", "repository", "registry_user"):
+        deploy.add_argument(name)
     image = actions.add_parser("publish")
     image.add_argument("component", choices=COMPONENTS)
     for action in (image, actions.add_parser("assemble")):
@@ -242,14 +410,20 @@ def main():
             action.add_argument("inputs", type=Path)
         action.add_argument("output", type=Path)
     args = parser.parse_args()
-    if args.action == "authorize":
-        sha = verified_tag(args.version, args.signers)
+    if args.action in ("authorize", "authorize-unsigned"):
+        sha = (
+            verified_tag(args.version, args.signers)
+            if args.action == "authorize"
+            else verified_unsigned_tag(args.version)
+        )
         if capture(["git", "rev-parse", "HEAD"]) != sha:
-            raise ValueError("The signed version and checked-out commit disagree.")
+            raise ValueError("The release tag and checked-out commit disagree.")
         with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as result:
             result.write(f"version={args.version}\nsha={sha}\n")
     elif args.action == "publish":
         publish(args.component, args.version, args.sha, args.repository, args.output)
+    elif args.action == "deploy-ssh":
+        deploy_ssh(args.version, args.sha, args.repository, args.registry_user)
     else:
         assemble(args.version, args.sha, args.repository, args.inputs, args.output)
 

@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 !.env.dev.example
+containers/gcp/.release-manifest.json
+containers/gcp/.release-images.json
 *.pem
 *.key
 

@@ -26,16 +26,22 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify the publisher's annotated SSH signature
+      - name: Verify release tag and version metadata
         id: tag
         env:
           SIGNING_PUBLIC_KEY: ${{ vars.RELEASE_SIGNING_PUBLIC_KEY }}
+          REQUIRE_SIGNED_TAG: ${{ vars.REQUIRE_SIGNED_TAG }}
           REF_PROTECTED: ${{ github.ref_protected }}
         run: |
-          [[ "$REF_PROTECTED" == true ]] || { echo 'A protected tag is required.' >&2; exit 1; }
-          [[ "$SIGNING_PUBLIC_KEY" =~ ^(ssh-ed25519|sk-ssh-ed25519@openssh.com)[[:space:]][a-zA-Z0-9+/=]+$ ]]
-          printf 'astroagent-release namespaces="git" %s\n' "$SIGNING_PUBLIC_KEY" > "$RUNNER_TEMP/release-signers"
-          python scripts/release_assets.py authorize "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-signers"
+          if [[ -n "$SIGNING_PUBLIC_KEY" || "$REQUIRE_SIGNED_TAG" == true ]]; then
+            [[ "$REF_PROTECTED" == true ]] || { echo 'A protected tag is required.' >&2; exit 1; }
+            [[ "$SIGNING_PUBLIC_KEY" =~ ^(ssh-ed25519|sk-ssh-ed25519@openssh.com)[[:space:]][a-zA-Z0-9+/=]+$ ]]
+            printf 'astroagent-release namespaces="git" %s\n' "$SIGNING_PUBLIC_KEY" > "$RUNNER_TEMP/release-signers"
+            python scripts/release_assets.py authorize "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-signers"
+          else
+            echo "RELEASE_SIGNING_PUBLIC_KEY is not configured; skipping SSH tag signature verification and validating tag metadata only."
+            python scripts/release_assets.py authorize-unsigned "$GITHUB_REF_NAME"
+          fi
 
   checks:
     needs: authorization
@@ -52,6 +58,7 @@ jobs:
     environment: release-registry
     permissions:
       contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -65,8 +72,8 @@ jobs:
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ vars.GHCR_PUBLISH_USER }}
-          password: ${{ secrets.GHCR_PUBLISH_TOKEN }}
+          username: ${{ secrets.GHCR_PUBLISH_TOKEN && vars.GHCR_PUBLISH_USER || github.actor }}
+          password: ${{ secrets.GHCR_PUBLISH_TOKEN || github.token }}
       - name: Publish digest and immutable release aliases
         env:
           COMPONENT: ${{ matrix.component }}
@@ -109,7 +116,7 @@ jobs:
             printf '```\n'
           } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/attest-build-provenance@v3
-        if: vars.PRODUCTION_DEPLOY_ENABLED == 'true'
+        if: vars.PRODUCTION_DEPLOY_ENABLED == 'true' && vars.PRODUCTION_DEPLOY_MODE != 'ssh'
         with:
           subject-path: release.json
       - uses: actions/upload-artifact@v4
@@ -128,6 +135,7 @@ jobs:
       contents: read
       id-token: write
       attestations: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -137,6 +145,7 @@ jobs:
         with:
           name: release-manifest
       - name: Verify the release manifest
+        if: vars.PRODUCTION_DEPLOY_MODE != 'ssh'
         env:
           GH_TOKEN: ${{ github.token }}
           REVISION: ${{ needs.authorization.outputs.sha }}
@@ -145,12 +154,15 @@ jobs:
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
             --source-ref "$GITHUB_REF" --source-digest "$REVISION" --deny-self-hosted-runners
       - uses: google-github-actions/auth@v3
+        if: vars.PRODUCTION_DEPLOY_MODE != 'ssh'
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
           project_id: ${{ vars.GCP_PROJECT_ID }}
       - uses: google-github-actions/setup-gcloud@v3
+        if: vars.PRODUCTION_DEPLOY_MODE != 'ssh'
       - name: Deploy and verify through the restricted IAP SSH command
+        if: vars.PRODUCTION_DEPLOY_MODE != 'ssh'
         env:
           GCP_PROJECT: ${{ vars.GCP_PROJECT_ID }}
           GCP_ZONE: ${{ vars.GCP_ZONE }}
@@ -184,6 +196,65 @@ jobs:
             -o HostKeyAlias=astroagent-production -o StrictHostKeyChecking=yes \
             -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ConnectTimeout=15 \
             astroagent-release@127.0.0.1 apply < release.json 2>&1 | tee -a deployment-report.log
+      - name: Deploy directly to GCP VM over SSH
+        if: vars.PRODUCTION_DEPLOY_MODE == 'ssh'
+        env:
+          DEPLOY_HOST: ${{ secrets.GCP_SSH_HOST }}
+          DEPLOY_USER: ${{ secrets.GCP_SSH_USER }}
+          DEPLOY_PATH: ${{ secrets.GCP_DEPLOY_PATH }}
+          DEPLOY_KEY: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          DEPLOY_PORT: ${{ secrets.GCP_SSH_PORT || '22' }}
+          DEPLOY_KNOWN_HOST: ${{ secrets.GCP_SSH_KNOWN_HOST }}
+          RELEASE_TAG: ${{ needs.authorization.outputs.version }}
+          RELEASE_SHA: ${{ needs.authorization.outputs.sha }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ github.token }}
+        run: |
+          umask 077
+          printf 'Workflow %s, version %s (%s), mode=ssh\n' "$GITHUB_RUN_ID" "$RELEASE_TAG" "$RELEASE_SHA" > deployment-report.log
+          [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ && "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*$ && "$DEPLOY_PATH" == /* && "$DEPLOY_PORT" =~ ^[0-9]{1,5}$ && -n "$DEPLOY_KEY" && -n "$DEPLOY_KNOWN_HOST" ]] || {
+            echo 'Configure the server address, user, absolute path, SSH private key and pinned host key.' | tee -a deployment-report.log
+            exit 1
+          }
+          key_dir=$(mktemp -d)
+          trap 'rm -f -- "$key_dir/key" "$key_dir/known_hosts"; rmdir -- "$key_dir"' EXIT
+          printf '%s\n' "$DEPLOY_KEY" > "$key_dir/key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOST" > "$key_dir/known_hosts"
+          unset DEPLOY_KEY DEPLOY_KNOWN_HOST
+          ssh_opts=(
+            -F /dev/null -T -p "$DEPLOY_PORT" -i "$key_dir/key"
+            -o BatchMode=yes -o IdentitiesOnly=yes -o ServerAliveInterval=15
+            -o ServerAliveCountMax=3 -o ConnectTimeout=20 -o HostKeyAlgorithms=ssh-ed25519
+            -o UserKnownHostsFile="$key_dir/known_hosts" -o GlobalKnownHostsFile=/dev/null
+            -o StrictHostKeyChecking=yes
+          )
+          remote_script=$(cat <<'REMOTE'
+          set -euo pipefail
+          export GIT_TERMINAL_PROMPT=0
+          cd -- "$1"
+          [[ "$(git rev-parse --show-toplevel)" == "$(pwd -P)" &&
+             "$(git remote get-url origin)" == "https://github.com/$4.git" &&
+             -z "$(git status --porcelain --untracked-files=no)" ]] || {
+            echo 'Use a clean production checkout of the expected repository.' >&2
+            exit 1
+          }
+          [[ -f containers/gcp/.env && ! -L containers/gcp/.env &&
+             "$(stat -c '%a' containers/gcp/.env)" == 600 ]] || {
+            echo 'Prepare containers/gcp/.env with mode 600 before releasing.' >&2
+            exit 1
+          }
+          docker info >/dev/null
+          git fetch --no-tags origin "refs/tags/$2:refs/tags/$2" </dev/null
+          [[ "$(git rev-parse "refs/tags/$2^{commit}")" == "$3" ]]
+          git checkout --detach "$3" </dev/null
+          exec python3 scripts/release_assets.py deploy-ssh "$2" "$3" "${4,,}" "$5"
+          REMOTE
+          )
+          command="bash -c $(printf '%q' "$remote_script") bash $(printf '%q ' \
+            "$DEPLOY_PATH" "$RELEASE_TAG" "$RELEASE_SHA" "$GITHUB_REPOSITORY" "$GHCR_USER")"
+          { printf '%s\n' "$GHCR_TOKEN"; cat release.json; } | \
+            ssh "${ssh_opts[@]}" -- "${DEPLOY_USER}@${DEPLOY_HOST}" "$command" \
+            2>&1 | tee -a deployment-report.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -211,5 +282,5 @@ jobs:
             jq -e '(.isDraft == false) and ([.assets[].name] | contains(["release.json", "deployment-report.log"]))' existing-release.json >/dev/null
           else
             gh release create "$VERSION" release.json deployment-report.log --repo "$GITHUB_REPOSITORY" \
-              --verify-tag --title "AstroAgent $VERSION" --generate-notes
+              --verify-tag --title "Siderfolio $VERSION" --generate-notes
           fi
