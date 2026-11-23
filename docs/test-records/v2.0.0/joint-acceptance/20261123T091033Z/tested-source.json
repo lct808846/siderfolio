@@ -1,7 +1,7 @@
 {
   "base_commit": "746d3bea778e1dfef51269743549d8038f69ea0d",
   "version": "2.0.0",
-  "scope_sha256": "442f3488b6eff62475bca2354c99a52825bf1748e81cba2c03de578ec02aa125",
+  "scope_sha256": "fbc0830f2a58d887f75284ebbcb28ce316277fd7d15e48a144d22dc21f47351a",
   "files": {
     ".env.dev.example": "51f61df950d098e59d60a8d8df69568d25c51635c9ad3abd6c7760fb2300eb9a",
     ".github/copilot-instructions.md": "1608c857389a55e029044bc78ba94b6c574eef5a8d35b6109e317962a553da68",
@@ -116,6 +116,7 @@
     "tests/test_conversations.py": "2f61990806068297739dfdec769ed0c6e766215b2f5c1f026bff262d60d2b8a6",
     "tests/test_health.py": "8d0e79172005e930496af263361d19fbfdc70e7e232776dbb0ab60a04aefad2a",
     "tests/test_identity_postgres.py": "be8aa379fe817ce1f01f19845f1199a06f5c06411ad36a0bafb97e2f3896ea4d",
-    "tests/test_identity_security.py": "1c4d6730aa4e600eda5a5fcfc9788bd8de604cf33d0c89e2203db34738b2ed22"
+    "tests/test_identity_security.py": "1c4d6730aa4e600eda5a5fcfc9788bd8de604cf33d0c89e2203db34738b2ed22",
+    "tests/test_mcp_server.py": "b7f6c679cb7ce52236fae912f2741fe05301989f13d033ad3574512edb1e0a00"
   }
 }

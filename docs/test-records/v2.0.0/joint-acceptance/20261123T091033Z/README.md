@@ -1,6 +1,6 @@
 # Siderfolio V2.0.0（含 V1.9.0）联合测试验收记录
 
-2026-11-23。以 V1.8.0（`d437730bf70272073e38b76a025b50c98533b322`）和 V1.9.0（`746d3bea778e1dfef51269743549d8038f69ea0d`）为基线，对 V1.9.0 与 V2.0.0（更名为 **Siderfolio**）进行联合测试验收，并在过程中修复发现的代码与测试问题。最终纳入 V2.0.0 验收范围的 114 个工作区改动文件及 SHA-256 指纹见 [tested-source.json](tested-source.json)，初始工作区状态见 [initial-scope.txt](initial-scope.txt)。所有数据库与破坏性演练均在独立临时 PostgreSQL 容器中执行，未向本机 `astroagent-v16` 日常数据库写入测试样本。
+2026-11-23。以 V1.8.0（`d437730bf70272073e38b76a025b50c98533b322`）和 V1.9.0（`746d3bea778e1dfef51269743549d8038f69ea0d`）为基线，对 V1.9.0 与 V2.0.0（更名为 **Siderfolio**）进行联合测试验收，并在过程中修复发现的代码与测试问题。最终纳入 V2.0.0 验收范围的 115 个工作区改动文件及 SHA-256 指纹见 [tested-source.json](tested-source.json)，初始工作区状态见 [initial-scope.txt](initial-scope.txt)。所有数据库与破坏性演练均在独立临时 PostgreSQL 容器中执行，未向本机 `astroagent-v16` 日常数据库写入测试样本。
 
 ## 结果汇总
 

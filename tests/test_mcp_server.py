@@ -443,17 +443,30 @@ def test_standalone_stdio_process_stdout_purity_and_rpc_errors():
             }
         ),
     ]
-    proc = subprocess.run(
+    proc = subprocess.Popen(
         [sys.executable, "-m", "astroagent.mcp_server"],
-        input=("\n".join(messages) + "\n").encode("utf-8"),
-        capture_output=True,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         env=env,
-        timeout=20,
-        check=False,
     )
+    assert proc.stdin is not None and proc.stdout is not None and proc.stderr is not None
+    parsed: list[dict] = []
+    try:
+        for raw_msg in messages:
+            proc.stdin.write((raw_msg + "\n").encode("utf-8"))
+            proc.stdin.flush()
+            line = proc.stdout.readline()
+            assert line, "MCP server closed stdout before replying"
+            parsed.append(json.loads(line.decode("utf-8")))
+        proc.stdin.close()
+        stderr_bytes = proc.stderr.read()
+        proc.wait(timeout=20)
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.wait(timeout=5)
     assert proc.returncode == 0
-    stdout_lines = [line for line in proc.stdout.decode("utf-8").splitlines() if line.strip()]
-    parsed = [json.loads(line) for line in stdout_lines]
     by_id = {item.get("id"): item for item in parsed}
     assert any(item.get("error", {}).get("code") == types.PARSE_ERROR for item in parsed)
     assert by_id["bad-rpc"]["error"]["code"] == types.INVALID_REQUEST
@@ -462,7 +475,7 @@ def test_standalone_stdio_process_stdout_purity_and_rpc_errors():
     assert by_id["ads-1"]["result"]["structuredContent"]["result"]["error"]["code"] == (
         "ads_not_configured"
     )
-    stderr_text = proc.stderr.decode("utf-8")
+    stderr_text = stderr_bytes.decode("utf-8")
     assert "secret-query-text-never-log" not in stderr_text
     assert "mcp_tool_call" in stderr_text
     _ = time.monotonic()
