@@ -148,7 +148,8 @@
   background: color-mix(in srgb, var(--paper) 74%, transparent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
-.model-picker-list { max-height: max(50px, calc(var(--model-menu-room) - 58px)); overflow: auto; overscroll-behavior: contain; }
+.model-picker-list { max-height: calc(var(--model-menu-room) - 14px); overflow: auto; overscroll-behavior: contain; }
+.model-picker-search + .model-picker-list { max-height: max(50px, calc(var(--model-menu-room) - 58px)); }
 .model-picker-group + .model-picker-group { margin-top: 6px; padding-top: 5px; border-top: 1px solid var(--line); }
 .model-picker-group-label {
   padding: 5px 10px 4px;

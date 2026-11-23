@@ -10,7 +10,7 @@ from openai import APITimeoutError, AuthenticationError, RateLimitError
 from astroagent.config import Settings
 from astroagent.errors import ServiceError
 from astroagent.execution import MODEL_TASK_SLOTS
-from astroagent.model_client import chat_model
+from astroagent.model_client import chat_model, invoke_model
 from astroagent.plot_schemas import PlotProposal
 
 SYSTEM = """你是科研绘图助手。只能调用一次 plot_python 或 plot_gnuplot 返回绘图方案，不能运行代码。
@@ -66,7 +66,8 @@ def generate(request, info, data):
             for engine in ("python", "gnuplot")
         ]
         model = chat_model(settings, tools=tools, max_tokens=7000, parallel=False)
-        answer = model.invoke(
+        answer = invoke_model(
+            model,
             [
                 SystemMessage(content=SYSTEM),
                 HumanMessage(
@@ -80,7 +81,7 @@ def generate(request, info, data):
                         ensure_ascii=False,
                     )
                 ),
-            ]
+            ],
         )
         calls = answer.tool_calls
         if len(calls) != 1 or calls[0]["name"] not in {"plot_python", "plot_gnuplot"}:

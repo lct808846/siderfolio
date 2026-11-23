@@ -212,8 +212,7 @@ class PostgresRepository(ConversationRepository):
                         "SELECT value FROM astroagent_meta WHERE key='schema_version'"
                     ).fetchone()
                     extensions = {
-                        r[0]
-                        for r in replacement.execute("SELECT extname FROM pg_extension")
+                        r[0] for r in replacement.execute("SELECT extname FROM pg_extension")
                     }
                     if (
                         not row

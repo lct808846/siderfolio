@@ -22,7 +22,7 @@ const titles: Record<string, string> = { activate: '确认邮箱', resend: '重�
 const title = computed(() => {
   if (message.value) return ['activate', 'reset-password'].includes(mode.value) ? '密码已设置' : '检查收件箱'
   if (mode.value === 'activate' && setupToken.value) return '设置密码'
-  return titles[mode.value] || '登录 AstroAgent'
+  return titles[mode.value] || '登录 Siderfolio'
 })
 const statusText = computed(() => {
   if (!message.value) return ''

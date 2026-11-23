@@ -42,7 +42,7 @@ from astroagent.schemas import (
 from astroagent.simbad import SimbadService
 from astroagent.trace_runtime import classify_error_code, extract_message_usage
 
-SYSTEM_PROMPT = """你是 AstroAgent，一位专业、自然、乐于助人的天文科研与科普助手，
+SYSTEM_PROMPT = """你是 Siderfolio，一位专业、自然、乐于助人的天文科研与科普助手，
 配备实时天文数据库查询、科研绘图与 N 体数值模拟工具。默认使用自然流畅的中文回答。
 回答天文概念、物理机制、天体科普、观测常识、理论解释、公式推导或一般科研讨论时
 （例如“什么是双星团”“恒星如何演化”等），请像资深天文学家一样直接、清晰、详实、自然地说明，
@@ -180,7 +180,7 @@ SAVE_LITERATURE_TOOL = {
         "name": "save_literature",
         "description": (
             "仅在用户当前消息明确要求保存或加入文献库且目标范围唯一确定时调用。"
-            "仅提交可核对的 ADS 批次与 1 起序号或真实 bibcode 引用；由服务端校验授权、去重并持久化。"
+            "仅提交可核对的 ADS 批次与 1 起序号或真实 bibcode 引用；由服务端校验并入库。"
         ),
         "parameters": SaveLiteratureQuery.model_json_schema(),
     },
@@ -667,9 +667,7 @@ class AstroAgent:
                     continue
                 if name == "save_literature":
                     span = (
-                        trace_recorder.start_span(
-                            kind="tool_literature_save", name="文献直接入库"
-                        )
+                        trace_recorder.start_span(kind="tool_literature_save", name="文献直接入库")
                         if trace_recorder is not None
                         else None
                     )
@@ -714,11 +712,7 @@ class AstroAgent:
                             if isinstance(exc, PermissionError)
                             else "literature_selection_invalid"
                         )
-                        err_msg = (
-                            exc.error.message
-                            if isinstance(exc, ServiceError)
-                            else str(exc)
-                        )
+                        err_msg = exc.error.message if isinstance(exc, ServiceError) else str(exc)
                         if trace_recorder is not None and span is not None:
                             trace_recorder.record_span(
                                 span_id=span[0],
@@ -830,9 +824,7 @@ class AstroAgent:
                         truncated = False
                         ref = {
                             "type": "simbad",
-                            "index": str(
-                                sum(1 for r in results if isinstance(r, QueryResult)) - 1
-                            ),
+                            "index": str(sum(1 for r in results if isinstance(r, QueryResult)) - 1),
                         }
                     res_err_code = result.error.code if result.error is not None else None
                     span_status = (

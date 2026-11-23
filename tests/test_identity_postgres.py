@@ -930,7 +930,7 @@ def test_enrollment_uri_roundtrip_matches_returned_secret(identity_client):
     query = parse_qs(uri.query)
     assert uri.scheme == "otpauth" and uri.netloc == "totp"
     assert query["secret"] == [value["secret"]]
-    assert query["issuer"] == ["AstroAgent"]
+    assert query["issuer"] == ["Siderfolio"]
     assert query["digits"] == ["6"] and query["period"] == ["30"]
 
 

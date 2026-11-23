@@ -76,14 +76,14 @@ class MailWorker:
         message["From"], message["To"] = self.settings.smtp_from, payload["email"]
         message["Message-ID"] = f"<{row['id']}@astroagent.invalid>"
         message["Subject"] = (
-            "AstroAgent 安全通知"
+            "Siderfolio 安全通知"
             if payload["purpose"] == "security"
-            else "AstroAgent 邮箱验证"
+            else "Siderfolio 邮箱验证"
             if payload["purpose"] == "activate"
-            else "AstroAgent 重置密码"
+            else "Siderfolio 重置密码"
         )
         message.set_content(
-            "AstroAgent\n\n"
+            "Siderfolio\n\n"
             + (
                 payload["message"]
                 if payload["purpose"] == "security"

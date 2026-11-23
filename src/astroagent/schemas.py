@@ -1,14 +1,13 @@
 """接口与工具共用的可追溯数据结构。"""
 
 import math
-from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import Annotated, Literal
 from urllib.parse import quote_plus
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator
 
-if TYPE_CHECKING:
-    from astroagent.literature_schemas import LiteratureSaveReceipt
+from astroagent.literature_schemas import LiteratureSaveReceipt
+from astroagent.source_schemas import Source
 
 
 class ChatRequest(BaseModel):
@@ -36,12 +35,6 @@ class ErrorInfo(BaseModel):
 
 class ErrorResponse(BaseModel):
     error: ErrorInfo
-
-
-class Source(BaseModel):
-    name: Literal["SIMBAD", "ADS", "Gaia"] = "SIMBAD"
-    url: str
-    retrieved_at: datetime
 
 
 class ObjectData(BaseModel):
@@ -632,11 +625,6 @@ class ChatResponse(BaseModel):
     gaia_results: list[GaiaQueryResult] = Field(default_factory=list)
     nbody_proposals: list[NBodyProposalResult] = Field(default_factory=list)
     plot_proposals: list[PlotProposalResult] = Field(default_factory=list)
-    literature_receipts: list["LiteratureSaveReceipt"] = Field(default_factory=list)
+    literature_receipts: list[LiteratureSaveReceipt] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     warnings: list[ErrorInfo] = Field(default_factory=list)
-
-
-from astroagent.literature_schemas import LiteratureSaveReceipt  # noqa: E402
-
-ChatResponse.model_rebuild()

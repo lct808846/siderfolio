@@ -1,0 +1,74 @@
+## main...origin/main
+ M .github/workflows/test.yml
+ M .gitignore
+ M AGENTS.md
+ M README.md
+ M containers/application/Dockerfile
+ M containers/frontend/Dockerfile
+ M containers/plotting/gnuplot.Dockerfile
+ M containers/plotting/python.Dockerfile
+ M docs/ROADMAP.md
+ M docs/UI_DESIGN_SPEC.md
+ M frontend/index.html
+ M frontend/openapi.json
+ M frontend/package-lock.json
+ M frontend/package.json
+ M frontend/src/components/AppearanceSettings.vue
+ M frontend/src/components/ComposerProjectPicker.vue
+ M frontend/src/components/ModelSelector.vue
+ M frontend/src/components/WorkspaceHeader.vue
+ M frontend/src/model-selector.css
+ M frontend/src/types/generated.ts
+ M frontend/src/utils/qrcode.ts
+ M frontend/src/views/AccountWorkspace.vue
+ M frontend/src/views/AdminWorkspace.vue
+ M frontend/src/views/App.vue
+ M frontend/src/views/IdentityWorkspace.vue
+ M frontend/src/views/ProfileWorkspace.vue
+ M frontend/tests/identity-browser/identity.spec.ts
+ M frontend/tests/identity-browser/session-source.spec.ts
+ M frontend/vite.config.ts
+ M pyproject.toml
+ M scripts/containers.ps1
+ M src/astroagent/__init__.py
+ M src/astroagent/ads.py
+ M src/astroagent/agent.py
+ M src/astroagent/api/admin.py
+ M src/astroagent/api/auth.py
+ M src/astroagent/api/compute.py
+ M src/astroagent/api/conversations.py
+ M src/astroagent/auth_access.py
+ M src/astroagent/auth_config.py
+ M src/astroagent/auth_mail.py
+ M src/astroagent/compute_tasks.py
+ M src/astroagent/conversation_service.py
+ M src/astroagent/exports.py
+ M src/astroagent/gaia.py
+ M src/astroagent/identity.py
+ M src/astroagent/knowledge_service.py
+ M src/astroagent/local_model_client.py
+ M src/astroagent/main.py
+ M src/astroagent/mcp_client.py
+ M src/astroagent/model_client.py
+ M src/astroagent/plot_planner.py
+ M src/astroagent/plot_service.py
+ M src/astroagent/plots.py
+ M src/astroagent/rag_service.py
+ M src/astroagent/simbad.py
+?? .env.dev.example
+?? .github/copilot-instructions.md
+?? .github/workflows/release.yml
+?? CLAUDE.md
+?? GEMINI.md
+?? compose.dev.yaml
+?? compose.v20.yaml
+?? containers/dev/
+?? containers/gcp/
+?? containers/release/
+?? docs/DEVELOPMENT_AND_RELEASE.md
+?? docs/PROJECT_PLAN_V2.0.md
+?? scripts/ci_verify.py
+?? scripts/dev.ps1
+?? scripts/dev_identity.py
+?? scripts/release_assets.py
+?? src/astroagent/usage.py

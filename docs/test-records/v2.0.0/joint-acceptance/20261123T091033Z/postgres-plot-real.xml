@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="10.675" timestamp="2026-11-23T09:38:33.113137+00:00" hostname="68adfef315b7"><testcase classname="tests.test_plot_postgres" name="test_plot_lifecycle_confirmations_and_export" time="9.989" /></testsuite></testsuites>

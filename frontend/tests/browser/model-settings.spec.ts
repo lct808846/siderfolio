@@ -177,7 +177,8 @@ test('administrator layout keeps masked metadata, tabs and current-account prote
   await expect(page.getByRole('heading', { name: '账号与服务状态', exact: true })).toBeVisible()
   const current = page.getByRole('row').filter({ hasText: 'a***@example.org' })
   await expect(current.getByText('当前账号', { exact: true })).toBeVisible()
-  await expect(current.getByRole('button')).toHaveCount(0)
+  await expect(current.getByRole('button')).toHaveCount(1)
+  await expect(current.getByRole('button', { name: '配额', exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: '下一页', exact: true })).toHaveCount(0)
   for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 })

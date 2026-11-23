@@ -193,7 +193,9 @@ class ProviderRegistry:
         for provider in value["providers"]:
             models_out = []
             for model in provider["models"]:
-                ref = lookup_reference_pricing([str(model.get("id") or ""), str(model.get("label") or "")])
+                ref = lookup_reference_pricing(
+                    [str(model.get("id") or ""), str(model.get("label") or "")]
+                )
                 entry = {**model, "selection_id": model_key(provider, model)}
                 if ref is not None:
                     entry["reference_input_price_per_1m"] = ref["input_per_1m"]

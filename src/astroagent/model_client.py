@@ -10,6 +10,7 @@ from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
 from langchain_openai import ChatOpenAI
 
 from astroagent.errors import ServiceError
+from astroagent.usage import reserve_request
 
 LOGGER = logging.getLogger(__name__)
 
@@ -143,6 +144,7 @@ def _extract_chunk_text(content) -> str:
 
 
 def invoke_model(model, messages, on_delta=None):
+    reserve_request("model_requests")
     if on_delta is None:
         return model.invoke(messages)
     if isinstance(model, ProtocolModel):

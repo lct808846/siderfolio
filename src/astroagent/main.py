@@ -89,7 +89,7 @@ async def lifespan(app):
 
 
 app = FastAPI(
-    title="AstroAgent", version=__version__, lifespan=lifespan, docs_url=None, redoc_url=None
+    title="Siderfolio", version=__version__, lifespan=lifespan, docs_url=None, redoc_url=None
 )
 app.include_router(health_router)
 app.include_router(auth_router)

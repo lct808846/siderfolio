@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/capacity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Capacity */
+        get: operations["capacity_api_v1_admin_capacity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/mail": {
         parameters: {
             query?: never;
@@ -173,6 +190,24 @@ export interface paths {
         head?: never;
         /** Update User */
         patch: operations["update_user_api_v1_admin_users__user_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/users/{user_id}/quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** User Quota */
+        get: operations["user_quota_api_v1_admin_users__user_id__quota_get"];
+        /** Set User Quota */
+        put: operations["set_user_quota_api_v1_admin_users__user_id__quota_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/artifacts/{artifact_id}/download": {
@@ -2169,6 +2204,44 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccountLimits */
+        AccountLimits: {
+            /**
+             * Astronomy Queries
+             * @default 240
+             */
+            astronomy_queries: number;
+            /**
+             * Compute Queued
+             * @default 2
+             */
+            compute_queued: number;
+            /**
+             * Model Requests
+             * @default 120
+             */
+            model_requests: number;
+            /**
+             * Storage Mib
+             * @default 1024
+             */
+            storage_mib: number;
+        };
+        /** AccountUsage */
+        AccountUsage: {
+            /** Astronomy Queries */
+            astronomy_queries: number;
+            limits: components["schemas"]["AccountLimits"];
+            /** Model Requests */
+            model_requests: number;
+            /**
+             * Resets At
+             * Format: date-time
+             */
+            resets_at: string;
+            /** Storage Bytes */
+            storage_bytes: number;
+        };
         /**
          * AdsEvidenceParameters
          * @description 年份等条件由用户写在实际检索式中，服务端不静默改写。
@@ -2410,6 +2483,17 @@ export interface components {
             right_id: string;
             /** Warnings */
             warnings: string[];
+        };
+        /** ComputeCapacity */
+        ComputeCapacity: {
+            /** Active */
+            active: number;
+            /** Enabled */
+            enabled: boolean;
+            /** Queued */
+            queued: number;
+            /** Worker Ready */
+            worker_ready: boolean;
         };
         /** ComputeConfirm */
         ComputeConfirm: {
@@ -2969,7 +3053,7 @@ export interface components {
             /** Gaia Results */
             gaia_results: components["schemas"]["ExportGaiaQueryResult"][];
             /** Literature Receipts */
-            literature_receipts: components["schemas"]["ExportLiteratureSaveReceipt"][];
+            literature_receipts?: components["schemas"]["ExportLiteratureSaveReceipt"][];
             /** Literature Results */
             literature_results: components["schemas"]["ExportLiteratureSearchResult"][];
             /** Nbody Proposals */
@@ -6687,6 +6771,26 @@ export interface operations {
             };
         };
     };
+    capacity_api_v1_admin_capacity_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComputeCapacity"];
+                };
+            };
+        };
+    };
     mail_api_v1_admin_mail_get: {
         parameters: {
             query?: {
@@ -6976,6 +7080,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    user_quota_api_v1_admin_users__user_id__quota_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountUsage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_user_quota_api_v1_admin_users__user_id__quota_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountLimits"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountUsage"];
                 };
             };
             /** @description Validation Error */

@@ -4,6 +4,7 @@ import asyncio
 import json
 import threading
 import time
+from contextvars import copy_context
 from typing import Annotated
 from uuid import UUID
 
@@ -200,7 +201,7 @@ async def submit_stream(conversation_id: UUID, request: TurnRequest, service: Se
         finally:
             loop.call_soon_threadsafe(queue.put_nowait, None)
 
-    threading.Thread(target=worker, daemon=True).start()
+    threading.Thread(target=copy_context().run, args=(worker,), daemon=True).start()
 
     async def stream():
         pending: tuple[str, dict] | None = None

@@ -1,0 +1,374 @@
+unformatted: File would be reformatted
+   --> scripts\evaluate_v19.py:29:16
+    |
+28  |     try:
+    -         return (
+    -             subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True)
+    -             .strip()
+    -         )
+29  +         return subprocess.check_output(
+30  +             ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True
+31  +         ).strip()
+32  |     except Exception:
+--------------------------------------------------------------------------------
+131 |     elif cid == "iso-01-account-isolation-and-sanitized-trace":
+    -         recorder = TraceRecorder(conversation_id="eval-c", turn_id="eval-t", astronomy_transport="mcp")
+132 +         recorder = TraceRecorder(
+133 +             conversation_id="eval-c", turn_id="eval-t", astronomy_transport="mcp"
+134 +         )
+135 |         span = recorder.start_span(kind="tool_ads", name="ADS 文献检索")
+--------------------------------------------------------------------------------
+220 |     parser.add_argument("--record-type", default="evaluation")
+    -     parser.add_argument("--dry-run", action="store_true", help="Print report to stdout without writing test-records")
+221 +     parser.add_argument(
+222 +         "--dry-run", action="store_true", help="Print report to stdout without writing test-records"
+223 +     )
+224 |     args = parser.parse_args()
+--------------------------------------------------------------------------------
+262 |     out_dir.mkdir(parents=True, exist_ok=True)
+    -     (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+263 +     (out_dir / "report.json").write_text(
+264 +         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+265 +     )
+266 |     (out_dir / "README.md").write_text(markdown, encoding="utf-8")
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\agent.py:670:51
+    |
+669 |                     span = (
+    -                         trace_recorder.start_span(
+    -                             kind="tool_literature_save", name="文献直接入库"
+    -                         )
+670 +                         trace_recorder.start_span(kind="tool_literature_save", name="文献直接入库")
+671 |                         if trace_recorder is not None
+--------------------------------------------------------------------------------
+714 |                         )
+    -                         err_msg = (
+    -                             exc.error.message
+    -                             if isinstance(exc, ServiceError)
+    -                             else str(exc)
+    -                         )
+715 +                         err_msg = exc.error.message if isinstance(exc, ServiceError) else str(exc)
+716 |                         if trace_recorder is not None and span is not None:
+--------------------------------------------------------------------------------
+826 |                             "type": "simbad",
+    -                             "index": str(
+    -                                 sum(1 for r in results if isinstance(r, QueryResult)) - 1
+    -                             ),
+827 +                             "index": str(sum(1 for r in results if isinstance(r, QueryResult)) - 1),
+828 |                         }
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\api\compute.py:116:14
+    |
+115 |                 HumanMessage(content=body.description),
+    -             ]
+116 +             ],
+117 |         )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\compute_tasks.py:251:8
+    |
+250 |         raise ServiceError(409, "compute_queue_limit", f"账号已排队 {count}/{limit} 项计算。")
+    -     if db.execute(
+    -         f"SELECT count(*) AS count FROM {TABLE} WHERE state='queued'",
+    -     ).fetchone()["count"] >= 24:
+    -         raise ServiceError(503, "compute_capacity", "站点计算队列已满，请稍后再提交。", retryable=True)
+251 +     if (
+252 +         db.execute(
+253 +             f"SELECT count(*) AS count FROM {TABLE} WHERE state='queued'",
+254 +         ).fetchone()["count"]
+255 +         >= 24
+256 +     ):
+257 +         raise ServiceError(
+258 +             503, "compute_capacity", "站点计算队列已满，请稍后再提交。", retryable=True
+259 +         )
+260 |     try:
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\conversation_service.py:57:32
+    |
+56  |
+    -     def _apply_turn_enrichment(
+    -         self, turn, persisted_receipts, trace, *, pricing_snapshot=None
+    -     ):
+57  +     def _apply_turn_enrichment(self, turn, persisted_receipts, trace, *, pricing_snapshot=None):
+58  |         if persisted_receipts or turn.literature_receipts:
+--------------------------------------------------------------------------------
+62  |                 pricing, aliases = pricing_snapshot
+    -                 trace = enrich_trace_cost(
+    -                     trace, configured_pricing=pricing, model_aliases=aliases
+    -                 )
+63  +                 trace = enrich_trace_cost(trace, configured_pricing=pricing, model_aliases=aliases)
+64  |             turn.run_trace = trace
+--------------------------------------------------------------------------------
+214 |                     if isinstance(project_sources, dict):
+    -                         excerpts = project_sources.get("excerpts") or project_sources.get("documents")
+215 +                         excerpts = project_sources.get("excerpts") or project_sources.get(
+216 +                             "documents"
+217 +                         )
+218 |                         if isinstance(excerpts, list):
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\literature_auth.py:70:16
+    |
+69  |     ),
+    -     re.compile(r"(?:直接|帮我|请|把它|把它们|把这|把那|把前|把第)[^。！？!?\n]{0,24}(?:入库|加进去|存进去|收进去)"),
+70  +     re.compile(
+71  +         r"(?:直接|帮我|请|把它|把它们|把这|把那|把前|把第)[^。！？!?\n]{0,24}(?:入库|加进去|存进去|收进去)"
+72  +     ),
+73  |     re.compile(r"(?:入库|加入文献管理|加入文献库|加入我的文献库|添加到文献库|保存到文献库)"),
+--------------------------------------------------------------------------------
+192 |             raise PermissionError(
+    -                 self.deny_reason
+    -                 or "当前用户消息未包含明确的文献入库授权，已拒绝写入个人文献库。"
+193 +                 self.deny_reason or "当前用户消息未包含明确的文献入库授权，已拒绝写入个人文献库。"
+194 |             )
+--------------------------------------------------------------------------------
+203 |             if self.selection_kind in {"all_batch", "single", "ranked_n"}:
+    -                 successful_current = [b for b in current_batches if b.status == "success" and b.papers]
+204 +                 successful_current = [
+205 +                     b for b in current_batches if b.status == "success" and b.papers
+206 +                 ]
+207 |                 if len(successful_current) > 1:
+--------------------------------------------------------------------------------
+219 |             # 历史批次：当用户使用模糊指代（如“那几篇”）且历史存在多个批次时拒绝猜测
+    -             if self.selection_kind in {"all_batch", "single", "ranked_n"} and not self.refers_recent:
+220 +             if (
+221 +                 self.selection_kind in {"all_batch", "single", "ranked_n"}
+222 +                 and not self.refers_recent
+223 +             ):
+224 |                 distinct_batches = [
+--------------------------------------------------------------------------------
+383 |         end = _parse_int_token(range_match.group(2))
+    -         if (
+    -             start is not None
+    -             and end is not None
+    -             and 1 <= start <= end <= MAX_LITERATURE_BATCH
+    -         ):
+384 +         if start is not None and end is not None and 1 <= start <= end <= MAX_LITERATURE_BATCH:
+385 |             indices = list(range(start, end + 1))
+--------------------------------------------------------------------------------
+397 |             value = _parse_int_token(tok)
+    -             if value is not None and 1 <= value <= MAX_LITERATURE_BATCH and value not in parsed_indices:
+398 +             if (
+399 +                 value is not None
+400 +                 and 1 <= value <= MAX_LITERATURE_BATCH
+401 +                 and value not in parsed_indices
+402 +             ):
+403 |                 parsed_indices.append(value)
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\literature_schemas.py:54:30
+   |
+53 |         if len(tag) > MAX_LITERATURE_TAG_LENGTH or "\x00" in tag:
+   -             raise ValueError(f"单个标签长度须在 1–{MAX_LITERATURE_TAG_LENGTH} 字符内且不含非法字符。")
+54 +             raise ValueError(
+55 +                 f"单个标签长度须在 1–{MAX_LITERATURE_TAG_LENGTH} 字符内且不含非法字符。"
+56 +             )
+57 |         key = tag.casefold()
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\literature_service.py:69:16
+    |
+68  |             matched = next((p for p in result.papers if p.bibcode == paper.bibcode), None)
+    -             if result.status == "success" and matched is not None and _has_verifiable_ads_source(matched):
+69  +             if (
+70  +                 result.status == "success"
+71  +                 and matched is not None
+72  +                 and _has_verifiable_ads_source(matched)
+73  +             ):
+74  |                 verified.append((pos, matched))
+--------------------------------------------------------------------------------
+132 |             if turn.response is None or not turn.response.literature_results:
+    -                 raise ServiceError(404, "ads_batch_not_found", "该会话轮次中没有可保存的 ADS 检索结果。")
+133 +                 raise ServiceError(
+134 +                     404, "ads_batch_not_found", "该会话轮次中没有可保存的 ADS 检索结果。"
+135 +                 )
+136 |             if request.batch_index >= len(turn.response.literature_results):
+--------------------------------------------------------------------------------
+142 |             if not snapshot.response.literature_results:
+    -                 raise ServiceError(404, "ads_batch_not_found", "该快照中没有可保存的 ADS 检索结果。")
+143 +                 raise ServiceError(
+144 +                     404, "ads_batch_not_found", "该快照中没有可保存的 ADS 检索结果。"
+145 +                 )
+146 |             if request.batch_index >= len(snapshot.response.literature_results):
+--------------------------------------------------------------------------------
+151 |         if batch is None or batch.status != "success" or not batch.papers:
+    -             raise ServiceError(422, "ads_batch_unavailable", "所选 ADS 批次未成功返回文献，无法入库。")
+152 +             raise ServiceError(
+153 +                 422, "ads_batch_unavailable", "所选 ADS 批次未成功返回文献，无法入库。"
+154 +             )
+155 |
+--------------------------------------------------------------------------------
+160 |                 if pos > len(batch.papers):
+    -                     raise ServiceError(422, "literature_index_invalid", f"文献序号 #{pos} 超出该批次范围。")
+161 +                     raise ServiceError(
+162 +                         422, "literature_index_invalid", f"文献序号 #{pos} 超出该批次范围。"
+163 +                     )
+164 |                 if pos not in seen:
+--------------------------------------------------------------------------------
+182 |         warnings: list[str] = []
+    -         unverified = [pair for pair in selected if needs_reverify or not _has_verifiable_ads_source(pair[1])]
+183 +         unverified = [
+184 +             pair for pair in selected if needs_reverify or not _has_verifiable_ads_source(pair[1])
+185 +         ]
+186 |         if unverified:
+--------------------------------------------------------------------------------
+191 |                 for pos, paper in selected
+    -                 if (pos in verified_map) or (not needs_reverify and _has_verifiable_ads_source(paper))
+192 +                 if (pos in verified_map)
+193 +                 or (not needs_reverify and _has_verifiable_ads_source(paper))
+194 |             ]
+--------------------------------------------------------------------------------
+260 |         warnings: list[str] = []
+    -         unverified = [pair for pair in chosen if needs_reverify or not _has_verifiable_ads_source(pair[1])]
+261 +         unverified = [
+262 +             pair for pair in chosen if needs_reverify or not _has_verifiable_ads_source(pair[1])
+263 +         ]
+264 |         if unverified:
+--------------------------------------------------------------------------------
+269 |                 for pos, paper in chosen
+    -                 if (pos in verified_map) or (not needs_reverify and _has_verifiable_ads_source(paper))
+270 +                 if (pos in verified_map)
+271 +                 or (not needs_reverify and _has_verifiable_ads_source(paper))
+272 |             ]
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\literature_store.py:199:23
+    |
+198 |             start = (page - 1) * page_size
+    -             window = [self._decorate_origin(db, item) for item in filtered[start : start + page_size]]
+199 +             window = [
+200 +                 self._decorate_origin(db, item) for item in filtered[start : start + page_size]
+201 +             ]
+202 |             return LiteratureListResponse(
+--------------------------------------------------------------------------------
+307 |
+    -             total_existing = int(
+    -                 db.execute("SELECT COUNT(*) FROM literature_items").fetchone()[0]
+    -             )
+308 +             total_existing = int(db.execute("SELECT COUNT(*) FROM literature_items").fetchone()[0])
+309 |             now = utc_now()
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\local_access.py:184:31
+    |
+183 |                 return await self.app(scope, receive, with_headers)
+    -             bodyless_delete = (
+    -                 scope["method"] == "DELETE"
+    -                 and (
+    -                     re.fullmatch(
+    -                         r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
+    -                         scope["path"],
+    -                     )
+    -                     is not None
+    -                     or re.fullmatch(
+    -                         r"/api/v1/literature/items/[0-9a-fA-F-]{36}",
+    -                         scope["path"],
+    -                     )
+    -                     is not None
+184 +             bodyless_delete = scope["method"] == "DELETE" and (
+185 +                 re.fullmatch(
+186 +                     r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
+187 +                     scope["path"],
+188 |                 )
+189 +                 is not None
+190 +                 or re.fullmatch(
+191 +                     r"/api/v1/literature/items/[0-9a-fA-F-]{36}",
+192 +                     scope["path"],
+193 +                 )
+194 +                 is not None
+195 |             )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\model_providers.py:196:48
+    |
+195 |             for model in provider["models"]:
+    -                 ref = lookup_reference_pricing([str(model.get("id") or ""), str(model.get("label") or "")])
+196 +                 ref = lookup_reference_pricing(
+197 +                     [str(model.get("id") or ""), str(model.get("label") or "")]
+198 +                 )
+199 |                 entry = {**model, "selection_id": model_key(provider, model)}
+    |
+
+unformatted: File would be reformatted
+  --> src\astroagent\plot_planner.py:84:14
+   |
+83 |                 ),
+   -             ]
+84 +             ],
+85 |         )
+   |
+
+unformatted: File would be reformatted
+   --> src\astroagent\postgres.py:215:29
+    |
+214 |                     extensions = {
+    -                         r[0]
+    -                         for r in replacement.execute("SELECT extname FROM pg_extension")
+215 +                         r[0] for r in replacement.execute("SELECT extname FROM pg_extension")
+216 |                     }
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\rag_service.py:837:18
+    |
+836 |                     HumanMessage(content=encode(payload)),
+    -                 ]
+837 +                 ],
+838 |             )
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\trace_runtime.py:370:42
+    |
+369 |             result_count=result_count,
+    -             error_category=error_category or (classify_error_code(error_code) if error_code else None),
+370 +             error_category=error_category
+371 +             or (classify_error_code(error_code) if error_code else None),
+372 |             error_code=error_code,
+--------------------------------------------------------------------------------
+382 |             return None
+    -         provider = next((s.usage.provider for s in model_spans if s.usage and s.usage.provider), None)
+383 +         provider = next(
+384 +             (s.usage.provider for s in model_spans if s.usage and s.usage.provider), None
+385 +         )
+386 |         model = next((s.usage.model for s in model_spans if s.usage and s.usage.model), None)
+--------------------------------------------------------------------------------
+391 |         out_total = sum(u.output_tokens or 0 for u in reported)
+    -         tot_total = sum(u.total_tokens or ((u.input_tokens or 0) + (u.output_tokens or 0)) for u in reported)
+392 +         tot_total = sum(
+393 +             u.total_tokens or ((u.input_tokens or 0) + (u.output_tokens or 0)) for u in reported
+394 +         )
+395 |         return estimate_usage_cost(
+    |
+
+unformatted: File would be reformatted
+   --> src\astroagent\usage.py:90:13
+    |
+89  |     raise ServiceError(
+    -         429, f"{category}_quota", f"本小时{label}已用 {used}/{limit}，约 {minutes} 分钟后恢复。",
+90  +         429,
+91  +         f"{category}_quota",
+92  +         f"本小时{label}已用 {used}/{limit}，约 {minutes} 分钟后恢复。",
+93  |         retryable=True,
+--------------------------------------------------------------------------------
+115 |         raise ServiceError(
+    -             409, "storage_quota",
+116 +             409,
+117 +             "storage_quota",
+118 |             f"账号已用 {used / 1024**2:.1f}/{limit} MiB，空间不足。请清理数据或联系管理员。",
+    |
+
+16 files would be reformatted, 191 files already formatted

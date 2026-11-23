@@ -1,5 +1,6 @@
 """No public UI link; every operation also enforces server-side administrator rights."""
 
+from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
@@ -9,6 +10,7 @@ from astroagent.api.auth import Input, actor, runtime, source
 from astroagent.auth_access import administrator
 from astroagent.auth_store import AUTH_LOCK
 from astroagent.errors import ServiceError
+from astroagent.usage import AccountLimits, account_snapshot, limits_key
 
 router = APIRouter(prefix="/api/v1/admin", tags=["administration"])
 
@@ -16,6 +18,21 @@ router = APIRouter(prefix="/api/v1/admin", tags=["administration"])
 class UserAction(Input):
     action: Literal["enable", "disable", "grant_admin", "revoke_admin"]
     reason: Literal["user_request", "security_incident", "role_assignment", "account_review"]
+
+
+class AccountUsage(Input):
+    limits: AccountLimits
+    model_requests: int
+    astronomy_queries: int
+    storage_bytes: int
+    resets_at: datetime
+
+
+class ComputeCapacity(Input):
+    enabled: bool
+    worker_ready: bool
+    queued: int
+    active: int
 
 
 def masked(address):
@@ -84,6 +101,58 @@ def users(request: Request, page: int = Query(default=1, ge=1, le=10000)):
         }
         for row in rows
     ]
+
+
+def quota_target(db, user_id):
+    target = db.execute(
+        "SELECT id,namespace FROM public.auth_users WHERE id=%s", (str(user_id),)
+    ).fetchone()
+    if not target:
+        raise ServiceError(404, "user_not_found", "目标账号不存在。")
+    return target
+
+
+@router.get("/users/{user_id}/quota", response_model=AccountUsage)
+def user_quota(user_id: UUID, request: Request):
+    service, _ = runtime(request), admin(request)
+    with service.store.connect() as db:
+        return account_snapshot(db, service.store, quota_target(db, user_id))
+
+
+@router.put("/users/{user_id}/quota", response_model=AccountUsage)
+def set_user_quota(user_id: UUID, body: AccountLimits, request: Request):
+    service, user = runtime(request), admin(request)
+    service.store.rate("admin_change", source(request), user["id"], limit=20)
+    with service.store.connect() as db:
+        writable(db, user)
+        target = quota_target(db, user_id)
+        db.execute(
+            "INSERT INTO public.auth_meta(key,value) VALUES (%s,%s) "
+            "ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value",
+            (limits_key(target["id"]), body.model_dump_json()),
+        )
+        service.store.audit(db, user["id"], "quota_updated", "ok", target=target["id"])
+        return account_snapshot(db, service.store, target)
+
+
+@router.get("/capacity", response_model=ComputeCapacity)
+def capacity(request: Request):
+    from astroagent import compute_tasks
+
+    service, _ = runtime(request), admin(request)
+    enabled = compute_tasks.enabled()
+    with service.store.connect() as db:
+        ready = db.execute("SELECT to_regclass('public.compute_tasks') AS relation").fetchone()
+        counts = (
+            db.execute(
+                "SELECT count(*) FILTER (WHERE state='queued') AS queued, "
+                "count(*) FILTER (WHERE state IN ('running','cancelling')) AS active "
+                "FROM public.compute_tasks"
+            ).fetchone()
+            if ready["relation"]
+            else {"queued": 0, "active": 0}
+        )
+    return {"enabled": enabled, "worker_ready": enabled and compute_tasks.worker_ready(), **counts}
 
 
 @router.patch("/users/{user_id}")

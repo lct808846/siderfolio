@@ -131,6 +131,10 @@ class IdentityRuntime:
 
     @property
     def registration_ready(self):
+        return self.settings.registration_enabled and self.email_ready
+
+    @property
+    def email_ready(self):
         if (
             not self.settings.mail_ready
             or not self.settings.password_blocklist

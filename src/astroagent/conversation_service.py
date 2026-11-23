@@ -12,6 +12,7 @@ from astroagent.literature_auth import analyze_save_permit
 from astroagent.mcp_client import McpAdsAdapter
 from astroagent.model_providers import configured_pricing_snapshot
 from astroagent.trace_runtime import TraceRecorder, enrich_trace_cost
+from astroagent.usage import require_storage
 
 LOGGER = logging.getLogger(__name__)
 
@@ -53,17 +54,13 @@ class ConversationService:
         if turn.response is not None:
             turn.response.literature_receipts = list(merged)
 
-    def _apply_turn_enrichment(
-        self, turn, persisted_receipts, trace, *, pricing_snapshot=None
-    ):
+    def _apply_turn_enrichment(self, turn, persisted_receipts, trace, *, pricing_snapshot=None):
         if persisted_receipts or turn.literature_receipts:
             self._merge_receipts(turn, persisted_receipts)
         if trace is not None:
             if pricing_snapshot is not None:
                 pricing, aliases = pricing_snapshot
-                trace = enrich_trace_cost(
-                    trace, configured_pricing=pricing, model_aliases=aliases
-                )
+                trace = enrich_trace_cost(trace, configured_pricing=pricing, model_aliases=aliases)
             turn.run_trace = trace
             turn.trace_status = "available"
         elif turn.trace_status == "available":
@@ -184,6 +181,7 @@ class ConversationService:
             if existing is not None:
                 existing = self.enrich_turn(identifier, existing)
                 return existing, 202 if existing.execution_status == "running" else 200
+            require_storage()
             if not self.slots.acquire(blocking=False):
                 raise ServiceError(
                     503,
@@ -214,7 +212,9 @@ class ConversationService:
                     project_sources = knowledge.chat_context(identifier, request.message)
                     doc_count = 0
                     if isinstance(project_sources, dict):
-                        excerpts = project_sources.get("excerpts") or project_sources.get("documents")
+                        excerpts = project_sources.get("excerpts") or project_sources.get(
+                            "documents"
+                        )
                         if isinstance(excerpts, list):
                             doc_count = len(excerpts)
                     if project_sources:

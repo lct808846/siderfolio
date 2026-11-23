@@ -1,8 +1,16 @@
-# AstroAgent
+# Siderfolio
+
+Siderfolio（原 AstroAgent）是面向个人和小课题组的天文科研工作台。
+
+**V2.0.0** 正式将产品更名为 **Siderfolio**（原 AstroAgent），交付面向 Ubuntu 服务器的 Docker Compose + Caddy HTTPS 部署配置、按账号用量配额与后台容量/审计管理、按轮容器更新与发布体系，并完成 V1.9.0 与 V2.0.0 的联合测试验收与备份恢复演练。 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v2.0.0) · [发布说明](docs/development/v2.0.0/RELEASE.md) · [V2.0 开发文档](docs/PROJECT_PLAN_V2.0.md) · [联合验收记录](docs/test-records/v2.0.0/joint-acceptance/20261123T091033Z/README.md)
 
 界面开发统一遵循 [UI 设计规范](docs/UI_DESIGN_SPEC.md)，其中规定视觉变量、布局、组件、交互状态、页面族例外及审查清单。
 
-**V1.9.0** 提供个人天文文献库、对话内查找和保存文献、会话与计算运行详情，以及固定科研评估框架。功能与视觉验收安排在 V2.0 开发完成后合并进行。 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.9.0) · [发布说明](docs/development/v1.9.0/RELEASE.md) · [部署说明](docs/development/v1.9.0/OPERATIONS.md)
+Ubuntu 服务器部署见 [GCP 部署与启动说明](containers/gcp/README.md)，包含域名或公网 IP 的 HTTPS 配置、Gemini、PostgreSQL 和部署脚本。
+
+本机日常使用与改动预览统一在 `astroagent-v16` 的 5173 入口，Agent 每轮更新受影响的服务。隔离预览、单次授权发布及 GCP 自动部署见 [开发与发布手册](docs/DEVELOPMENT_AND_RELEASE.md)。
+
+**V1.9.0** 提供个人天文文献库、对话内查找和保存文献、会话与计算运行详情，以及固定科研评估框架，已在本次联合验收中完成复验。 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.9.0) · [发布说明](docs/development/v1.9.0/RELEASE.md) · [部署说明](docs/development/v1.9.0/OPERATIONS.md) · [V1.9 联合验收](docs/test-records/v1.9.0/joint-acceptance/20261123T091033Z/README.md)
 
 **V1.8.0** 新增本地 **Astronomy MCP Server** 与 AstroAgent 的 MCP 查询通道，并将绘图与 N 体模拟方案放入对话。天文查询默认直连，管理员可在网页中切换到 MCP。见 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.8.0)、[发布说明](docs/development/v1.8.0/RELEASE.md)及[操作说明](docs/development/v1.8.0/OPERATIONS.md)。
 

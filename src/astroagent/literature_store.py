@@ -196,7 +196,9 @@ class LiteratureStore:
 
             total = len(filtered)
             start = (page - 1) * page_size
-            window = [self._decorate_origin(db, item) for item in filtered[start : start + page_size]]
+            window = [
+                self._decorate_origin(db, item) for item in filtered[start : start + page_size]
+            ]
             return LiteratureListResponse(
                 items=window,
                 total=total,
@@ -303,9 +305,7 @@ class LiteratureStore:
                 parsed = LiteratureSaveReceipt.model_validate_json(existing_receipt[0])
                 return parsed.model_copy(update={"replayed": True})
 
-            total_existing = int(
-                db.execute("SELECT COUNT(*) FROM literature_items").fetchone()[0]
-            )
+            total_existing = int(db.execute("SELECT COUNT(*) FROM literature_items").fetchone()[0])
             now = utc_now()
             receipt_items: list[LiteratureSaveReceiptItem] = []
             added_count = 0
@@ -338,7 +338,8 @@ class LiteratureStore:
                 if total_existing + added_count >= MAX_LITERATURE_ITEMS_PER_ACCOUNT:
                     rejected_count += 1
                     extra_warnings.append(
-                        f"个人文献库已达上限（{MAX_LITERATURE_ITEMS_PER_ACCOUNT} 篇），部分条目未写入。"
+                        f"个人文献库已达上限（{MAX_LITERATURE_ITEMS_PER_ACCOUNT} 篇），"
+                        "部分条目未写入。"
                     )
                     receipt_items.append(
                         LiteratureSaveReceiptItem(
@@ -394,7 +395,8 @@ class LiteratureStore:
                 ).fetchone()
                 if inserted is None:
                     winner = db.execute(
-                        "SELECT id, record FROM literature_items WHERE provider='ADS' AND bibcode=?",
+                        "SELECT id, record FROM literature_items "
+                        "WHERE provider='ADS' AND bibcode=?",
                         (paper.bibcode,),
                     ).fetchone()
                     winner_item = LiteratureItem.model_validate_json(winner[1]) if winner else item

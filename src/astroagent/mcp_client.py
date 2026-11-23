@@ -46,6 +46,7 @@ from astroagent.schemas import (
     ObjectQuery,
     QueryResult,
 )
+from astroagent.usage import reserve_request
 
 if TYPE_CHECKING:
     from astroagent.config import LocalSettings, Settings
@@ -861,6 +862,7 @@ class McpClientPool:
         cancel_event: threading.Event | None = None,
     ) -> AstronomyResult:
         assert self._pool is not None
+        reserve_request("astronomy_queries")
         cid = sanitize_correlation_id(correlation_id)
         _LAST_MCP_CALL.meta = {"transport": "mcp", "tool": tool_name, "correlation_id": cid}
         return self._submit(

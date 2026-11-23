@@ -29,7 +29,7 @@ from astroagent.compute_schemas import (
 from astroagent.config import Settings
 from astroagent.errors import ServiceError
 from astroagent.execution import MODEL_TASK_SLOTS
-from astroagent.model_client import chat_model
+from astroagent.model_client import chat_model, invoke_model
 from astroagent.schemas import ErrorResponse
 
 status_router = APIRouter(prefix="/api/v1/compute", tags=["compute"])
@@ -99,7 +99,8 @@ def describe(project_id: UUID, body: ComputeDescribe, request: Request, service:
     try:
         model = chat_model(settings, max_tokens=5000, json_mode=True)
         schema = json.dumps(ComputeProposal.model_json_schema(), ensure_ascii=False)
-        answer = model.invoke(
+        answer = invoke_model(
+            model,
             [
                 SystemMessage(
                     content=(
@@ -112,7 +113,7 @@ def describe(project_id: UUID, body: ComputeDescribe, request: Request, service:
                     )
                 ),
                 HumanMessage(content=body.description),
-            ]
+            ],
         )
         proposal = ComputeProposal.model_validate_json(answer.content)
         if proposal.clarification:

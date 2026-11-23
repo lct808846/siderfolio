@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 
 from astroagent.errors import ServiceError
+from astroagent.usage import account_usage
 
 PUBLIC = {
     ("GET", "/api/v1/auth/csrf"),
@@ -207,4 +208,5 @@ class IdentityAccess:
                 }
             await send(message)
 
-        await self.app(scope, receive, secured_send)
+        with account_usage(identity.store, user):
+            await self.app(scope, receive, secured_send)

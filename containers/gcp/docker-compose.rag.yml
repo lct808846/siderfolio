@@ -1,0 +1,12 @@
+services:
+  backend:
+    environment:
+      ASTROAGENT_RAG_SEMANTIC_ENABLED: "true"
+      ASTROAGENT_RAG_MODEL_PATH: /models/embedding
+      ASTROAGENT_RAG_MODEL_SHA256: "${EMBEDDING_MODEL_SHA256:?Set the verified embedding model SHA-256}"
+    volumes:
+      - type: bind
+        source: "${EMBEDDING_MODEL_DIR:?Set the prepared absolute Linux model path}"
+        target: /models/embedding
+        read_only: true
+        bind: { create_host_path: false }

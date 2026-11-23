@@ -29,6 +29,7 @@ from astroagent.knowledge_text import (
     query_terms,
 )
 from astroagent.schemas import ErrorInfo
+from astroagent.usage import require_storage
 
 PARSER_SLOT = threading.BoundedSemaphore(1)
 
@@ -92,6 +93,7 @@ class KnowledgeService:
                 return self.result(
                     existing
                 ), 202 if existing.state == "parsing" else existing.http_status
+            require_storage(len(content) if content is not None else 0)
             if not PARSER_SLOT.acquire(blocking=False):
                 raise ServiceError(
                     503,

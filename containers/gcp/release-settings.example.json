@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "project_dir": "/srv/astroagent/containers/gcp",
+  "repository": "lct808846/astroagent",
+  "compute": false,
+  "rag": false,
+  "auto_rollback": false
+}

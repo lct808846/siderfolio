@@ -813,7 +813,7 @@ class RagService:
             admitted_call = True
             from langchain_core.messages import HumanMessage, SystemMessage
 
-            from astroagent.model_client import chat_model
+            from astroagent.model_client import chat_model, invoke_model
 
             payload = {
                 "question": preview.question,
@@ -829,11 +829,12 @@ class RagService:
                     for item in preview.evidence
                 ],
             }
-            result = chat_model(config, max_tokens=2400, json_mode=True).invoke(
+            result = invoke_model(
+                chat_model(config, max_tokens=2400, json_mode=True),
                 [
                     SystemMessage(content=INSTRUCTION),
                     HumanMessage(content=encode(payload)),
-                ]
+                ],
             )
             raw = result.content
             if (

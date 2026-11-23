@@ -3,7 +3,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } fro
 import { useRoute } from 'vue-router'
 import { useModels } from '../stores/models'
 
-const props = defineProps<{ modelValue: string; disabled?: boolean }>()
+const props = withDefaults(defineProps<{
+  modelValue: string
+  disabled?: boolean
+  searchable?: boolean
+}>(), { searchable: true })
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const models = useModels()
 const route = useRoute(), listId = `model-picker-${useId()}`
@@ -15,7 +19,7 @@ const locked = computed(() => props.disabled || models.loading || !models.config
 const currentLabel = computed(() => models.loading && !models.options.length ? '读取模型…' : props.modelValue ? models.labelFor(props.modelValue) : '选择模型')
 const groups = computed(() => {
   const result = new Map<string, typeof models.options>()
-  const term = query.value.trim().toLowerCase()
+  const term = props.searchable ? query.value.trim().toLowerCase() : ''
   for (const model of models.options) {
     if (term && !`${model.id} ${model.label} ${model.provider || ''}`.toLowerCase().includes(term)) continue
     const name = model.provider || (model.id.toLowerCase().includes('qwen') ? 'Qwen' : model.id.toLowerCase().includes('deepseek') ? 'DeepSeek' : '其他模型')
@@ -56,8 +60,8 @@ async function showChoices(focus = false) {
   await nextTick()
   await position()
   if (token === revision && open.value && choicesOpen.value) {
-    if (focus) focusOption(active.value)
-    else searchInput.value?.focus({ preventScroll: true })
+    if (!focus && searchInput.value) searchInput.value.focus({ preventScroll: true })
+    else focusOption(active.value)
   }
   if (token === revision) movingFocus = false
 }
@@ -165,7 +169,7 @@ onBeforeUnmount(() => {
             <span>模型</span><span class="model-picker-current">{{ currentLabel }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
           </button>
           <div v-if="choicesOpen" class="model-picker-catalog">
-            <input ref="searchInput" v-model="query" class="model-picker-search" type="search" placeholder="搜索模型…" aria-label="搜索模型" autocomplete="off" spellcheck="false" @keydown="searchKey">
+            <input v-if="searchable" ref="searchInput" v-model="query" class="model-picker-search" type="search" placeholder="搜索模型…" aria-label="搜索模型" autocomplete="off" spellcheck="false" @keydown="searchKey">
             <div :id="`${listId}-choices`" ref="choices" class="model-picker-list" role="listbox" aria-label="可用模型" @keydown="listKey">
               <div v-for="(group, groupIndex) in groups" :key="group.name" class="model-picker-group" role="group" :aria-labelledby="`${listId}-group-${groupIndex}`">
                 <div :id="`${listId}-group-${groupIndex}`" class="model-picker-group-label">{{ group.name }}</div>
@@ -174,7 +178,7 @@ onBeforeUnmount(() => {
                   <svg v-if="model.id === modelValue" class="model-picker-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
                 </button>
               </div>
-              <p v-if="!filtered.length" class="model-picker-empty" role="status">没有匹配的模型</p>
+              <p v-if="searchable && !filtered.length" class="model-picker-empty" role="status">没有匹配的模型</p>
             </div>
           </div>
         </div>

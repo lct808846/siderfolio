@@ -14,7 +14,7 @@ async function login(page: Page, email: string) {
 test('anonymous pages, probes and APIs remain closed', async ({ page, request }) => {
   for (const path of ['/', '/projects', '/account', '/settings', '/admin']) {
     await page.goto(path)
-    await expect(page.getByRole('heading', { name: '登录 AstroAgent' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '登录 Siderfolio' })).toBeVisible()
     await expect(page).toHaveURL(/\/login/)
   }
   for (const path of ['/api/v1/conversations', '/api/v1/models', '/api/v1/admin/overview', '/openapi.json']) {
@@ -23,7 +23,7 @@ test('anonymous pages, probes and APIs remain closed', async ({ page, request })
   expect((await request.get('/health')).status()).toBe(404)
   expect((await request.get('/__internal/health')).status()).toBe(404)
   await page.goto('/login?next=https://evil.example.org/')
-  await expect(page.getByRole('heading', { name: '登录 AstroAgent' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '登录 Siderfolio' })).toBeVisible()
 })
 
 test('login, private conversation, refresh, logout and account switch', async ({ page, context }, info) => {
@@ -45,7 +45,7 @@ test('login, private conversation, refresh, logout and account switch', async ({
   await page.goto('/account')
   await expect(page.getByRole('heading', { name: 'first@example.org' })).toBeVisible()
   await page.getByRole('button', { name: '退出登录', exact: true }).click()
-  await expect(page.getByRole('heading', { name: '登录 AstroAgent' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '登录 Siderfolio' })).toBeVisible()
   expect(await page.evaluate(() => localStorage.getItem('astroagent.qa.draft'))).toBeNull()
   await login(page, 'second@example.org')
   await expect(page.getByText(title, { exact: true })).toHaveCount(0)
@@ -62,8 +62,8 @@ test('cross-tab logout discards prior private page', async ({ page, context }) =
   await other.goto('/account')
   await expect(other.getByRole('heading', { name: 'first@example.org' })).toBeVisible()
   await other.getByRole('button', { name: '退出登录', exact: true }).click()
-  await expect(other.getByRole('heading', { name: '登录 AstroAgent' })).toBeVisible()
+  await expect(other.getByRole('heading', { name: '登录 Siderfolio' })).toBeVisible()
   await expect(page).toHaveURL(/\/login/)
-  await expect(page.getByRole('heading', { name: '登录 AstroAgent' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '登录 Siderfolio' })).toBeVisible()
   await other.close()
 })

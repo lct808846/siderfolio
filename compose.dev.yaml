@@ -1,0 +1,198 @@
+name: astroagent-dev
+
+x-owner: &owner
+  io.astroagent.dev.workspace: "${ASTRO_DEV_OWNER:?Use scripts/dev.ps1}"
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "5m", max-file: "2" }
+x-service: &service
+  platform: linux/amd64
+  labels: *owner
+  logging: *logging
+  init: true
+  security_opt: [no-new-privileges:true]
+x-app-build: &app-build
+  context: .
+  dockerfile: containers/application/Dockerfile
+  args:
+    PYTHON_IMAGE: python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2
+    DOCKER_CLI_IMAGE: docker@sha256:2357639ad1ea7d0194134bf3292622fd4e562483966ed674e5d7c945b5f3b28d
+
+services:
+  postgres:
+    <<: *service
+    image: pgvector/pgvector@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f
+    environment:
+      POSTGRES_DB: astroagent_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${ASTRO_DEV_PG_PASSWORD:?Use scripts/dev.ps1}"
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      ASTRO_DEV_DB_PASSWORD: "${ASTRO_DEV_DB_PASSWORD:?Use scripts/dev.ps1}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./containers/dev/10-database.sql:/docker-entrypoint-initdb.d/10-database.sql:ro
+      - ./scripts/compute_schema.sql:/devtools/compute_schema.sql:ro
+    networks: [database]
+    shm_size: 128m
+    healthcheck:
+      # TCP is available only after entrypoint initialization has ended.
+      test: [CMD-SHELL, "pg_isready -q -h 127.0.0.1 -d astroagent_dev -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    <<: *service
+    build:
+      <<: *app-build
+      target: backend
+    image: "astroagent-dev-backend:${ASTRO_DEV_BACKEND_KEY:?Use scripts/dev.ps1}"
+    entrypoint: [python]
+    command:
+      - -m
+      - uvicorn
+      - astroagent.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+      - --reload-dir
+      - /app/src
+      - --reload-delay
+      - "0.5"
+      - --no-proxy-headers
+    environment:
+      PYTHONPATH: /app/src
+      ASTROAGENT_DEV_STACK: astroagent-dev
+      ASTROAGENT_DEPLOYMENT_MODE: container
+      ASTROAGENT_DATA_DIR: /var/lib/astroagent
+      ASTROAGENT_DATABASE_URL: "postgresql://astroagent:${ASTRO_DEV_DB_PASSWORD:?Use scripts/dev.ps1}@postgres:5432/astroagent_dev"
+      ASTROAGENT_AUTH_ORIGIN: http://127.0.0.1:15273
+      ASTROAGENT_AUTH_LOCAL_HTTP: "true"
+      ASTROAGENT_AUTH_SECRET: "${ASTRO_DEV_AUTH_SECRET:?Use scripts/dev.ps1}"
+      ASTROAGENT_AUTH_REGISTRATION_ENABLED: "false"
+      ASTROAGENT_ALLOWED_ORIGINS: '["http://127.0.0.1:15273"]'
+      ASTROAGENT_PROXY_TOKEN: "${ASTRO_DEV_PROXY_TOKEN:?Use scripts/dev.ps1}"
+      ASTROAGENT_COMPUTE_ENABLED: "${ASTRO_DEV_COMPUTE:-0}"
+      ASTROAGENT_PLOT_EXECUTION_ENABLED: "false"
+      ASTROAGENT_RAG_SEMANTIC_ENABLED: "${ASTRO_DEV_RAG_ENABLED:-false}"
+      ASTROAGENT_RAG_MODEL_PATH: /models/embedding
+      ASTROAGENT_RAG_MODEL_SHA256: "${ASTRO_DEV_EMBEDDING_SHA256:-}"
+      ASTROAGENT_LOCAL_MODEL_ENABLED: "${ASTRO_DEV_OLLAMA_ENABLED:-false}"
+      ASTROAGENT_LOCAL_MODEL_NAME: astroagent-qwen3-4b-instruct-2507:q4km
+      ASTROAGENT_LOCAL_MODEL_URL: http://ollama:11434
+      ASTROAGENT_LOCAL_MODEL_DIGEST: "${ASTRO_DEV_OLLAMA_DIGEST:-}"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    volumes:
+      - ./src:/app/src:ro
+      - ./scripts/dev_identity.py:/devtools/dev_identity.py:ro
+      - app_data:/var/lib/astroagent
+      - compute_spool:/var/lib/astroagent-compute
+      - type: bind
+        source: "${ASTRO_DEV_EMBEDDING_DIR:-./.astroagent/dev/empty-models}"
+        target: /models/embedding
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [database, web, models, outbound]
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import os, urllib.request;
+          request = urllib.request.Request('http://127.0.0.1:8000/api/v1/auth/csrf',
+          headers={'X-Astroagent-Proxy':os.environ['ASTROAGENT_PROXY_TOKEN']});
+          urllib.request.urlopen(request, timeout=3).close()
+      interval: 4s
+      timeout: 4s
+      retries: 30
+
+  frontend:
+    <<: *service
+    build:
+      context: .
+      dockerfile: containers/frontend/Dockerfile
+      target: development
+      args:
+        NODE_IMAGE: node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
+    image: "astroagent-dev-frontend:${ASTRO_DEV_FRONTEND_KEY:?Use scripts/dev.ps1}"
+    environment:
+      ASTROAGENT_DEV_PROXY_TOKEN: "${ASTRO_DEV_PROXY_TOKEN:?Use scripts/dev.ps1}"
+      npm_config_cache: /tmp/npm
+    ports: ["127.0.0.1:15273:5173"]
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/index.html:/app/index.html:ro
+      - ./frontend/vite.config.ts:/app/vite.config.ts:ro
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+    networks: [web]
+    depends_on:
+      backend: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 4s
+      timeout: 4s
+      retries: 20
+
+  compute-worker:
+    <<: *service
+    profiles: [compute]
+    build:
+      <<: *app-build
+      target: compute-worker
+    image: "astroagent-dev-compute:${ASTRO_DEV_WORKER_KEY:?Use scripts/dev.ps1}"
+    environment:
+      ASTROAGENT_COMPUTE_IMAGE_ID: "${ASTRO_DEV_WORKER_IMAGE_ID:-}"
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=32m,mode=1777"]
+    cpus: 1
+    mem_limit: 512m
+    pids_limit: 24
+    stop_grace_period: 130s
+    volumes:
+      - compute_spool:/var/lib/astroagent-compute
+    healthcheck:
+      test: [CMD, python, -c, "from astroagent.compute_io import fresh,spool; raise SystemExit(not fresh(spool() / 'heartbeat'))"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  ollama:
+    <<: *service
+    profiles: [ollama]
+    image: "${ASTRO_DEV_OLLAMA_IMAGE:-ollama/ollama:0.40.15}"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: /models
+      OLLAMA_NO_CLOUD: "1"
+      OLLAMA_NUM_PARALLEL: "1"
+      HOME: /tmp
+    volumes:
+      - type: bind
+        source: "${ASTRO_DEV_OLLAMA_MODELS_DIR:-./.astroagent/dev/empty-models}"
+        target: /models
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [models]
+    healthcheck:
+      test: [CMD, ollama, list]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+
+volumes:
+  postgres_data: { labels: *owner }
+  app_data: { labels: *owner }
+  compute_spool: { labels: *owner }
+networks:
+  database: { internal: true, labels: *owner }
+  models: { internal: true, labels: *owner }
+  web: { labels: *owner }
+  outbound: { labels: *owner }

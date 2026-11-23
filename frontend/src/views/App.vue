@@ -906,7 +906,7 @@ onBeforeUnmount(() => {
             <div class="turn-label"><time class="ui-pill ui-pill-mono" :datetime="turn.received_at">{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="ui-pill ui-pill-neutral">历史记录</span></div>
             <UserMessage :text="turn.message" :attachments="turn.attachments" :disabled="attachmentDisabled" @edit="editQuestion($event, turn.revision, turn.conversation_id)" />
             <div class="answer">
-              <div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>AstroAgent</b><span v-if="turn.response && turn.response.status !== 'success'" class="tag" :class="turn.response.status">{{ turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div>
+              <div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>Siderfolio</b><span v-if="turn.response && turn.response.status !== 'success'" class="tag" :class="turn.response.status">{{ turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div>
               <p v-if="turn.execution_status==='running'" class="thinking-status"><span class="thinking-shimmer-text">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</span></p>
               <ConversationErrorNotice
                 v-if="turn.error"
@@ -1025,7 +1025,7 @@ onBeforeUnmount(() => {
           <div class="answer pending-answer">
             <div class="answer-label">
               <span class="mini-star is-thinking" aria-hidden="true">✳</span>
-              <b>AstroAgent</b>
+              <b>Siderfolio</b>
             </div>
             <div v-if="store.pendingTurn.streamedText" class="streaming-answer-wrap">
               <MarkdownAnswer class="answer-text" :text="store.pendingTurn.streamedText" />
@@ -1070,7 +1070,14 @@ onBeforeUnmount(() => {
             <button type="button" class="composer-task-button composer-plot-toggle" :class="{ active: toolMode === 'plot' }" :aria-pressed="toolMode === 'plot'" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" :data-tooltip="toolMode === 'plot' ? '已选中科研绘图工具（再次点击取消）' : '告诉模型调用科研绘图工具：根据需求自动生成并审阅绘图脚本'" @click="toggleToolMode('plot')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M7 15l4-5 4 3 5-7" /><circle cx="11" cy="10" r="1" /></svg><span>科研绘图</span></button>
             <button type="button" class="composer-task-button composer-nbody-toggle" :class="{ active: toolMode === 'compute', 'is-unavailable': computeDisabled }" :aria-pressed="toolMode === 'compute'" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" :data-tooltip="toolMode === 'compute' ? '已选中 N 体模拟工具（再次点击取消）' : computeDisabled ? '告诉模型生成 N 体模拟初始条件参数（服务端暂未启用计算执行器）' : '告诉模型调用 N 体模拟工具：根据需求自动填写初始参数并由你确认运行'" @click="toggleToolMode('compute')"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><circle cx="5" cy="6" r="1.5" /><circle cx="19" cy="17" r="1.5" /><path d="M6.3 7.2l3.4 2.9m4.7 3.8 3.4 2M18.5 8a8 8 0 0 0-9-3m-4 8a8 8 0 0 0 9 7" /></svg><span>N 体模拟</span><span v-if="computeDisabled" class="composer-status-pill">未启用</span></button>
           </div>
-          <div class="composer-tools"><ModelSelector :model-value="currentModel" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" @update:model-value="selectModel" /></div>
+          <div class="composer-tools">
+            <ModelSelector
+              :model-value="currentModel"
+              :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest"
+              :searchable="false"
+              @update:model-value="selectModel"
+            />
+          </div>
           <AttachmentButton :scope="modelScope" :disabled="attachmentDisabled" />
           <button class="button-primary composer-send" :disabled="!canSend" type="submit" :aria-label="store.running || sending ? '正在处理问题' : '发送问题'" :data-tooltip="store.running || sending ? '正在处理，请稍候' : '发送问题及附件；Enter 发送，Shift + Enter 换行'">
             <svg v-if="store.running || sending" class="composer-send-spinner" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" /></svg>

@@ -11,7 +11,7 @@ test('responsive panels preserve drafts without sending', async ({ page }) => {
     const question = page.getByRole('textbox', { name: '天文问题' })
     await question.fill('面板切换保留的测试问题')
     await page.getByRole('button', { name: '打开结果栏' }).click()
-    await expect(page.getByRole('complementary', { name: '结果核查' })).toBeVisible()
+    await expect(page.getByRole('complementary', { name: '结果与文件' })).toBeVisible()
     await page.getByRole('button', { name: '收起结果面板' }).click()
     await expect(question).toHaveValue('面板切换保留的测试问题')
   }

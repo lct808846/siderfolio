@@ -181,20 +181,17 @@ class LocalAccess:
         }:
             if scope["method"] == "DELETE" and scope["path"].startswith("/api/v1/conversations"):
                 return await self.app(scope, receive, with_headers)
-            bodyless_delete = (
-                scope["method"] == "DELETE"
-                and (
-                    re.fullmatch(
-                        r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
-                        scope["path"],
-                    )
-                    is not None
-                    or re.fullmatch(
-                        r"/api/v1/literature/items/[0-9a-fA-F-]{36}",
-                        scope["path"],
-                    )
-                    is not None
+            bodyless_delete = scope["method"] == "DELETE" and (
+                re.fullmatch(
+                    r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
+                    scope["path"],
                 )
+                is not None
+                or re.fullmatch(
+                    r"/api/v1/literature/items/[0-9a-fA-F-]{36}",
+                    scope["path"],
+                )
+                is not None
             )
             bodyless_action = scope["method"] == "POST" and (
                 scope["path"] == "/api/v1/projects/default"

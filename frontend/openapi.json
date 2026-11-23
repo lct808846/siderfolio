@@ -1,6 +1,75 @@
 {
   "components": {
     "schemas": {
+      "AccountLimits": {
+        "additionalProperties": false,
+        "properties": {
+          "astronomy_queries": {
+            "default": 240,
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Astronomy Queries",
+            "type": "integer"
+          },
+          "compute_queued": {
+            "default": 2,
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Compute Queued",
+            "type": "integer"
+          },
+          "model_requests": {
+            "default": 120,
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Model Requests",
+            "type": "integer"
+          },
+          "storage_mib": {
+            "default": 1024,
+            "maximum": 65536.0,
+            "minimum": 32.0,
+            "title": "Storage Mib",
+            "type": "integer"
+          }
+        },
+        "title": "AccountLimits",
+        "type": "object"
+      },
+      "AccountUsage": {
+        "additionalProperties": false,
+        "properties": {
+          "astronomy_queries": {
+            "title": "Astronomy Queries",
+            "type": "integer"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/AccountLimits"
+          },
+          "model_requests": {
+            "title": "Model Requests",
+            "type": "integer"
+          },
+          "resets_at": {
+            "format": "date-time",
+            "title": "Resets At",
+            "type": "string"
+          },
+          "storage_bytes": {
+            "title": "Storage Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "limits",
+          "model_requests",
+          "astronomy_queries",
+          "storage_bytes",
+          "resets_at"
+        ],
+        "title": "AccountUsage",
+        "type": "object"
+      },
       "AdsEvidenceParameters": {
         "additionalProperties": false,
         "description": "年份等条件由用户写在实际检索式中，服务端不静默改写。",
@@ -589,6 +658,35 @@
           "warnings"
         ],
         "title": "Comparison",
+        "type": "object"
+      },
+      "ComputeCapacity": {
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "integer"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "queued": {
+            "title": "Queued",
+            "type": "integer"
+          },
+          "worker_ready": {
+            "title": "Worker Ready",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled",
+          "worker_ready",
+          "queued",
+          "active"
+        ],
+        "title": "ComputeCapacity",
         "type": "object"
       },
       "ComputeConfirm": {
@@ -2202,7 +2300,6 @@
           "results",
           "literature_results",
           "gaia_results",
-          "literature_receipts",
           "sources",
           "warnings"
         ],
@@ -12701,8 +12798,8 @@
     }
   },
   "info": {
-    "title": "AstroAgent",
-    "version": "1.9.0"
+    "title": "Siderfolio",
+    "version": "2.0.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -12744,6 +12841,27 @@
           }
         },
         "summary": "Audit",
+        "tags": [
+          "administration"
+        ]
+      }
+    },
+    "/api/v1/admin/capacity": {
+      "get": {
+        "operationId": "capacity_api_v1_admin_capacity_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComputeCapacity"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capacity",
         "tags": [
           "administration"
         ]
@@ -13125,6 +13243,100 @@
           }
         },
         "summary": "Update User",
+        "tags": [
+          "administration"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}/quota": {
+      "get": {
+        "operationId": "user_quota_api_v1_admin_users__user_id__quota_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountUsage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "User Quota",
+        "tags": [
+          "administration"
+        ]
+      },
+      "put": {
+        "operationId": "set_user_quota_api_v1_admin_users__user_id__quota_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountLimits"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountUsage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set User Quota",
         "tags": [
           "administration"
         ]

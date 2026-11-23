@@ -94,7 +94,7 @@ onMounted(() => {
 
       <div class="appearance-live-stage">
         <div class="appearance-live-topbar" aria-hidden="true">
-          <span class="appearance-live-brand"><i />AstroAgent</span>
+          <span class="appearance-live-brand"><i />Siderfolio</span>
           <div class="appearance-live-nav">
             <span class="is-active">查询工作台</span>
             <span>知识库</span>

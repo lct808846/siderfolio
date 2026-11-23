@@ -121,7 +121,7 @@ def test_revocation_between_download_chunks_stops_delivery():
 
     from astroagent.auth_access import IdentityAccess
 
-    principal = {"id": "synthetic", "admin": False}
+    principal = {"id": "synthetic", "namespace": "aa_" + "0" * 32, "admin": False}
     revoked = False
     store = SimpleNamespace(authenticate=lambda *args: None if revoked else principal)
     identity = SimpleNamespace(

@@ -44,10 +44,10 @@ test('inline N-body review routes a confirmed PeTar task and restores its result
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
   const card = page.getByRole('region', { name: 'N 体模拟参数方案' })
   await expect(card.getByText('合成双体轨道', { exact: true })).toBeVisible()
-  await card.getByRole('button', { name: '手动修改参数' }).click()
+  await card.getByRole('button', { name: '编辑参数' }).click()
   await card.getByLabel('模拟引擎').selectOption('petar')
   expect([created, confirmed]).toEqual([0, 0])
-  await card.getByRole('button', { name: '确认按此参数运行模拟' }).click()
+  await card.getByRole('button', { name: '确认运行模拟' }).click()
   await expect(card.getByText('1.02 s', { exact: true })).toBeVisible()
   await card.getByRole('tab', { name: '位置快照' }).click()
   await expect(card.getByRole('slider')).toHaveValue('128')
@@ -59,7 +59,7 @@ test('inline N-body review routes a confirmed PeTar task and restores its result
 test('model selection and attachment preview do not send a message', async ({ page }) => {
   let sends = 0
   page.on('request', request => {
-    if (request.method() === 'POST' && /\/turns$/.test(new URL(request.url()).pathname)) sends++
+    if (request.method() === 'POST' && /\/turns(?:\/stream)?$/.test(new URL(request.url()).pathname)) sends++
   })
   await page.route('**/api/v1/models', route => route.fulfill({
     status: 200, contentType: 'application/json', body: JSON.stringify({
@@ -84,7 +84,7 @@ test('model selection and attachment preview do not send a message', async ({ pa
 test('dragged attachment and edited question create separate preserved turns', async ({ page }) => {
   let sends = 0
   page.on('request', request => {
-    if (request.method() === 'POST' && /\/turns$/.test(new URL(request.url()).pathname)) sends++
+    if (request.method() === 'POST' && /\/turns(?:\/stream)?$/.test(new URL(request.url()).pathname)) sends++
   })
   await page.goto('/')
   const transfer = await page.evaluateHandle(() => {

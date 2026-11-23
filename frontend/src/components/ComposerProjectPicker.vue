@@ -18,9 +18,7 @@ const route = useRoute()
 const listId = `project-picker-${useId()}`
 const trigger = ref<HTMLButtonElement | null>(null)
 const popup = ref<HTMLElement | null>(null)
-const searchInput = ref<HTMLInputElement | null>(null)
 const open = ref(false)
-const query = ref('')
 const left = ref(12)
 const top = ref(12)
 const placement = ref<'above' | 'below'>('above')
@@ -31,19 +29,8 @@ const selectedProject = computed(() =>
     : null,
 )
 const triggerLabel = computed(() => selectedProject.value?.name || '选择项目')
-const filteredProjects = computed(() => {
-  const term = query.value.trim().toLowerCase()
-  if (!term) return projectsStore.customProjects
-  return projectsStore.customProjects.filter(item =>
-    item.name.toLowerCase().includes(term) || (item.description || '').toLowerCase().includes(term),
-  )
-})
-const showDefaultOption = computed(() => {
-  const term = query.value.trim().toLowerCase()
-  return !term || '个人空间 默认'.includes(term)
-})
 
-async function position() {
+function position() {
   if (!trigger.value || !popup.value) return
   const rect = trigger.value.getBoundingClientRect()
   const width = popup.value.offsetWidth || 264
@@ -63,7 +50,6 @@ async function position() {
 
 async function show() {
   if (props.disabled || props.busy || open.value) return
-  query.value = ''
   open.value = true
   void projectsStore.load().catch(() => undefined)
   await nextTick()
@@ -71,8 +57,8 @@ async function show() {
   if (typeof popup.value.showPopover === 'function' && !popup.value.matches(':popover-open')) {
     popup.value.showPopover()
   }
-  await position()
-  searchInput.value?.focus({ preventScroll: true })
+  position()
+  popup.value.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus({ preventScroll: true })
 }
 
 function close(restoreFocus = false) {
@@ -112,14 +98,11 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 function onResize() {
-  if (open.value) void position()
+  if (open.value) position()
 }
 
 watch(() => route.fullPath, () => close(false))
-watch(query, async () => {
-  await nextTick()
-  if (open.value) await position()
-})
+watch(() => projectsStore.customProjects.length, onResize, { flush: 'post' })
 watch(() => props.disabled, value => { if (value) close(false) })
 
 onMounted(() => {
@@ -170,22 +153,6 @@ onBeforeUnmount(() => {
           :style="{ left: `${left}px`, top: `${top}px` }"
           @keydown="onKeydown"
         >
-          <div class="project-picker-search">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
-            </svg>
-            <input
-              ref="searchInput"
-              v-model="query"
-              type="search"
-              placeholder="搜索项目…"
-              aria-label="搜索项目"
-              autocomplete="off"
-              spellcheck="false"
-            >
-          </div>
-
           <button
             type="button"
             class="project-picker-item is-create"
@@ -203,7 +170,6 @@ onBeforeUnmount(() => {
 
           <div class="project-picker-list" role="listbox" aria-label="可用项目空间">
             <button
-              v-if="showDefaultOption"
               type="button"
               role="option"
               class="project-picker-item"
@@ -221,7 +187,7 @@ onBeforeUnmount(() => {
             </button>
 
             <button
-              v-for="project in filteredProjects"
+              v-for="project in projectsStore.customProjects"
               :key="project.id"
               type="button"
               role="option"
@@ -238,10 +204,6 @@ onBeforeUnmount(() => {
                 <path d="m5 12 4 4L19 6" />
               </svg>
             </button>
-
-            <p v-if="!showDefaultOption && !filteredProjects.length" class="project-picker-empty" role="status">
-              未找到匹配的项目
-            </p>
           </div>
         </div>
       </Transition>
@@ -345,42 +307,6 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.project-picker-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 9px;
-  margin-bottom: 4px;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
-}
-
-.project-picker-search svg {
-  width: 14px;
-  height: 14px;
-  flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-}
-
-.project-picker-search input {
-  width: 100%;
-  min-height: 34px;
-  padding: 5px 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--ink);
-  font-size: 12.5px;
-}
-
-.project-picker-search input:focus {
-  outline: none;
-  box-shadow: none;
-}
-
 .project-picker-divider {
   height: 1px;
   margin: 4px 6px;
@@ -475,14 +401,6 @@ onBeforeUnmount(() => {
   width: 15px;
   height: 15px;
   color: var(--accent);
-}
-
-.project-picker-empty {
-  margin: 0;
-  padding: 14px 10px;
-  color: var(--muted);
-  font-size: 12px;
-  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {

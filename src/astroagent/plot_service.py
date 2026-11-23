@@ -38,6 +38,7 @@ class PlotService:
         self.sandbox = (
             ExecutorClient(settings)
             if settings.deployment_mode == "container"
+            or len(settings.plot_executor_token.get_secret_value()) == 64
             else Sandbox(settings)
         )
         interrupted = self.store.recover()
@@ -222,12 +223,12 @@ class PlotService:
                 )
                 files[source_name] = original
                 files["README.md"] = (
-                    f"# AstroAgent 绘图记录\n\nEngine: {plan['proposal']['engine']}\n\n"
+                    f"# Siderfolio 绘图记录\n\nEngine: {plan['proposal']['engine']}\n\n"
                     + plan["proposal"]["explanation"]
                     + "\n\n"
                     + "\n".join(info["warnings"] + plan["proposal"]["warnings"])
                     + "\n\n在独立等价环境中，将data.csv放在/input/data.csv，脚本写入/output。"
-                    + f"实际执行脚本与下载字节一致。\nAstroAgent {__version__}\n"
+                    + f"实际执行脚本与下载字节一致。\nSiderfolio {__version__}\n"
                 ).encode()
                 manifest = {
                     "format": "astroagent-plot",

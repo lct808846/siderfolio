@@ -1,0 +1,69 @@
+........................................................................ [ 10%]
+............................................................F........... [ 21%]
+.................................................................F...... [ 32%]
+........................................................................ [ 43%]
+..........................................................F............. [ 54%]
+...F......ss.s............s............................................. [ 64%]
+........................................................................ [ 75%]
+........................................................................ [ 86%]
+.........................................................s.............. [ 97%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_context_whole_turn_window_and_bytes ___________________
+D:\project\astroagent\tests\test_conversations.py:150: in test_context_whole_turn_window_and_bytes
+    ???
+E   AssertionError: assert (8 <= 6)
+E    +  where 8 = len([{'turn_id': '4f82e9ea-e102-46c0-b0ea-ebacf539f970', 'revision': 1, 'message': '问题', 'model': None, ...}, {'turn_id': ...ne, ...}, {'turn_id': '6d7ef705-3eeb-492e-b3db-212b3b7065f6', 'revision': 6, 'message': '问题', 'model': None, ...}, ...])
+E    +    where [{'turn_id': '4f82e9ea-e102-46c0-b0ea-ebacf539f970', 'revision': 1, 'message': '问题', 'model': None, ...}, {'turn_id': ...ne, ...}, {'turn_id': '6d7ef705-3eeb-492e-b3db-212b3b7065f6', 'revision': 6, 'message': '问题', 'model': None, ...}, ...] = <astroagent.context.PreparedContext object at 0x78540b682720>.payload
+_______________ test_historical_v03_snapshots_remain_exportable ________________
+D:\project\astroagent\tests\test_exports.py:421: in test_historical_v03_snapshots_remain_exportable
+    ???
+D:\project\astroagent\tests\test_exports.py:25: in parse
+    ???
+src/astroagent/api/exports.py:112: in validate_json
+    return ExportRequest.model_validate_json(body)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for ExportRequest
+E   snapshot.literature_receipts
+E     Field required [type=missing, input_value={'status': 'success', 'an...665Z'}], 'warnings': []}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+_____________________ test_health_is_documented_in_openapi _____________________
+D:\project\astroagent\tests\test_health.py:30: in test_health_is_documented_in_openapi
+    ???
+E   AssertionError: assert 'Siderfolio' == 'AstroAgent'
+E     
+E     - AstroAgent
+E     + Siderfolio
+____________ test_revocation_between_download_chunks_stops_delivery ____________
+D:\project\astroagent\tests\test_identity_security.py:153: in test_revocation_between_download_chunks_stops_delivery
+    ???
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+src/astroagent/auth_access.py:211: in __call__
+    with account_usage(identity.store, user):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+src/astroagent/usage.py:45: in account_usage
+    token = _account.set((store, principal["id"], principal["namespace"]) if principal else None)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'namespace'
+=========================== short test summary info ============================
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:160: Windows Job Object-specific failure path
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:186: Windows Job Object-specific memory limit
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:261: public PDF acceptance requires explicit local fixture
+SKIPPED [1] D:\project\astroagent\tests\test_knowledge.py:524: explicit opt-in for 256 MiB disk acceptance
+SKIPPED [1] D:\project\astroagent\tests\test_windows_tcp_listeners.py:9: Windows IP Helper API
+FAILED tests/test_conversations.py::test_context_whole_turn_window_and_bytes
+FAILED tests/test_exports.py::test_historical_v03_snapshots_remain_exportable
+FAILED tests/test_health.py::test_health_is_documented_in_openapi - Assertion...
+FAILED tests/test_identity_security.py::test_revocation_between_download_chunks_stops_delivery
+4 failed, 657 passed, 5 skipped, 106 deselected in 143.11s (0:02:23)

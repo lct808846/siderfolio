@@ -16,7 +16,7 @@ from langchain_core.messages import AIMessage
 from astroagent.agent import AstroAgent
 from astroagent.api import conversations as routes
 from astroagent.config import LocalSettings, Settings
-from astroagent.context import MAX_HISTORY_BYTES, PreparedContext
+from astroagent.context import MAX_HISTORY_BYTES, MAX_HISTORY_TURNS, PreparedContext
 from astroagent.conversation_schemas import ArtifactRequest, Turn, TurnRequest
 from astroagent.conversation_service import ConversationService
 from astroagent.conversations import ConversationRepository, conversation_title
@@ -144,16 +144,19 @@ def test_context_whole_turn_window_and_bytes():
             received_at="2026-10-28T00:00:00Z",
             response=response,
         )
-        for i in range(8)
+        for i in range(MAX_HISTORY_TURNS + 2)
     ]
     context = PreparedContext(history, "新问题")
-    assert len(context.payload) <= 6 and context.record.delivered_bytes <= MAX_HISTORY_BYTES
+    assert 0 < len(context.payload) <= MAX_HISTORY_TURNS
+    assert context.record.delivered_bytes <= MAX_HISTORY_BYTES
     assert history[0].turn_id in context.record.omitted_turn_ids
     assert all(
         len(item["historical_response"]["gaia_results"][0]["data"]) == 10
         for item in context.payload
     )
-    history[-1].response = ChatResponse(status="success", answer="大" * 70000)
+    history[-1].response = ChatResponse(
+        status="success", answer="大" * (MAX_HISTORY_BYTES // 3 + 1)
+    )
     context = PreparedContext(history, "新问题")
     assert history[-1].turn_id in context.record.omitted_turn_ids
     assert context.record.warnings

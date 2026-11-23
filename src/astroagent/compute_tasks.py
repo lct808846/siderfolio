@@ -25,6 +25,7 @@ from astroagent.compute_schemas import (
     SimulationEngine,
 )
 from astroagent.errors import ServiceError
+from astroagent.usage import limits_for
 
 LOGGER = logging.getLogger(__name__)
 LOCK = 456419927012700
@@ -244,8 +245,18 @@ def confirm(db, row, confirmation):
         f"SELECT count(*) AS count FROM {TABLE} WHERE account_id=%s AND state='queued'",
         (row["account_id"],),
     ).fetchone()["count"]
-    if count >= 2:
-        raise ServiceError(409, "compute_queue_limit", "每个账号最多同时排队 2 项计算。")
+    limit = limits_for(db, row["account_id"]).compute_queued
+    if count >= limit:
+        raise ServiceError(409, "compute_queue_limit", f"账号已排队 {count}/{limit} 项计算。")
+    if (
+        db.execute(
+            f"SELECT count(*) AS count FROM {TABLE} WHERE state='queued'",
+        ).fetchone()["count"]
+        >= 24
+    ):
+        raise ServiceError(
+            503, "compute_capacity", "站点计算队列已满，请稍后再提交。", retryable=True
+        )
     try:
         return db.execute(
             f"UPDATE {TABLE} SET state='queued',request_id=%s,confirmed_revision=%s,"
@@ -395,7 +406,8 @@ class Dispatcher(threading.Thread):
         if (directory / "done").exists():
             self.finish(db, directory, row)
             return
-        run_alive = worker_ready() and fresh(directory / "heartbeat")
+        worker_online = worker_ready()
+        run_alive = worker_online and fresh(directory / "heartbeat")
         if (now > row["lease_until"] and not run_alive) or (
             now - row["started_at"]
         ).total_seconds() > WALL_SECONDS + 15:
@@ -403,16 +415,18 @@ class Dispatcher(threading.Thread):
                 (directory / "cancel").touch()
             transition(db, row, "interrupted", "计算失去响应，已撤销本次运行。")
             return
+        dispatched = False
         if row["state"] == "cancelling":
             if directory.exists() and (directory / "input").exists():
                 (directory / "cancel").touch()
             else:
                 transition(db, row, "cancelled", row["error"])
                 return
-        elif worker_ready() and not (directory / "input").exists():
+        elif worker_online and not (directory / "input").exists():
             directory.mkdir(mode=0o700, exist_ok=True)
             write(directory / "input", row["parameters"])
-        if worker_ready():
+            dispatched = True
+        if run_alive or dispatched:
             progress = read(directory / "progress", 128) if (directory / "progress").exists() else 0
             db.execute(
                 f"UPDATE {TABLE} SET samples_completed=%s,updated_at=now(),"

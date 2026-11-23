@@ -33,7 +33,7 @@ CSV_POLICY = {
     "array_columns": "JSON strings",
     "numeric_rounding": False,
 }
-README = """# AstroAgent 查询导出包
+README = """# Siderfolio 查询导出包
 
 本包来自客户端提交的快照（client_supplied_snapshot）。来源真实性未经认证；
 SHA-256 只检验文件字节变化，不是来源签名或科研结论认证。

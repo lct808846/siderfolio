@@ -21,7 +21,7 @@ const nameInput = ref<HTMLInputElement | null>(null)
 const usernameDraft = ref('')
 
 const displayName = computed(() => {
-  return (summary.value?.account.username || identityUser.value?.username || identityUser.value?.email?.split('@')[0] || 'AstroAgent 用户').trim()
+  return (summary.value?.account.username || identityUser.value?.username || identityUser.value?.email?.split('@')[0] || 'Siderfolio 用户').trim()
 })
 
 const avatarText = computed(() => (displayName.value.slice(0, 2) || 'AA').toUpperCase())

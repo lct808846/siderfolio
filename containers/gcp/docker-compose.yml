@@ -1,0 +1,265 @@
+name: astroagent-gcp
+
+x-service: &service
+  platform: linux/amd64
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "50m"
+      max-file: "3"
+
+x-app-build: &app-build
+  context: ../..
+  dockerfile: containers/application/Dockerfile
+  args:
+    PYTHON_IMAGE: "${PYTHON_IMAGE:-python@sha256:4766d8b510c428e595d74b9cc5bbb2fae8e26316fffb4adc89908d79aacd58a2}"
+    DOCKER_CLI_IMAGE: "${DOCKER_CLI_IMAGE:-docker@sha256:2357639ad1ea7d0194134bf3292622fd4e562483966ed674e5d7c945b5f3b28d}"
+
+x-gcp-build: &gcp-build
+  context: ../..
+  dockerfile: containers/gcp/Dockerfile
+  args:
+    POSTGRES_IMAGE: "${POSTGRES_IMAGE:-pgvector/pgvector@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f}"
+    CADDY_IMAGE: "${CADDY_IMAGE:-caddy@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0}"
+
+services:
+  postgres:
+    <<: *service
+    build:
+      <<: *gcp-build
+      target: postgres
+    image: astroagent-gcp-postgres:2.0.0
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the GCP .env}"
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      ASTROAGENT_DB_PASSWORD: "${ASTROAGENT_DB_PASSWORD:?Set ASTROAGENT_DB_PASSWORD in the GCP .env}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [database]
+    mem_limit: 1280m
+    shm_size: 256m
+    cpus: 1
+    stop_grace_period: 60s
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready -q -h 127.0.0.1 -U postgres -d astroagent &&
+          psql -U postgres -d astroagent -Atqc
+          "SELECT count(*) FROM pg_extension WHERE extname IN ('vector','pg_trgm')" | grep -qx 2
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  backend:
+    <<: *service
+    build:
+      <<: *app-build
+      target: backend
+    image: astroagent-gcp-backend:2.0.0
+    # Use the project's environment settings and identity CLI without its local JSON secret loader.
+    entrypoint: ["python"]
+    command:
+      - -m
+      - uvicorn
+      - astroagent.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "1"
+      - --no-proxy-headers
+      - --no-access-log
+    environment:
+      MODEL_PROTOCOL: gemini
+      DEEPSEEK_BASE_URL: https://generativelanguage.googleapis.com/v1beta
+      DEEPSEEK_API_KEY: "${GEMINI_API_KEY:?Set GEMINI_API_KEY in the GCP .env}"
+      DEEPSEEK_MODEL: "${GEMINI_MODEL:?Set GEMINI_MODEL in the GCP .env}"
+      LLM_THINKING_PARAMETER: none
+      ADS_API_TOKEN: "${ADS_API_TOKEN:-}"
+      ASTROAGENT_DEPLOYMENT_MODE: container
+      ASTROAGENT_AUTH_ORIGIN: "https://${PUBLIC_HOST:?Set PUBLIC_HOST in the GCP .env}"
+      ASTROAGENT_AUTH_LOCAL_HTTP: "false"
+      ASTROAGENT_AUTH_SECRET: "${ASTROAGENT_AUTH_SECRET:?Run deploy.sh prepare}"
+      ASTROAGENT_AUTH_IDLE_SECONDS: "1800"
+      ASTROAGENT_AUTH_ABSOLUTE_SECONDS: "43200"
+      ASTROAGENT_AUTH_COOKIE_MAX_AGE: "43200"
+      ASTROAGENT_AUTH_SMTP_HOST: "${SMTP_HOST:?Set SMTP_HOST in the GCP .env}"
+      ASTROAGENT_AUTH_SMTP_PORT: "${SMTP_PORT:-465}"
+      ASTROAGENT_AUTH_SMTP_MODE: "${SMTP_MODE:-tls}"
+      ASTROAGENT_AUTH_SMTP_USER: "${SMTP_USER:?Set SMTP_USER in the GCP .env}"
+      ASTROAGENT_AUTH_SMTP_PASSWORD: "${SMTP_PASSWORD:?Set SMTP_PASSWORD in the GCP .env}"
+      ASTROAGENT_AUTH_SMTP_FROM: "${SMTP_FROM:?Set SMTP_FROM in the GCP .env}"
+      ASTROAGENT_AUTH_REGISTRATION_ENABLED: "${REGISTRATION_ENABLED:-true}"
+      ASTROAGENT_AUTH_REGISTRATION_LIMIT: "${REGISTRATION_LIMIT:-10}"
+      ASTROAGENT_AUTH_TENANT_LIMIT: "${TENANT_LIMIT:-8}"
+      ASTROAGENT_DATABASE_URL: "postgresql://astroagent:${ASTROAGENT_DB_PASSWORD:?Run deploy.sh prepare}@postgres:5432/astroagent"
+      ASTROAGENT_PROXY_TOKEN: "${ASTROAGENT_PROXY_TOKEN:?Run deploy.sh prepare}"
+      ASTROAGENT_ALLOWED_ORIGINS: '["https://${PUBLIC_HOST:?Set PUBLIC_HOST in the GCP .env}"]'
+      ASTROAGENT_DATA_DIR: /var/lib/astroagent
+      ASTROAGENT_LIMIT_MODEL_REQUESTS: "${MODEL_REQUESTS_PER_HOUR:-60}"
+      ASTROAGENT_LIMIT_ASTRONOMY_QUERIES: "${ASTRONOMY_QUERIES_PER_HOUR:-120}"
+      ASTROAGENT_LIMIT_STORAGE_MIB: "${ACCOUNT_STORAGE_MIB:-1024}"
+      ASTROAGENT_LIMIT_COMPUTE_QUEUED: "${ACCOUNT_COMPUTE_QUEUED:-2}"
+      ASTROAGENT_LOCAL_MODEL_ENABLED: "false"
+      ASTROAGENT_LOCAL_MODEL_URL: http://ollama:11434
+      ASTROAGENT_RAG_SEMANTIC_ENABLED: "false"
+      ASTROAGENT_PLOT_EXECUTION_ENABLED: "false"
+      ASTROAGENT_COMPUTE_ENABLED: "${COMPUTE_ENABLED:-0}"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    networks: [web, database, outbound]
+    volumes:
+      - application_data:/var/lib/astroagent
+      - compute_spool:/var/lib/astroagent-compute
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=512m,mode=1777"]
+    mem_limit: 3g
+    cpus: 1.5
+    pids_limit: 128
+    stop_grace_period: 90s
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import os, urllib.request;
+          request = urllib.request.Request('http://127.0.0.1:8000/api/v1/auth/csrf',
+          headers={'X-Astroagent-Proxy': os.environ['ASTROAGENT_PROXY_TOKEN']});
+          urllib.request.urlopen(request, timeout=4).close()
+      interval: 15s
+      timeout: 6s
+      retries: 8
+      start_period: 30s
+
+  frontend:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: containers/frontend/Dockerfile
+      target: runtime
+      args:
+        NODE_IMAGE: "${NODE_IMAGE:-node@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d}"
+    image: astroagent-gcp-frontend:2.0.0
+    environment:
+      ASTROAGENT_DEPLOYMENT_MODE: container
+      ASTROAGENT_API_TARGET: http://backend:8000
+      ASTROAGENT_SITE_ORIGIN: "https://${PUBLIC_HOST:?Set PUBLIC_HOST in the GCP .env}"
+      ASTROAGENT_PROXY_TOKEN: "${ASTROAGENT_PROXY_TOKEN:?Run deploy.sh prepare}"
+    command:
+      - sh
+      - -eu
+      - -c
+      - |
+        umask 077
+        printf '%s' "$$ASTROAGENT_PROXY_TOKEN" > /run/secrets/proxy_token
+        unset ASTROAGENT_PROXY_TOKEN
+        exec node server.mjs
+    networks: [web, edge]
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /run/secrets:rw,noexec,nosuid,nodev,size=64k,mode=0700,uid=1000,gid=1000
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    depends_on:
+      backend: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:5173/__internal/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  # The service name is part of the frontend's trusted edge DNS check.
+  ingress:
+    <<: *service
+    build:
+      <<: *gcp-build
+      target: ingress
+    image: astroagent-gcp-ingress:2.0.0
+    entrypoint: ["caddy"]
+    command: ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+    environment:
+      PUBLIC_HOST: "${PUBLIC_HOST:?Set PUBLIC_HOST in the GCP .env}"
+      SITE_MODE: "${SITE_MODE:-ip}"
+      ACME_CONTACT: "${ACME_EMAIL:+email ${ACME_EMAIL}}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge, acme]
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777"]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    depends_on:
+      frontend: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:2018/ready]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  compute-worker:
+    <<: *service
+    profiles: [compute]
+    build:
+      <<: *app-build
+      target: compute-worker
+    image: astroagent-gcp-compute-worker:2.0.0
+    environment:
+      ASTROAGENT_COMPUTE_IMAGE_ID: "${COMPUTE_IMAGE_ID:-}"
+    network_mode: none
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=32m,mode=1777"]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 24
+    volumes:
+      - compute_spool:/var/lib/astroagent-compute
+    healthcheck:
+      test: [CMD, python, -c, "from astroagent.compute_io import fresh,spool; raise SystemExit(not fresh(spool() / 'heartbeat'))"]
+      interval: 5s
+      timeout: 3s
+      retries: 8
+      start_period: 10s
+
+networks:
+  web: { internal: true }
+  edge: { internal: true }
+  database: { internal: true }
+  outbound: {}
+  acme: {}
+
+volumes:
+  postgres_data:
+  application_data:
+  compute_spool:
+  caddy_data:
+  caddy_config:

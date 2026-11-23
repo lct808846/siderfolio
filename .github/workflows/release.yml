@@ -1,0 +1,215 @@
+name: Formal release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions: {}
+concurrency:
+  group: astroagent-formal-release
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  authorization:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+      sha: ${{ steps.tag.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the publisher's annotated SSH signature
+        id: tag
+        env:
+          SIGNING_PUBLIC_KEY: ${{ vars.RELEASE_SIGNING_PUBLIC_KEY }}
+          REF_PROTECTED: ${{ github.ref_protected }}
+        run: |
+          [[ "$REF_PROTECTED" == true ]] || { echo 'A protected tag is required.' >&2; exit 1; }
+          [[ "$SIGNING_PUBLIC_KEY" =~ ^(ssh-ed25519|sk-ssh-ed25519@openssh.com)[[:space:]][a-zA-Z0-9+/=]+$ ]]
+          printf 'astroagent-release namespaces="git" %s\n' "$SIGNING_PUBLIC_KEY" > "$RUNNER_TEMP/release-signers"
+          python scripts/release_assets.py authorize "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-signers"
+
+  checks:
+    needs: authorization
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      revision: ${{ needs.authorization.outputs.sha }}
+
+  images:
+    needs: [authorization, checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    environment: release-registry
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [backend, frontend, ingress, postgres, compute-worker, plot-executor, plot-python, plot-gnuplot]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorization.outputs.sha }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ vars.GHCR_PUBLISH_USER }}
+          password: ${{ secrets.GHCR_PUBLISH_TOKEN }}
+      - name: Publish digest and immutable release aliases
+        env:
+          COMPONENT: ${{ matrix.component }}
+          VERSION: ${{ needs.authorization.outputs.version }}
+          REVISION: ${{ needs.authorization.outputs.sha }}
+        run: |
+          python scripts/release_assets.py publish "$COMPONENT" "$VERSION" "$REVISION" "${GITHUB_REPOSITORY,,}" "image-$COMPONENT.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-${{ matrix.component }}
+          path: image-${{ matrix.component }}.json
+          if-no-files-found: error
+
+  manifest:
+    needs: [authorization, images]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorization.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          merge-multiple: true
+          path: image-parts
+      - name: Collect the tested source and image identities
+        env:
+          VERSION: ${{ needs.authorization.outputs.version }}
+          REVISION: ${{ needs.authorization.outputs.sha }}
+        run: |
+          python scripts/release_assets.py assemble "$VERSION" "$REVISION" "${GITHUB_REPOSITORY,,}" image-parts release.json
+          {
+            printf '### Release %s (%s)\n\n```json\n' "$VERSION" "$REVISION"
+            cat release.json
+            printf '```\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/attest-build-provenance@v3
+        if: vars.PRODUCTION_DEPLOY_ENABLED == 'true'
+        with:
+          subject-path: release.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest
+          path: release.json
+          if-no-files-found: error
+
+  production:
+    if: vars.PRODUCTION_DEPLOY_ENABLED == 'true'
+    needs: [authorization, manifest]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+      attestations: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorization.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-manifest
+      - name: Verify the release manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVISION: ${{ needs.authorization.outputs.sha }}
+        run: |
+          gh attestation verify release.json --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --source-ref "$GITHUB_REF" --source-digest "$REVISION" --deny-self-hosted-runners
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Deploy and verify through the restricted IAP SSH command
+        env:
+          GCP_PROJECT: ${{ vars.GCP_PROJECT_ID }}
+          GCP_ZONE: ${{ vars.GCP_ZONE }}
+          GCP_VM: ${{ vars.GCP_VM }}
+          DEPLOY_KEY: ${{ secrets.GCP_DEPLOY_SSH_KEY }}
+          SSH_KNOWN_HOST: ${{ secrets.GCP_DEPLOY_KNOWN_HOST }}
+        run: |
+          umask 077
+          printf 'Workflow %s, version %s\n' "$GITHUB_RUN_ID" "$GITHUB_REF_NAME" > deployment-report.log
+          [[ "$GCP_VM" =~ ^[a-z][a-z0-9-]+$ && -n "$GCP_PROJECT" && -n "$GCP_ZONE" ]]
+          [[ -n "$DEPLOY_KEY" && "$SSH_KNOWN_HOST" == 'astroagent-production ssh-ed25519 '* ]]
+          key_dir=$(mktemp -d)
+          printf '%s\n' "$DEPLOY_KEY" > "$key_dir/key"
+          printf '%s\n' "$SSH_KNOWN_HOST" > "$key_dir/known_hosts"
+          unset DEPLOY_KEY SSH_KNOWN_HOST
+          gcloud compute start-iap-tunnel "$GCP_VM" 22 --project="$GCP_PROJECT" --zone="$GCP_ZONE" \
+            --local-host-port=127.0.0.1:22122 --quiet > "$key_dir/iap.log" 2>&1 &
+          iap_pid=$!
+          trap 'kill "$iap_pid" 2>/dev/null || true; rm -f -- "$key_dir/key" "$key_dir/known_hosts" "$key_dir/iap.log"; rmdir -- "$key_dir"' EXIT
+          for attempt in {1..30}; do
+            if nc -z 127.0.0.1 22122; then break; fi
+            if ! kill -0 "$iap_pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          if ! nc -z 127.0.0.1 22122; then
+            printf 'IAP tunnel did not start. Check the runner identity, instance and firewall.\n' | tee -a deployment-report.log
+            exit 1
+          fi
+          ssh -F /dev/null -T -p 22122 -i "$key_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o UserKnownHostsFile="$key_dir/known_hosts" -o GlobalKnownHostsFile=/dev/null \
+            -o HostKeyAlias=astroagent-production -o StrictHostKeyChecking=yes \
+            -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ConnectTimeout=15 \
+            astroagent-release@127.0.0.1 apply < release.json 2>&1 | tee -a deployment-report.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-report
+          path: deployment-report.log
+
+  publish-release:
+    needs: [authorization, production]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-manifest
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-report
+      - name: Attach the verified release and deployment report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.authorization.outputs.version }}
+        run: |
+          if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" --json isDraft,assets > existing-release.json; then
+            jq -e '(.isDraft == false) and ([.assets[].name] | contains(["release.json", "deployment-report.log"]))' existing-release.json >/dev/null
+          else
+            gh release create "$VERSION" release.json deployment-report.log --repo "$GITHUB_REPOSITORY" \
+              --verify-tag --title "AstroAgent $VERSION" --generate-notes
+          fi

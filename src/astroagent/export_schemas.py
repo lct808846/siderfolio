@@ -22,10 +22,11 @@ def _strict_type(annotation):
             fields = {}
             for name, original in annotation.model_fields.items():
                 field = deepcopy(original)
-                # These fields were introduced in V1.8. Earlier snapshot manifests omit them.
+                # Older snapshot manifests omit fields added in later versions.
                 if annotation is not ChatResponse or name not in (
                     "nbody_proposals",
                     "plot_proposals",
+                    "literature_receipts",
                 ):
                     field.default = ...
                     field.default_factory = None

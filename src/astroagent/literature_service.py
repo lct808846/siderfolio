@@ -66,7 +66,11 @@ class LiteratureService:
             query = LiteratureQuery(query=f'bibcode:"{paper.bibcode}"', rows=1)
             result = ads_service.search(query)
             matched = next((p for p in result.papers if p.bibcode == paper.bibcode), None)
-            if result.status == "success" and matched is not None and _has_verifiable_ads_source(matched):
+            if (
+                result.status == "success"
+                and matched is not None
+                and _has_verifiable_ads_source(matched)
+            ):
                 verified.append((pos, matched))
             else:
                 rejected.append(
@@ -126,7 +130,9 @@ class LiteratureService:
         if request.conversation_id and request.turn_id:
             turn = self.repo.turn(request.conversation_id, request.turn_id)
             if turn.response is None or not turn.response.literature_results:
-                raise ServiceError(404, "ads_batch_not_found", "该会话轮次中没有可保存的 ADS 检索结果。")
+                raise ServiceError(
+                    404, "ads_batch_not_found", "该会话轮次中没有可保存的 ADS 检索结果。"
+                )
             if request.batch_index >= len(turn.response.literature_results):
                 raise ServiceError(404, "ads_batch_not_found", "指定的 ADS 检索批次不存在。")
             batch = turn.response.literature_results[request.batch_index]
@@ -134,21 +140,27 @@ class LiteratureService:
         elif request.project_id and request.snapshot_id:
             snapshot = self.conversations.projects.snapshot(request.project_id, request.snapshot_id)
             if not snapshot.response.literature_results:
-                raise ServiceError(404, "ads_batch_not_found", "该快照中没有可保存的 ADS 检索结果。")
+                raise ServiceError(
+                    404, "ads_batch_not_found", "该快照中没有可保存的 ADS 检索结果。"
+                )
             if request.batch_index >= len(snapshot.response.literature_results):
                 raise ServiceError(404, "ads_batch_not_found", "指定的 ADS 检索批次不存在。")
             batch = snapshot.response.literature_results[request.batch_index]
             needs_reverify = snapshot.provenance == "imported_unverified"
 
         if batch is None or batch.status != "success" or not batch.papers:
-            raise ServiceError(422, "ads_batch_unavailable", "所选 ADS 批次未成功返回文献，无法入库。")
+            raise ServiceError(
+                422, "ads_batch_unavailable", "所选 ADS 批次未成功返回文献，无法入库。"
+            )
 
         selected: list[tuple[int, PaperData]] = []
         seen: set[int] = set()
         if request.paper_indices:
             for pos in request.paper_indices:
                 if pos > len(batch.papers):
-                    raise ServiceError(422, "literature_index_invalid", f"文献序号 #{pos} 超出该批次范围。")
+                    raise ServiceError(
+                        422, "literature_index_invalid", f"文献序号 #{pos} 超出该批次范围。"
+                    )
                 if pos not in seen:
                     seen.add(pos)
                     selected.append((pos, batch.papers[pos - 1]))
@@ -168,14 +180,17 @@ class LiteratureService:
 
         rejected: list[LiteratureSaveReceiptItem] = []
         warnings: list[str] = []
-        unverified = [pair for pair in selected if needs_reverify or not _has_verifiable_ads_source(pair[1])]
+        unverified = [
+            pair for pair in selected if needs_reverify or not _has_verifiable_ads_source(pair[1])
+        ]
         if unverified:
             verified_pairs, rejected, warnings = self._verify_via_ads(unverified, ads_service)
             verified_map = {pos: paper for pos, paper in verified_pairs}
             final_selected = [
                 (pos, verified_map[pos])
                 for pos, paper in selected
-                if (pos in verified_map) or (not needs_reverify and _has_verifiable_ads_source(paper))
+                if (pos in verified_map)
+                or (not needs_reverify and _has_verifiable_ads_source(paper))
             ]
         else:
             final_selected = selected
@@ -243,14 +258,17 @@ class LiteratureService:
         )
         rejected: list[LiteratureSaveReceiptItem] = []
         warnings: list[str] = []
-        unverified = [pair for pair in chosen if needs_reverify or not _has_verifiable_ads_source(pair[1])]
+        unverified = [
+            pair for pair in chosen if needs_reverify or not _has_verifiable_ads_source(pair[1])
+        ]
         if unverified:
             verified_pairs, rejected, warnings = self._verify_via_ads(unverified, ads_service)
             verified_map = {pos: paper for pos, paper in verified_pairs}
             final_chosen = [
                 (pos, verified_map[pos])
                 for pos, paper in chosen
-                if (pos in verified_map) or (not needs_reverify and _has_verifiable_ads_source(paper))
+                if (pos in verified_map)
+                or (not needs_reverify and _has_verifiable_ads_source(paper))
             ]
         else:
             final_chosen = chosen

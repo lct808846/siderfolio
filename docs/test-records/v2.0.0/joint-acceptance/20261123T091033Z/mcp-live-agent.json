@@ -1,0 +1,46 @@
+{
+  "astroagent": "2.0.0",
+  "sdk": "2.3.0",
+  "transport": {
+    "astronomy_tool_transport": "mcp",
+    "mcp_status": "ready",
+    "mcp_protocol_version": "2026-07-28",
+    "mcp_server_version": "2.0.0",
+    "mcp_tools": [
+      "query_simbad",
+      "search_ads",
+      "query_gaia"
+    ]
+  },
+  "ads_token_configured": true,
+  "chat_status": "partial",
+  "simbad": [
+    {
+      "status": "success",
+      "code": null,
+      "source_name": "SIMBAD",
+      "retrieved_at": "2026-11-23T10:04:54.460881Z",
+      "coordinates": [
+        56.600833333333334,
+        24.11388888888889
+      ]
+    }
+  ],
+  "ads": [
+    {
+      "status": "success",
+      "code": null,
+      "source_name": "ADS",
+      "retrieved_at": "2026-11-23T10:04:57.690004Z",
+      "returned_papers": 3
+    }
+  ],
+  "gaia": [
+    {
+      "status": "error",
+      "code": "gaia_unexpected_response",
+      "source_name": "Gaia",
+      "retrieved_at": "2026-11-23T10:05:02.800528Z"
+    }
+  ]
+}

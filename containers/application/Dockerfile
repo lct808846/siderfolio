@@ -16,9 +16,9 @@ COPY src ./src
 RUN python -m pip install --no-deps --no-build-isolation . \
     && python -m pip check \
     && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin astroagent \
-    && mkdir -p /var/lib/astroagent-executor /var/lib/astroagent-compute \
-    && touch /var/lib/astroagent-compute/.volume \
-    && chown -R 10001:10001 /var/lib/astroagent-executor /var/lib/astroagent-compute
+    && mkdir -p /var/lib/astroagent /var/lib/astroagent-executor /var/lib/astroagent-compute \
+    && touch /var/lib/astroagent/.volume /var/lib/astroagent-compute/.volume \
+    && chown -R 10001:10001 /var/lib/astroagent /var/lib/astroagent-executor /var/lib/astroagent-compute
 USER 10001:10001
 
 FROM runtime AS backend

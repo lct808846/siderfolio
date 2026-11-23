@@ -194,7 +194,7 @@ def render_plot(record):
                 ]
                 figure.text(0.5, 0.83, " / ".join(flags), ha="center", color="#bb3322")
             with BytesIO() as buffer:
-                canvas.print_png(buffer, metadata={"Software": "AstroAgent"})
+                canvas.print_png(buffer, metadata={"Software": "Siderfolio"})
                 return buffer.getvalue()
         finally:
             if figure is not None:

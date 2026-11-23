@@ -67,7 +67,9 @@ _SAVE_INTENT_PATTERNS = (
         r"[^。！？!?\n]{0,18}"
         r"(?:我的|个人)?(?:天文)?(?:文献库|文献管理|文献列表|文献夹|库里|库中|里面|进去)"
     ),
-    re.compile(r"(?:直接|帮我|请|把它|把它们|把这|把那|把前|把第)[^。！？!?\n]{0,24}(?:入库|加进去|存进去|收进去)"),
+    re.compile(
+        r"(?:直接|帮我|请|把它|把它们|把这|把那|把前|把第)[^。！？!?\n]{0,24}(?:入库|加进去|存进去|收进去)"
+    ),
     re.compile(r"(?:入库|加入文献管理|加入文献库|加入我的文献库|添加到文献库|保存到文献库)"),
     re.compile(
         r"(?:把|将|从中|其中)[^。！？!?\n]{0,28}"
@@ -188,8 +190,7 @@ class SavePermit:
         """校验模型提交的候选引用是否在一次性许可范围内，返回目标批次与已核对条目。"""
         if not self.authorized:
             raise PermissionError(
-                self.deny_reason
-                or "当前用户消息未包含明确的文献入库授权，已拒绝写入个人文献库。"
+                self.deny_reason or "当前用户消息未包含明确的文献入库授权，已拒绝写入个人文献库。"
             )
         if self.consumed:
             raise PermissionError("本轮一次性文献入库授权已使用，不能在同一轮重复写入。")
@@ -200,7 +201,9 @@ class SavePermit:
         target_batch = None
         if arguments.source_scope == "current_turn":
             if self.selection_kind in {"all_batch", "single", "ranked_n"}:
-                successful_current = [b for b in current_batches if b.status == "success" and b.papers]
+                successful_current = [
+                    b for b in current_batches if b.status == "success" and b.papers
+                ]
                 if len(successful_current) > 1:
                     raise ValueError(
                         "本轮存在多批 ADS 检索结果，用户指代不唯一；请先确认保存哪一批或具体序号。"
@@ -214,7 +217,10 @@ class SavePermit:
                 raise ValueError("本轮没有可用的成功 ADS 检索批次可供保存。")
         else:
             # 历史批次：当用户使用模糊指代（如“那几篇”）且历史存在多个批次时拒绝猜测
-            if self.selection_kind in {"all_batch", "single", "ranked_n"} and not self.refers_recent:
+            if (
+                self.selection_kind in {"all_batch", "single", "ranked_n"}
+                and not self.refers_recent
+            ):
                 distinct_batches = [
                     (tid, bidx, batch)
                     for tid, bidx, batch in history_batches
@@ -273,7 +279,8 @@ class SavePermit:
             out_of_scope = [pos for pos, _ in chosen if pos not in allowed_set]
             if out_of_scope:
                 raise PermissionError(
-                    f"模型请求的文献序号 {out_of_scope} 超出用户明确指定的范围 {self.allowed_indices}。"
+                    f"模型请求的文献序号 {out_of_scope} "
+                    f"超出用户明确指定的范围 {self.allowed_indices}。"
                 )
         elif self.selection_kind == "bibcodes":
             allowed_codes = set(self.allowed_bibcodes)
@@ -375,11 +382,7 @@ def analyze_save_permit(
     if range_match:
         start = _parse_int_token(range_match.group(1))
         end = _parse_int_token(range_match.group(2))
-        if (
-            start is not None
-            and end is not None
-            and 1 <= start <= end <= MAX_LITERATURE_BATCH
-        ):
+        if start is not None and end is not None and 1 <= start <= end <= MAX_LITERATURE_BATCH:
             indices = list(range(start, end + 1))
             base.authorized = True
             base.selection_kind = "indices"
@@ -393,7 +396,11 @@ def analyze_save_permit(
     for match in _INDEX_LIST_PATTERN.finditer(cleaned):
         for tok in re.findall(r"\d+|[一二两三四五六七八九十]", match.group(1)):
             value = _parse_int_token(tok)
-            if value is not None and 1 <= value <= MAX_LITERATURE_BATCH and value not in parsed_indices:
+            if (
+                value is not None
+                and 1 <= value <= MAX_LITERATURE_BATCH
+                and value not in parsed_indices
+            ):
                 parsed_indices.append(value)
     if not parsed_indices:
         for match in _EN_INDICES_PATTERN.finditer(cleaned):

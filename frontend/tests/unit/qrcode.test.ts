@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { buildOtpAuthUri, encodeQrCode } from '../../src/utils/qrcode'
 
 describe('TOTP QR code encoder', () => {
-  it('builds a valid otpauth:// URI for AstroAgent', () => {
+  it('builds a valid otpauth:// URI for Siderfolio', () => {
     const uri = buildOtpAuthUri('observer@example.org', 'JBSWY3DPEHPK3PXP')
     expect(uri).toBe(
-      'otpauth://totp/AstroAgent:observer%40example.org?secret=JBSWY3DPEHPK3PXP&issuer=AstroAgent&algorithm=SHA1&digits=6&period=30',
+      'otpauth://totp/Siderfolio:observer%40example.org?secret=JBSWY3DPEHPK3PXP&issuer=Siderfolio&algorithm=SHA1&digits=6&period=30',
     )
   })
 

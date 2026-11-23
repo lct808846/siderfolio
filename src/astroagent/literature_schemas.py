@@ -7,7 +7,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator, model_validator
 
-from astroagent.schemas import Source
+from astroagent.source_schemas import Source
 
 DOI_PATTERN = re.compile(r"^10\.\d{4,9}/[^\s\"<>\\]+$")
 BIBCODE_PATTERN = re.compile(r"^[A-Za-z0-9.&+_-]{4,40}$")
@@ -51,7 +51,9 @@ def normalize_tags(values: list[str]) -> list[str]:
         if not tag:
             continue
         if len(tag) > MAX_LITERATURE_TAG_LENGTH or "\x00" in tag:
-            raise ValueError(f"单个标签长度须在 1–{MAX_LITERATURE_TAG_LENGTH} 字符内且不含非法字符。")
+            raise ValueError(
+                f"单个标签长度须在 1–{MAX_LITERATURE_TAG_LENGTH} 字符内且不含非法字符。"
+            )
         key = tag.casefold()
         if key in seen:
             continue

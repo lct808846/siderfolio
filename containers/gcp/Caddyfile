@@ -1,0 +1,44 @@
+{
+	admin off
+	{$ACME_CONTACT}
+	# Clients connecting by IP may omit SNI, and Docker sees a private address.
+	default_sni {$PUBLIC_HOST}
+}
+
+(astroagent_domain_tls) {
+	tls {
+		issuer acme https://acme-v02.api.letsencrypt.org/directory
+	}
+}
+
+(astroagent_ip_tls) {
+	tls {
+		issuer acme https://acme-v02.api.letsencrypt.org/directory {
+			profile shortlived
+			disable_tlsalpn_challenge
+		}
+	}
+}
+
+https://{$PUBLIC_HOST} {
+	import astroagent_{$SITE_MODE}_tls
+	@internal path /health /__internal /__internal/*
+	respond @internal 404
+
+	# The Vue runtime serves both pages and the existing authenticated /api proxy.
+	reverse_proxy frontend:5173 {
+		header_up X-Astroagent-Edge-Client {http.request.remote.host}
+		header_up -X-Astroagent-Client-Address
+		header_up -X-Astroagent-Proxy
+	}
+}
+
+# Caddy also serves ACME HTTP challenges on port 80. Browser traffic upgrades to TLS.
+http://{$PUBLIC_HOST} {
+	redir https://{$PUBLIC_HOST}{uri} 308
+}
+
+http://127.0.0.1:2018 {
+	bind 127.0.0.1
+	respond /ready 200
+}

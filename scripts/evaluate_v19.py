@@ -26,17 +26,16 @@ CASES_PATH = ROOT / "docs" / "development" / "v1.9.0" / "evaluation-cases.json"
 
 def _git_head() -> str:
     try:
-        return (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True)
-            .strip()
-        )
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True
+        ).strip()
     except Exception:
         return "unknown"
 
 
 def _run_offline_case(case: dict) -> dict:
     from astroagent.literature_auth import analyze_save_permit
-    from astroagent.mcp_server import build_server
+    from astroagent.mcp_server import build_mcp_tools
     from astroagent.schemas import LiteratureSearchResult, PaperData, Source
     from astroagent.trace_runtime import TraceRecorder
 
@@ -107,22 +106,27 @@ def _run_offline_case(case: dict) -> dict:
         batch = LiteratureSearchResult(
             status="success",
             query="q",
+            rows=1,
+            start=0,
+            sort="relevance",
             returned_count=1,
             total_found=1,
             papers=[paper],
             source=dummy_src,
         )
+        t1 = "11111111-1111-4111-8111-111111111111"
+        t2 = "22222222-2222-4222-8222-222222222222"
         rejected = False
         try:
             permit.verify_and_resolve(
                 SaveLiteratureQuery(
                     source_scope="history_turn",
-                    source_turn_id="t-1",
+                    source_turn_id=t1,
                     batch_index=0,
                     paper_indices=[1],
                 ),
                 current_batches=[],
-                history_batches=[("t-1", 0, batch), ("t-2", 0, batch)],
+                history_batches=[(t1, 0, batch), (t2, 0, batch)],
             )
         except (PermissionError, ValueError) as exc:
             rejected = True
@@ -130,7 +134,9 @@ def _run_offline_case(case: dict) -> dict:
         status = "passed" if rejected else "failed"
 
     elif cid == "iso-01-account-isolation-and-sanitized-trace":
-        recorder = TraceRecorder(conversation_id="eval-c", turn_id="eval-t", astronomy_transport="mcp")
+        recorder = TraceRecorder(
+            conversation_id="eval-c", turn_id="eval-t", astronomy_transport="mcp"
+        )
         span = recorder.start_span(kind="tool_ads", name="ADS 文献检索")
         recorder.record_span(
             span_id=span[0],
@@ -148,12 +154,11 @@ def _run_offline_case(case: dict) -> dict:
         dumped = trace.model_dump_json()
         forbidden = ("prompt", "abstract", "secret", "password", "traceback")
         sanitized = not any(word in dumped.lower() for word in forbidden)
-        server = build_server()
-        tool_names = sorted(getattr(server, "_tool_manager", None)._tools.keys()) if hasattr(server, "_tool_manager") else []
-        mcp_ok = (not tool_names) or (set(tool_names) == {"query_simbad", "search_ads", "query_gaia"})
+        tool_names = sorted(tool.name for tool in build_mcp_tools())
+        mcp_ok = tool_names == ["query_gaia", "query_simbad", "search_ads"]
         ok = sanitized and mcp_ok and trace.astronomy_transport == "mcp"
         status = "passed" if ok else "failed"
-        notes.append(f"sanitized={sanitized} mcp_tools={tool_names or 'verified_in_schema'}")
+        notes.append(f"sanitized={sanitized} mcp_tools={tool_names}")
 
     else:
         status = "skipped"
@@ -182,16 +187,27 @@ def _render_markdown(report: dict) -> str:
         f"- **生成时间 (UTC)**：`{report['generated_at']}`",
         f"- **运行模式**：`{report['mode']}`",
         f"- **样例集版本**：`{report['suite_version']}`",
-        f"- **对比锚点**：`{report['baseline_anchor']}` → `v{report['target_version']}` (`{report['git_head']}`)",
+        (
+            f"- **对比锚点**：`{report['baseline_anchor']}` → "
+            f"`v{report['target_version']}` (`{report['git_head']}`)"
+        ),
         "",
         "## 1. 汇总统计",
         "",
-        f"- 通过：`{report['summary']['passed']}`　失败：`{report['summary']['failed']}`　跳过：`{report['summary']['skipped']}`　总计：`{report['summary']['total']}`",
+        (
+            f"- 通过：`{report['summary']['passed']}`　"
+            f"失败：`{report['summary']['failed']}`　"
+            f"跳过：`{report['summary']['skipped']}`　"
+            f"总计：`{report['summary']['total']}`"
+        ),
         "- Token 用量：离线模式未调用真实模型，记为 `未报告`；费用记为 `未知`（不编造数据）。",
         "",
         "## 2. 逐项结果与 V1.8 / V1.9 版本对照",
         "",
-        "| 样例 ID | 场景 | V1.8 基线适用性 | V1.9 结果 | 样本数 n | 耗时 (ms) | Token / 费用 | 备注 |",
+        (
+            "| 样例 ID | 场景 | V1.8 基线适用性 | V1.9 结果 | "
+            "样本数 n | 耗时 (ms) | Token / 费用 | 备注 |"
+        ),
         "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for item in report["results"]:
@@ -199,14 +215,19 @@ def _render_markdown(report: dict) -> str:
         tok = "未报告 / 未知" if item["tokens"] is None else str(item["tokens"])
         note = "；".join(item["notes"]).replace("|", "/")
         lines.append(
-            f"| `{item['id']}` | {item['title']} | {v18_col} | `{item['status']}` | {item['samples']} | {item['latency_ms']} | {tok} | {note} |"
+            f"| `{item['id']}` | {item['title']} | {v18_col} | `{item['status']}` | "
+            f"{item['samples']} | {item['latency_ms']} | {tok} | {note} |"
         )
     lines.extend(
         [
             "",
             "## 3. 限制与说明",
             "",
-            "- 离线模式仅验证确定性本地规则（授权边界、追踪脱敏、MCP 工具面）；真实外部服务（SIMBAD/ADS/Gaia/模型/REBOUND/PeTar）须在隔离验收环境使用 `--mode live` 单独留证。",
+            (
+                "- 离线模式仅验证确定性本地规则（授权边界、追踪脱敏、MCP 工具面）；"
+                "真实外部服务（SIMBAD/ADS/Gaia/模型/REBOUND/PeTar）"
+                "须在隔离验收环境使用 `--mode live` 单独留证。"
+            ),
             "- 本报告完整保留失败与跳过项，不覆盖历史记录。",
             "",
         ]
@@ -218,7 +239,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("offline", "live"), default="offline")
     parser.add_argument("--record-type", default="evaluation")
-    parser.add_argument("--dry-run", action="store_true", help="Print report to stdout without writing test-records")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print report to stdout without writing test-records"
+    )
     args = parser.parse_args()
 
     sys.path.insert(0, str(ROOT / "src"))
@@ -226,8 +249,9 @@ def main() -> int:
 
     if args.mode == "live":
         print(
-            "Live evaluation requires an explicitly provisioned isolated AstroAgent instance and database; "
-            "configure ASTROAGENT_EVAL_BASE_URL against an isolated acceptance stack before running.",
+            "Live evaluation requires an explicitly provisioned isolated AstroAgent instance "
+            "and database; configure ASTROAGENT_EVAL_BASE_URL against an isolated acceptance "
+            "stack before running.",
             file=sys.stderr,
         )
         return 2
@@ -258,7 +282,9 @@ def main() -> int:
     stamp = now.strftime("%Y%m%dT%H%M%SZ")
     out_dir = ROOT / "docs" / "test-records" / "v1.9.0" / args.record_type / stamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (out_dir / "report.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     (out_dir / "README.md").write_text(markdown, encoding="utf-8")
     print(f"Wrote V1.9 evaluation report to {out_dir}")
     return 0 if report["summary"]["failed"] == 0 else 1

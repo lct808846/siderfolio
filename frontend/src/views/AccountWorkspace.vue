@@ -52,14 +52,14 @@ const revokePassword = ref('')
 const revokeCode = ref('')
 
 const displayName = computed(() => {
-  return (identityUser.value?.username || identityUser.value?.email?.split('@')[0] || 'AstroAgent 用户').trim()
+  return (identityUser.value?.username || identityUser.value?.email?.split('@')[0] || 'Siderfolio 用户').trim()
 })
 
 const qrCode = computed(() => {
   if (!secret.value) return null
   const uri =
     otpauthUri.value ||
-    buildOtpAuthUri(identityUser.value?.email || 'user', secret.value, 'AstroAgent')
+    buildOtpAuthUri(identityUser.value?.email || 'user', secret.value, 'Siderfolio')
   try {
     return encodeQrCode(uri, 3)
   } catch {
@@ -111,7 +111,7 @@ async function enrollTotp() {
     secret.value = value.secret
     otpauthUri.value =
       value.otpauth_uri ||
-      buildOtpAuthUri(identityUser.value?.email || 'user', value.secret, 'AstroAgent')
+      buildOtpAuthUri(identityUser.value?.email || 'user', value.secret, 'Siderfolio')
     totpPassword.value = ''
     totpCurrentCode.value = ''
     confirmCode.value = ''
@@ -175,7 +175,7 @@ async function copyRecoveryCodes() {
 function downloadRecoveryCodes() {
   if (!recovery.value.length) return
   const lines = [
-    'AstroAgent 双因素验证 (2FA) 一次性应急恢复码',
+    'Siderfolio 双因素验证 (2FA) 一次性应急恢复码',
     `账号: ${identityUser.value?.email || ''}`,
     `生成时间: ${new Date().toLocaleString('zh-CN')}`,
     '说明: 每个恢复码仅可使用一次，请离线妥善保管。',
@@ -369,7 +369,7 @@ onMounted(() => { void loadSessions() })
           <button type="button" class="account-value-action" :disabled="busy" @click="openPanel('sessions')">{{ sessionsLoading ? '正在读取…' : sessionsLoaded ? sessions.length + ' 个会话' : '查看会话' }}<span aria-hidden="true">›</span></button>
         </div>
         <div class="settings-row">
-          <div><h4>退出当前登录</h4><p>结束当前浏览器上的 AstroAgent 登录会话</p></div>
+          <div><h4>退出当前登录</h4><p>结束当前浏览器上的 Siderfolio 登录会话</p></div>
           <button type="button" :disabled="busy" @click="handleLogout">退出登录</button>
         </div>
       </section>

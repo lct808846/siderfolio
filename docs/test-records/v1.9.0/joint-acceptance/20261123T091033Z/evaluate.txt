@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/workspace/scripts/evaluate_v19.py", line 268, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/scripts/evaluate_v19.py", line 235, in main
+    results = [_run_offline_case(case) for case in suite["scenarios"]]
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scripts/evaluate_v19.py", line 38, in _run_offline_case
+    from astroagent.literature_auth import analyze_save_permit
+  File "/workspace/src/astroagent/literature_auth.py", line 10, in <module>
+    from astroagent.literature_schemas import BIBCODE_PATTERN, MAX_LITERATURE_BATCH, SaveLiteratureQuery
+  File "/workspace/src/astroagent/literature_schemas.py", line 10, in <module>
+    from astroagent.schemas import Source
+  File "/workspace/src/astroagent/schemas.py", line 640, in <module>
+    from astroagent.literature_schemas import LiteratureSaveReceipt  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ImportError: cannot import name 'LiteratureSaveReceipt' from partially initialized module 'astroagent.literature_schemas' (most likely due to a circular import) (/workspace/src/astroagent/literature_schemas.py)

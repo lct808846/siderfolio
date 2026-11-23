@@ -25,6 +25,7 @@ class AuthSettings(BaseSettings):
     smtp_from: str = ""
     smtp_mode: str = "tls"
     mail_hour_limit: int = Field(default=100, ge=1, le=10000)
+    registration_enabled: bool = True
     registration_limit: int = Field(default=1000, ge=1, le=100000)
     tenant_limit: int = Field(default=32, ge=1, le=128)
     audit_days: int = Field(default=90, ge=7, le=365)

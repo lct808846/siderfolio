@@ -11,6 +11,7 @@ from requests import Session
 from requests.exceptions import ConnectionError, HTTPError, Timeout
 
 from astroagent.schemas import ErrorInfo, ObjectData, ObjectQuery, QueryResult, Source
+from astroagent.usage import reserve_request
 
 SIMBAD_SERVERS = ("simbad.cds.unistra.fr", "simbad.cfa.harvard.edu")
 
@@ -87,6 +88,7 @@ class SimbadService:
 
     def query(self, object_name: str) -> QueryResult:
         name = ObjectQuery(object_name=object_name).object_name
+        reserve_request("astronomy_queries")
         for index, server in enumerate(SIMBAD_SERVERS):
             source = Source(
                 url=f"https://{server}/simbad/sim-id?"

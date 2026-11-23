@@ -34,7 +34,7 @@ test('clipboard preserves the question and reports a denied copy', async ({ page
 test('pending response does not open results and manual close survives refresh', async ({ page }) => {
   let release!: () => void
   const gate = new Promise<void>(resolve => { release = resolve })
-  await page.route('**/api/v1/conversations/*/turns', async route => { await gate; await route.continue() }, { times: 1 })
+  await page.route(/\/api\/v1\/conversations\/[^/]+\/turns(?:\/stream)?$/, async route => { await gate; await route.continue() }, { times: 1 })
   try {
     await page.goto('/')
     await page.getByRole('textbox', { name: '天文问题' }).fill('合成 Gaia 查询')

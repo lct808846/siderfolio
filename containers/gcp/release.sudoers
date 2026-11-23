@@ -1,0 +1,2 @@
+# Install after validating with visudo. The SSH account has no Docker group access.
+astroagent-release ALL=(root) NOPASSWD: /usr/bin/python3 -I /usr/local/lib/astroagent/release_apply.py apply

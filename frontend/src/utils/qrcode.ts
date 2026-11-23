@@ -1,6 +1,6 @@
 /**
  * Zero-dependency ISO/IEC 18004 QR Code encoder & SVG generator (Byte mode, EC Level M).
- * Designed for crisp vector rendering of TOTP `otpauth://` URIs in AstroAgent.
+ * Designed for crisp vector rendering of TOTP `otpauth://` URIs in Siderfolio.
  */
 
 interface VersionSpec {
@@ -423,7 +423,7 @@ export function encodeQrCode(text: string, margin = 4): QrCodeSvgResult {
   }
 }
 
-export function buildOtpAuthUri(email: string, secret: string, issuer = 'AstroAgent'): string {
+export function buildOtpAuthUri(email: string, secret: string, issuer = 'Siderfolio'): string {
   const cleanEmail = (email || 'user').trim()
   const label = `${encodeURIComponent(issuer)}:${encodeURIComponent(cleanEmail)}`
   const params = new URLSearchParams({

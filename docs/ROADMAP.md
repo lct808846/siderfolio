@@ -2,7 +2,9 @@
 
 **更新日期** 2026-11-23
 
-V1.9.0 提供顶部栏文献管理、对话内查找并保存文献、会话与计算运行追踪及固定科研评估框架。功能与视觉验收安排在 V2.0 开发完成后合并进行。 [发布说明](development/v1.9.0/RELEASE.md) · [实施说明](development/v1.9.0/IMPLEMENTATION.md)
+V2.0.0 将产品更名为 **Siderfolio**（原 AstroAgent），交付面向个人和小课题组的服务器部署配置、多账号配额与后台管理、开发与发布体系，并完成 V1.9.0 与 V2.0.0 联合验收及独立数据库备份恢复演练。 [发布说明](development/v2.0.0/RELEASE.md) · [V2.0 开发文档](PROJECT_PLAN_V2.0.md) · [联合验收](test-records/v2.0.0/joint-acceptance/20261123T091033Z/README.md)
+
+V1.9.0 提供顶部栏文献管理、对话内查找并保存文献、会话与计算运行追踪及固定科研评估框架，已与 V2.0.0 联合完成功能与回归验收。 [发布说明](development/v1.9.0/RELEASE.md) · [实施说明](development/v1.9.0/IMPLEMENTATION.md) · [联合验收](test-records/v1.9.0/joint-acceptance/20261123T091033Z/README.md)
 
 V1.8.0 提供独立 Astronomy MCP Server、对话内绘图及 N 体模拟。AstroAgent 与独立客户端均已实测 SIMBAD、ADS、Gaia。 [发布说明](development/v1.8.0/RELEASE.md) · [增量验收](test-records/v1.8.0/changed-parts/20261122T082958Z/README.md)
 
@@ -44,9 +46,9 @@ V1.6.0 的身份、模型服务商和个人资料见[发布说明](development/v
 | **V1.6** | 邮箱注册登录与后台管理 | 邮箱激活、强制登录、管理员后台和用户数据隔离 | V1.6.0 正式源码已发布，实际覆盖见[发布说明](development/v1.6.0/RELEASE.md) |
 | **V1.7** | 科研计算任务中心 | 后台任务、REBOUND 与 PeTar 小规模模拟、可视化与可复现实验记录 | [发布说明](development/v1.7.0/RELEASE.md) · [增量验收](test-records/v1.7.0/changed-parts/20261121T092707Z/README.md) |
 | **V1.8** | Astronomy MCP Server | 通过本地 MCP 服务提供 SIMBAD、ADS、Gaia 三项只读查询，将绘图和 N 体模拟接入对话 | [开发文档](PROJECT_PLAN_V1.8.md) · [增量验收](test-records/v1.8.0/changed-parts/20261122T082958Z/README.md) |
-| **V1.9** | 天文文献管理、评估与追踪 | 顶部栏文献库、对话内 ADS 检索与直接入库、会话和任务运行详情、固定评估及版本对照 | [发布说明](development/v1.9.0/RELEASE.md) · [开发文档](PROJECT_PLAN_V1.9.md) |
+| **V1.9** | 天文文献管理、评估与追踪 | 顶部栏文献库、对话内 ADS 检索与直接入库、会话和任务运行详情、固定评估及版本对照 | [发布说明](development/v1.9.0/RELEASE.md) · [联合验收](test-records/v1.9.0/joint-acceptance/20261123T091033Z/README.md) |
 | **V1.x** | 经验证的扩展 | 按需求增加单项数据源、交叉匹配或外部文献管理工具集成；每项另立契约 | 科学误差、范围、质量/性能边界及兼容性均有独立验收 |
-| **V2.0** | 生产部署与多用户能力增强 | 在 V1.6 身份权限及用户隔离基础上，扩展服务端异步任务、配额、审计/Tracing、运行评估、备份与部署 | 跨用户数据/任务隔离、安全与压力测试、故障恢复和运维验收 |
+| **V2.0** | 可长期运行的科研工作台 | Linux／Compose 正式部署、多账号隔离与配额、后台任务恢复、备份和品牌更新 | [发布说明](development/v2.0.0/RELEASE.md) · [联合验收](test-records/v2.0.0/joint-acceptance/20261123T091033Z/README.md) |
 
 V0.9 是集成阶段编号，正式发布的候选标签可使用 `v1.0.0-rc.N`，并与包元数据采用一致的预发布版本映射；具体策略在该阶段开发文档固定。不能为了达到 V1.0 版本号而把未实现能力列为已交付。
 
@@ -125,11 +127,7 @@ V1.9 将 ADS 结果接入个人文献库，用户在会话中明确指定条目�
 
 ### V2.0：生产运行
 
-在已有个人工作台基础上设计认证授权、逐用户数据与任务隔离、队列/取消/重试语义、配额、审计与可观测性、部署和灾难恢复。生产级 Evaluation 在基础评估之上扩展，持续评估不等到 V2.0 才开始。
-
-V1.0 已将主业务库和向量存储规划为 PostgreSQL + pgvector；V2.0 需在此基础上设计多用户隔离、并发和生产运维，而不是把数据库选型本身视作多用户能力已完成。
-
-仅修改监听地址、加登录页或部署到服务器不构成 V2.0；先完成访问边界与隔离契约，再开放多人使用。
+沿用 PostgreSQL + pgvector、V1.6 身份隔离和 V1.9 追踪评估。交付单机 HTTPS 部署、用量配额、服务重启后的任务核对、升级回退及独立环境恢复演练。用两个账号并行保存文献与执行模拟核对数据隔离和任务恢复。Siderfolio 更名与兼容范围见 [V2.0 开发文档](PROJECT_PLAN_V2.0.md)。
 
 ## 4. 跨版本约束与依赖
 

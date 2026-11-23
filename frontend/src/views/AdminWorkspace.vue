@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import SettingsSelect from '../components/SettingsSelect.vue'
 import { identityRequest, identityUser } from '../identity-state'
+import type { components } from '../types/generated'
 
 type User = {
   id: string
@@ -37,10 +38,13 @@ type Overview = {
 }
 type AdminTab = 'users' | 'mail' | 'audit'
 type UserFilter = 'all' | 'active' | 'pending' | 'disabled' | 'admin'
+type AccountUsage = components['schemas']['AccountUsage']
+type ComputeCapacity = components['schemas']['ComputeCapacity']
 
 const tab = ref<AdminTab>('users')
 const page = ref(1)
 const overview = ref<Overview | null>(null)
+const computeCapacity = ref<ComputeCapacity | null>(null)
 const users = ref<User[]>([])
 const mails = ref<Mail[]>([])
 const events = ref<Audit[]>([])
@@ -62,6 +66,16 @@ const reason = ref('account_review')
 
 const mailDialog = ref<HTMLDialogElement | null>(null)
 const retryTarget = ref<Mail | null>(null)
+const quotaDialog = ref<HTMLDialogElement | null>(null)
+const quotaTarget = ref<User | null>(null)
+const quota = ref<AccountUsage | null>(null)
+const quotaError = ref('')
+const limitFields = [
+  { key: 'model_requests', label: '每小时模型请求', min: 1, max: 10000 },
+  { key: 'astronomy_queries', label: '每小时天文查询', min: 1, max: 10000 },
+  { key: 'storage_mib', label: '存储限额（MiB）', min: 32, max: 65536 },
+  { key: 'compute_queued', label: '计算排队上限', min: 1, max: 20 },
+] as const
 
 let countdownTimer: number | null = null
 
@@ -198,6 +212,7 @@ async function load() {
   busy.value = true
   try {
     overview.value = await identityRequest<Overview>('admin/overview')
+    computeCapacity.value = await identityRequest<ComputeCapacity>('admin/capacity').catch(() => null)
     if (tab.value === 'users') users.value = await identityRequest<User[]>('admin/users?page=' + page.value)
     if (tab.value === 'mail') mails.value = await identityRequest<Mail[]>('admin/mail?page=' + page.value)
     if (tab.value === 'audit') events.value = await identityRequest<Audit[]>('admin/audit?page=' + page.value)
@@ -214,6 +229,37 @@ function changeTab(value: AdminTab) {
   searchQuery.value = ''
   userFilter.value = 'all'
   void load()
+}
+
+async function openQuota(user: User) {
+  if (busy.value) return
+  busy.value = true
+  error.value = ''
+  quotaError.value = ''
+  try {
+    quota.value = await identityRequest<AccountUsage>(`admin/users/${user.id}/quota`)
+    quotaTarget.value = user
+    quotaDialog.value?.showModal()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : '读取账号用量失败。'
+  } finally {
+    busy.value = false
+  }
+}
+
+async function saveQuota() {
+  if (!quota.value || !quotaTarget.value || busy.value) return
+  busy.value = true
+  quotaError.value = ''
+  try {
+    await identityRequest<AccountUsage>(`admin/users/${quotaTarget.value.id}/quota`, 'PUT', quota.value.limits)
+    message.value = '账号配额已保存。'
+    quotaDialog.value?.close()
+  } catch (e) {
+    quotaError.value = e instanceof Error ? e.message : '保存配额失败。'
+  } finally {
+    busy.value = false
+  }
 }
 
 function open(user: User, kind: string) {
@@ -321,7 +367,7 @@ onBeforeUnmount(() => {
                 <path d="M12 3.2L13.85 10.15L20.8 12L13.85 13.85L12 20.8L10.15 13.85L3.2 12L10.15 10.15L12 3.2Z" fill="currentColor" />
               </svg>
             </span>
-            <b>AstroAgent</b>
+            <b>Siderfolio</b>
           </RouterLink>
           <span class="admin-topbar-badge">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6l-7-3Z" /><path d="m9.5 12 1.8 1.8L15 10" /></svg>
@@ -354,10 +400,13 @@ onBeforeUnmount(() => {
         <div v-if="overview" class="ui-pill-list" aria-label="系统配额策略">
           <span class="ui-pill" :class="overview.registration_available ? 'ui-pill-success' : 'ui-pill-warning'">
             <span class="ui-dot" aria-hidden="true" />
-            {{ overview.registration_available ? '注册开放' : '注册已达上限' }}
+            {{ overview.registration_available ? '注册开放' : '注册暂不可用' }}
           </span>
           <span class="ui-pill ui-pill-mono">配额 {{ overview.users.total }} / {{ overview.registration_limit }}</span>
           <span class="ui-pill ui-pill-mono">发信上限 {{ overview.mail_hour_limit }}/h</span>
+          <span v-if="computeCapacity?.enabled" class="ui-pill" :class="computeCapacity.worker_ready ? 'ui-pill-success' : 'ui-pill-warning'">
+            计算队列 {{ computeCapacity.queued }} 项排队，{{ computeCapacity.active }} 项执行中<span v-if="!computeCapacity.worker_ready"> · 执行器未就绪</span>
+          </span>
         </div>
       </header>
 
@@ -579,9 +628,11 @@ onBeforeUnmount(() => {
                       </div>
                     </td>
                     <td class="admin-col-actions">
-                      <span v-if="user.id === identityUser?.id" class="ui-pill ui-pill-accent">当前账号</span>
-                      <div v-else class="admin-row-actions">
+                      <div class="admin-row-actions">
+                        <button type="button" :disabled="busy" @click="openQuota(user)">配额</button>
+                        <span v-if="user.id === identityUser?.id" class="ui-pill ui-pill-accent">当前账号</span>
                         <button
+                          v-if="user.id !== identityUser?.id"
                           type="button"
                           :class="user.disabled ? '' : 'admin-btn-subtle-danger'"
                           :disabled="busy"
@@ -590,6 +641,7 @@ onBeforeUnmount(() => {
                           {{ user.disabled ? '启用' : '禁用' }}
                         </button>
                         <button
+                          v-if="user.id !== identityUser?.id"
                           type="button"
                           :disabled="busy || !user.active || user.disabled"
                           @click="open(user, user.admin ? 'revoke_admin' : 'grant_admin')"
@@ -719,6 +771,27 @@ onBeforeUnmount(() => {
         <div class="project-actions">
           <button type="button" :disabled="busy" @click="closeActionDialog">取消</button>
           <button type="submit" class="button-primary" :disabled="busy">确认操作</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog ref="quotaDialog" class="project-dialog admin-action-dialog" aria-labelledby="account-quota-heading">
+      <form v-if="quota && quotaTarget" class="admin-dialog-form" @submit.prevent="saveQuota">
+        <div class="dialog-header">
+          <div class="dialog-header-copy">
+            <h2 id="account-quota-heading">账号配额</h2>
+            <p class="dialog-subtitle">{{ quotaTarget.email }}</p>
+          </div>
+        </div>
+        <p class="muted small">本小时已使用 {{ quota.model_requests }} 次模型请求、{{ quota.astronomy_queries }} 次天文查询。当前存储 {{ (quota.storage_bytes / 1048576).toFixed(1) }} MiB。</p>
+        <label v-for="field in limitFields" :key="field.key" class="admin-dialog-field">
+          <span class="admin-dialog-label">{{ field.label }}</span>
+          <input v-model.number="quota.limits[field.key]" type="number" :min="field.min" :max="field.max" step="1" required :disabled="busy">
+        </label>
+        <p v-if="quotaError" class="notice danger" role="alert">{{ quotaError }}</p>
+        <div class="project-actions">
+          <button type="button" :disabled="busy" @click="quotaDialog?.close()">关闭</button>
+          <button type="submit" class="button-primary" :disabled="busy">保存配额</button>
         </div>
       </form>
     </dialog>

@@ -1,6 +1,16 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ['**']
+  workflow_call:
+    inputs:
+      revision:
+        type: string
+        required: true
+
+permissions:
+  contents: read
 
 jobs:
   postgres:
@@ -24,36 +34,60 @@ jobs:
       ASTROAGENT_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:5432/astroagent_test_control
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install -e ".[dev]"
       - name: Prepare real isolated plotting runtimes
         run: |
-          docker build -f containers/plotting/python.Dockerfile -t astroagent-ci-plot-python containers/plotting
-          docker build -f containers/plotting/gnuplot.Dockerfile -t astroagent-ci-plot-gnuplot containers/plotting
+          docker buildx bake -f containers/release/docker-bake.hcl --load plot-python plot-gnuplot
           echo "ASTROAGENT_PLOT_EXECUTION_ENABLED=true" >> "$GITHUB_ENV"
-          echo "ASTROAGENT_PLOT_PYTHON_IMAGE=$(docker image inspect --format '{{.Id}}' astroagent-ci-plot-python)" >> "$GITHUB_ENV"
-          echo "ASTROAGENT_PLOT_GNUPLOT_IMAGE=$(docker image inspect --format '{{.Id}}' astroagent-ci-plot-gnuplot)" >> "$GITHUB_ENV"
-      - run: python -m pytest -m postgres -q
+          echo "ASTROAGENT_PLOT_PYTHON_IMAGE=$(docker image inspect --format '{{.Id}}' astroagent-ci-plot-python:local)" >> "$GITHUB_ENV"
+          echo "ASTROAGENT_PLOT_GNUPLOT_IMAGE=$(docker image inspect --format '{{.Id}}' astroagent-ci-plot-gnuplot:local)" >> "$GITHUB_ENV"
+      - run: python -m pytest -m 'postgres and not live' -ra --junitxml=postgres.xml
+      - run: python scripts/ci_verify.py postgres postgres.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: postgres-checks
+          path: postgres.xml
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install -e ".[dev]"
+      - run: python -m compileall -q src scripts
       - run: python -m ruff check src tests scripts
       - run: python -m ruff format --check src tests scripts
-      - run: python -m pytest -q
+      - run: python -m pytest -m 'not live and not postgres' -ra --junitxml=python.xml
       - run: python -m pip check
+      - name: Audit Python dependencies
+        run: |
+          python -m pip install pip-audit
+          python -m pip_audit --skip-editable
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-checks
+          path: python.xml
 
   frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -84,3 +118,40 @@ jobs:
         working-directory: frontend
       - run: npx playwright test --config playwright.mail-navigation.ts
         working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-browser-checks
+          path: frontend/test-results/
+
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [backend, frontend, ingress, postgres, compute-worker, plot-executor]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v4
+      - name: Validate production image recipes
+        uses: docker/bake-action@v7
+        with:
+          source: .
+          files: containers/release/docker-bake.hcl
+          targets: ${{ matrix.target }}
+          load: true
+          set: |
+            ${{ matrix.target }}.cache-from=type=gha,scope=ci-${{ matrix.target }}
+            ${{ matrix.target }}.cache-to=type=gha,scope=ci-${{ matrix.target }},mode=max
+      - name: Verify real REBOUND and PeTar execution with a circular binary
+        if: matrix.target == 'compute-worker'
+        run: |
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges:true --memory 512m --cpus 1 --pids-limit 24 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=32m,mode=1777 \
+            --mount "type=bind,src=$PWD/scripts/ci_verify.py,dst=/ci_verify.py,readonly" \
+            --entrypoint python astroagent-ci-compute-worker:local /ci_verify.py compute

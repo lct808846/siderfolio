@@ -15,6 +15,7 @@ from defusedxml.common import DefusedXmlException
 
 from astroagent.analysis import analyze_sources
 from astroagent.schemas import ErrorInfo, GaiaQuery, GaiaQueryResult, GaiaSourceData, Source
+from astroagent.usage import reserve_request
 
 GAIA_ENDPOINT = "https://gea.esac.esa.int/tap-server/tap/sync"
 GAIA_ARCHIVE = "https://gea.esac.esa.int/archive/"
@@ -282,6 +283,7 @@ class GaiaService:
 
     def query(self, arguments: GaiaQuery) -> GaiaQueryResult:
         adql, maxrec = build_adql(arguments)
+        reserve_request("astronomy_queries")
         warnings = [SAMPLE_WARNING]
         if arguments.mode == "cone":
             warnings.append(POSITION_WARNING)

@@ -46,7 +46,7 @@ test('real container source consistency, profile and TOTP binding survive page n
   const payload = await enrollment.json()
   const uri = new URL(payload.otpauth_uri)
   expect(uri.searchParams.get('secret')).toBe(payload.secret)
-  await expect(page.getByRole('img', { name: 'AstroAgent 双因素身份验证绑定二维码' })).toBeVisible()
+  await expect(page.getByRole('img', { name: 'Siderfolio 双因素身份验证绑定二维码' })).toBeVisible()
   await page.getByLabel('6 位动态验证码', { exact: true }).fill(otp(payload.secret))
   await page.getByRole('button', { name: '确认并完成绑定', exact: true }).click()
   await expect(page.locator('.account-recovery-workbench')).toBeVisible()

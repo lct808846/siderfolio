@@ -1,0 +1,68 @@
+{
+  "version": "2.0.0",
+  "timestamp_utc": "2026-11-23T11:26:58.089985+00:00",
+  "mcp_readonly_tools": [
+    "query_gaia",
+    "query_simbad",
+    "search_ads"
+  ],
+  "v19_literature_and_traces": {
+    "agent_top3_saved": [
+      "2025ApJ...900....1A",
+      "2025ApJ...900....2A",
+      "2025ApJ...900....3A"
+    ],
+    "manual_add_and_dedup": {
+      "added": 1,
+      "already_saved": 1,
+      "idempotent_replay_verified": true,
+      "existing_tags_and_note_preserved": true
+    },
+    "deleted_conversation_literature_preserved": {
+      "item_id": "4d193ef8-e3f9-442c-a9b3-fd48a8581427",
+      "source_available_after_delete": false
+    },
+    "run_trace": {
+      "status": "ok",
+      "spans": [
+        "model",
+        "tool_ads",
+        "tool_literature_save",
+        "model"
+      ],
+      "tokens_total": 2500,
+      "estimated_cost": 0.00077,
+      "pricing_version": "2026-11-qa",
+      "sanitized_no_prompts_abstracts_notes_secrets": true
+    },
+    "cross_account_isolation_404": true
+  },
+  "v20_quotas_and_admin": {
+    "alice_quota_updated": {
+      "model_requests": 1,
+      "astronomy_queries": 1,
+      "storage_mib": 64,
+      "compute_queued": 1
+    },
+    "alice_astronomy_quota_exceeded_code": "astronomy_queries_quota",
+    "alice_astronomy_quota_exceeded_message": "本小时天文查询已用 1/1，约 34 分钟后恢复。",
+    "bob_unaffected": true,
+    "admin_capacity": {
+      "enabled": true,
+      "worker_ready": true,
+      "queued": 1,
+      "active": 0
+    },
+    "admin_audit_recorded_quota_updated": true
+  },
+  "v20_backup_restore_drill": {
+    "format": "pg_dump-custom",
+    "dump_bytes": 218838,
+    "dump_sha256": "84af2dcbe5d837861d68ce81efe9290f75b8d8bfc112682c13643c0457ee351b",
+    "restored_alice_literature_count": 5,
+    "restored_alice_turn_receipts": 2,
+    "restored_alice_trace_status": "ok",
+    "restored_bob_compute_task_id": "3ba7b3f1-e1d5-4570-8b99-4ba3046cf3f8",
+    "restored_bob_compute_task_state": "interrupted"
+  }
+}

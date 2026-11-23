@@ -1,8 +1,15 @@
 ARG NODE_IMAGE
-FROM ${NODE_IMAGE} AS build
+FROM ${NODE_IMAGE} AS dependencies
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
+
+FROM dependencies AS development
+RUN chown node:node /app/node_modules
+USER node
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+FROM dependencies AS build
 COPY frontend ./
 RUN npm run build
 

@@ -75,7 +75,8 @@ class TraceStore:
                 "INSERT INTO run_traces (turn_id,conversation_id,trace_id,created_at,record) "
                 "VALUES (?,?,?,?,?) "
                 "ON CONFLICT (turn_id) DO UPDATE SET "
-                "trace_id=EXCLUDED.trace_id, created_at=EXCLUDED.created_at, record=EXCLUDED.record",
+                "trace_id=EXCLUDED.trace_id, created_at=EXCLUDED.created_at, "
+                "record=EXCLUDED.record",
                 (
                     trace.turn_id,
                     trace.conversation_id,

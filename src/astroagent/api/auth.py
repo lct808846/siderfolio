@@ -193,24 +193,21 @@ def issue_email(body, request, purpose):
     service = runtime(request)
     canonical, display = email_address(body.email)
     service.store.rate("email", source(request), canonical, limit=5, seconds=3600)
-    if not service.registration_ready:
+    if not service.email_ready:
         raise ServiceError(
             503, "email_unavailable", "邮件注册或找回服务暂不可用，请联系管理员；已有账号可登录。"
         )
     with service.store.connect() as db:
         db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
-        if (
-            purpose == "activate"
-            and db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"]
-            >= service.settings.registration_limit
-        ):
-            raise ServiceError(
-                503, "registration_capacity", "注册与重发服务暂已达到名额上限，请联系管理员。"
-            )
         user = db.execute(
             "SELECT * FROM public.auth_users WHERE email_key=%s FOR UPDATE", (canonical,)
         ).fetchone()
         if purpose == "activate" and not user:
+            if not service.settings.registration_enabled:
+                raise ServiceError(403, "registration_closed", "站点暂未开放新账号注册。")
+            count = db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"]
+            if count >= service.settings.registration_limit:
+                raise ServiceError(503, "registration_capacity", "注册名额已满，请联系管理员。")
             identifier = str(uuid4())
             user = db.execute(
                 (
@@ -634,13 +631,13 @@ def enroll(body: ProofInput, request: Request):
         )
     account_label = quote(user.get("email_display") or user.get("email_key") or "user", safe="@.")
     otpauth_uri = (
-        f"otpauth://totp/AstroAgent:{account_label}"
-        f"?secret={secret}&issuer=AstroAgent&algorithm=SHA1&digits=6&period=30"
+        f"otpauth://totp/Siderfolio:{account_label}"
+        f"?secret={secret}&issuer=Siderfolio&algorithm=SHA1&digits=6&period=30"
     )
     return {
         "secret": secret,
         "otpauth_uri": otpauth_uri,
-        "issuer": "AstroAgent",
+        "issuer": "Siderfolio",
         "period": 30,
         "digits": 6,
         "message": "请使用身份验证器扫描二维码，并输入 6 位动态验证码完成绑定。",

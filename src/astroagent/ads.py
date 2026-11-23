@@ -7,6 +7,7 @@ import requests
 from pydantic import SecretStr
 
 from astroagent.schemas import ErrorInfo, LiteratureQuery, LiteratureSearchResult, PaperData, Source
+from astroagent.usage import reserve_request
 
 ADS_ENDPOINT = "https://api.adsabs.harvard.edu/v1/search/query"
 ADS_FIELDS = "bibcode,title,author,year,pub,doi,abstract,citation_count"
@@ -96,6 +97,7 @@ class AdsService:
         token = self._token.get_secret_value().strip()
         if not token:
             return failure("ads_not_configured", "请在服务端配置 ADS_API_TOKEN 后检索文献。")
+        reserve_request("astronomy_queries")
         params = {
             "q": arguments.query,
             "fl": ADS_FIELDS,

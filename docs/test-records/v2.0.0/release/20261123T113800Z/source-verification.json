@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "acceptance_base": "746d3bea778e1dfef51269743549d8038f69ea0d",
+  "v18_anchor": "d437730bf70272073e38b76a025b50c98533b322",
+  "acceptance_fingerprint": "1169a0c0abcbc9c22987692c9cdb48f09bb45b01c096332301ebd1b5eca5a0a6",
+  "accepted_files_rechecked": 113,
+  "release_documentation": [
+    "README.md",
+    "docs/ROADMAP.md",
+    "docs/PROJECT_PLAN_V2.0.md",
+    "docs/development/v2.0.0/RELEASE.md"
+  ],
+  "metadata_consistent": true,
+  "whitespace_check": "passed",
+  "credential_check": "passed"
+}

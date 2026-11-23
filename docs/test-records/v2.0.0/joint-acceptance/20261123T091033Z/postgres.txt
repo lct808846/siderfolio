@@ -1,0 +1,20 @@
+....................................F.................F................. [ 79%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+____________ test_enrollment_uri_roundtrip_matches_returned_secret _____________
+D:\project\astroagent\tests\test_identity_postgres.py:933: in test_enrollment_uri_roundtrip_matches_returned_secret
+    ???
+E   AssertionError: assert ['Siderfolio'] == ['AstroAgent']
+E     
+E     At index 0 diff: 'Siderfolio' != 'AstroAgent'
+E     Use -v to get more diff
+_________________ test_plot_lifecycle_confirmations_and_export _________________
+D:\project\astroagent\tests\test_plot_postgres.py:83: in test_plot_lifecycle_confirmations_and_export
+    ???
+E   AssertionError: {"error":{"code":"plot_sandbox_unavailable","message":"隔离绘图环境未就绪；没有在宿主机执行脚本。请核对本机Linux Docker和固定镜像配置。","retryable":false}}
+E   assert (503 == 200)
+E    +  where 503 = <Response [503 Service Unavailable]>.status_code
+=========================== short test summary info ============================
+FAILED tests/test_identity_postgres.py::test_enrollment_uri_roundtrip_matches_returned_secret
+FAILED tests/test_plot_postgres.py::test_plot_lifecycle_confirmations_and_export
+2 failed, 89 passed, 681 deselected in 100.32s (0:01:40)

@@ -367,7 +367,8 @@ class TraceRecorder:
             correlation_id=correlation_id,
             truncated=truncated,
             result_count=result_count,
-            error_category=error_category or (classify_error_code(error_code) if error_code else None),
+            error_category=error_category
+            or (classify_error_code(error_code) if error_code else None),
             error_code=error_code,
             result_ref=result_ref,
             usage=usage,
@@ -379,14 +380,18 @@ class TraceRecorder:
         model_spans = [s for s in self.spans if s.kind == "model" and s.usage is not None]
         if not model_spans:
             return None
-        provider = next((s.usage.provider for s in model_spans if s.usage and s.usage.provider), None)
+        provider = next(
+            (s.usage.provider for s in model_spans if s.usage and s.usage.provider), None
+        )
         model = next((s.usage.model for s in model_spans if s.usage and s.usage.model), None)
         reported = [s.usage for s in model_spans if s.usage and s.usage.usage_source == "reported"]
         if not reported:
             return ModelUsageSummary(provider=provider, model=model, usage_source="unknown")
         in_total = sum(u.input_tokens or 0 for u in reported)
         out_total = sum(u.output_tokens or 0 for u in reported)
-        tot_total = sum(u.total_tokens or ((u.input_tokens or 0) + (u.output_tokens or 0)) for u in reported)
+        tot_total = sum(
+            u.total_tokens or ((u.input_tokens or 0) + (u.output_tokens or 0)) for u in reported
+        )
         return estimate_usage_cost(
             provider=provider,
             model=model,
