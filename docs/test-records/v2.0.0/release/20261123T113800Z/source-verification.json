@@ -2,8 +2,8 @@
   "version": "2.0.0",
   "acceptance_base": "746d3bea778e1dfef51269743549d8038f69ea0d",
   "v18_anchor": "d437730bf70272073e38b76a025b50c98533b322",
-  "acceptance_fingerprint": "1169a0c0abcbc9c22987692c9cdb48f09bb45b01c096332301ebd1b5eca5a0a6",
-  "accepted_files_rechecked": 113,
+  "acceptance_fingerprint": "442f3488b6eff62475bca2354c99a52825bf1748e81cba2c03de578ec02aa125",
+  "accepted_files_rechecked": 114,
   "release_documentation": [
     "README.md",
     "docs/ROADMAP.md",

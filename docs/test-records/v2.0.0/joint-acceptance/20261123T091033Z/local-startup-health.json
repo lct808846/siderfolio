@@ -1,7 +1,7 @@
 {
   "version": "2.0.0",
   "images": {
-    "backend": "sha256:7fcffa7bf61d28b372fb854c22e316748c996643a4d0b4edef76c26d511eabc4",
+    "backend": "sha256:927e60db77c7b533e89dd7e9e0fe0ddd0ac097a7bfd9b4d4f24f160e28b1b845",
     "frontend": "sha256:f32ac6dd077387f14e241bbd8d5f826ac665b5f179ee44ff0e10271d0060b7e1",
     "ingress": "sha256:05b707ae8b4639d30561b466978987fe8083915b8cad49a76f57dd200d6af2c0"
   },

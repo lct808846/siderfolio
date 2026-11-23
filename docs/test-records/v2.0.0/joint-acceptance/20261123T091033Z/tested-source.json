@@ -1,7 +1,7 @@
 {
   "base_commit": "746d3bea778e1dfef51269743549d8038f69ea0d",
   "version": "2.0.0",
-  "scope_sha256": "1169a0c0abcbc9c22987692c9cdb48f09bb45b01c096332301ebd1b5eca5a0a6",
+  "scope_sha256": "442f3488b6eff62475bca2354c99a52825bf1748e81cba2c03de578ec02aa125",
   "files": {
     ".env.dev.example": "51f61df950d098e59d60a8d8df69568d25c51635c9ad3abd6c7760fb2300eb9a",
     ".github/copilot-instructions.md": "1608c857389a55e029044bc78ba94b6c574eef5a8d35b6109e317962a553da68",
@@ -15,6 +15,7 @@
     "compose.dev.yaml": "15ac76e4010988d2d36ee193c8f57b6aac016cb78c6171e99e832df2baf3e1bb",
     "compose.v20.yaml": "e179ee806d4300ce575ed1e3c677114035d4086e1b954df76fb7da90d14ba92d",
     "containers/application/Dockerfile": "f9061df96462895a5cc1e699f07ec72be6c10eb5fe50c9ca6117e28c97abab0e",
+    "containers/application/requirements-runtime.lock": "d4a9d5c0273be8463070f2806f38ba1e8bf772a6f8a27572d70f9a9e78fea897",
     "containers/dev/10-database.sql": "f38940aadfbb644b04360820e86780238bbee1a841a917bc5ebd7a8ff2c31794",
     "containers/frontend/Dockerfile": "c1ae5fca70e74356d827b93b5706db3497599a4f2d422cfcea5107fba15432b3",
     "containers/gcp/.env.example": "ae15804bed50836350ea5d4c49883913e1122a8236c14b98be2b2c77a64caeab",
@@ -66,7 +67,7 @@
     "frontend/tests/unit/qrcode.test.ts": "b64aebf92d6c271b2c0746b71391e48b47eed8a5d2dda2bf374bbba8baf47e52",
     "frontend/tests/unit/workbench.test.ts": "82b7636c90e377a82c1a2e8414e59bf21375a8bcc309a0ffec66b4dbee4070f4",
     "frontend/vite.config.ts": "dc86212c98a3b29d3a37583bc03ba7d5ab3e758758a9632f7864095debc3cdbb",
-    "pyproject.toml": "4c3dd152fad0e910243a6f33ef39fa05e8ecd1ec12290dd420115f1d82d35f56",
+    "pyproject.toml": "fc3c115366145235646f563fcddc0550ca0623d366438187f955abb1cb865cbc",
     "scripts/ci_verify.py": "ca30f8ae4218e8c2e4832cb31f921a492b50f161a87bece01c304f1f1e1fd721",
     "scripts/containers.ps1": "bea0811c7b1991256529f45406d47f0c1c955cd9b95c27627ef786eef3b249b3",
     "scripts/dev.ps1": "41e50744bdd05e152233a005c6e56d61510bf2f82bdc67137b466bb314926d9c",
