@@ -3664,6 +3664,10 @@
   :root[data-theme-mode="dark"] .settings-profile-entry {
     background: var(--surface-card);
   }
+  :root[data-theme-mode="dark"] .settings-back-btn {
+    border: 1px solid var(--line-strong);
+    background: color-mix(in srgb, var(--surface-card) 82%, transparent);
+  }
 }
 :root[data-theme-mode="dark"] .settings-profile-entry:hover,
 :root[data-theme-mode="dark"] .settings-profile-entry:focus-visible,

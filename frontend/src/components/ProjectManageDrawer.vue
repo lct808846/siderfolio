@@ -1143,10 +1143,15 @@ defineExpose({ open, close })
   flex: 1 1 0;
   min-height: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 16px 20px 28px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.project-drawer-body > * {
+  flex-shrink: 0;
 }
 
 .drawer-stack {

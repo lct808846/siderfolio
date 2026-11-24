@@ -236,6 +236,7 @@
   .primary-workspace .workspace-global-nav a { padding: 6px 10px; font-size: 12px; }
   .primary-workspace .workspace-global-nav a.workspace-openapi-link { display: none; }
   .conversation-layout .chat-scroll { padding: 14px 14px 18px; }
+  .conversation-layout .chat-scroll-empty { justify-content: flex-start; }
   .conversation-layout .welcome { padding-block: 8px 12px; }
   .conversation-layout .welcome-intro { padding-bottom: 14px; }
   .conversation-layout .welcome h2 { font-size: 21px; }
