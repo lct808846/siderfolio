@@ -57,6 +57,12 @@ APEX_REDIRECT_HOST=siderfolio.com
 
 部署后的 `verify` 会核对两个域名的证书、重定向目标和认证入口。直连 SSH 发布使用普通附注版本标签，保留已启用的本地命名模型和现有的内部模型网络。使用 IAP 受控发布时，域名和 Compose 变更需走维护流程，核对实际运行的新版本后通过部署工具登记运行基线。 [生产发布与维护流程](../../docs/DEVELOPMENT_AND_RELEASE.md#5-github-与-gcp-的一次性启用)
 
+### 使用 Cloudflare 代理
+
+先发布 Caddy 的可信代理配置，再将根域名和 www 的两条记录设为已代理。Caddy 仅从 Cloudflare 官方网段接受访客 IP 标头，直接连接时使用实际连接地址。维护配置时核对两份官方地址表。[Cloudflare IPv4](https://www.cloudflare.com/ips-v4) · [Cloudflare IPv6](https://www.cloudflare.com/ips-v6)
+
+切换前核对覆盖根域名与 www 的边缘证书已生效，并将回源加密设置为 Full (strict)。认证与流式 API 沿用源站的缓存控制。切换后核对两种协议下的根域名跳转、www 的认证接口和流式响应。出现代理故障时，可将两条记录恢复到仅 DNS，保留原有的源站证书和转发。
+
 ## 3. 首次登录与业务验证
 
 从 HTTPS 的 `/register` 注册，收邮件、激活并设密码，再登录。用一条无需附件的简单聊天验证 Gemini，用 ADS token 配置完成后再验证文献检索。这些动作独立于启动探针。

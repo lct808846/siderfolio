@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "astroagent"
-version = "2.0.2"
+version = "2.0.3"
 description = "基于 DeepSeek、SIMBAD、ADS 与 Gaia DR3 的天文查询与基础分析服务"
 readme = "README.md"
 requires-python = ">=3.12"
