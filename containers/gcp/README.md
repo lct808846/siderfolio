@@ -55,7 +55,7 @@ APEX_REDIRECT_HOST=siderfolio.com
 
 `APEX_REDIRECT_HOST` 可留空。启用时须填写 `PUBLIC_HOST` 对应的根域名。Caddy 为两个名字分别管理受信任的 HTTPS 证书。根域名的 HTTP 和 HTTPS 都直接返回 `308` 到 `https://www.siderfolio.com`，保留路径和查询参数。站点的 Cookie、认证来源、前端 API 和新邮件链接均使用 www。由 IP 版切换后，用户首次打开 www 时需在原有账号下重新登录；旧邮件若仍指向 IP，可在 www 重新申请相应链接。
 
-部署后的 `verify` 会核对两个域名的证书、重定向目标和认证入口。直连 SSH 发布保留已启用的本地命名模型和现有的内部模型网络。使用 IAP 受控发布时，域名和 Compose 变更需走维护流程，核对实际运行的新版本后通过部署工具登记运行基线。 [生产发布与维护流程](../../docs/DEVELOPMENT_AND_RELEASE.md#5-github-与-gcp-的一次性启用)
+部署后的 `verify` 会核对两个域名的证书、重定向目标和认证入口。直连 SSH 发布使用普通附注版本标签，保留已启用的本地命名模型和现有的内部模型网络。使用 IAP 受控发布时，域名和 Compose 变更需走维护流程，核对实际运行的新版本后通过部署工具登记运行基线。 [生产发布与维护流程](../../docs/DEVELOPMENT_AND_RELEASE.md#5-github-与-gcp-的一次性启用)
 
 ## 3. 首次登录与业务验证
 

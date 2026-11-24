@@ -5,8 +5,8 @@
 | 环境 | 运行位置 | 数据与入口 | 更新方式 |
 | --- | --- | --- | --- |
 | Development | Windows Docker Desktop 的 WSL2 Linux 引擎，默认使用 Compose 项目 `astroagent-v16` | 原有账号与科研数据，浏览器 [本机入口](http://127.0.0.1:5173) | 每轮构建并更新有改动的服务 |
-| Testing | GitHub Actions 托管 Linux Runner | 临时 PostgreSQL／pgvector、合成身份和科研数据、独立绘图环境。Runner 结束后销毁 | 分支 Push，或指定签名版本的发布检查 |
-| Production | GCP Linux 虚拟机，Compose 项目 `astroagent-gcp` | 固定 HTTPS 地址、PostgreSQL／pgvector 持久卷、用户和科研数据 | 保护标签、通过 CI 的镜像摘要、受限 IAP SSH 命令 |
+| Testing | GitHub Actions 托管 Linux Runner | 临时 PostgreSQL／pgvector、合成身份和科研数据、独立绘图环境。Runner 结束后销毁 | 分支推送和批准版本的标签发布检查 |
+| Production | GCP Linux 虚拟机，Compose 项目 `astroagent-gcp` | 固定 HTTPS 地址、PostgreSQL／pgvector 持久卷、用户和科研数据 | 经 CI 核对的版本和镜像摘要、现有 SSH 部署入口 |
 
 本机站点经同源代理访问 FastAPI。认证、CSRF、MFA、按账号数据边界沿用应用实现。SIMBAD、Gaia、ADS、LangChain 模型客户端、RAG、脚本绘图及计算队列继续使用仓库现有组件。涉及数据库试验或正式业务验收时，使用独立环境与专用数据。
 
@@ -77,24 +77,22 @@ Agent 每轮完成应用源码或运行配置修改后，在仓库根目录执�
 | Cursor | Agent 原生支持项目根 `AGENTS.md`，选用打开本机仓库的 Agent 会话。[Cursor 项目规则](https://cursor.com/docs/rules) |
 | GitHub Copilot | 支持 Agent 指令的入口会读取 `AGENTS.md`。另提供 `.github/copilot-instructions.md` 指向共享规范，覆盖读取仓库通用指令的客户端。可在响应引用或相应诊断里检查实际加载文件。[Copilot 仓库指令](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions) |
 
-每轮交付应记录改动文件、受影响服务、实际更新和服务状态、入口及待验证内容。仓库规则适用于 Agent 开发流程。GitHub 保护规则、签名、服务器权限和本机脚本的目标核对负责实际操作边界。
+每轮交付应记录改动文件、受影响服务、实际更新和服务状态、入口及待验证内容。仓库规则适用于 Agent 开发流程。GitHub 保护规则、服务器权限和本机脚本的目标核对负责实际操作边界。
 
 ## 4. 一次授权的正式发布
 
-日常开发可保留未提交修改。发布前由用户明确批准一个版本及改动范围。发布操作者复核现有修改、密钥及私有科研数据的排除规则，更新 Python、前端和前端锁文件里的版本号并提交，按保护规则将同一提交推送或合并到 `main`。记录最终位于 `main` 的完整提交 SHA。然后使用受限发布身份创建并推送签名标签。
+日常开发可保留未提交修改。发布前由用户明确批准版本和改动范围。核对文件范围，更新 Python、前端、锁文件和 OpenAPI 快照中的版本，按保护规则将提交推送或合并到 main。核对 GitHub 上该提交的完整 SHA 和 CI 结果，再创建并推送正式版本标签。现有 GCP 直连 SSH 路径使用普通附注标签。
 
 ```powershell
-# 在获得该版本发布授权并核对实际 Commit SHA 后运行
 $releaseVersion = 'vX.Y.Z'
-$releaseCommit = '填写已批准的完整提交SHA'
-$releaseKey = '填写发布签名密钥路径'
-git -c gpg.format=ssh -c "user.signingkey=$releaseKey" tag -s $releaseVersion $releaseCommit -m "Release AstroAgent $releaseVersion"
+$releaseCommit = '填写已批准的完整提交 SHA'
+git tag --annotate --no-sign $releaseVersion $releaseCommit -m "Release Siderfolio $releaseVersion"
 git push origin "refs/tags/$releaseVersion"
 ```
 
-签名密钥在日常 Agent 会话外保管，可使用单独的发布身份或支持用户在场的 SSH 签名设备。聊天中的“发布 vX.Y.Z”授权提交和该次签名操作。GitHub 以该签名标签识别批准的版本及 SHA。普通 Git 凭据不得持有标签规则的绕过权限或发布签名密钥。用户只在发起该版本发布时授权一次，CI 成功后流程自动推进。修改已签名提交或换版本需要新的明确授权。
+发布工作流核对标签指向 main 中的提交以及源码版本号。用户批准一次覆盖该版本的 CI、镜像发布和常规生产更新。修改已打标签的发布源码须重新批准一个版本。部署入口为受限 IAP 时，创建 SSH 签名标签并使用该路径的发布凭据。
 
-`test.yml` 由分支推送触发，发布工作流也对签名标签的提交调用同一套 CI。必要检查包含 Ruff、离线 Python 测试、PostgreSQL 真实身份、RAG、N 体队列及隔离绘图、前端类型／Lint／Vitest／构建、OpenAPI 和现有 Playwright 用例，以及 Python 和 npm 依赖审计与容器镜像构建。PostgreSQL JUnit 门槛要求关键测试模块实际执行且无跳过项。仅适用于真实上游、Windows 或额外数据的用例按条件保留状态。科学 CI 使用两颗各 0.5 太阳质量、分离 1 AU 的孤立圆轨道双体，以 1 yr 为周期分别运行实际 REBOUND 和 PeTar，可执行误差阈值见脚本。全部必要门槛通过后才构建正式镜像。
+`test.yml` 由分支推送触发，发布工作流也对正式版本标签的提交调用同一套 CI。必要检查包含 Ruff、离线 Python 测试、PostgreSQL 真实身份、RAG、N 体队列及隔离绘图、前端类型／Lint／Vitest／构建、OpenAPI 和现有 Playwright 用例，以及 Python 和 npm 依赖审计与容器镜像构建。PostgreSQL JUnit 门槛要求关键测试模块实际执行且无跳过项。仅适用于真实上游、Windows 或额外数据的用例按条件保留状态。科学 CI 使用两颗各 0.5 太阳质量、分离 1 AU 的孤立圆轨道双体，以 1 yr 为周期分别运行实际 REBOUND 和 PeTar，可执行误差阈值见脚本。全部必要门槛通过后才构建正式镜像。
 
 `release.yml` 发布前端、后端、Caddy、PostgreSQL 初始化镜像、计算 Worker 和三种绘图相关镜像到 GHCR。用 `vX.Y.Z` 与 `sha-<完整提交>` 标记，每个版本报告列出实际 `@sha256:…` 摘要。镜像按构建输入和服务使用独立缓存，未变化的镜像可复用。PeTar 编译层与后端安装层可共享。源文件依赖确有变化时才需新的对应构建输入。版本标签冲突直接失败。无 `latest` 生产依赖。部署报告中的版本表示发布提交，复用镜像的 `org.opencontainers.image.revision` 对应其首次构建提交。
 
@@ -103,22 +101,24 @@ git push origin "refs/tags/$releaseVersion"
 ### GitHub
 
 1. 为 `main` 配置保护，包含必要 CI 状态、禁止强推，保护工作流及部署脚本改动的审查。为正式 `v*.*.*` 标签设置规则集，限制创建、更新、删除，仅受控发布身份可创建。普通 Agent 凭据排除在绕过名单外。发布后保持原标签与摘要，修复使用新版本。
-2. 在 Actions 仓库变量设置 `RELEASE_SIGNING_PUBLIC_KEY`，填发布签名的 OpenSSH 公钥类型及公钥值，去掉结尾备注。使用 `ssh-ed25519` 或 `sk-ssh-ed25519@openssh.com`。启用前保持 `PRODUCTION_DEPLOY_ENABLED` 未设置或 `false`。
-3. 创建 GitHub Environment `release-registry` 和 `production`，均只允许 `v*.*.*` 的标签，取消分支通配和额外人工 Review。按下表设置变量与 Secrets。GCP 端独立校验签名标签和带来源证明的清单。
+2. 现有 GCP 生产环境设置 `PRODUCTION_DEPLOY_MODE=ssh`。在生产 Environment 配置部署主机、账号、目录、SSH 登录密钥和已核验的主机公钥。受限 IAP 路径另设 `RELEASE_SIGNING_PUBLIC_KEY`，填当前发布身份的 OpenSSH 公钥类型及值，去掉结尾备注。使用 `ssh-ed25519` 或 `sk-ssh-ed25519@openssh.com`。受限 IAP 启用前保持 `PRODUCTION_DEPLOY_ENABLED=false`。
+3. 创建 GitHub Environment `release-registry` 和 `production`，均只允许 `v*.*.*` 的标签，取消分支通配和额外人工 Review。按下表设置变量与 Secrets。受限 IAP 的 GCP 端独立校验签名标签和带来源证明的清单。
 4. 为 GHCR 包关闭从仓库继承的权限，使用包的独立权限管理。把写权限留给受限的镜像发布身份，普通分支的 `GITHUB_TOKEN` 在包上最多有读权限。这样用于复用的输入标签和缓存只能由正式发布更新。镜像通过自定义标签记录源码，保留包的独立权限。生产拉取私有镜像只需读取权限。[GHCR 包权限](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)
 
 | 类型 | 名称 | 值 |
 | --- | --- | --- |
 | `release-registry` 变量 | `GHCR_PUBLISH_USER` | 具备目标包推送权限的 GitHub 账号 |
 | `release-registry` Secret | `GHCR_PUBLISH_TOKEN` | 仅用于目标 GHCR 包的经典个人访问令牌，权限 `write:packages`，避免授予 `repo` 或删除权限 |
+| `production` Secrets | `GCP_SSH_HOST`、`GCP_SSH_USER`、`GCP_DEPLOY_PATH` | 直连 SSH 目标和现有生产目录 |
+| `production` Secrets | `GCP_SSH_PRIVATE_KEY`、`GCP_SSH_KNOWN_HOST`、`GCP_SSH_PORT` | 直连 SSH 登录、主机身份和可选端口 |
 | Environment 变量 | `GCP_PROJECT_ID`、`GCP_ZONE`、`GCP_VM` | 唯一目标的 GCP Project ID、可用区和虚拟机实例名称 |
 | Environment 变量 | `GCP_WORKLOAD_IDENTITY_PROVIDER`、`GCP_DEPLOY_SERVICE_ACCOUNT` | WIF Provider 完整资源名、部署服务账号邮箱 |
 | Environment Secret | `GCP_DEPLOY_SSH_KEY` | 限定只执行部署命令的 SSH 私钥，与 Git 签名密钥分开 |
 | Environment Secret | `GCP_DEPLOY_KNOWN_HOST` | `astroagent-production ssh-ed25519 <主机公钥>`，从 GCP 管理终端核对后填写 |
 
-可先让签名版本产出 CI、镜像和清单。生产前确认当前 GitHub 方案支持仓库的标签规则、Environment 和 artifact attestations。若缺少可靠的标签或证明保护，保持自动部署关闭，在受控环境使用已批准源码和经核对的摘要安排人工部署。避免把普通仓库写权限当作发布批准。[GitHub 标签规则](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [GitHub 部署环境](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) · [来源证明可用性](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations)
+启用受限 IAP 前可用签名版本验证 CI、镜像和清单。确认当前 GitHub 方案支持仓库的标签规则、Environment 和 artifact attestations。在受限 IAP 路径缺少可靠的标签或证明保护时，保持自动部署关闭，在受控环境使用已批准源码和经核对的摘要安排人工部署。避免把普通仓库写权限当作发布批准。[GitHub 标签规则](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [GitHub 部署环境](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) · [来源证明可用性](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations)
 
-### GCP 虚拟机
+### 受限 IAP 的 GCP 虚拟机
 
 1. 按 [GCP 手册](../containers/gcp/README.md) 让经授权的维护者准备 Docker Compose、HTTPS、Gemini／邮件、私有 `.env`、业务卷和备份。完成已批准的首装或迁移，确认运行基线的标签、SHA 及数据兼容性。常规自动更新从这个健康基线开始，不执行首装、迁移或恢复。
 2. 为 GitHub Actions 配置独立 WIF Provider。以 GitHub 不变的仓库 ID、`assertion.ref_type == 'tag'`、`assertion.environment == 'production'` 和指向本仓库 `.github/workflows/release.yml@refs/tags/` 的 `assertion.workflow_ref` 前缀限制令牌。仅允许模拟上述部署服务账号。给它 IAP 到指定实例、端口 22 的权限，以及 `compute.instances.get` 和 `compute.instances.list`。虚拟机的 22 端口仅放行 IAP 所需范围，80／443 继续提供网页。IAP 的传输权限和 SSH 的公钥认证分别配置，无需公开 SSH 或上传 GCP 服务账号私钥。[Google WIF Action](https://github.com/google-github-actions/auth) · [GitHub OIDC 声明](https://docs.github.com/en/actions/reference/security/oidc) · [GCP IAP 权限与防火墙](https://docs.cloud.google.com/iap/docs/using-tcp-forwarding)
@@ -156,7 +156,7 @@ sudo /usr/bin/python3 -I /usr/local/lib/astroagent/release_apply.py status
 
 ## 6. 失败、停止、回退与核对
 
-- CI 失败时，在 Actions 查看真实失败及跳过报告。还未签名的修改继续走开发流程。修正已经打标签的源码使用新版本和新签名。遇到可恢复网络问题、队列忙或 GitHub 服务故障，可对同一受权标签重跑失败的作业。
+- CI 失败时，在 Actions 查看真实失败及跳过报告。标签推送前的修改继续走开发流程。修正已打标签的源码使用新版本。遇到可恢复网络问题、队列忙或 GitHub 服务故障，可对同一受权标签重跑失败的作业。
 - 生产目标、签名、SHA、提出的镜像摘要或生产文件不匹配时，在更新前停止。检测到架构、认证边界、生产 Compose 变化或新增架构语句时安排单独审查。数据库兼容性还需以项目约定及验收证据确认。
 - 服务更新后检查 Docker 健康、HTTPS 登录页、认证预检、匿名业务拦截和探针隔离。失败记录包含目标、原镜像及改动服务。`pending.json` 保留于部署状态目录，未核对状态前不继续其它版本。操作员先查现状、之前的镜像和备份，再决定恢复方案。
 - 代码提供上一组已验证应用摘要的回退路径，`auto_rollback` 默认关闭，待独立环境证明同库兼容、原镜像可用及恢复后的健康检查后再启用。数据库恢复、清理及涉及真实数据的回滚由用户另行批准。保持备份、账户、模型、队列及科研产物所在卷。
@@ -167,7 +167,7 @@ sudo /usr/bin/python3 -I /usr/local/lib/astroagent/release_apply.py status
 
 本机日常使用与改动预览已统一到 `astroagent-v16`。按轮更新预检已核对 5173、原数据库卷及五个可选更新目标。撤下旧隔离预览容器前后，5173 的登录页和认证预检均成功，原数据卷和隔离开发卷均保留。隔离预览配置仍可按需使用。
 
-GitHub 端的权限、Secrets、GHCR 包权限、GCP IAP、目标实例、签名公钥、生产基线和数据备份由首次启用时配置。正式 CI、各客户端规则加载及业务验收、远程部署和自动回退演练另行记录。
+GCP 正式环境使用直连 SSH 发布。受限 IAP 的权限、公钥和生产基线按独立流程启用。正式 CI、各客户端规则加载及业务验收、远程部署和自动回退演练另行记录。
 
 ## 8. 本次文件清单
 

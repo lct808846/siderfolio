@@ -44,7 +44,7 @@ API 契约变化后运行 `python scripts/generate_frontend_types.py`，同步 O
 
 ## 测试规范
 
-开发阶段不主动运行测试和验收。持续集成在分支 Push 或签名版本发布后使用合成数据执行。启动健康和功能验收分别记录。用户明确安排本机测试或验收时使用以下命令。
+开发阶段不主动运行测试和验收。持续集成在推送分支或正式版本标签后使用合成数据执行。启动健康和功能验收分别记录。用户明确安排本机测试或验收时使用以下命令。
 
 - 后端：`python -m pytest -q`；测试文件命名为 `tests/test_*.py`。
 - Python 检查：`python -m ruff check src tests scripts` 与 `python -m ruff format --check src tests scripts`。
@@ -54,7 +54,7 @@ API 契约变化后运行 `python scripts/generate_frontend_types.py`，同步 O
 
 ## 提交与合并请求
 
-日常开发不自动 Commit、Push、合并、打发布标签、创建 Release 或部署云端。只有在用户明确批准指定 `vX.Y.Z` 后，才按[发布手册](docs/DEVELOPMENT_AND_RELEASE.md#4-一次授权的正式发布)提交批准的文件范围、推送并用受限签名凭据创建该标签。该批准覆盖此版本正常的 CI、GHCR 推送和生产更新，无需在 CI 后另行批准。数据库迁移、破坏性操作、重大权限变更或密钥调整须按影响另获授权。任何 Agent 使用的日常凭据应与受保护发布凭据分开。
+日常开发不自动 Commit、Push、合并、打发布标签、创建 Release 或部署云端。只有在用户明确批准指定 `vX.Y.Z` 后，才按[发布手册](docs/DEVELOPMENT_AND_RELEASE.md#4-一次授权的正式发布)提交批准的文件范围、推送到 main 并为已核对的提交创建版本标签。GCP 直连 SSH 发布使用普通附注标签。受限 IAP 部署遵循其专用签名规则。该批准覆盖此版本正常的 CI、GHCR 推送和生产更新，无需在 CI 后另行批准。数据库迁移、破坏性操作、重大权限变更或密钥调整须按影响另获授权。Agent 的日常凭据与生产服务器的部署凭据分开保管。
 
 历史提交使用简短、祈使式英文主题，例如 `Fix missing PNG validation in workflow archives`；沿用该风格，无须添加 Conventional Commits 前缀。保持提交范围集中，保留工作区已有修改。
 

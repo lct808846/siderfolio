@@ -32,14 +32,19 @@ jobs:
           SIGNING_PUBLIC_KEY: ${{ vars.RELEASE_SIGNING_PUBLIC_KEY }}
           REQUIRE_SIGNED_TAG: ${{ vars.REQUIRE_SIGNED_TAG }}
           REF_PROTECTED: ${{ github.ref_protected }}
+          DEPLOY_MODE: ${{ vars.PRODUCTION_DEPLOY_MODE }}
         run: |
-          if [[ -n "$SIGNING_PUBLIC_KEY" || "$REQUIRE_SIGNED_TAG" == true ]]; then
+          if [[ "$DEPLOY_MODE" != ssh ]] &&
+             [[ "$REQUIRE_SIGNED_TAG" == true || -n "$SIGNING_PUBLIC_KEY" ]]; then
             [[ "$REF_PROTECTED" == true ]] || { echo 'A protected tag is required.' >&2; exit 1; }
-            [[ "$SIGNING_PUBLIC_KEY" =~ ^(ssh-ed25519|sk-ssh-ed25519@openssh.com)[[:space:]][a-zA-Z0-9+/=]+$ ]]
+            [[ "$SIGNING_PUBLIC_KEY" =~ ^(ssh-ed25519|sk-ssh-ed25519@openssh.com)[[:space:]][a-zA-Z0-9+/=]+$ ]] || {
+              echo 'Configure the release signing public key for the restricted deployment.' >&2
+              exit 1
+            }
             printf 'astroagent-release namespaces="git" %s\n' "$SIGNING_PUBLIC_KEY" > "$RUNNER_TEMP/release-signers"
             python scripts/release_assets.py authorize "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-signers"
           else
-            echo "RELEASE_SIGNING_PUBLIC_KEY is not configured; skipping SSH tag signature verification and validating tag metadata only."
+            echo "Verifying the release tag against main and the version metadata."
             python scripts/release_assets.py authorize-unsigned "$GITHUB_REF_NAME"
           fi
 
