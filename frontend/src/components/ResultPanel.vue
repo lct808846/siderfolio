@@ -714,6 +714,7 @@ async function save() {
 
 <template>
   <aside class="results-panel" :class="{ 'is-expanded': expanded }" aria-label="结果与文件">
+    <div class="results-sheet-handle" aria-hidden="true"><span /></div>
     <header class="pane-heading workspace-pane-header results-header">
       <div class="results-title-block">
         <h2>{{ dynamicHeading }}</h2>
@@ -723,7 +724,7 @@ async function save() {
         <button
           v-if="expandable"
           type="button"
-          class="result-icon-action"
+          class="result-icon-action result-expand-btn"
           :aria-pressed="expanded"
           :aria-label="expanded ? '恢复标准宽度' : '加宽展开结果栏'"
           :title="expanded ? '恢复标准宽度' : '加宽展开结果栏'"
@@ -1616,5 +1617,35 @@ async function save() {
 
 .paper-save-feedback.is-error {
   color: var(--danger);
+}
+
+.results-sheet-handle {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .results-sheet-handle {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 2px;
+    flex: none;
+  }
+
+  .results-sheet-handle span {
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--muted) 36%, transparent);
+  }
+
+  .result-expand-btn {
+    display: none;
+  }
+
+  .result-close {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
 }
 </style>

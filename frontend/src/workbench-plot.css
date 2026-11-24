@@ -163,8 +163,25 @@
   .workbench-plot-context > label { min-width: 110px; flex: 1 1 130px; }
   .plot-workspace-embedded .plot-reading { padding: 16px 12px; }
   .plot-workspace-embedded .plot-main > .chat-heading { padding-inline: 12px; }
-  .composer-task-tools { flex-basis: 100%; }
-  .composer-task-tools .composer-task-button { padding-inline: 8px; gap: 5px; }
+  .composer-task-tools {
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding: 0 0 8px;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  }
+  .composer-task-tools::-webkit-scrollbar { display: none; }
+  .composer-task-tools .composer-task-button {
+    height: 32px;
+    min-height: 32px;
+    padding-inline: 10px;
+    gap: 5px;
+    font-size: 12px;
+    border-radius: 999px;
+  }
   .composer-plot-return { display: none; }
   .workbench-plot .plot-appearance { grid-template-columns: minmax(0, 1fr); }
 }

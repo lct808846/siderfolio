@@ -101,6 +101,7 @@ const sending = ref(false)
 const failedSubmission = ref<Submission | null>(null)
 const input = ref<HTMLTextAreaElement | null>(null)
 const compactLayout = ref(false), sidebarCollapsed = ref(false)
+const historyToggle = ref<HTMLButtonElement | null>(null)
 const resultsToggle = ref<HTMLButtonElement | null>(null)
 const resultsPanelStates = readResultsPanelStates()
 const restoringResults = ref(true)
@@ -164,12 +165,13 @@ async function openActiveSpaceManager(tab: DrawerTab = 'context') {
 async function selectSidebarProject(projectId: string) {
   draftProjectId.value = projectId === projectsStore.defaultProjectId ? '' : projectId
   if (projectId) projectsStore.setActiveProject(projectId)
+  if (compactLayout.value && store.panel === 'history') store.panel = 'chat'
   if (route.path !== '/') {
     await router.push('/')
   }
   await nextTick()
   resizeComposer()
-  input.value?.focus()
+  if (!compactLayout.value) input.value?.focus()
 }
 async function handleInspectSnapshot(item: Snapshot) {
   inspectedSnapshot.value = item
@@ -300,14 +302,58 @@ const completedResults = computed(() => store.turns.filter(turn =>
   turn.response && turn.execution_status === 'completed'
   && (turn.response.results?.length || turn.response.literature_results?.length || turn.response.gaia_results?.length),
 ))
+const resultArtifactCount = computed(() => {
+  let count = 0
+  for (const turn of store.turns) {
+    const res = turn.response
+    if (res) {
+      count += (res.gaia_results?.length || 0)
+        + (res.literature_results?.length || 0)
+        + (res.results?.length || 0)
+        + (res.nbody_proposals?.length || 0)
+        + (res.plot_proposals?.length || 0)
+    }
+    count += turn.attachments?.length || 0
+  }
+  return count
+})
 let knownResults = new Set<string>()
 let restoreFrame = 0, restoreRevision = 0
 const historyVisible = computed(() => compactLayout.value ? store.panel === 'history' : !sidebarCollapsed.value)
+const mobileOverlayOpen = computed(() => compactLayout.value && (store.panel === 'history' || (!profileMode.value && store.panel === 'results')))
 let layoutQuery: MediaQueryList | undefined
 function updateLayout() { compactLayout.value = layoutQuery?.matches || false }
 function toggleHistory() {
-  if (compactLayout.value) store.panel = store.panel === 'history' ? 'chat' : 'history'
-  else sidebarCollapsed.value = !sidebarCollapsed.value
+  if (compactLayout.value) {
+    const opening = store.panel !== 'history'
+    store.panel = opening ? 'history' : 'chat'
+    if (opening) {
+      void nextTick(() => {
+        const drawer = document.getElementById('conversation-history')
+        drawer?.querySelector<HTMLElement>('.mobile-drawer-close, .new-conversation, button, a[href]')?.focus({ preventScroll: true })
+      })
+    } else {
+      void nextTick(() => { historyToggle.value?.focus({ preventScroll: true }) })
+    }
+  } else {
+    sidebarCollapsed.value = !sidebarCollapsed.value
+  }
+}
+function closeMobileHistory() {
+  if (compactLayout.value && store.panel === 'history') {
+    store.panel = 'chat'
+    void nextTick(() => { historyToggle.value?.focus({ preventScroll: true }) })
+  }
+}
+function dismissMobileOverlay() {
+  if (store.panel === 'results') void closeResults()
+  else if (store.panel === 'history') closeMobileHistory()
+}
+function onWorkbenchKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape' || !mobileOverlayOpen.value) return
+  if (document.querySelector('dialog[open]')) return
+  event.preventDefault()
+  dismissMobileOverlay()
 }
 function rememberResults(open: boolean) {
   const id = route.params.id
@@ -345,6 +391,9 @@ function handleOpenToolResult(payload: ComputeResultPayload | PlotResultPayload)
   resultFocusNonce.value++
   rememberResults(true)
   store.panel = 'results'
+  void nextTick(() => {
+    if (store.panel === 'results') document.getElementById('workbench-results')?.querySelector<HTMLButtonElement>('.result-close')?.focus({ preventScroll: true })
+  })
 }
 async function closeResults() {
   const id = route.params.id
@@ -505,7 +554,7 @@ function revealNewResults() {
   if (restoringResults.value || !store.current || store.current.id !== route.params.id) return
   const fresh = completedResults.value.some(turn => !knownResults.has(turn.turn_id))
   for (const turn of completedResults.value) knownResults.add(turn.turn_id)
-  if (fresh) revealResultsAutomatically()
+  if (fresh && !compactLayout.value) revealResultsAutomatically()
 }
 watch(completedResults, revealNewResults)
 let appliedTurnLink = '', requestedTurnLink = ''
@@ -544,6 +593,7 @@ let preparingConversation = false
 async function create() {
   // Share the guard across the sidebar and brand, including router navigation.
   if (preparingConversation || sending.value) return
+  if (compactLayout.value && store.panel === 'history') store.panel = 'chat'
   preparingConversation = true
   try {
     const origin = route.fullPath
@@ -671,7 +721,8 @@ watch(() => route.params.id, async id => {
   restoringResults.value = true
   knownResults = new Set()
   // Apply saved geometry before fetching history; loading must not replay an open animation.
-  store.panel = typeof id === 'string' && resultsPanelStates.get(id) === true ? 'results' : 'chat'
+  const isCompactNow = typeof window !== 'undefined' && window.matchMedia('(max-width: 980px)').matches
+  store.panel = !isCompactNow && typeof id === 'string' && resultsPanelStates.get(id) === true ? 'results' : 'chat'
   if (typeof id === 'string') {
     if (store.preparedConversation?.id === id) {
       store.$patch({ current: store.preparedConversation, preparedConversation: null, turns: [], selectedTurnId: '', loading: false })
@@ -680,9 +731,13 @@ watch(() => route.params.id, async id => {
     if (id !== store.current?.id) await store.load(id)
     if (revision !== restoreRevision) return
     if (store.current?.id === id) {
-      const open = resultsPanelStates.get(id) ?? (completedResults.value.length > 0)
-      store.panel = open ? 'results' : 'chat'
-      rememberResults(open)
+      if (isCompactNow) {
+        store.panel = 'chat'
+      } else {
+        const open = resultsPanelStates.get(id) ?? (completedResults.value.length > 0)
+        store.panel = open ? 'results' : 'chat'
+        rememberResults(open)
+      }
       knownResults = new Set(completedResults.value.map(turn => turn.turn_id))
     }
   } else {
@@ -783,11 +838,15 @@ watch(() => store.pendingTurn?.streamedText, async value => {
   await nextTick()
   el.scrollTop = el.scrollHeight
 })
-watch(() => route.fullPath, () => { void applyWorkbenchHandoff() }, { immediate: true })
+watch(() => route.fullPath, () => {
+  if (compactLayout.value && store.panel === 'history') store.panel = 'chat'
+  void applyWorkbenchHandoff()
+}, { immediate: true })
 onMounted(async () => {
   layoutQuery = window.matchMedia('(max-width: 980px)')
   updateLayout(); layoutQuery.addEventListener('change', updateLayout)
   window.addEventListener('resize', resizeComposer)
+  window.addEventListener('keydown', onWorkbenchKeydown)
   resizeComposer()
   void applyWorkbenchHandoff()
   if (pendingDrawerRequest && projectManageDrawer.value) {
@@ -807,6 +866,7 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(restoreFrame)
   layoutQuery?.removeEventListener('change', updateLayout)
   window.removeEventListener('resize', resizeComposer)
+  window.removeEventListener('keydown', onWorkbenchKeydown)
 })
 </script>
 
@@ -817,21 +877,28 @@ onBeforeUnmount(() => {
   <ProjectOverview v-else-if="route.path.endsWith('/overview')" />
   <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />
-  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode ? 'chat' : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && store.panel==='results'" :data-results-wide="resultsExpanded && !profileMode && store.panel==='results'" :data-results-restoring="restoringResults">
+  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode ? (store.panel === 'history' ? 'history' : 'chat') : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && store.panel==='results'" :data-results-wide="resultsExpanded && !profileMode && store.panel==='results'" :data-results-restoring="restoringResults">
     <WorkspaceHeader title="本地科研工作台" />
+    <div
+      v-if="mobileOverlayOpen"
+      class="mobile-sheet-scrim"
+      aria-hidden="true"
+      @click="dismissMobileOverlay"
+    />
     <ConversationSidebar
       id="conversation-history"
       :active-project-id="activeSpaceProjectId"
       :inert="!historyVisible"
       :aria-hidden="!historyVisible"
       @create="create"
+      @close="closeMobileHistory"
       @removed="afterRemoval"
       @select-project="selectSidebarProject"
       @manage-project="(id, tab, del) => openProjectManager(id, tab, del)"
     />
-    <main class="chat-panel">
+    <main class="chat-panel" :inert="mobileOverlayOpen" :aria-hidden="mobileOverlayOpen">
       <header class="chat-heading">
-        <button type="button" class="chat-toolbar-button history-toggle" :aria-expanded="historyVisible" aria-controls="conversation-history" :aria-label="historyVisible ? '收起会话列表' : '展开会话列表'" :title="historyVisible ? '收起会话列表' : '展开会话列表'" @click="toggleHistory"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /><path class="history-toggle-chevron" d="m16 10-2 2 2 2" /></svg></button>
+        <button ref="historyToggle" type="button" class="chat-toolbar-button history-toggle" :aria-expanded="historyVisible" aria-controls="conversation-history" :aria-label="historyVisible ? '收起会话列表' : '展开会话列表'" :title="historyVisible ? '收起会话列表' : '展开会话列表'" @click="toggleHistory"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /><path class="history-toggle-chevron" d="m16 10-2 2 2 2" /></svg></button>
         <h1 :title="profileMode ? '个人资料' : conversationTitle">{{ profileMode ? '个人资料' : conversationTitle }}</h1>
         <button
           v-if="!profileMode"
@@ -849,10 +916,22 @@ onBeforeUnmount(() => {
         </button>
         <LocalTitleStatus v-if="!profileMode" silent :conversation-id="conversationId" :has-message="!!store.turns.length || store.pending" :submitting="store.pending" />
         <button
+          v-if="!profileMode"
+          type="button"
+          class="chat-toolbar-button mobile-quick-new"
+          :disabled="store.creating || store.loading || store.running || !!store.disconnectedRequest"
+          aria-label="新建会话"
+          title="新建会话"
+          @click="create"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+        </button>
+        <button
           v-show="!profileMode && store.panel !== 'results'"
           ref="resultsToggle"
           type="button"
           class="chat-toolbar-button results-toggle"
+          :class="{ 'has-badge': resultArtifactCount > 0 }"
           :aria-expanded="store.panel === 'results'"
           aria-controls="workbench-results"
           aria-label="打开结果栏"
@@ -861,6 +940,7 @@ onBeforeUnmount(() => {
             <rect x="3" y="4" width="18" height="16" rx="3" />
             <path d="M15 4v16m-8-7 3-2-3-2" />
           </svg>
+          <span v-if="resultArtifactCount > 0" class="results-toggle-badge" aria-hidden="true">{{ resultArtifactCount > 9 ? '9+' : resultArtifactCount }}</span>
         </button>
       </header>
       <ProfileWorkspace v-if="profileMode" />

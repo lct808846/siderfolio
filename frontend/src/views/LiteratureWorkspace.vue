@@ -3,14 +3,19 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiError, safeLink } from '../api'
 import { literatureApi } from '../api/literature'
-import PanelSwitcher from '../components/PanelSwitcher.vue'
 import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import type { LiteratureItem, LiteratureListResponse } from '../types'
 
 const route = useRoute()
 const router = useRouter()
 
-const mobilePane = ref<'list' | 'detail'>('list')
+function isCompactViewport() {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 980px)').matches
+}
+
+const mobilePane = ref<'list' | 'detail'>(
+  typeof route.params.itemId === 'string' && route.params.itemId ? 'detail' : 'list',
+)
 const searchText = ref('')
 const selectedYear = ref<number | ''>('')
 const selectedTag = ref('')
@@ -169,7 +174,7 @@ async function fetchList(resetPage = false) {
     if (token !== listToken) return
     listing.value = result
     const rows = result.items || []
-    if (!routeItemId.value && rows.length > 0 && !activeItem.value) {
+    if (!routeItemId.value && rows.length > 0 && !activeItem.value && !isCompactViewport()) {
       await openItem(rows[0]!.id, false)
     }
   } catch (reason) {
@@ -205,6 +210,13 @@ async function openItem(itemId: string, switchMobile = true) {
     await router.push(`/literature/${encodeURIComponent(itemId)}`)
   } else {
     await loadDetail(itemId)
+  }
+}
+
+function backToList() {
+  mobilePane.value = 'list'
+  if (routeItemId.value) {
+    void router.push('/literature')
   }
 }
 
@@ -313,8 +325,10 @@ watch(selectedYear, () => {
 
 watch(routeItemId, id => {
   if (id) {
+    if (isCompactViewport()) mobilePane.value = 'detail'
     void loadDetail(id)
   } else {
+    mobilePane.value = 'list'
     activeItem.value = null
     syncDraft(null)
   }
@@ -334,16 +348,6 @@ onBeforeUnmount(() => {
   <div class="workbench workspace-panes literature-workspace" :data-mobile-pane="mobilePane">
     <WorkspaceHeader title="个人天文文献库" />
 
-    <PanelSwitcher
-      v-model="mobilePane"
-      class="lit-mobile-switcher"
-      label="文献视图切换"
-      :options="[
-        { value: 'list', label: `文献列表 (${listing.total})` },
-        { value: 'detail', label: '文献详情' },
-      ]"
-    />
-
     <div class="lit-layout">
       <!-- Left Frosted Rail -->
       <aside class="lit-list-pane" aria-label="文献列表与筛选">
@@ -352,20 +356,6 @@ onBeforeUnmount(() => {
             <h1>文献管理</h1>
             <span class="lit-count-pill">{{ listing.total }} 篇</span>
           </div>
-          <button
-            type="button"
-            class="lit-icon-btn"
-            :class="{ 'is-spinning': listLoading }"
-            :disabled="listLoading"
-            aria-label="刷新文献库"
-            title="刷新文献库"
-            @click="fetchList(false)"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M21 12a9 9 0 1 1-2.64-6.36L21 8" />
-              <path d="M21 3v5h-5" />
-            </svg>
-          </button>
         </header>
 
         <div class="lit-filters">
@@ -459,6 +449,10 @@ onBeforeUnmount(() => {
             <button v-if="hasActiveFilter" type="button" class="lit-quiet-action" @click="clearFilters">
               清空筛选条件
             </button>
+            <RouterLink v-else class="button-primary lit-mobile-empty-cta" to="/">
+              前往查询工作台检索 ADS
+              <span aria-hidden="true">→</span>
+            </RouterLink>
           </div>
 
           <ul v-else class="lit-items">
@@ -499,6 +493,10 @@ onBeforeUnmount(() => {
       <main class="lit-detail-pane" aria-label="文献详情与个人笔记">
         <!-- Unified 56px Top Bar aligned 1:1 with left rail -->
         <header class="lit-detail-bar">
+          <button type="button" class="lit-mobile-back" aria-label="返回文献列表" @click="backToList">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+            <span>列表</span>
+          </button>
           <template v-if="activeItem">
             <div class="lit-detail-bar-meta">
               <span class="ui-pill ui-pill-ads">{{ activeItem.year || '年份未知' }}</span>
@@ -521,7 +519,7 @@ onBeforeUnmount(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                ADS 原始记录 ↗
+                <span class="lit-ads-full">ADS 原始记录</span><span class="lit-ads-short">ADS</span> ↗
               </a>
               <a
                 v-for="(doiUrl, idx) in (activeItem.doi_urls || []).slice(0, 1)"
@@ -531,7 +529,7 @@ onBeforeUnmount(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DOI {{ activeItem.doi?.[idx] || '' }} ↗
+                DOI<span v-if="activeItem.doi?.[idx]" class="lit-doi-full"> {{ activeItem.doi[idx] }}</span> ↗
               </a>
               <button type="button" class="lit-bar-danger" @click="requestDelete">移除</button>
             </div>
@@ -609,6 +607,8 @@ onBeforeUnmount(() => {
             <section class="lit-glass-card lit-monograph" aria-labelledby="lit-sec-ads">
               <div class="lit-monograph-kicker">
                 <span class="ui-pill ui-pill-ads">ADS 原始书目</span>
+                <span class="ui-pill ui-pill-neutral lit-mobile-only-pill">{{ activeItem.year || '年份未知' }}</span>
+                <span v-if="activeItem.citation_count != null" class="ui-pill ui-pill-neutral lit-mobile-only-pill">被引 {{ activeItem.citation_count }}</span>
                 <span v-if="activeItem.publication" class="lit-pub-name">{{ activeItem.publication }}</span>
                 <span class="lit-snapshot-time">快照 {{ formatUtc(activeItem.source.retrieved_at) }}</span>
               </div>
@@ -621,7 +621,17 @@ onBeforeUnmount(() => {
 
               <dl class="lit-meta-strip">
                 <div class="lit-meta-tile">
-                  <dt>Bibcode</dt>
+                  <dt class="lit-meta-tile-head">
+                    <span>Bibcode</span>
+                    <button
+                      type="button"
+                      class="lit-inline-copy"
+                      :title="bibcodeCopied ? '已复制 Bibcode' : '点击复制 Bibcode'"
+                      @click="copyBibcode(activeItem.bibcode)"
+                    >
+                      {{ bibcodeCopied ? '已复制 ✓' : '复制' }}
+                    </button>
+                  </dt>
                   <dd><code>{{ activeItem.bibcode }}</code></dd>
                 </div>
                 <div class="lit-meta-tile">
@@ -809,6 +819,7 @@ onBeforeUnmount(() => {
 
 /* Left Frosted Rail — matches ConversationSidebar */
 .lit-list-pane {
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -823,6 +834,7 @@ onBeforeUnmount(() => {
 
 /* Right Studio Canvas — matches Chat Panel */
 .lit-detail-pane {
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -871,47 +883,6 @@ onBeforeUnmount(() => {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-.lit-icon-btn {
-  width: 32px;
-  height: 32px;
-  min-height: 32px;
-  padding: 0;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface-card) 72%, transparent);
-  box-shadow: none;
-  color: var(--muted);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
-}
-
-.lit-icon-btn svg {
-  width: 15px;
-  height: 15px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.lit-icon-btn:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 8%, var(--surface-card));
-}
-
-.lit-icon-btn.is-spinning svg {
-  animation: lit-spin 0.9s linear infinite;
-}
-
-@keyframes lit-spin {
-  to { transform: rotate(360deg); }
 }
 
 /* Search & Filter Dock */
@@ -1370,7 +1341,22 @@ onBeforeUnmount(() => {
   box-shadow: none;
   color: var(--muted);
   font-size: 11.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
+}
+
+.lit-ads-short,
+.lit-mobile-only-pill,
+.lit-inline-copy {
+  display: none;
+}
+
+.lit-meta-tile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .lit-bib-copy code {
@@ -1598,14 +1584,17 @@ onBeforeUnmount(() => {
 /* Monograph Detail Reading Content */
 .lit-detail-content {
   width: 100%;
+  min-width: 0;
   max-width: var(--reading-max-width, 880px);
   margin: 0 auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
 .lit-glass-card {
   position: relative;
+  min-width: 0;
   padding: 20px 22px;
   border-radius: 16px;
   border: 1px solid var(--glass-edge);
@@ -1614,6 +1603,7 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(18px) saturate(150%);
   box-shadow: var(--shadow-card);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   overflow: hidden;
 }
@@ -1732,6 +1722,8 @@ onBeforeUnmount(() => {
   line-height: 1.85;
   color: var(--ink);
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Section 2: Provenance & Model Explanation */
@@ -2103,6 +2095,11 @@ onBeforeUnmount(() => {
   border: 0;
 }
 
+.lit-mobile-back,
+.lit-mobile-empty-cta {
+  display: none;
+}
+
 @media (max-width: 1120px) {
   .lit-guide-grid {
     grid-template-columns: 1fr;
@@ -2119,12 +2116,12 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 980px) {
-  .lit-mobile-switcher {
-    display: flex;
+  .lit-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .lit-layout {
-    grid-template-columns: 1fr;
+  .lit-doi-full {
+    display: none;
   }
 
   .literature-workspace[data-mobile-pane='list'] .lit-detail-pane {
@@ -2133,6 +2130,183 @@ onBeforeUnmount(() => {
 
   .literature-workspace[data-mobile-pane='detail'] .lit-list-pane {
     display: none;
+  }
+
+  .lit-mobile-empty-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .lit-mobile-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex: none;
+    min-height: 34px;
+    padding: 0 10px 0 6px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line-strong);
+    background: var(--surface-card);
+    box-shadow: none;
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .lit-mobile-back svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+@media (max-width: 680px) {
+  .lit-list-pane,
+  .lit-detail-pane {
+    border-radius: 0;
+    border-inline: 0;
+    border-bottom: 0;
+    box-shadow: none;
+  }
+
+  .lit-pane-header {
+    padding: 10px 14px;
+    min-height: 48px;
+  }
+
+  .lit-filters {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .lit-search-field input,
+  .lit-tag-input-row input,
+  .lit-note-editor textarea {
+    font-size: 16px;
+  }
+
+  .lit-tag-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .lit-tag-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lit-filter-chip {
+    flex: 0 0 auto;
+  }
+
+  .lit-list-scroll {
+    padding: 8px 12px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .lit-row {
+    padding: 13px 14px;
+    border-radius: 13px;
+  }
+
+  .lit-detail-bar {
+    padding: 8px 12px;
+    gap: 8px;
+    min-height: 48px;
+    flex-wrap: nowrap;
+  }
+
+  .lit-detail-bar-meta {
+    display: none;
+  }
+
+  .lit-ads-full,
+  .lit-doi-full {
+    display: none;
+  }
+
+  .lit-ads-short {
+    display: inline;
+  }
+
+  .lit-mobile-only-pill {
+    display: inline-flex;
+  }
+
+  .lit-inline-copy {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line-strong);
+    background: var(--surface-card);
+    box-shadow: none;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 560;
+  }
+
+  .lit-detail-bar-actions {
+    margin-left: auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .lit-bar-link,
+  .lit-bar-danger {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .lit-detail-scroll {
+    padding: 12px 12px max(24px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+
+  .lit-glass-card {
+    padding: 15px 14px;
+    border-radius: 14px;
+  }
+
+  .lit-monograph-kicker {
+    gap: 6px 8px;
+  }
+
+  .lit-snapshot-time {
+    margin-left: 0;
+  }
+
+  .lit-paper-heading {
+    font-size: 17px;
+    line-height: 1.42;
+  }
+
+  .lit-save-bar {
+    position: sticky;
+    bottom: 0;
+    padding: 10px 0 max(4px, env(safe-area-inset-bottom));
+    background: var(--surface-card);
+  }
+
+  .lit-save-btn {
+    min-height: 40px;
+    padding: 0 20px;
   }
 }
 </style>

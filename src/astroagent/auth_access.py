@@ -87,15 +87,7 @@ class IdentityAccess:
             cookie.load(headers.get("cookie", ""))
             session = cookie["astroagent_session"].value if "astroagent_session" in cookie else ""
             anonymous = cookie["astroagent_preauth"].value if "astroagent_preauth" in cookie else ""
-            client_ip = headers.get("x-astroagent-client-address") or (
-                scope["client"][0] if scope.get("client") else "unknown"
-            )
-            current_source = (
-                identity.source_hash(client_ip) if hasattr(identity, "source_hash") else None
-            )
-            user = await run_in_threadpool(
-                identity.store.authenticate, session, True, current_source
-            )
+            user = await run_in_threadpool(identity.store.authenticate, session)
             if (method, path) not in PUBLIC and not user:
                 return await fail(401, "login_required", "请先登录。")
             if method not in {"GET", "HEAD"}:
@@ -183,9 +175,7 @@ class IdentityAccess:
             ):
                 # Revocation is checked again before reading results and each file chunk.
                 try:
-                    valid = await run_in_threadpool(
-                        identity.store.authenticate, session, False, current_source
-                    )
+                    valid = await run_in_threadpool(identity.store.authenticate, session, False)
                 except Exception:
                     valid = None
                 if not valid:

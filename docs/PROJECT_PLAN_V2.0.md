@@ -10,7 +10,7 @@ V2.0 的目标是交付一套可由个人或小课题组独立部署、长期使
 
 V2.0 的首个生产目标是把 Siderfolio 部署到 GCP 单台 Linux 虚拟机。GCP 配置草案已完成 Compose 配置解析和脚本语法检查。V2.0 开发时再完成配置定版与构建，按当前安排先在目标服务器启动公网入口，功能和恢复演练另行验收。[GCP 部署配置](../containers/gcp/README.md) · [现有容器部署方案](CONTAINER_DEPLOYMENT_V1.5.md)
 
-V2.0 的本机默认流程沿用 5173 和现有数据，按轮更新受影响的 Docker 服务。隔离预览可按需启动。签名版本发布工作流覆盖 CI、GHCR 与受限 GCP 更新，启用条件及验证状态见[开发与发布手册](DEVELOPMENT_AND_RELEASE.md)。
+本机默认在 5173 使用独立开发数据库预览，Vue 与 FastAPI 优先热更新，依赖或构建配置变化时只重建受影响的开发服务。GCP 公网实例用于正式日常使用。签名版本发布工作流覆盖 CI、GHCR 与受限 GCP 更新，见[开发与发布手册](DEVELOPMENT_AND_RELEASE.md)。
 
 ### 1.1 目标环境与公网入口
 

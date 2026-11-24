@@ -403,6 +403,22 @@ onBeforeUnmount(() => {
   color: var(--accent);
 }
 
+@media (max-width: 680px) {
+  .project-picker-popover {
+    left: 10px !important;
+    right: 10px !important;
+    width: calc(100vw - 20px) !important;
+    max-width: none;
+    border-radius: 16px;
+    padding: 8px;
+  }
+  .project-picker-item {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .composer-project-chevron,
   .project-picker-item {

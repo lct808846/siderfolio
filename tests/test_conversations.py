@@ -22,6 +22,7 @@ from astroagent.conversation_service import ConversationService
 from astroagent.conversations import ConversationRepository, conversation_title
 from astroagent.errors import ServiceError
 from astroagent.main import app
+from astroagent.postgres import PostgresRepository
 from astroagent.schemas import ChatResponse
 from scripts.export_samples import synthetic_request
 
@@ -258,6 +259,39 @@ def test_duplicate_process_and_multiworker_not_enabled(tmp_path, monkeypatch):
     monkeypatch.setenv("WEB_CONCURRENCY", "2")
     with pytest.raises(ServiceError):
         ConversationRepository(settings).initialize()
+
+
+@pytest.mark.parametrize(
+    ("stack", "web_concurrency", "uvicorn_workers", "expected_code"),
+    [
+        ("", "1", "1", "conversation_storage_unavailable"),
+        ("astroagent-dev", "1", "1", "database_unavailable"),
+        ("astroagent-dev", "2", "1", "conversation_storage_unavailable"),
+        ("astroagent-dev", "1", "2", "conversation_storage_unavailable"),
+    ],
+)
+def test_postgres_reload_child_respects_single_worker_guard(
+    tmp_path, monkeypatch, stack, web_concurrency, uvicorn_workers, expected_code
+):
+    monkeypatch.setenv("ASTROAGENT_DEV_STACK", stack)
+    monkeypatch.setenv("WEB_CONCURRENCY", web_concurrency)
+    monkeypatch.setenv("UVICORN_WORKERS", uvicorn_workers)
+    monkeypatch.setattr("astroagent.postgres.multiprocessing.parent_process", lambda: object())
+    repository = PostgresRepository(
+        LocalSettings(
+            _env_file=None,
+            data_dir=tmp_path,
+            database_url="postgresql://127.0.0.1/astroagent_test",
+        )
+    )
+
+    def connect():
+        raise ServiceError(503, "database_unavailable", "Fixture reached the database connection.")
+
+    monkeypatch.setattr(repository, "connect", connect)
+    with pytest.raises(ServiceError) as error:
+        repository.initialize()
+    assert error.value.error.code == expected_code
 
 
 def test_concurrency_idempotent_running_and_global_slots(tmp_path):

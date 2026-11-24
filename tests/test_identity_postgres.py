@@ -456,15 +456,12 @@ def test_two_accounts_isolate_ids_and_missing_table_never_falls_back(identity_cl
     assert not client.identity.store.authenticate(first_cookie)
 
 
-@pytest.mark.parametrize("expiry", ["anomalous_source", "absolute", "revoked", "disabled"])
+@pytest.mark.parametrize("expiry", ["absolute", "revoked", "disabled"])
 def test_session_expiry_and_disable_fail_closed(identity_client, expiry):
     client = identity_client
     account(client)
     with client.store.connect() as db:
         statement = {
-            "anomalous_source": (
-                "UPDATE public.auth_sessions SET source_hash='anomalous_remote_location'"
-            ),
             "absolute": "UPDATE public.auth_sessions SET expires_at=now()-interval '1 second'",
             "revoked": "UPDATE public.auth_sessions SET revoked=true",
             "disabled": "UPDATE public.auth_users SET disabled=true,generation=generation+1",
@@ -911,13 +908,26 @@ def test_current_persistent_session_renewal_preserves_revocation(identity_client
     assert client.store.authenticate(cookie) is None
 
 
-def test_source_change_revokes_session(identity_client):
+def test_existing_browser_session_survives_network_change_and_new_login(identity_client):
     client = identity_client
     account(client)
-    cookie = client.cookies.get("astroagent_session")
-    assert client.store.authenticate(cookie, source_hash="synthetic-other-network") is None
-    assert client.store.authenticate(cookie) is None
-    assert client.get("/api/v1/conversations").status_code == 401
+    with client.store.connect() as db:
+        db.execute(
+            "UPDATE public.auth_sessions SET source_hash='synthetic-other-network', "
+            "last_seen=now()-interval '1 day'"
+        )
+    assert client.get("/api/v1/auth/session").status_code == 200
+
+    other = client.fresh()
+    try:
+        response = post(
+            other, "auth/login", {"email": "observer@example.org", "password": PASSWORD}
+        )
+        assert response.status_code == 200, response.text
+        assert other.get("/api/v1/auth/session").status_code == 200
+        assert client.get("/api/v1/conversations").status_code == 200
+    finally:
+        other.close()
 
 
 def test_enrollment_uri_roundtrip_matches_returned_secret(identity_client):

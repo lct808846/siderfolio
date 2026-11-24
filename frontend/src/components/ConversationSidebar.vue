@@ -14,6 +14,7 @@ import SuccessToast from './SuccessToast.vue'
 const props = defineProps<{ activeProjectId?: string }>()
 const emit = defineEmits<{
   create: []
+  close: []
   removed: [ids: string[]]
   'select-project': [projectId: string]
   'manage-project': [projectId: string, tab: 'context' | 'snapshots' | 'manage', promptDelete?: boolean]
@@ -259,6 +260,7 @@ async function startProjectChat(projectId: string) {
     const created = await projectsStore.startConversationDetail(projectId)
     store.preparedConversation = { ...created, turns: [] }
     void store.refreshList().catch(() => undefined)
+    emit('close')
     await router.push(`/conversations/${created.id}`)
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : '在项目中新建对话失败，请稍后重试。'
@@ -317,8 +319,12 @@ function toggleRecent() {
   if (!recentOpen.value) closeMenu(false)
 }
 function chooseConversation(id: string) {
-  if (selecting.value) selected.value = selected.value.includes(id) ? selected.value.filter(value => value !== id) : [...selected.value, id]
-  else void router.push(`/conversations/${id}`)
+  if (selecting.value) {
+    selected.value = selected.value.includes(id) ? selected.value.filter(value => value !== id) : [...selected.value, id]
+  } else {
+    emit('close')
+    if (route.params.id !== id) void router.push(`/conversations/${id}`)
+  }
 }
 const selectionPinned = computed(() => selected.value.length > 0 && selected.value.every(id => pins.value.includes(id)))
 function pinSelected() {
@@ -427,7 +433,22 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <aside class="history-panel" :class="{ 'is-selecting': selecting, 'is-scrolling': scrolling, 'is-dragging-scrollbar': draggingScrollbar }" aria-label="会话列表" @keydown.esc="selecting ? stopSelection() : (userMenuOpen = false)">
+  <aside class="history-panel" :class="{ 'is-selecting': selecting, 'is-scrolling': scrolling, 'is-dragging-scrollbar': draggingScrollbar }" aria-label="会话列表" @keydown.esc="selecting ? stopSelection() : (userMenuOpen ? (userMenuOpen = false) : emit('close'))">
+    <div class="mobile-drawer-head">
+      <div class="mobile-drawer-brand">
+        <span class="mobile-drawer-emblem" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(-28 12 12)" stroke="currentColor" stroke-opacity="0.48" stroke-width="1.4" />
+            <path d="M12 3.2L13.85 10.15L20.8 12L13.85 13.85L12 20.8L10.15 13.85L3.2 12L10.15 10.15L12 3.2Z" fill="currentColor" />
+          </svg>
+        </span>
+        <b>Siderfolio</b>
+        <span class="mobile-drawer-sub">项目与会话</span>
+      </div>
+      <button type="button" class="history-icon-button mobile-drawer-close" aria-label="关闭会话列表" @click="emit('close')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
+      </button>
+    </div>
     <div class="history-top">
       <Transition name="history-mode">
         <button v-if="!selecting" key="create" class="new-conversation" :inert="selecting" :disabled="locked || store.loading || store.running || !!store.disconnectedRequest" @click="emit('create')"><span aria-hidden="true">＋</span>{{ store.creating ? '正在准备…' : '新建会话' }}</button>
@@ -522,6 +543,7 @@ onBeforeUnmount(() => {
                             :class="{ selected: store.current?.id === chat.id }"
                             data-tooltip-truncated
                             @pointerenter="store.prefetch(chat.id)"
+                            @click="emit('close')"
                           >
                             <span data-tooltip-source>{{ chat.title }}</span>
                           </RouterLink>
@@ -600,11 +622,11 @@ onBeforeUnmount(() => {
                 </div>
               </div>
               <div class="sidebar-user-menu-divider"></div>
-              <RouterLink role="menuitem" to="/profile" @click="userMenuOpen = false">
+              <RouterLink role="menuitem" to="/profile" @click="userMenuOpen = false; emit('close')">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="9.5" r="2.75" /><path d="M6.8 18.8a6 6 0 0 1 10.4 0" /></svg>
                 <span>个人资料</span>
               </RouterLink>
-              <RouterLink role="menuitem" to="/settings" @click="userMenuOpen = false">
+              <RouterLink role="menuitem" to="/settings" @click="userMenuOpen = false; emit('close')">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
                 <span>设置</span>
               </RouterLink>
@@ -713,6 +735,50 @@ onBeforeUnmount(() => {
 <style scoped>
 /* Only this middle region scrolls; fixed controls never share its scrollbar. */
 aside.history-panel.history-panel { overflow: hidden; --selection-duration: 200ms; --selection-easing: cubic-bezier(.2, .7, .3, 1); }
+.mobile-drawer-head {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 2px 12px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.mobile-drawer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.mobile-drawer-emblem {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line));
+  color: var(--accent);
+}
+.mobile-drawer-emblem svg { width: 16px; height: 16px; display: block; }
+.mobile-drawer-brand b { font-size: 15px; font-weight: 650; color: var(--ink); letter-spacing: -0.02em; }
+.mobile-drawer-sub {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--surface-tint);
+}
+.mobile-drawer-close {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  border-radius: 9px;
+  color: var(--muted);
+}
+@media (max-width: 980px) {
+  .mobile-drawer-head { display: flex; }
+}
 .history-top { display: grid; flex: none; height: 40px; }
 .history-top > * { grid-area: 1 / 1; min-width: 0; }
 .history-top .new-conversation { width: 100%; height: 40px; min-height: 40px; margin: 0; }

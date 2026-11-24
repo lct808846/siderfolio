@@ -308,50 +308,84 @@ onMounted(() => { void loadSummary() })
           </div>
         </div>
 
-        <div v-if="summary?.models.length" class="profile-table-wrap">
-          <table class="profile-table">
-            <thead>
-              <tr>
-                <th scope="col">模型</th>
-                <th scope="col">调用场景</th>
-                <th scope="col" class="is-num">调用次数</th>
-                <th scope="col" class="is-num">已记录 Token</th>
-                <th scope="col">最近使用（北京时间）</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="entry in summary.models" :key="entry.model">
-                <td>
-                  <div class="profile-model-cell">
-                    <strong>{{ entry.label }}</strong>
-                    <code v-if="entry.label !== entry.model">{{ entry.model }}</code>
-                  </div>
-                </td>
-                <td>
-                  <div class="profile-channel-tags">
-                    <span v-for="tag in channelTags(entry)" :key="tag" class="tag">{{ tag }}</span>
-                  </div>
-                </td>
-                <td class="is-num">
-                  <strong>{{ entry.calls }}</strong>
-                  <span class="profile-subcount">
-                    成功 {{ entry.succeeded }}<template v-if="entry.failed > 0"> · 失败 {{ entry.failed }}</template>
-                  </span>
-                </td>
-                <td class="is-num">
-                  <template v-if="entry.total_tokens != null">
-                    <strong>{{ entry.total_tokens.toLocaleString('zh-CN') }}</strong>
+        <template v-if="summary?.models.length">
+          <div class="profile-table-wrap">
+            <table class="profile-table">
+              <thead>
+                <tr>
+                  <th scope="col">模型</th>
+                  <th scope="col">调用场景</th>
+                  <th scope="col" class="is-num">调用次数</th>
+                  <th scope="col" class="is-num">已记录 Token</th>
+                  <th scope="col">最近使用（北京时间）</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="entry in summary.models" :key="entry.model">
+                  <td>
+                    <div class="profile-model-cell">
+                      <strong>{{ entry.label }}</strong>
+                      <code v-if="entry.label !== entry.model">{{ entry.model }}</code>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="profile-channel-tags">
+                      <span v-for="tag in channelTags(entry)" :key="tag" class="tag">{{ tag }}</span>
+                    </div>
+                  </td>
+                  <td class="is-num">
+                    <strong>{{ entry.calls }}</strong>
                     <span class="profile-subcount">
-                      输入 {{ entry.input_tokens == null ? '—' : entry.input_tokens.toLocaleString('zh-CN') }} / 输出 {{ entry.output_tokens == null ? '—' : entry.output_tokens.toLocaleString('zh-CN') }}
+                      成功 {{ entry.succeeded }}<template v-if="entry.failed > 0"> · 失败 {{ entry.failed }}</template>
                     </span>
-                  </template>
-                  <span v-else class="muted">—</span>
-                </td>
-                <td>{{ formatDateTime(entry.last_used_at) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  </td>
+                  <td class="is-num">
+                    <template v-if="entry.total_tokens != null">
+                      <strong>{{ entry.total_tokens.toLocaleString('zh-CN') }}</strong>
+                      <span class="profile-subcount">
+                        输入 {{ entry.input_tokens == null ? '—' : entry.input_tokens.toLocaleString('zh-CN') }} / 输出 {{ entry.output_tokens == null ? '—' : entry.output_tokens.toLocaleString('zh-CN') }}
+                      </span>
+                    </template>
+                    <span v-else class="muted">—</span>
+                  </td>
+                  <td>{{ formatDateTime(entry.last_used_at) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ul class="profile-model-cards" aria-label="模型使用明细">
+            <li v-for="entry in summary.models" :key="`card-${entry.model}`" class="profile-model-card">
+              <div class="profile-model-card-head">
+                <div class="profile-model-card-title">
+                  <strong>{{ entry.label }}</strong>
+                  <code v-if="entry.label !== entry.model">{{ entry.model }}</code>
+                </div>
+                <span class="ui-pill ui-pill-accent">{{ entry.calls }} 次调用</span>
+              </div>
+              <div v-if="channelTags(entry).length" class="profile-channel-tags">
+                <span v-for="tag in channelTags(entry)" :key="tag" class="tag">{{ tag }}</span>
+              </div>
+              <dl class="profile-model-metrics">
+                <div class="profile-model-metric">
+                  <dt>调用结果</dt>
+                  <dd>
+                    成功 {{ entry.succeeded }}<template v-if="entry.failed > 0"> · <span class="profile-metric-fail">失败 {{ entry.failed }}</span></template>
+                  </dd>
+                </div>
+                <div class="profile-model-metric">
+                  <dt>已记录 Token</dt>
+                  <dd v-if="entry.total_tokens != null">
+                    <strong>{{ entry.total_tokens.toLocaleString('zh-CN') }}</strong>
+                    <small>入 {{ entry.input_tokens == null ? '—' : entry.input_tokens.toLocaleString('zh-CN') }} / 出 {{ entry.output_tokens == null ? '—' : entry.output_tokens.toLocaleString('zh-CN') }}</small>
+                  </dd>
+                  <dd v-else class="muted">—</dd>
+                </div>
+              </dl>
+              <p class="profile-model-last-used">最近使用 · {{ formatDateTime(entry.last_used_at) }}</p>
+            </li>
+          </ul>
+        </template>
         <div v-else-if="summary" class="profile-empty-state">
           <p>当前账号下还没有模型调用记录。</p>
           <RouterLink to="/" class="settings-action-link">前往查询工作台开始提问 →</RouterLink>

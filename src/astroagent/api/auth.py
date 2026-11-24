@@ -427,30 +427,32 @@ def login(body: LoginInput, request: Request, response: Response):
         if not valid:
             service.store.audit(db, None, "login", "denied", source=current_source)
         else:
+            previous_login = db.execute(
+                (
+                    "SELECT source_hash FROM public.auth_sessions WHERE user_id=%s AND NOT revoked "
+                    "AND source_hash IS NOT NULL AND expires_at>now() "
+                    "AND last_seen>now()-(%s * interval '1 second') "
+                    "ORDER BY created_at DESC LIMIT 1"
+                ),
+                (user["id"], service.settings.idle_seconds),
+            ).fetchone()
             old = getattr(request.state, "principal", None)
             if old:
                 db.execute(
                     "UPDATE public.auth_sessions SET revoked=true WHERE hash=%s",
                     (old["session_hash"],),
                 )
-            anomalous_prior = db.execute(
-                (
-                    "UPDATE public.auth_sessions SET revoked=true WHERE user_id=%s AND NOT "
-                    "revoked AND source_hash IS NOT NULL AND source_hash<>%s RETURNING hash"
-                ),
-                (user["id"], current_source),
-            ).fetchall()
-            if anomalous_prior:
+            if previous_login and previous_login["source_hash"] != current_source:
                 service.store.audit(
                     db,
                     user["id"],
                     "anomalous_location_login",
-                    "revoked_prior",
+                    "observed",
                     source=current_source,
                     reason="different_network_source",
                 )
                 service.store.security_mail(
-                    db, user, "检测到异地或新网络位置登录，原有其他网络位置的会话已自动保护性下线。"
+                    db, user, "检测到新的网络位置登录。请在账号安全中核对活动会话。"
                 )
             if PASSWORDS.check_needs_rehash(user["password_hash"]):
                 db.execute(

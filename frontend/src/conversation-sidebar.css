@@ -55,6 +55,26 @@
 @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
   .conversation-menu { background: var(--surface-card); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+@media (max-width: 680px) {
+  .conversation-menu {
+    left: 10px !important;
+    right: 10px !important;
+    top: auto !important;
+    bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: 75dvh;
+    border-radius: 18px;
+    padding: 8px;
+    z-index: 80;
+  }
+  .conversation-menu button,
+  .conversation-menu a {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
 @media (forced-colors: active) {
   .conversation-row.selected, .conversation-more[aria-expanded="true"] { outline: 1px solid Highlight; outline-offset: -2px; }
 }

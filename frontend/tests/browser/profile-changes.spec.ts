@@ -101,7 +101,8 @@ test('profile navigation and responsive sidebar preserve the unsent question', a
     }
     const toggle = page.locator('.history-toggle')
     await toggle.click()
-    await toggle.click()
+    if (width <= 980) await page.getByRole('button', { name: '关闭会话列表', exact: true }).click()
+    else await toggle.click()
   }
   if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ animations: 'disabled', path: path.join(process.env.ASTROAGENT_RECORD_DIR, info.project.name + '-profile-mobile.png') })
   await page.setViewportSize({ width: 1440, height: 900 })

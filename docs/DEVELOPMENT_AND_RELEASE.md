@@ -1,54 +1,33 @@
-# AstroAgent 开发与发布手册
+# Siderfolio 开发与发布手册
 
 ## 1. 三套环境
 
 | 环境 | 运行位置 | 数据与入口 | 更新方式 |
 | --- | --- | --- | --- |
-| Development | Windows Docker Desktop 的 WSL2 Linux 引擎，默认使用 Compose 项目 `astroagent-v16` | 原有账号与科研数据，浏览器 [本机入口](http://127.0.0.1:5173) | 每轮构建并更新有改动的服务 |
+| Development | Windows Docker Desktop 的 WSL2 Linux 引擎，Compose 项目 `astroagent-dev` | 独立数据库 `astroagent_dev`，[唯一默认预览入口](http://127.0.0.1:5173) | Vite HMR、Uvicorn 自动重载，按需构建受影响的镜像 |
 | Testing | GitHub Actions 托管 Linux Runner | 临时 PostgreSQL／pgvector、合成身份和科研数据、独立绘图环境。Runner 结束后销毁 | 分支推送和批准版本的标签发布检查 |
-| Production | GCP Linux 虚拟机，Compose 项目 `astroagent-gcp` | 固定 HTTPS 地址、PostgreSQL／pgvector 持久卷、用户和科研数据 | 经 CI 核对的版本和镜像摘要、现有 SSH 部署入口 |
+| Production | GCP Linux 虚拟机，Compose 项目 `astroagent-gcp` | 通过固定 HTTPS 地址正式使用，保留独立的用户和科研数据及 PostgreSQL／pgvector 持久卷 | 经 CI 核对的版本和镜像摘要、现有 SSH 部署入口 |
 
 本机站点经同源代理访问 FastAPI。认证、CSRF、MFA、按账号数据边界沿用应用实现。SIMBAD、Gaia、ADS、LangChain 模型客户端、RAG、脚本绘图及计算队列继续使用仓库现有组件。涉及数据库试验或正式业务验收时，使用独立环境与专用数据。
 
 ## 2. 本机启动、更新和预览
 
-### 默认使用 5173 并按轮更新
+### 启动 5173 开发预览
 
-在 Docker Desktop 中使用 Linux 容器和 WSL2 后端。已有部署直接启动 `astroagent-v16`，从 [5173 本机入口](http://127.0.0.1:5173) 登录。该项目名沿用 V1.6 的名称和数据库卷。日常使用及迭代预览共用现有账号、会话和科研数据。
-
-Agent 每轮完成应用源码或运行配置修改后，在仓库根目录执行对应服务的 PowerShell 更新命令。
-
-```powershell
-.\scripts\containers.ps1 -Action update -Service frontend
-.\scripts\containers.ps1 -Action update -Service frontend,backend
-.\scripts\containers.ps1 -Action update -Service frontend -CheckOnly
-.\scripts\containers.ps1 -Action status
-```
-
-脚本核对本机项目、已挂载的数据库卷及账号数据库。镜像构建成功后替换指定服务，等待容器健康并检查登录入口与认证预检。检查通过后刷新 5173。已有容器停止时，脚本可启动现有核心依赖。后端或计算 Worker 替换前检查活动任务。数据库结构变更、身份或凭据调整以及真实数据操作按影响单独授权。
-
-| 本轮改动 | 更新目标 |
-| --- | --- |
-| Vue、CSS、TypeScript、前端锁文件 | `frontend` |
-| FastAPI、Python 依赖 | `backend` |
-| API 契约及同步的前端类型 | `backend,frontend` |
-| 本机入口代理 | `ingress` |
-| 隔离绘图代理 | `plot-executor` |
-| REBOUND 或 PeTar Worker | `compute-worker` |
-
-### 按需启动隔离开发环境
-
-需要隔离预览或在独立数据库中试验时，显式启动 `astroagent-dev`。隔离配置继续提供 Vite HMR 和 Uvicorn reload。
+打开 Docker Desktop，使用 Linux 容器和 WSL2 后端。在仓库根目录用 PowerShell 启动 `astroagent-dev`。
 
 ```powershell
 .\scripts\dev.ps1 -Action Start
+.\scripts\dev.ps1 -Action Update
 .\scripts\dev.ps1 -Action Status
 .\scripts\dev.ps1 -Action Logs -Service backend
 ```
 
-打开 [http://127.0.0.1:15273](http://127.0.0.1:15273)。首次启动只给识别到的空开发数据库安装身份表。脚本在 `.astroagent/dev/runtime.env` 创建开发专用随机凭据，以后沿用该文件。开发预览启用本机 HTTP，只有 Vite 端口映射到宿主机环回地址。开发默认关闭邮件注册和外部模型凭据。需要进入已登录页面时运行 `.\scripts\dev.ps1 -Action Account`，脚本在开发库创建一个合成账号并在本机显示登录信息。邮箱注册、找回密码及实际送达使用专用测试环境验证。
+Vite 端口只映射到宿主机环回地址。FastAPI 和 PostgreSQL 通过开发网络访问。本机开发库已接收旧库数据，使用原有本机账号和 MFA 登录。`.astroagent/dev/runtime.env` 与持久卷配套保存。全新隔离实例才需要初始化身份表或用 `.\scripts\dev.ps1 -Action Account` 创建合成账号。开发默认关闭邮件注册和外部模型凭据。邮箱注册、找回密码及实际送达使用专用测试环境验证。[打开 5173 预览](http://127.0.0.1:5173)
 
-使用隔离环境时，执行 `.\scripts\dev.ps1 -Action Update` 核对资源和镜像。已绑定的源码由 Vite 或 Uvicorn 检测。打开的页面通常随 HMR 更新，后端重载结束后刷新页面或重试请求即可。
+开发脚本先检查 5173 的占用。若已核对的 `astroagent-v16` 入口仍占用端口，脚本在开发镜像就绪后只暂停该入口容器。开发启动失败时会尝试恢复旧入口。若遇到其他端口占用，脚本报出冲突并停止。迁移后的本机业务数据由 `astroagent_dev` 持久卷保存，涉及数据库试验时使用专用测试实例。
+
+每轮应用代码或开发配置修改完成后，Agent 执行 `.\scripts\dev.ps1 -Action Update` 检查预览和认证接口。若服务已经停止，该命令也可启动开发环境。已挂载的源码由 Vite 或 Uvicorn 检测。打开的页面通常随 HMR 更新。后端重载结束后可刷新页面或重试请求。
 
 | 改动 | 容器处理 |
 | --- | --- |
@@ -62,7 +41,7 @@ Agent 每轮完成应用源码或运行配置修改后，在仓库根目录执�
 
 模型和计算按需启用。复制 [.env.dev.example](../.env.dev.example) 为 `.env.dev`，填入已有模型目录及摘要。Embedding 和 Ollama 模型以只读方式共享，选用自己的模型时检查模型名与 V1.5 的本地助手契约。脚本不移动模型文件。启用计算前先启动基础服务，再设置 `ASTRO_DEV_COMPUTE=1`，执行 `.\scripts\dev.ps1 -Action InitCompute` 和 `.\scripts\dev.ps1 -Action Update`。隔离绘图的开发镜像可以单独构建。连接运行中的绘图代理需要独立可信边界，默认开发容器不上挂日常 Docker Socket。OCI 镜像与业务验收分别记录。
 
-在隔离环境用 `Status`、`Logs` 或 `Stop` 查看、排查及暂停。停止保留开发卷、私有配置和模型。单独停一个服务可指定 `-Service`。预览端口冲突时先核对占用及项目归属。更新失败保留错误记录，向用户说明当前实际可用地址和影响范围。
+用 `Status`、`Logs` 或 `Stop` 查看、排查及暂停开发服务。停止保留开发卷、私有配置和模型。单独停一个服务可指定 `-Service`。更新失败时报告当前实际可用地址和影响范围。
 
 ## 3. Agent 规则加载与交接
 
@@ -77,7 +56,7 @@ Agent 每轮完成应用源码或运行配置修改后，在仓库根目录执�
 | Cursor | Agent 原生支持项目根 `AGENTS.md`，选用打开本机仓库的 Agent 会话。[Cursor 项目规则](https://cursor.com/docs/rules) |
 | GitHub Copilot | 支持 Agent 指令的入口会读取 `AGENTS.md`。另提供 `.github/copilot-instructions.md` 指向共享规范，覆盖读取仓库通用指令的客户端。可在响应引用或相应诊断里检查实际加载文件。[Copilot 仓库指令](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions) |
 
-每轮交付应记录改动文件、受影响服务、实际更新和服务状态、入口及待验证内容。仓库规则适用于 Agent 开发流程。GitHub 保护规则、服务器权限和本机脚本的目标核对负责实际操作边界。
+每轮交付记录改动文件、受影响服务、实际采用的热更新或重建方式、服务状态、5173 入口、是否需刷新及待验证内容。GitHub 保护规则、服务器权限和本机脚本的目标核对负责实际操作边界。
 
 ## 4. 一次授权的正式发布
 
@@ -165,9 +144,9 @@ sudo /usr/bin/python3 -I /usr/local/lib/astroagent/release_apply.py status
 
 ## 7. 当前交付状态
 
-本机日常使用与改动预览已统一到 `astroagent-v16`。按轮更新预检已核对 5173、原数据库卷及五个可选更新目标。撤下旧隔离预览容器前后，5173 的登录页和认证预检均成功，原数据卷和隔离开发卷均保留。隔离预览配置仍可按需使用。
+本机开发默认使用 `astroagent-dev` 和 5173。原 `astroagent-v16` 业务库已迁入 `astroagent_dev`，核对了 82 张表及 171 行数据，并在开发后端验证了两个账号的 MFA 数据可解密。旧 PostgreSQL 容器及专用数据卷已清理。GCP 公网实例承载正式日常使用，按第 4 节的正式发布流程更新。
 
-GCP 正式环境使用直连 SSH 发布。受限 IAP 的权限、公钥和生产基线按独立流程启用。正式 CI、各客户端规则加载及业务验收、远程部署和自动回退演练另行记录。
+已核对 5173 的登录入口和认证接口。实际触发了 Vite HMR 和 Uvicorn 重载，并确认重复更新会复用现有的开发容器。正式业务验收与发布验证另行记录。
 
 ## 8. 本次文件清单
 

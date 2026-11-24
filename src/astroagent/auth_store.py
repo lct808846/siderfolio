@@ -1,6 +1,5 @@
 """Public control plane. Business objects never live in these identity tables."""
 
-import hmac
 import json
 import queue
 import time
@@ -347,7 +346,7 @@ class AuthStore:
                 (keyed(self.settings, "login-backoff", "account:" + account),),
             )
 
-    def authenticate(self, token, touch=True, source_hash=None):
+    def authenticate(self, token, touch=True):
         if not token or len(token) > 256:
             return None
         with self.connect() as db:
@@ -355,7 +354,7 @@ class AuthStore:
                 (
                     "SELECT u.*,s.hash AS session_hash,s.mfa_at,s.reauth_at,s.last_seen AS "
                     "session_last_seen,s.created_at AS "
-                    "session_created,s.source_hash AS session_source FROM public.auth_sessions s "
+                    "session_created FROM public.auth_sessions s "
                     "JOIN public.auth_users u ON u.id=s.user_id WHERE s.hash=%s AND NOT s.revoked "
                     "AND s.expires_at>now() AND s.last_seen>now()-(%s * interval '1 second') "
                     "AND u.active AND NOT u.disabled"
@@ -364,41 +363,17 @@ class AuthStore:
             ).fetchone()
             if not row:
                 return None
-            if (
-                source_hash
-                and row.get("session_source")
-                and not hmac.compare_digest(row["session_source"], source_hash)
-            ):
-                db.execute(
-                    "UPDATE public.auth_sessions SET revoked=true WHERE hash=%s",
-                    (row["session_hash"],),
-                )
-                self.audit(
-                    db,
-                    row["id"],
-                    "session_anomaly_revoked",
-                    "revoked",
-                    source=source_hash,
-                    reason="anomalous_source",
-                )
-                self.security_mail(
-                    db, row, "检测到账号在异常网络位置访问，当前登录会话已自动保护性下线。"
-                )
-                return None
             last_seen = row.get("session_last_seen")
-            needs_touch = touch and (
-                (source_hash and not row.get("session_source"))
-                or last_seen is None
-                or last_seen < datetime.now(UTC) - timedelta(seconds=60)
-            )
-            if needs_touch:
+            if touch and (
+                last_seen is None or last_seen < datetime.now(UTC) - timedelta(seconds=60)
+            ):
                 db.execute(
                     (
                         "UPDATE public.auth_sessions SET last_seen=now(), "
-                        "expires_at=GREATEST(expires_at, now()+(%s * interval '1 second')), "
-                        "source_hash=COALESCE(source_hash, %s) WHERE hash=%s"
+                        "expires_at=GREATEST(expires_at, now()+(%s * interval '1 second')) "
+                        "WHERE hash=%s"
                     ),
-                    (self.settings.absolute_seconds, source_hash, row["session_hash"]),
+                    (self.settings.absolute_seconds, row["session_hash"]),
                 )
             return row
 

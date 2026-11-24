@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="sf-bg" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e4d41" />
+      <stop offset="52%" stop-color="#173447" />
+      <stop offset="100%" stop-color="#101f36" />
+    </linearGradient>
+    <radialGradient id="sf-glow" cx="30%" cy="24%" r="65%">
+      <stop offset="0%" stop-color="#6be0b2" stop-opacity="0.34" />
+      <stop offset="100%" stop-color="#6be0b2" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="sf-star" x1="20" y1="12" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f6fffb" />
+      <stop offset="58%" stop-color="#c8f6e1" />
+      <stop offset="100%" stop-color="#84ddb8" />
+    </linearGradient>
+    <linearGradient id="sf-orbit" x1="12" y1="42" x2="52" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8be4c0" stop-opacity="0.38" />
+      <stop offset="50%" stop-color="#f6d38b" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.45" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#sf-bg)" />
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#sf-glow)" />
+  <rect x="3" y="3" width="58" height="58" rx="14" stroke="#a8e8c8" stroke-opacity="0.42" stroke-width="2" />
+  <ellipse cx="32" cy="32" rx="22" ry="9.4" transform="rotate(-28 32 32)" stroke="url(#sf-orbit)" stroke-width="2.6" />
+  <path d="M32 10.5L36.5 27.5L53.5 32L36.5 36.5L32 53.5L27.5 36.5L10.5 32L27.5 27.5L32 10.5Z" fill="url(#sf-star)" />
+  <circle cx="48" cy="18" r="2.7" fill="#f6d38b" />
+</svg>

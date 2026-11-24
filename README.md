@@ -8,7 +8,7 @@ Siderfolio（原 AstroAgent）是面向个人和小课题组的天文科研工�
 
 Ubuntu 服务器部署见 [GCP 部署与启动说明](containers/gcp/README.md)，包含域名或公网 IP 的 HTTPS 配置、Gemini、PostgreSQL 和部署脚本。
 
-本机日常使用与改动预览统一在 `astroagent-v16` 的 5173 入口，Agent 每轮更新受影响的服务。隔离预览、单次授权发布及 GCP 自动部署见 [开发与发布手册](docs/DEVELOPMENT_AND_RELEASE.md)。
+本机开发使用 `astroagent-dev` 的独立数据库，从 [5173 预览入口](http://127.0.0.1:5173) 查看热更新。GCP 公网实例用于正式日常使用。开发启动、增量更新及单次授权发布见 [开发与发布手册](docs/DEVELOPMENT_AND_RELEASE.md)。
 
 **V1.9.0** 提供个人天文文献库、对话内查找和保存文献、会话与计算运行详情，以及固定科研评估框架，已在本次联合验收中完成复验。 [GitHub 源码发布](https://github.com/lct808846/astroagent/releases/tag/v1.9.0) · [发布说明](docs/development/v1.9.0/RELEASE.md) · [部署说明](docs/development/v1.9.0/OPERATIONS.md) · [V1.9 联合验收](docs/test-records/v1.9.0/joint-acceptance/20261123T091033Z/README.md)
 

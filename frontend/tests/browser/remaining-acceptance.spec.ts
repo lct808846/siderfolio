@@ -205,7 +205,8 @@ test('sidebar toggles across compact and desktop boundaries without losing draft
     await toggle.click()
     await expect(toggle).toHaveAttribute('aria-expanded', initial === 'true' ? 'false' : 'true')
     expect(await page.evaluate(() => !!document.activeElement?.closest('[inert], [aria-hidden="true"]'))).toBe(false)
-    await toggle.click()
+    if (width <= 980) await page.getByRole('button', { name: '关闭会话列表', exact: true }).click()
+    else await toggle.click()
     await expect(input).toHaveValue('侧栏切换时保留的草稿')
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   }

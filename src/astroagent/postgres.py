@@ -270,7 +270,10 @@ class PostgresRepository(ConversationRepository):
             raise ServiceError(
                 503, "database_not_configured", "请先在服务端配置本机PostgreSQL，再打开设置。"
             )
-        if multiprocessing.parent_process() is not None or any(
+        # The development reloader supervises one serving child. The advisory lock
+        # below still rejects a second process opening the same repository.
+        development_stack = os.getenv("ASTROAGENT_DEV_STACK") == "astroagent-dev"
+        if (multiprocessing.parent_process() is not None and not development_stack) or any(
             os.getenv(name, "1") != "1" for name in ("WEB_CONCURRENCY", "UVICORN_WORKERS")
         ):
             raise storage_error()

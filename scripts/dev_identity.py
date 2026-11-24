@@ -18,7 +18,7 @@ def main():
     if (
         os.environ.get("ASTROAGENT_DEV_STACK") != "astroagent-dev"
         or not auth.local_http
-        or auth.origin != "http://127.0.0.1:15273"
+        or auth.origin != "http://127.0.0.1:5173"
         or (location.hostname, location.path) != ("postgres", "/astroagent_dev")
     ):
         raise SystemExit("This operation requires the isolated Compose development stack.")

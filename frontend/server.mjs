@@ -46,7 +46,7 @@ async function signedIn(req) {
   })
 }
 if (containerMode && !/^[0-9a-f]{64}$/.test(proxyToken)) throw new Error('Proxy credential is missing')
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' }
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' }
 const compressibleExt = new Set(['.html', '.js', '.css', '.svg', '.json'])
 const staticCache = new Map()
 async function loadStaticAsset(file) {
@@ -105,6 +105,9 @@ const server = http.createServer(async (req, res) => {
     const pathname = decodeURIComponent(url.pathname)
     let file = path.resolve(root, '.' + pathname)
     if (file !== root && !file.startsWith(root + path.sep)) { res.writeHead(404); return res.end() }
+    if (pathname === '/favicon.ico') {
+      try { await stat(file) } catch { file = path.join(root, 'favicon.svg') }
+    }
     if (!path.extname(pathname)) file = path.join(root, 'index.html')
     const isHtmlEntry = file === path.join(root, 'index.html')
     if (isHtmlEntry && !publicPages.has(pathname)) {

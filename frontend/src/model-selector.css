@@ -207,8 +207,26 @@
 .turn-label .turn-model { color: var(--muted); font-size: 10px; }
 .rag-question .model-selector { margin: 10px 0; }
 @media (max-width: 680px) {
-  .model-selector { max-width: 184px; }
-  .model-selector-name { font-size: 11px; }
+  .model-selector { max-width: 210px; }
+  .model-selector-trigger { height: 34px; padding: 4px 8px; }
+  .model-selector-name { font-size: 12px; }
+  .model-picker {
+    left: 10px !important;
+    right: 10px !important;
+    width: calc(100vw - 20px) !important;
+    max-width: none;
+    border-radius: 16px;
+    padding: 8px;
+  }
+  .model-picker-row,
+  .model-picker-option {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+  }
+  .model-picker-label {
+    font-size: 13.5px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .model-picker-enter-active, .model-picker-leave-active, .model-selector-chevron, .conversation-layout .composer .composer-send { transition: none; }

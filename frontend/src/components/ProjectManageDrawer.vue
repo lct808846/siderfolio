@@ -1681,7 +1681,38 @@ defineExpose({ open, close })
   transform: translateX(32px);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 680px) {
+  .project-drawer-backdrop {
+    align-items: flex-end;
+    justify-content: stretch;
+  }
+
+  .project-drawer-panel {
+    width: 100%;
+    height: 92dvh;
+    max-height: 92dvh;
+    border-left: 0;
+    border-top: 1px solid var(--line-strong);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .project-drawer-head {
+    padding: 14px 16px 12px;
+  }
+
+  .project-drawer-tabs {
+    padding: 8px 14px;
+  }
+
+  .project-drawer-body {
+    padding: 14px 14px max(24px, env(safe-area-inset-bottom));
+  }
+
+  .project-drawer-enter-from .project-drawer-panel,
+  .project-drawer-leave-to .project-drawer-panel {
+    transform: translateY(32px);
+  }
+
   .drawer-modules-grid {
     grid-template-columns: minmax(0, 1fr);
   }

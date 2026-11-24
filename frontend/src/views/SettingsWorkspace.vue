@@ -25,12 +25,38 @@ const avatarText = computed(() => (displayName.value.slice(0, 2) || 'AA').toUppe
 const failedAvatarUrl = ref('')
 const rawAvatarUrl = computed(() => identityUser.value?.avatar_url || '')
 const avatarUrl = computed(() => (rawAvatarUrl.value && rawAvatarUrl.value !== failedAvatarUrl.value ? rawAvatarUrl.value : ''))
+const WORKBENCH_RETURN_KEY = 'astroagent.last_workbench_path.v1'
+const NON_APP_RETURN_PREFIXES = [
+  '/settings',
+  '/account',
+  '/admin',
+  '/login',
+  '/register',
+  '/activate',
+  '/resend',
+  '/forgot-password',
+  '/reset-password',
+]
+function readLastWorkbenchPath() {
+  try {
+    const value = sessionStorage.getItem(WORKBENCH_RETURN_KEY)
+    if (value && (value === '/' || value.startsWith('/?') || value.startsWith('/conversations/'))) {
+      return value
+    }
+  } catch { /* Ignore storage unavailability. */ }
+  return '/'
+}
+function isNonAppReturnPath(path: string) {
+  return NON_APP_RETURN_PREFIXES.some(
+    prefix => path === prefix || path.startsWith(`${prefix}/`) || path.startsWith(`${prefix}?`),
+  )
+}
 function backToApp() {
   const back = typeof window.history.state?.back === 'string' ? window.history.state.back : ''
-  if (back && back.startsWith('/') && !back.startsWith('/settings') && !back.startsWith('/account')) {
+  if (back && back.startsWith('/') && !isNonAppReturnPath(back)) {
     router.back()
   } else {
-    void router.push('/')
+    void router.push(readLastWorkbenchPath())
   }
 }
 const sections = [
@@ -52,6 +78,7 @@ const isAccountGroup = (id: SectionId) => id === 'security' || id === 'account'
 const accountOpened = ref(isAccountGroup(active.value.id))
 watch(() => active.value.id, id => { if (isAccountGroup(id)) accountOpened.value = true })
 const search = ref(''), content = ref<HTMLElement | null>(null)
+const mobileDetailOpen = ref(Boolean(route.query.section || route.path === '/account'))
 const filteredSections = computed(() => {
   const words = search.value.trim().toLocaleLowerCase().split(/\s+/)
   return availableSections.value.filter(section => words.every(word => `${section.label} ${section.keywords}`.toLocaleLowerCase().includes(word)))
@@ -59,8 +86,17 @@ const filteredSections = computed(() => {
 const accountNavSections = computed(() => filteredSections.value.filter(section => section.group === 'account'))
 const appNavSections = computed(() => filteredSections.value.filter(section => section.group === 'app'))
 function selectSection(id: SectionId) {
+  mobileDetailOpen.value = true
   if (active.value.id !== id) void router.replace({ path: '/settings', query: id === 'security' ? {} : { section: id } })
 }
+function backToSettingsList() {
+  mobileDetailOpen.value = false
+}
+watch(() => [route.path, route.query.section], ([path, section]) => {
+  if (path === '/account' || (typeof section === 'string' && section)) {
+    mobileDetailOpen.value = true
+  }
+})
 watch(() => active.value.id, () => { if (content.value) content.value.scrollTop = 0 })
 const state = ref<SetupStatus | null>(null), error = ref(''), busy = ref(false), checkedAt = ref('')
 const mcpBusy = ref(false), mcpError = ref(''), mcpSuccess = ref('')
@@ -226,12 +262,15 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
 <template>
   <div class="workspace-panes primary-workspace settings-workspace">
     <WorkspaceHeader title="本机设置" />
-    <main class="settings-main settings-center">
+    <main class="settings-main settings-center" :data-mobile-view="mobileDetailOpen ? 'detail' : 'list'">
       <aside class="settings-navigation" aria-label="设置导航">
-        <button type="button" class="settings-back-btn" @click="backToApp">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
-          <span>返回应用</span>
-        </button>
+        <div class="settings-nav-top">
+          <button type="button" class="settings-back-btn" @click="backToApp">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+            <span>返回应用</span>
+          </button>
+          <span class="settings-mobile-heading" aria-hidden="true">设置</span>
+        </div>
         <h1 class="sr-only">设置</h1>
         <label class="settings-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" /></svg><input v-model="search" type="search" aria-label="搜索设置" placeholder="搜索设置项…" /></label>
         <div class="settings-nav-scroll">
@@ -242,23 +281,37 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
                 <img v-if="avatarUrl" :src="avatarUrl" alt="" class="settings-profile-avatar-img" @error="failedAvatarUrl = avatarUrl" />
                 <template v-else>{{ avatarText }}</template>
               </span>
-              <span class="settings-profile-name">{{ displayName }}</span>
+              <span class="settings-profile-copy">
+                <span class="settings-profile-name">{{ displayName }}</span>
+                <small v-if="identityUser?.email" class="settings-profile-email">{{ identityUser.email }}</small>
+              </span>
               <span class="settings-link-arrow" aria-hidden="true">↗</span>
+              <span class="settings-nav-chevron" aria-hidden="true">›</span>
             </RouterLink>
           </template>
           <template v-if="accountNavSections.length">
             <span class="settings-nav-label" :class="{ 'settings-nav-label-spaced': !search.trim() }">账户</span>
-            <nav aria-label="账户设置">
+            <nav aria-label="账户设置" class="settings-nav-group">
               <button v-for="section in accountNavSections" :key="section.id" type="button" class="settings-nav-item" :aria-current="active.id === section.id ? 'page' : undefined" data-tooltip="" @click="selectSection(section.id)">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path :d="section.icon" /></svg><span>{{ section.label }}</span>
+                <span class="settings-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path :d="section.icon" /></svg></span>
+                <span class="settings-nav-copy">
+                  <span class="settings-nav-title">{{ section.label }}</span>
+                  <small class="settings-nav-desc">{{ section.description }}</small>
+                </span>
+                <span class="settings-nav-chevron" aria-hidden="true">›</span>
               </button>
             </nav>
           </template>
           <template v-if="appNavSections.length">
             <span class="settings-nav-label" :class="{ 'settings-nav-label-spaced': accountNavSections.length > 0 }">工作台</span>
-            <nav aria-label="工作台设置">
+            <nav aria-label="工作台设置" class="settings-nav-group">
               <button v-for="section in appNavSections" :key="section.id" type="button" class="settings-nav-item" :aria-current="active.id === section.id ? 'page' : undefined" data-tooltip="" @click="selectSection(section.id)">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path :d="section.icon" /></svg><span>{{ section.label }}</span>
+                <span class="settings-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path :d="section.icon" /></svg></span>
+                <span class="settings-nav-copy">
+                  <span class="settings-nav-title">{{ section.label }}</span>
+                  <small class="settings-nav-desc">{{ section.description }}</small>
+                </span>
+                <span class="settings-nav-chevron" aria-hidden="true">›</span>
               </button>
             </nav>
           </template>
@@ -274,7 +327,14 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
       </aside>
 
       <div ref="content" class="settings-detail" :aria-busy="busy">
-        <div class="settings-detail-reading">
+        <div class="settings-mobile-bar">
+          <button type="button" class="settings-mobile-back" aria-label="返回设置列表" @click="backToSettingsList">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+            <span>设置</span>
+          </button>
+          <span class="settings-mobile-bar-title">{{ active.label }}</span>
+        </div>
+        <div class="settings-detail-reading" @pointerdown.capture="mobileDetailOpen = true" @focusin.capture="mobileDetailOpen = true">
           <header class="settings-detail-heading settings-detail-hero">
             <div class="settings-heading-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path :d="active.icon" /></svg>

@@ -2,9 +2,9 @@
 param(
     [ValidateSet('Update', 'Start', 'Status', 'Logs', 'Stop', 'Account', 'InitCompute', 'BuildPlot', 'Config')]
     [string]$Action = 'Update',
-    [ValidateSet('frontend', 'backend', 'postgres', 'compute-worker', 'ollama')]
+    [ValidateSet('frontend', 'backend', 'postgres', 'compute-worker', 'ollama', 'plot-executor')]
     [string]$Service,
-    [ValidateSet('frontend', 'backend', 'compute-worker')]
+    [ValidateSet('frontend', 'backend', 'compute-worker', 'plot-executor')]
     [string[]]$Rebuild = @(),
     [ValidateSet('python', 'gnuplot', 'executor')]
     [string[]]$PlotImage = @('python', 'gnuplot', 'executor')
@@ -19,7 +19,8 @@ $settingsPath = Join-Path $repo '.env.dev'
 $ownerLabel = 'io.astroagent.dev.workspace'
 $dockerExe = (Get-Command docker.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
 $dockerArgs = @('--host', 'npipe:////./pipe/dockerDesktopLinuxEngine')
-$preview = 'http://127.0.0.1:15273'
+$previewPort = 5173
+$preview = "http://127.0.0.1:$previewPort"
 
 function SHA256([string]$Value) {
     $algorithm = [Security.Cryptography.SHA256]::Create()
@@ -65,7 +66,7 @@ function Get-DevSetting([string]$Name, [string]$Fallback = '') {
 }
 
 function Read-DevSettings {
-    $allowed = @('ASTRO_DEV_COMPUTE', 'ASTRO_DEV_EMBEDDING_DIR', 'ASTRO_DEV_EMBEDDING_SHA256',
+    $allowed = @('ASTRO_DEV_COMPUTE', 'ASTRO_DEV_PLOTTING', 'ASTRO_DEV_EMBEDDING_DIR', 'ASTRO_DEV_EMBEDDING_SHA256',
         'ASTRO_DEV_OLLAMA_MODELS_DIR', 'ASTRO_DEV_OLLAMA_IMAGE', 'ASTRO_DEV_OLLAMA_DIGEST')
     $result = @{}
     if (Test-Path -LiteralPath $settingsPath) {
@@ -84,7 +85,7 @@ function Read-DevSettings {
 function Set-ModelDirectory([string]$Name) {
     $value = Get-DevSetting $Name
     if (-not $value) { return $false }
-    if ($value -notmatch '^[a-zA-Z]:/[^$`r`n]+$' -or
+    if ($value -notmatch '^[a-zA-Z]:/[^$\r\n]+$' -or
         -not (Test-Path -LiteralPath $value -PathType Container)) {
         throw "$Name must identify an existing local model directory such as D:/models/embedding."
     }
@@ -98,7 +99,8 @@ function Get-DevContainers {
 
 function Confirm-DevResource([string]$Type, [string]$Id) {
     $labelPath = if ($Type -eq 'container') { '.Config.Labels' } else { '.Labels' }
-    $result = Invoke-DevDocker @($Type, 'inspect', '--format', "{{index $labelPath `"$ownerLabel`"}}", $Id)
+    $labels = (Invoke-DevDocker @($Type, 'inspect', '--format', "{{json $labelPath}}", $Id) | Out-String) | ConvertFrom-Json
+    $result = if ($labels) { $labels.$ownerLabel } else { $null }
     if ($result -cne $owner) {
         throw "The Docker development project contains a $Type owned by another workspace or unknown setup."
     }
@@ -111,6 +113,34 @@ function Invoke-DevSql([string]$Sql) {
 
 function Get-DevServiceIds([string]$Target) {
     @(Invoke-DevCompose @('ps', '-aq', $Target))
+}
+
+function Find-LegacyPreviewIngress {
+    $bindingPattern = "(?:127\.0\.0\.1|0\.0\.0\.0|\[::\]|::):${previewPort}->\d+/tcp"
+    $publishers = @(Invoke-DevDocker @('ps', '--no-trunc', '--format', '{{.ID}}|{{.Names}}|{{.Ports}}') |
+        Where-Object { ($_ -split '\|', 3)[2] -match $bindingPattern })
+    if (-not $publishers.Count) {
+        $listener = [Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpListeners() |
+            Where-Object { $_.Port -eq $previewPort -and $_.Address.ToString() -in @('127.0.0.1', '0.0.0.0', '::') } |
+            Select-Object -First 1
+        if ($listener) { throw "Port $previewPort is held by a process outside the managed preview containers." }
+        return
+    }
+    if ($publishers.Count -ne 1) { throw "More than one container is publishing port $previewPort." }
+
+    $id, $name, $ports = $publishers[0] -split '\|', 3
+    $binding = "127.0.0.1:${previewPort}->${previewPort}/tcp"
+    if ($binding -in ($ports -split ',\s*')) {
+        if ($name -ceq 'astroagent-dev-frontend-1') {
+            Confirm-DevResource 'container' $id
+            return
+        }
+        if ($name -ceq 'astroagent-v16-ingress-1') {
+            $labels = (Invoke-DevDocker @('container', 'inspect', '--format', '{{json .Config.Labels}}', $id) | Out-String) | ConvertFrom-Json
+            if ($labels -and $labels.'com.docker.compose.project' -ceq 'astroagent-v16' -and $labels.'com.docker.compose.service' -ceq 'ingress') { return $id }
+        }
+    }
+    throw "Port $previewPort is already published by $name. Check that container before updating."
 }
 
 function Confirm-ComputeIdle {
@@ -138,6 +168,10 @@ function Confirm-DevConfig($Config) {
         $Config.volumes.postgres_data.name -ne 'astroagent-dev_postgres_data') {
         throw 'The Compose configuration does not match the isolated development database.'
     }
+    if (@($Config.services.frontend.ports).Count -ne 1 -or
+        $Config.services.backend.environment.ASTROAGENT_AUTH_ORIGIN -cne $preview) {
+        throw 'The development site must use one local Vite port and the matching authentication origin.'
+    }
     foreach ($resource in @($Config.volumes.PSObject.Properties) + @($Config.networks.PSObject.Properties)) {
         $spec = $resource.Value
         if ($spec.external -or $spec.name -cne "${projectName}_$($resource.Name)" -or
@@ -152,15 +186,30 @@ function Confirm-DevConfig($Config) {
             throw 'A development service has an unexpected identity, network or permission.'
         }
         foreach ($volume in $spec.volumes) {
-            if ($volume.type -eq 'bind' -and (-not $volume.read_only -or
-                $volume.source -match '(?i)(docker\.sock|docker_engine)' -or
-                $volume.target -match '(?i)(docker\.sock|docker_engine)')) {
-                throw 'Development bind mounts must be read-only and exclude Docker control interfaces.'
+            if ($volume.type -eq 'bind') {
+                $isSocket = $volume.source -match '(?i)(docker\.sock|docker_engine)' -or
+                    $volume.target -match '(?i)(docker\.sock|docker_engine)'
+                if (-not $volume.read_only) {
+                    throw 'Development bind mounts must be read-only.'
+                }
+                if ($isSocket -and ($entry.Name -cne 'plot-executor' -or
+                    $volume.source -cne '/var/run/docker.sock' -or
+                    $volume.target -cne '/var/run/docker.sock')) {
+                    throw 'Development bind mounts must exclude Docker control interfaces outside plot-executor.'
+                }
+            }
+        }
+        if ($entry.Name -ceq 'plot-executor') {
+            $execNetworks = @($spec.networks.PSObject.Properties | ForEach-Object { $_.Name })
+            if (-not $spec.read_only -or ($null -ne $spec.ports -and @($spec.ports).Count -ne 0) -or
+                $execNetworks.Count -ne 1 -or $execNetworks[0] -cne 'execution' -or
+                -not $Config.networks.execution.internal) {
+                throw 'plot-executor must be read-only, unpublished, and restricted to the internal execution network.'
             }
         }
         foreach ($port in $spec.ports) {
             if ($entry.Name -ne 'frontend' -or $port.host_ip -cne '127.0.0.1' -or
-                $port.published -ne '15273' -or $port.target -ne 5173) {
+                $port.published -ne $previewPort -or $port.target -ne $previewPort) {
                 throw 'Only the loopback Vite preview port may be published.'
             }
         }
@@ -171,6 +220,7 @@ $owner = SHA256 $repo.ToLowerInvariant()
 $inherited = @{}
 $lock = $null
 $locked = $false
+$pausedIngress = $null
 try {
     foreach ($item in (Get-ChildItem Env: | Where-Object {
         $_.Name -match '^(ASTRO_DEV_|COMPOSE_|DOCKER_(HOST|CONTEXT|TLS|TLS_VERIFY|CERT_PATH)$)'
@@ -210,12 +260,15 @@ try {
             $env:ASTRO_DEV_DB_PASSWORD = '0' * 64
             $env:ASTRO_DEV_PROXY_TOKEN = '1' * 64
             $env:ASTRO_DEV_AUTH_SECRET = ('A' * 43) + '='
+            $env:ASTRO_DEV_EXECUTOR_TOKEN = '2' * 64
         }
     }
     $settings = Read-DevSettings
     $compute = Get-DevSetting 'ASTRO_DEV_COMPUTE' '0'
     if ($compute -cnotin @('0', '1')) { throw 'ASTRO_DEV_COMPUTE must be 0 or 1.' }
     $env:ASTRO_DEV_COMPUTE = $compute
+    $plotting = Get-DevSetting 'ASTRO_DEV_PLOTTING' '0'
+    if ($plotting -cnotin @('0', '1')) { throw 'ASTRO_DEV_PLOTTING must be 0 or 1.' }
     $rag = Set-ModelDirectory 'ASTRO_DEV_EMBEDDING_DIR'
     $ollama = Set-ModelDirectory 'ASTRO_DEV_OLLAMA_MODELS_DIR'
     if ($rag) {
@@ -240,13 +293,16 @@ try {
         'pyproject.toml', '.dockerignore')
     $workerPaths = @(Get-ChildItem (Join-Path $repo 'src/astroagent') -Filter 'compute*.py' -File |
         ForEach-Object { "src/astroagent/$($_.Name)" })
+    $executorPaths = @(Get-ChildItem (Join-Path $repo 'src/astroagent') -Filter 'plot*.py' -File |
+        ForEach-Object { "src/astroagent/$($_.Name)" })
     $env:ASTRO_DEV_OWNER = $owner
     $env:ASTRO_DEV_BACKEND_KEY = 'config'
     $env:ASTRO_DEV_FRONTEND_KEY = 'config'
     $env:ASTRO_DEV_WORKER_KEY = 'config'
+    $env:ASTRO_DEV_EXECUTOR_KEY = 'config'
 
     $composeArgs = @('compose', '--project-name', $projectName, '--project-directory', $repo,
-        '-f', (Join-Path $repo 'compose.dev.yaml'), '--profile', 'compute', '--profile', 'ollama')
+        '-f', (Join-Path $repo 'compose.dev.yaml'), '--profile', 'compute', '--profile', 'ollama', '--profile', 'plotting')
     if ($Action -eq 'Config') {
         $inputFile = if (Test-Path -LiteralPath $runtime) { $runtime } else { Join-Path $repo '.env.dev.example' }
         Invoke-DevCompose @('--env-file', $inputFile, 'config', '--quiet')
@@ -257,9 +313,17 @@ try {
     if (-not (Test-Path -LiteralPath $runtime)) {
         $identity = [Convert]::ToBase64String((New-RandomBytes)).Replace('+', '-').Replace('/', '_')
         $lines = @("ASTRO_DEV_PG_PASSWORD=$(New-LocalToken)", "ASTRO_DEV_DB_PASSWORD=$(New-LocalToken)",
-            "ASTRO_DEV_PROXY_TOKEN=$(New-LocalToken)", "ASTRO_DEV_AUTH_SECRET=$identity")
+            "ASTRO_DEV_PROXY_TOKEN=$(New-LocalToken)", "ASTRO_DEV_AUTH_SECRET=$identity",
+            "ASTRO_DEV_EXECUTOR_TOKEN=$(New-LocalToken)")
         $writer = New-Object IO.StreamWriter([IO.File]::Open($runtime, 'CreateNew', 'Write', 'None'))
         try { $writer.WriteLine($lines -join "`n") } finally { $writer.Dispose() }
+    } elseif ($plotting -eq '1') {
+        $runtimeLines = @([IO.File]::ReadAllLines($runtime) | Where-Object { $_ -ne '' })
+        if (-not ($runtimeLines | Where-Object { $_ -match '^ASTRO_DEV_EXECUTOR_TOKEN=[0-9a-f]{64}$' })) {
+            $runtimeLines = @($runtimeLines | Where-Object { $_ -notmatch '^ASTRO_DEV_EXECUTOR_TOKEN=' })
+            $runtimeLines += "ASTRO_DEV_EXECUTOR_TOKEN=$(New-LocalToken)"
+            [IO.File]::WriteAllText($runtime, ($runtimeLines -join "`n") + "`n", (New-Object Text.UTF8Encoding($false)))
+        }
     }
     $composeArgs += @('--env-file', $runtime)
     try {
@@ -271,6 +335,9 @@ try {
         'containers/frontend/Dockerfile', '.dockerignore') $effective.services.frontend.build
     $env:ASTRO_DEV_WORKER_KEY = Get-InputKey ($backendPaths + $workerPaths +
         @('containers/application/requirements-compute.lock', 'src/astroagent/__init__.py')) $effective.services.'compute-worker'.build
+    $env:ASTRO_DEV_EXECUTOR_KEY = Get-InputKey ($backendPaths + $executorPaths +
+        @('src/astroagent/__init__.py', 'src/astroagent/errors.py', 'src/astroagent/conversations.py',
+            'src/astroagent/local_model_client.py')) $effective.services.'plot-executor'.build
 
     switch ($Action) {
         'Status' { Invoke-DevCompose @('ps', '-a'); Write-Host "Preview: $preview"; return }
@@ -319,6 +386,7 @@ try {
         }
     }
 
+    $null = Find-LegacyPreviewIngress
     Invoke-DevCompose @('up', '-d', '--no-deps', '--wait', '--wait-timeout', '150', 'postgres')
     $schema = Invoke-DevSql "SELECT to_regclass('public.auth_meta') IS NOT NULL"
     Ensure-DevImage 'backend' "astroagent-dev-backend:$env:ASTRO_DEV_BACKEND_KEY"
@@ -348,13 +416,51 @@ try {
     }
     if ($ollama) { $services += 'ollama' }
     elseif (Get-DevServiceIds 'ollama') { Invoke-DevCompose @('stop', 'ollama') }
+    if ($plotting -eq '1') {
+        $pythonPlotKey = Get-InputKey @('containers/plotting/python.Dockerfile',
+            'containers/plotting/plot_worker.py', 'containers/plotting/matplotlibrc') 'python'
+        $gnuplotPlotKey = Get-InputKey @('containers/plotting/gnuplot.Dockerfile',
+            'containers/plotting/plot_worker.py') 'gnuplot'
+        $pythonPlotRef = "astroagent-dev-plot-python:$pythonPlotKey"
+        $gnuplotPlotRef = "astroagent-dev-plot-gnuplot:$gnuplotPlotKey"
+        if (-not @(Invoke-DevDocker @('image', 'ls', '--quiet', '--filter', "reference=$pythonPlotRef")).Count) {
+            Write-Host 'Building development plot image: python'
+            Invoke-DevDocker @('build', '-f', (Join-Path $repo 'containers/plotting/python.Dockerfile'),
+                '-t', $pythonPlotRef, '-t', 'astroagent-dev-plot-python:local', (Join-Path $repo 'containers/plotting'))
+        } else { Write-Host 'Using cached development plot image: python' }
+        if (-not @(Invoke-DevDocker @('image', 'ls', '--quiet', '--filter', "reference=$gnuplotPlotRef")).Count) {
+            Write-Host 'Building development plot image: gnuplot'
+            Invoke-DevDocker @('build', '-f', (Join-Path $repo 'containers/plotting/gnuplot.Dockerfile'),
+                '-t', $gnuplotPlotRef, '-t', 'astroagent-dev-plot-gnuplot:local', (Join-Path $repo 'containers/plotting'))
+        } else { Write-Host 'Using cached development plot image: gnuplot' }
+        Ensure-DevImage 'plot-executor' "astroagent-dev-plot-executor:$env:ASTRO_DEV_EXECUTOR_KEY"
+        $env:ASTRO_DEV_PLOT_PYTHON_IMAGE = Invoke-DevDocker @('image', 'inspect', '--format', '{{.Id}}', $pythonPlotRef)
+        $env:ASTRO_DEV_PLOT_GNUPLOT_IMAGE = Invoke-DevDocker @('image', 'inspect', '--format', '{{.Id}}', $gnuplotPlotRef)
+        $env:ASTRO_DEV_PLOTTING_ENABLED = 'true'
+        $services += 'plot-executor'
+    } elseif (Get-DevServiceIds 'plot-executor') {
+        Invoke-DevCompose @('stop', 'plot-executor')
+    }
     Ensure-DevImage 'frontend' "astroagent-dev-frontend:$env:ASTRO_DEV_FRONTEND_KEY"
+    $pausedIngress = Find-LegacyPreviewIngress
+    if ($pausedIngress) {
+        Write-Host "Stopping the previous local ingress to make port $previewPort available."
+        Invoke-DevDocker @('container', 'stop', $pausedIngress)
+    }
     Invoke-DevCompose (@('up', '-d', '--no-deps', '--no-build', '--wait', '--wait-timeout', '150') + $services)
     $null = Invoke-RestMethod -Uri "$preview/api/v1/auth/csrf" -TimeoutSec 10
     Invoke-DevCompose @('ps', '-a')
     Write-Host "Preview: $preview (Vue HMR / FastAPI reload for mounted source)"
 } catch {
-    Write-Error "Development update did not complete. $($_.Exception.Message)" -ErrorAction Continue
+    $failure = $_.Exception.Message
+    if ($pausedIngress) {
+        try {
+            Invoke-DevCompose @('stop', 'frontend')
+            Invoke-DevDocker @('container', 'start', $pausedIngress)
+            Write-Warning "The previous local ingress was restored on port $previewPort."
+        } catch { Write-Warning "The previous local ingress could not be restored. $($_.Exception.Message)" }
+    }
+    Write-Error "Development update did not complete. $failure" -ErrorAction Continue
     exit 1
 } finally {
     if ($locked) { $lock.ReleaseMutex() }

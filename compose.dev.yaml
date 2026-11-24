@@ -68,14 +68,17 @@ services:
       ASTROAGENT_DEPLOYMENT_MODE: container
       ASTROAGENT_DATA_DIR: /var/lib/astroagent
       ASTROAGENT_DATABASE_URL: "postgresql://astroagent:${ASTRO_DEV_DB_PASSWORD:?Use scripts/dev.ps1}@postgres:5432/astroagent_dev"
-      ASTROAGENT_AUTH_ORIGIN: http://127.0.0.1:15273
+      ASTROAGENT_AUTH_ORIGIN: http://127.0.0.1:5173
       ASTROAGENT_AUTH_LOCAL_HTTP: "true"
       ASTROAGENT_AUTH_SECRET: "${ASTRO_DEV_AUTH_SECRET:?Use scripts/dev.ps1}"
       ASTROAGENT_AUTH_REGISTRATION_ENABLED: "false"
-      ASTROAGENT_ALLOWED_ORIGINS: '["http://127.0.0.1:15273"]'
+      ASTROAGENT_ALLOWED_ORIGINS: '["http://127.0.0.1:5173"]'
       ASTROAGENT_PROXY_TOKEN: "${ASTRO_DEV_PROXY_TOKEN:?Use scripts/dev.ps1}"
       ASTROAGENT_COMPUTE_ENABLED: "${ASTRO_DEV_COMPUTE:-0}"
-      ASTROAGENT_PLOT_EXECUTION_ENABLED: "false"
+      ASTROAGENT_PLOT_EXECUTION_ENABLED: "${ASTRO_DEV_PLOTTING_ENABLED:-false}"
+      ASTROAGENT_PLOT_EXECUTOR_TOKEN: "${ASTRO_DEV_EXECUTOR_TOKEN:-}"
+      ASTROAGENT_PLOT_PYTHON_IMAGE: "${ASTRO_DEV_PLOT_PYTHON_IMAGE:-}"
+      ASTROAGENT_PLOT_GNUPLOT_IMAGE: "${ASTRO_DEV_PLOT_GNUPLOT_IMAGE:-}"
       ASTROAGENT_RAG_SEMANTIC_ENABLED: "${ASTRO_DEV_RAG_ENABLED:-false}"
       ASTROAGENT_RAG_MODEL_PATH: /models/embedding
       ASTROAGENT_RAG_MODEL_SHA256: "${ASTRO_DEV_EMBEDDING_SHA256:-}"
@@ -83,6 +86,7 @@ services:
       ASTROAGENT_LOCAL_MODEL_NAME: astroagent-qwen3-4b-instruct-2507:q4km
       ASTROAGENT_LOCAL_MODEL_URL: http://ollama:11434
       ASTROAGENT_LOCAL_MODEL_DIGEST: "${ASTRO_DEV_OLLAMA_DIGEST:-}"
+      ADS_API_TOKEN: "${ADS_API_TOKEN:-}"
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
     volumes:
@@ -95,7 +99,7 @@ services:
         target: /models/embedding
         read_only: true
         bind: { create_host_path: false }
-    networks: [database, web, models, outbound]
+    networks: [database, web, models, outbound, execution]
     depends_on:
       postgres: { condition: service_healthy }
     healthcheck:
@@ -124,7 +128,7 @@ services:
     environment:
       ASTROAGENT_DEV_PROXY_TOKEN: "${ASTRO_DEV_PROXY_TOKEN:?Use scripts/dev.ps1}"
       npm_config_cache: /tmp/npm
-    ports: ["127.0.0.1:15273:5173"]
+    ports: ["127.0.0.1:5173:5173"]
     volumes:
       - ./frontend/src:/app/src:ro
       - ./frontend/index.html:/app/index.html:ro
@@ -172,6 +176,7 @@ services:
       OLLAMA_HOST: 0.0.0.0:11434
       OLLAMA_MODELS: /models
       OLLAMA_NO_CLOUD: "1"
+      OLLAMA_NOPRUNE: "1"
       OLLAMA_NUM_PARALLEL: "1"
       HOME: /tmp
     volumes:
@@ -187,12 +192,60 @@ services:
       timeout: 4s
       retries: 20
 
+  plot-executor:
+    <<: *service
+    profiles: [plotting]
+    build:
+      <<: *app-build
+      target: executor
+    image: "astroagent-dev-plot-executor:${ASTRO_DEV_EXECUTOR_KEY:?Use scripts/dev.ps1}"
+    user: "10001:10001"
+    group_add: ["0"]
+    read_only: true
+    cap_drop: [ALL]
+    entrypoint:
+      - sh
+      - -eu
+      - -c
+      - |
+        umask 077
+        printf '%s' "$$ASTRO_DEV_EXECUTOR_TOKEN" > /run/secrets/executor_token
+        unset ASTRO_DEV_EXECUTOR_TOKEN
+        exec python -m astroagent.plot_executor_server
+    environment:
+      ASTROAGENT_EXECUTOR_DAEMON_BOUNDARY: docker-desktop-wsl2-v1
+      ASTROAGENT_PLOT_PYTHON_IMAGE: "${ASTRO_DEV_PLOT_PYTHON_IMAGE:-}"
+      ASTROAGENT_PLOT_GNUPLOT_IMAGE: "${ASTRO_DEV_PLOT_GNUPLOT_IMAGE:-}"
+      ASTRO_DEV_EXECUTOR_TOKEN: "${ASTRO_DEV_EXECUTOR_TOKEN:-}"
+    volumes:
+      - executor_ledger:/var/lib/astroagent-executor
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [execution]
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,nodev,size=32m,mode=1777"
+      - "/run/secrets:rw,noexec,nosuid,nodev,size=64k,mode=0700,uid=10001,gid=10001"
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 64
+    stop_grace_period: 75s
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health',timeout=3)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
 volumes:
   postgres_data: { labels: *owner }
   app_data: { labels: *owner }
   compute_spool: { labels: *owner }
+  executor_ledger: { labels: *owner }
 networks:
   database: { internal: true, labels: *owner }
   models: { internal: true, labels: *owner }
+  execution: { internal: true, labels: *owner }
   web: { labels: *owner }
   outbound: { labels: *owner }

@@ -1,8 +1,10 @@
 # V1.6 配置、部署与旧数据归属
 
+本文记录 `astroagent-v16` 的历史部署与数据恢复方式。当前本机业务库已迁入 `astroagent_dev`，从 5173 使用原有本机账号登录。[开发与发布手册](../../DEVELOPMENT_AND_RELEASE.md#2-本机启动更新和预览)
+
 2026-11-14执行补充：本机已按用户授权构建、测试并部署V1.6。用户随后明确选择清空旧业务数据，因此本次没有执行第4节的旧数据认领；先将V1.5备份恢复到独立验证库，逐表比较33张表的完整行及BLOB/向量SHA-256，一致后清空原容器业务库。原备份私密保留，Windows其他数据库未操作。完整证据见[本轮记录](../../test-records/v1.6.0/acceptance/20261114T081737Z/README.md)。以下仍保留未来安装、认领和恢复的操作说明。
 
-当前私有环境为 `.astroagent/container/deployment-v16.env`，认证设置为 `.astroagent/container/secrets/auth-settings-v16.json`；密钥只首次生成，重建不会轮换。QQ SMTP已通过加密认证、提交及邮箱页面送达核对；个人账号和首次管理员没有默认创建。访问 `http://127.0.0.1:5173/register` 自行完成邮箱验证和设密。
+V1.6 私有环境为 `.astroagent/container/deployment-v16.env`，认证设置为 `.astroagent/container/secrets/auth-settings-v16.json`；密钥只首次生成，重建不会轮换。QQ SMTP已通过加密认证、提交及邮箱页面送达核对；个人账号和首次管理员没有默认创建。旧实例入口运行时可通过 `/register` 完成邮箱验证和设密。
 
 `scripts/containers.ps1` 检测到独立V1.6环境后自动组合身份/绘图覆盖文件；可显式传 `-WithIdentity`。私有的 `compose-v16-shared-model.yaml` 将模型卷指向已有V1.5模型卷，启动不再次导入或更改共享模型目录权限。新增 `V16_BACKEND_SETTINGS_FILE` 可指定独立的V1.6私密科研服务设置，保留旧版本设置。新的个人数据库与模型卷是不同资源；复用模型不会复用旧业务库。
 
@@ -35,7 +37,7 @@ python -m astroagent.identity_cli generate-key
 docker compose --env-file <V1.6私有env> -f compose.yaml -f compose.plotting.yaml -f compose.identity.yaml <操作>
 ```
 
-在 Windows 使用已安装在 D 盘的 Docker CLI，并显式选择本机 Docker 引擎。此组合项目名为 `astroagent-v16`，应用镜像标签为 `1.6.0`。**新项目的默认卷为空，不会自动复用或迁移 V1.5 卷**。已有 V1.6 部署升级时沿用同名卷与私有配置。5173 端口与旧实例冲突，隔离环境须另配端口与完全匹配的 origin，或在安排部署时先停旧入口。
+在 Windows 使用已安装在 D 盘的 Docker CLI，并显式选择本机 Docker 引擎。此组合项目名为 `astroagent-v16`，应用镜像标签为 `1.6.0`。**新项目的默认卷为空，不会自动复用或迁移 V1.5 卷**。已有 V1.6 部署升级时沿用同名卷与私有配置。安排旧实例维护时，先核对 5173 的占用。若开发前端正在使用该端口，可以用 `.\scripts\dev.ps1 -Action Stop -Service frontend` 暂停开发前端。
 
 1. 用户安排后构建 backend/frontend/ingress/plot-executor；不在镜像中生成秘密或创建数据库。
 2. 先启动PostgreSQL及必要内部依赖；新空数据库按既有容器入口安装public中的vector/pg_trgm扩展。
