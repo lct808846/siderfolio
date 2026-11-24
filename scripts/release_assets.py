@@ -241,6 +241,47 @@ def assemble(version, sha, repository, inputs, output):
     output.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n", "utf-8")
 
 
+def preserve_local_titles(compose, override):
+    backend = capture([*compose, "ps", "--all", "-q", "backend"])
+    if not backend:
+        return
+    info = json.loads(capture(["docker", "inspect", backend]))[0]
+    environment = dict(entry.split("=", 1) for entry in info["Config"]["Env"])
+    enabled = environment.get("ASTROAGENT_LOCAL_MODEL_ENABLED", "").lower()
+    if enabled not in {"true", "1", "on", "yes", "t", "y"}:
+        return
+
+    network_name = "astroagent-gcp_models"
+    network = json.loads(capture(["docker", "network", "inspect", network_name]))[0]
+    ollama = "astroagent-gcp-ollama-1"
+    members = network.get("Containers") or {}
+    health = capture(["docker", "inspect", "--format", "{{.State.Health.Status}}", ollama])
+    if (
+        not network["Internal"]
+        or (network.get("Labels") or {}).get("com.docker.compose.project") != "astroagent-gcp"
+        or network_name not in info["NetworkSettings"]["Networks"]
+        or not any(peer["Name"] == ollama for peer in members.values())
+        or environment.get("ASTROAGENT_LOCAL_MODEL_URL") != "http://ollama:11434"
+        or health != "healthy"
+    ):
+        raise ValueError("The local title model must remain on its healthy internal network.")
+
+    model_settings = {
+        key: environment[key]
+        for key in (
+            "ASTROAGENT_LOCAL_MODEL_ENABLED",
+            "ASTROAGENT_LOCAL_MODEL_NAME",
+            "ASTROAGENT_LOCAL_MODEL_DIGEST",
+            "ASTROAGENT_LOCAL_MODEL_THREADS",
+            "ASTROAGENT_LOCAL_MODEL_QUEUE_SIZE",
+            "ASTROAGENT_LOCAL_MODEL_TIMEOUT_SECONDS",
+        )
+        if key in environment
+    }
+    override["services"]["backend"].update(environment=model_settings, networks=["models"])
+    override["networks"] = {"models": {"external": True, "name": network_name}}
+
+
 def deploy_ssh(version, sha, repository, registry_user):
     token = sys.stdin.readline(4096).rstrip("\r\n")
     manifest = json.load(sys.stdin)
@@ -316,6 +357,10 @@ def deploy_ssh(version, sha, repository, registry_user):
     ):
         raise ValueError("The server's existing PostgreSQL identity database must be initialized.")
 
+    images = manifest["images"]
+    service_override = {"services": {name: {"image": images[name]} for name in services}}
+    preserve_local_titles(compose, service_override)
+
     with TemporaryDirectory(prefix="siderfolio-release-") as temporary:
         private = Path(temporary)
         config = os.environ | {"DOCKER_CONFIG": str(private / "docker")}
@@ -332,10 +377,7 @@ def deploy_ssh(version, sha, repository, registry_user):
         if login.returncode:
             raise ValueError("GHCR login failed. Check this repository's package read access.")
         override = private / "images.json"
-        images = manifest["images"]
-        override.write_text(
-            json.dumps({"services": {name: {"image": images[name]} for name in services}}), "utf-8"
-        )
+        override.write_text(json.dumps(service_override), "utf-8")
         pull = [*compose, "-f", str(override)]
         subprocess.run([*pull, "pull", *services], check=True, timeout=900, env=config)
         has_compute = capture([*sql, "SELECT to_regclass('public.compute_tasks') IS NOT NULL"])
@@ -353,7 +395,7 @@ def deploy_ssh(version, sha, repository, registry_user):
             != "0"
         ):
             raise ValueError("Wait for active compute tasks before replacing the backend.")
-        runtime = os.environ.copy()
+        runtime = os.environ | {"COMPOSE_REMOVE_ORPHANS": "false"}
         if compute == "1":
             runtime["COMPUTE_IMAGE_ID"] = capture(
                 [

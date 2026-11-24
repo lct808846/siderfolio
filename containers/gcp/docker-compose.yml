@@ -198,6 +198,9 @@ services:
     environment:
       PUBLIC_HOST: "${PUBLIC_HOST:?Set PUBLIC_HOST in the GCP .env}"
       SITE_MODE: "${SITE_MODE:-ip}"
+      APEX_REDIRECT_HOST: "${APEX_REDIRECT_HOST:-}"
+      HTTP_APEX_ADDRESS: "${APEX_REDIRECT_HOST:+, http://${APEX_REDIRECT_HOST}}"
+      HTTPS_APEX_ADDRESS: "${APEX_REDIRECT_HOST:+, https://${APEX_REDIRECT_HOST}}"
       ACME_CONTACT: "${ACME_EMAIL:+email ${ACME_EMAIL}}"
     ports:
       - "80:80"

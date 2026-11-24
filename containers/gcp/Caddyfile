@@ -20,8 +20,10 @@
 	}
 }
 
-https://{$PUBLIC_HOST} {
+https://{$PUBLIC_HOST}{$HTTPS_APEX_ADDRESS} {
 	import astroagent_{$SITE_MODE}_tls
+	@apex not host {$PUBLIC_HOST}
+	redir @apex https://{$PUBLIC_HOST}{uri} 308
 	@internal path /health /__internal /__internal/*
 	respond @internal 404
 
@@ -34,7 +36,7 @@ https://{$PUBLIC_HOST} {
 }
 
 # Caddy also serves ACME HTTP challenges on port 80. Browser traffic upgrades to TLS.
-http://{$PUBLIC_HOST} {
+http://{$PUBLIC_HOST}{$HTTP_APEX_ADDRESS} {
 	redir https://{$PUBLIC_HOST}{uri} 308
 }
 

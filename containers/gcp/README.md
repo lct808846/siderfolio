@@ -43,6 +43,20 @@ bash containers/gcp/deploy.sh deploy --init-db
 
 `.env` 权限为 `0600`，已有的仓库 `.gitignore` 忽略它，镜像构建上下文也排除它。Gemini 密钥只进入后端环境，数据库密码只进入 PostgreSQL 和需要连接它的后端。可用 `compose config --quiet` 校验，不要分享展开后的 Compose 配置或 Docker 环境变量列表。拥有服务器 Docker 控制权的用户可以读取容器环境。日志为 `json-file`，每个长期运行的容器 `restart: unless-stopped`，每个日志文件 `max-size: "50m"`，最多 3 个。数据库和执行器端口不发布到公网。
 
+### 以 www 作为正式站点
+
+域名接入时，在 DNS 中将根域名的 A 记录指向当前服务器的固定公网 IPv4，将 `www` 的 CNAME 指向根域名。Cloudflare 记录使用仅 DNS 和自动 TTL。服务器只配置 IPv4 时保留 A 与 CNAME。域名切换属于生产维护，先核对当前版本、备份、容器和发布方式，经批准后仅更新站点相关配置。
+
+```dotenv
+SITE_MODE=domain
+PUBLIC_HOST=www.siderfolio.com
+APEX_REDIRECT_HOST=siderfolio.com
+```
+
+`APEX_REDIRECT_HOST` 可留空。启用时须填写 `PUBLIC_HOST` 对应的根域名。Caddy 为两个名字分别管理受信任的 HTTPS 证书。根域名的 HTTP 和 HTTPS 都直接返回 `308` 到 `https://www.siderfolio.com`，保留路径和查询参数。站点的 Cookie、认证来源、前端 API 和新邮件链接均使用 www。由 IP 版切换后，用户首次打开 www 时需在原有账号下重新登录；旧邮件若仍指向 IP，可在 www 重新申请相应链接。
+
+部署后的 `verify` 会核对两个域名的证书、重定向目标和认证入口。直连 SSH 发布保留已启用的本地命名模型和现有的内部模型网络。使用 IAP 受控发布时，域名和 Compose 变更需走维护流程，核对实际运行的新版本后通过部署工具登记运行基线。 [生产发布与维护流程](../../docs/DEVELOPMENT_AND_RELEASE.md#5-github-与-gcp-的一次性启用)
+
 ## 3. 首次登录与业务验证
 
 从 HTTPS 的 `/register` 注册，收邮件、激活并设密码，再登录。用一条无需附件的简单聊天验证 Gemini，用 ADS token 配置完成后再验证文献检索。这些动作独立于启动探针。

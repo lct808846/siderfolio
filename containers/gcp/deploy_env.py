@@ -38,6 +38,16 @@ def check(condition, message):
         raise ValueError(message)
 
 
+def domain_name(host):
+    labels = host.split(".")
+    return (
+        len(host) <= 253
+        and len(labels) >= 2
+        and not labels[-1].isdigit()
+        and all(HOST_LABEL.fullmatch(label) for label in labels)
+    )
+
+
 def verify_compose():
     services = json.load(sys.stdin)["services"]
     ingress = services["ingress"]["environment"]
@@ -47,6 +57,7 @@ def verify_compose():
 
     host = ingress["PUBLIC_HOST"]
     mode = ingress["SITE_MODE"]
+    apex = ingress.get("APEX_REDIRECT_HOST", "")
     if mode == "ip":
         try:
             public_ip = ipaddress.IPv4Address(host)
@@ -57,16 +68,21 @@ def verify_compose():
             "IP 模式下 PUBLIC_HOST 必须是实际分配的公网 IPv4。",
         )
     elif mode == "domain":
-        labels = host.split(".")
-        check(
-            len(host) <= 253
-            and len(labels) >= 2
-            and not labels[-1].isdigit()
-            and all(HOST_LABEL.fullmatch(label) for label in labels),
-            "域名模式使用小写域名（IDN 使用 ASCII 形式），不带协议和端口。",
-        )
+        check(domain_name(host), "域名模式使用小写域名（IDN 使用 ASCII 形式），不带协议和端口。")
     else:
         raise ValueError("SITE_MODE 只能为 domain 或 ip。")
+    if apex:
+        check(
+            mode == "domain" and domain_name(apex) and host == f"www.{apex}",
+            "APEX_REDIRECT_HOST 必须是域名模式下 PUBLIC_HOST 对应的根域名。",
+        )
+
+    origin = f"https://{host}"
+    check(
+        backend["ASTROAGENT_AUTH_ORIGIN"] == frontend["ASTROAGENT_SITE_ORIGIN"] == origin
+        and json.loads(backend["ASTROAGENT_ALLOWED_ORIGINS"]) == [origin],
+        "前端、认证、邮件链接和允许的来源必须统一使用 PUBLIC_HOST 的 HTTPS 地址。",
+    )
 
     # Caddy expands these values before parsing its configuration. Allow only a single token.
     contact = ingress.get("ACME_CONTACT", "")
@@ -120,22 +136,26 @@ def verify_compose():
     )
     compute = backend["ASTROAGENT_COMPUTE_ENABLED"]
     check(compute in {"0", "1"}, "COMPUTE_ENABLED 只能为 0 或 1。")
-    print(host, compute)
+    return host, compute, apex
 
 
 def main():
     if sys.argv[1:] == ["prepare"]:
         prepare(Path(__file__).resolve().parent)
         return
-    if sys.argv[1:] == ["verify"]:
+    if sys.argv[1:] in (["verify"], ["verify", "--include-apex"]):
         try:
-            verify_compose()
+            host, compute, apex = verify_compose()
         except (KeyError, TypeError, json.JSONDecodeError):
             raise SystemExit("无法读取有效的 Compose 配置。") from None
         except ValueError as error:
             raise SystemExit(str(error)) from None
+        if sys.argv[2:]:
+            print(host, compute, apex)
+        else:
+            print(host, compute)
         return
-    raise SystemExit("Use prepare or verify.")
+    raise SystemExit("Use prepare or verify [--include-apex].")
 
 
 if __name__ == "__main__":

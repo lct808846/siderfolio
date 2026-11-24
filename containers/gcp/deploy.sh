@@ -40,35 +40,55 @@ if [[ "$action" == compose ]]; then
 fi
 
 check_config() {
-    # Only the public host and the compute switch make it to stdout.
-    "${compose[@]}" config --format json | python3 "$here/deploy_env.py" verify
+    # Only public hostnames and the compute switch make it to stdout.
+    "${compose[@]}" config --format json | python3 "$here/deploy_env.py" verify --include-apex
 }
 
 verify_site() {
-    local http_code login_code csrf_code private_code health_code attempt
-    local curl_args=(--noproxy '*' --silent --output /dev/null --write-out '%{http_code}' --max-time 5)
+    local http_redirect login_code='' csrf_code private_code health_code
+    local deadline=$((SECONDS + 205))
+    local apex_https_redirect='' apex_http_redirect
+    local curl_args=(--noproxy '*' --silent --output /dev/null --max-time 5)
+    local path='/login?from=domain-check&source=redirect'
+    local expected_redirect="308 https://$public_host$path"
     local http_target="$public_host:80:127.0.0.1:80"
     local tls_target="$public_host:443:127.0.0.1:443"
     printf '等待 Caddy 签发证书并验证 https://%s …\n' "$public_host"
-    for ((attempt = 0; attempt < 40; attempt++)); do
-        login_code="$(curl "${curl_args[@]}" --connect-to "$tls_target" "https://$public_host/login")" || login_code=
-        [[ "$login_code" == 200 ]] && break
+    while ((SECONDS < deadline)); do
+        login_code="$(curl "${curl_args[@]}" --write-out '%{http_code}' \
+            --connect-to "$tls_target" "https://$public_host/login")" || login_code=
+        if [[ "$login_code" == 200 ]]; then
+            [[ -z "$apex_host" ]] && break
+            apex_https_redirect="$(curl "${curl_args[@]}" --write-out '%{http_code} %{redirect_url}' \
+                --connect-to "$apex_host:443:127.0.0.1:443" "https://$apex_host$path")" || apex_https_redirect=
+            [[ "$apex_https_redirect" == "$expected_redirect" ]] && break
+        fi
         sleep 5
     done
     [[ "$login_code" == 200 ]] || fail 'HTTPS 登录页未就绪。查看：bash containers/gcp/deploy.sh compose logs --tail=80 ingress backend'
-    http_code="$(curl "${curl_args[@]}" --connect-to "$http_target" "http://$public_host/")"
+    http_redirect="$(curl "${curl_args[@]}" --write-out '%{http_code} %{redirect_url}' \
+        --connect-to "$http_target" "http://$public_host$path")"
+    [[ "$http_redirect" == "$expected_redirect" ]] || fail '主站 HTTP 重定向不符合预期。'
+    if [[ -n "$apex_host" ]]; then
+        [[ "$apex_https_redirect" == "$expected_redirect" ]] || fail '根域名 HTTPS 证书或重定向未就绪。'
+        apex_http_redirect="$(curl "${curl_args[@]}" --write-out '%{http_code} %{redirect_url}' \
+            --connect-to "$apex_host:80:127.0.0.1:80" "http://$apex_host$path")"
+        [[ "$apex_http_redirect" == "$expected_redirect" ]] || fail '根域名 HTTP 重定向不符合预期。'
+        printf '根域名 HTTP 和 HTTPS 均返回 308，并保留路径与查询参数。\n'
+    fi
+    curl_args+=(--write-out '%{http_code}')
     csrf_code="$(curl "${curl_args[@]}" --connect-to "$tls_target" "https://$public_host/api/v1/auth/csrf")"
     private_code="$(curl "${curl_args[@]}" --connect-to "$tls_target" "https://$public_host/api/v1/conversations")"
     health_code="$(curl "${curl_args[@]}" --connect-to "$tls_target" "https://$public_host/health")"
     printf 'HTTP 跳转 %s，登录页 %s，认证接口 %s，匿名业务接口 %s，内部探针 %s。\n' \
-        "$http_code" "$login_code" "$csrf_code" "$private_code" "$health_code"
-    [[ "$http_code" == 308 && "$csrf_code" == 200 && "$private_code" == 401 && "$health_code" == 404 ]] ||
+        "${http_redirect%% *}" "$login_code" "$csrf_code" "$private_code" "$health_code"
+    [[ "$csrf_code" == 200 && "$private_code" == 401 && "$health_code" == 404 ]] ||
         fail '入口或认证校验结果不符合预期。'
 }
 
 [[ "$action" == deploy || "$action" == verify || "$action" == backup ]] || fail "不支持的操作：$action"
 site="$(check_config)"
-read -r public_host compute <<< "$site"
+read -r public_host compute apex_host <<< "$site"
 if [[ "$compute" == 1 ]]; then
     compose+=(--profile compute)
 fi
