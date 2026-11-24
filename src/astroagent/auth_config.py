@@ -1,5 +1,6 @@
 """Identity settings are server-only; authentication has no anonymous fallback."""
 
+from email.utils import parseaddr
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -25,6 +26,11 @@ class AuthSettings(BaseSettings):
     smtp_from: str = ""
     smtp_mode: str = "tls"
     mail_hour_limit: int = Field(default=100, ge=1, le=10000)
+    mail_day_limit: int = Field(default=90, ge=1, le=10000)
+    mail_month_limit: int = Field(default=2700, ge=1, le=300000)
+    mail_request_address_day_limit: int = Field(default=8, ge=1, le=1000)
+    mail_request_ip_day_limit: int = Field(default=20, ge=1, le=1000)
+    registration_ip_day_limit: int = Field(default=5, ge=1, le=1000)
     registration_enabled: bool = True
     registration_limit: int = Field(default=1000, ge=1, le=100000)
     tenant_limit: int = Field(default=32, ge=1, le=128)
@@ -42,6 +48,14 @@ class AuthSettings(BaseSettings):
     def mail_ready(self):
         return all(
             (self.smtp_host, self.smtp_user, self.smtp_password.get_secret_value(), self.smtp_from)
+        )
+
+    @property
+    def feedback_mail_ready(self):
+        return (
+            self.mail_ready
+            and not self.local_http
+            and parseaddr(self.smtp_from)[1].lower() == "noreply@siderfolio.com"
         )
 
     @model_validator(mode="after")

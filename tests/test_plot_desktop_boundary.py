@@ -13,8 +13,9 @@ import yaml
 
 from astroagent.errors import ServiceError
 from astroagent.plot_executor_client import ExecutorClient
-from astroagent.plot_executor_daemon import DockerDesktopSandbox
+from astroagent.plot_executor_daemon import DockerDesktopSandbox, RootlessDockerSandbox
 from astroagent.plot_executor_server import Executor, Handler
+from astroagent.plot_sandbox import ROOTLESS_BOUNDARY, Sandbox
 
 
 def test_socket_only_mounted_in_unpublished_internal_broker():
@@ -88,6 +89,38 @@ def test_non_desktop_daemon_is_rejected(monkeypatch):
     monkeypatch.setattr(broker, "call", lambda *args, **kwargs: b'{"OperatingSystem":"Ubuntu"}')
     with pytest.raises(ServiceError) as exc:
         broker.admit("python")
+    assert exc.value.error.code == "plot_sandbox_unavailable"
+
+
+@pytest.mark.parametrize(
+    ("options", "driver", "version", "accepted"),
+    [
+        (["name=rootless"], "systemd", "2", True),
+        ([], "systemd", "2", False),
+        (["name=rootless"], "none", "2", False),
+        (["name=rootless"], "systemd", "1", False),
+    ],
+)
+def test_rootless_broker_requires_cgroups(monkeypatch, options, driver, version, accepted):
+    broker = RootlessDockerSandbox(SimpleNamespace(), "owner")
+    info = {"SecurityOptions": options, "CgroupDriver": driver, "CgroupVersion": version}
+    monkeypatch.setattr(broker, "call", lambda *args: json.dumps(info).encode())
+    monkeypatch.setattr(Sandbox, "admit", lambda _, engine: engine)
+    if accepted:
+        assert broker.admit("python") == "python"
+    else:
+        with pytest.raises(ServiceError) as exc:
+            broker.admit("python")
+        assert exc.value.error.code == "plot_sandbox_unavailable"
+
+
+def test_rootless_client_requires_an_explicit_boundary_from_executor(monkeypatch):
+    client = ExecutorClient(
+        SimpleNamespace(plot_execution_enabled=False, plot_executor_boundary=ROOTLESS_BOUNDARY)
+    )
+    monkeypatch.setattr(client, "request", lambda *args, **kwargs: {"ready": True, "images": {}})
+    with pytest.raises(ServiceError) as exc:
+        client.probe()
     assert exc.value.error.code == "plot_sandbox_unavailable"
 
 

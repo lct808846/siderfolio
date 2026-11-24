@@ -21,7 +21,7 @@ from astroagent.auth_security import (
     totp_step,
     verify_password,
 )
-from astroagent.auth_store import AUTH_LOCK
+from astroagent.auth_store import AUTH_LOCK, EMAIL_COOLDOWN_SECONDS
 from astroagent.errors import ServiceError
 
 router = APIRouter(prefix="/api/v1/auth", tags=["identity"])
@@ -192,7 +192,16 @@ def session(request: Request, response: Response):
 def issue_email(body, request, purpose):
     service = runtime(request)
     canonical, display = email_address(body.email)
-    service.store.rate("email", source(request), canonical, limit=5, seconds=3600)
+    client = source(request)
+    service.store.rate("email", client, canonical, limit=5, seconds=3600)
+    service.store.rate(
+        "email-daily",
+        client,
+        canonical,
+        limit=service.settings.mail_request_ip_day_limit,
+        account_limit=service.settings.mail_request_address_day_limit,
+        seconds=86400,
+    )
     if not service.email_ready:
         raise ServiceError(
             503, "email_unavailable", "邮件注册或找回服务暂不可用，请联系管理员；已有账号可登录。"
@@ -208,6 +217,13 @@ def issue_email(body, request, purpose):
             count = db.execute("SELECT count(*) AS n FROM public.auth_users").fetchone()["n"]
             if count >= service.settings.registration_limit:
                 raise ServiceError(503, "registration_capacity", "注册名额已满，请联系管理员。")
+            registrations = service.store.increment_rate(
+                db, "registration-daily", "source:" + client, 86400
+            )
+            if registrations > service.settings.registration_ip_day_limit:
+                raise ServiceError(
+                    429, "registration_rate_limit", "今日注册请求已达上限，请稍后再试。"
+                )
             identifier = str(uuid4())
             user = db.execute(
                 (
@@ -224,12 +240,23 @@ def issue_email(body, request, purpose):
                 or (purpose == "reset" and user["active"])
             )
         )
+        cooldown = EMAIL_COOLDOWN_SECONDS
         if eligible:
-            service.store.token(db, user, purpose, str(body.request_id))
+            cooldown = db.execute(
+                """
+                SELECT COALESCE(GREATEST(0, ceil(extract(epoch FROM
+                    (max(created_at) + (%s * interval '1 second') - now())))), 0) AS seconds
+                FROM public.auth_outbox WHERE user_id=%s AND purpose=%s
+                """,
+                (EMAIL_COOLDOWN_SECONDS, user["id"], purpose),
+            ).fetchone()["seconds"]
+            if not cooldown:
+                service.store.token(db, user, purpose, str(body.request_id))
+                cooldown = EMAIL_COOLDOWN_SECONDS
         service.store.audit(
             db, None, "email_" + purpose, "accepted", source=service.source_hash(source(request))
         )
-    return GENERIC
+    return int(cooldown)
 
 
 @router.post("/continue")
@@ -245,38 +272,26 @@ def continue_auth(body: EmailInput, request: Request):
             if user["disabled"]:
                 raise ServiceError(403, "account_disabled", "该账号已被禁用，请联系管理员。")
             return {"action": "login", "totp_enabled": bool(user["totp_secret"])}
-        if user and not user["disabled"]:
-            recent = db.execute(
-                (
-                    "SELECT extract(epoch FROM (now() - created_at)) AS elapsed "
-                    "FROM public.auth_outbox WHERE user_id=%s AND purpose='activate' "
-                    "AND state IN ('pending','submitted') ORDER BY created_at DESC LIMIT 1"
-                ),
-                (user["id"],),
-            ).fetchone()
-            if recent and 0 <= recent["elapsed"] < 60:
-                return {
-                    **GENERIC,
-                    "action": "activate_sent",
-                    "cooldown": max(1, 60 - int(recent["elapsed"])),
-                }
-    issue_email(body, request, "activate")
-    return {**GENERIC, "action": "activate_sent", "cooldown": 60}
+    cooldown = issue_email(body, request, "activate")
+    return {**GENERIC, "action": "activate_sent", "cooldown": cooldown}
 
 
 @router.post("/register")
 def register(body: EmailInput, request: Request):
-    return issue_email(body, request, "activate")
+    issue_email(body, request, "activate")
+    return GENERIC
 
 
 @router.post("/resend")
 def resend(body: EmailInput, request: Request):
-    return issue_email(body, request, "activate")
+    issue_email(body, request, "activate")
+    return GENERIC
 
 
 @router.post("/forgot-password")
 def forgot(body: EmailInput, request: Request):
-    return issue_email(body, request, "reset")
+    issue_email(body, request, "reset")
+    return GENERIC
 
 
 @router.post("/activate/confirm")

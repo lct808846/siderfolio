@@ -88,7 +88,8 @@ unset ADMIN_EMAIL
 
 - **N 体计算。** 将 `.env` 中 `COMPUTE_ENABLED=1`。首装使用 `bash containers/gcp/deploy.sh deploy --init-db --init-compute`，已装站点首次开启时使用 `bash containers/gcp/deploy.sh deploy --init-compute`。脚本以应用数据库角色显式安装增量计算表，启动无网络的 1 vCPU／512 MiB Worker，使用仓库本版的 REBOUND／PeTar 镜像。常规更新使用 `deploy`。排空活跃任务后再停用 Worker。 [计算任务运维说明](../../docs/development/v1.7.0/OPERATIONS.md)
 - **语义 RAG。** 基础部署保留本地知识库的词法检索。准备仓库认可的本地嵌入模型与 SHA-256 后，在 `.env` 填写 `EMBEDDING_MODEL_DIR`、`EMBEDDING_MODEL_SHA256`，用 `bash containers/gcp/deploy.sh --rag deploy` 只读挂载模型。首装再加 `--init-db`。启用后部署及管理命令保留 `--rag`。没有 CPU 内存实测前先从小文档开始。 [固定嵌入模型准备说明](../../docs/development/v1.0.0/MODEL_SETUP.md)
-- **Ollama 与脚本绘图。** 这台 VM 的基础配置使用云端 Gemini，Ollama 与模型权重不上机。网页中的程序生成脚本需通过专用绘图隔离环境执行，基础配置关闭该执行功能。需启用时按现有独立执行器契约配置并验收，通过内部网络连接；公网后端不挂 Docker 控制接口。 [绘图执行与隔离方案](../../docs/CONTAINER_DEPLOYMENT_V1.5.md)
+- **Ollama。** 基础配置使用云端 Gemini。会话自动命名可连接内部模型网络中的 Ollama。直连 SSH 发布会复用已就绪的内部模型服务。
+- **Python／Gnuplot 脚本绘图。** 在独立的无登录权限账号下运行 rootless Docker，并通过 systemd 委托 cgroup v2 的 CPU、内存和进程控制。独立绘图代理使用 `linux-rootless-v1`，只接入 `astroagent-gcp_plotting` 内部网络，以 `plot-executor` 为别名，读取挂载在 `/run/plot-engine` 的专用 daemon socket 目录。固定两种协议 2 镜像，使用代理与后端专用的 64 位十六进制凭据。在私有 `.env` 填写 `PLOT_ENABLED=1`、`PLOT_EXECUTOR_TOKEN`、`PLOT_PYTHON_IMAGE`、`PLOT_GNUPLOT_IMAGE` 后，直连 SSH 发布会读取绘图覆盖配置并检查代理就绪。手动更新后端时，同样追加 `-f containers/gcp/docker-compose.plot.yml`。绘图容器使用无网络、非 root 和只读根，限制时长与资源。代理可管理专用 daemon，仍与宿主机共享内核。 [Docker rootless 资源控制](https://docs.docker.com/engine/security/rootless/tips/#limiting-resources)
 
 ## 5. 更新、备份与排查
 

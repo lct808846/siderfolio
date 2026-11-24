@@ -9,6 +9,7 @@ import { useAppearance } from '../stores/appearance'
 const IdentityWorkspace = defineAsyncComponent(() => import('./IdentityWorkspace.vue'))
 const SettingsWorkspace = defineAsyncComponent(() => import('./SettingsWorkspace.vue'))
 const AdminWorkspace = defineAsyncComponent(() => import('./AdminWorkspace.vue'))
+const FeedbackWorkspace = defineAsyncComponent(() => import('./FeedbackWorkspace.vue'))
 const route = useRoute()
 const appearance = useAppearance()
 const showAstroBackdrop = computed(() => identityReady.value && !!identityUser.value && !isIdentityPage(route.path) && appearance.astroBackdrop)
@@ -29,5 +30,6 @@ onBeforeUnmount(() => { window.removeEventListener('astroagent:session-expired',
   <IdentityWorkspace v-else-if="!identityUser || isIdentityPage(route.path)" />
   <template v-else-if="route.path === '/settings' || route.path === '/account'"><InteractionHints /><SettingsWorkspace /></template>
   <AdminWorkspace v-else-if="route.path.startsWith('/admin') && identityUser.admin" />
+  <FeedbackWorkspace v-else-if="route.path === '/feedback'" />
   <App v-else :key="identityUser.id" />
 </template>

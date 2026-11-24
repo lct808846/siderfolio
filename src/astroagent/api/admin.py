@@ -8,6 +8,7 @@ from fastapi import APIRouter, Query, Request
 
 from astroagent.api.auth import Input, actor, runtime, source
 from astroagent.auth_access import administrator
+from astroagent.auth_mail_quota import MailQuotaUsage, mail_quota_usage
 from astroagent.auth_store import AUTH_LOCK
 from astroagent.errors import ServiceError
 from astroagent.usage import AccountLimits, account_snapshot, limits_key
@@ -220,6 +221,12 @@ def mail(request: Request, page: int = Query(default=1, ge=1, le=10000)):
             ),
             ((page - 1) * 30,),
         ).fetchall()
+
+
+@router.get("/mail/usage", response_model=list[MailQuotaUsage])
+def mail_usage(request: Request):
+    service, _ = runtime(request), admin(request)
+    return mail_quota_usage(service.store)
 
 
 @router.post("/mail/{mail_id}/retry")

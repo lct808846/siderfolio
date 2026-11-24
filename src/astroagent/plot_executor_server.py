@@ -17,14 +17,17 @@ from astroagent.errors import ServiceError
 from astroagent.local_model_client import strict_json
 from astroagent.plot_data import table
 from astroagent.plot_executor_client import MAX_REQUEST, decoded, encoded
-from astroagent.plot_executor_daemon import DockerDesktopSandbox
-from astroagent.plot_sandbox import IMAGE, unavailable
+from astroagent.plot_executor_daemon import DockerDesktopSandbox, RootlessDockerSandbox
+from astroagent.plot_sandbox import DESKTOP_BOUNDARY, IMAGE, ROOTLESS_BOUNDARY, unavailable
+
+SANDBOXES = {DESKTOP_BOUNDARY: DockerDesktopSandbox, ROOTLESS_BOUNDARY: RootlessDockerSandbox}
 
 
 class Executor:
     def __init__(self):
-        if os.getenv("ASTROAGENT_EXECUTOR_DAEMON_BOUNDARY") != "docker-desktop-wsl2-v1":
-            raise ValueError("Docker Desktop boundary acknowledgement is required")
+        self.boundary = os.getenv("ASTROAGENT_EXECUTOR_DAEMON_BOUNDARY")
+        if self.boundary not in SANDBOXES:
+            raise ValueError("A supported executor boundary is required")
         self.token = Path("/run/secrets/executor_token").read_text().strip()
         if not re.fullmatch("[0-9a-f]{64}", self.token):
             raise ValueError("Executor credential")
@@ -55,7 +58,7 @@ class Executor:
             plot_timeout_seconds=30,
             plot_docker_host="unix:///var/run/docker.sock",
         )
-        self.sandbox = DockerDesktopSandbox(settings, owner)
+        self.sandbox = SANDBOXES[self.boundary](settings, owner)
         self.slot = threading.BoundedSemaphore(1)
         self.records = {}
         paths = list(self.root.glob("*.json"))
@@ -113,7 +116,7 @@ class Executor:
             for engine in ("python", "gnuplot"):
                 reference, identifier = self.sandbox.admit(engine)
                 images[engine] = {"reference": reference, "id": identifier}
-            return {"ready": True, "images": images}
+            return {"ready": True, "images": images, "isolation": self.boundary}
         finally:
             self.slot.release()
 
@@ -152,7 +155,7 @@ class Executor:
             files, runtime = self.sandbox.run(
                 {"engine": engine, "script": script}, data, identifier, admitted
             )
-            runtime["isolation"] = "docker-desktop-wsl2-v1"
+            runtime["isolation"] = self.boundary
             if not self.sandbox.cleanup_owned(identifier):
                 raise unavailable()
             self.save(identifier, request_hash, "completed")

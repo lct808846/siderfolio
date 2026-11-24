@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Update', 'Start', 'Status', 'Logs', 'Stop', 'Account', 'InitCompute', 'BuildPlot', 'Config')]
+    [ValidateSet('Update', 'Start', 'Status', 'Logs', 'Stop', 'Account', 'InitCompute', 'InitFeedback', 'BuildPlot', 'Config')]
     [string]$Action = 'Update',
     [ValidateSet('frontend', 'backend', 'postgres', 'compute-worker', 'ollama', 'plot-executor')]
     [string]$Service,
@@ -247,7 +247,7 @@ try {
         foreach ($id in $networks) { Confirm-DevResource 'network' $id }
     }
 
-    if ($Action -in @('Status', 'Logs', 'Stop', 'Account', 'InitCompute') -and
+    if ($Action -in @('Status', 'Logs', 'Stop', 'Account', 'InitCompute', 'InitFeedback') -and
         -not (Test-Path -LiteralPath $runtime -PathType Leaf)) {
         throw 'No configured development stack. Run scripts/dev.ps1 -Action Start first.'
     }
@@ -356,6 +356,13 @@ try {
         }
         'Account' {
             Invoke-DevCompose @('exec', '-T', 'backend', 'python', '/devtools/dev_identity.py')
+            return
+        }
+        'InitFeedback' {
+            if ((Invoke-DevSql 'SELECT current_database()') -ne 'astroagent_dev') {
+                throw 'Feedback migration requires the verified astroagent_dev database.'
+            }
+            Invoke-DevCompose @('exec', '-T', 'backend', 'python', '-m', 'astroagent.identity_cli', 'install-feedback')
             return
         }
         'InitCompute' {

@@ -119,11 +119,14 @@ class LocalAccess:
         )
         chat_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/chat/attachments"
         avatar_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/profile/avatar"
+        feedback_uploading = scope["method"] == "POST" and scope["path"] == "/api/v1/feedback"
         plot_uploading = scope["method"] == "PUT" and re.fullmatch(
             r"/api/v1/projects/[0-9a-fA-F-]{36}/plotting/datasets/[0-9a-fA-F-]{36}/upload",
             scope["path"],
         )
-        uploading = uploading or chat_uploading or avatar_uploading or plot_uploading
+        uploading = (
+            uploading or chat_uploading or avatar_uploading or plot_uploading or feedback_uploading
+        )
         if uploading:
             if (
                 headers.get(b"content-type", "").split(";", 1)[0].strip().lower()
@@ -144,7 +147,11 @@ class LocalAccess:
                     chunk = message.get("body", b"")
                     received += len(chunk)
                     limit_mb = (
-                        5 if (plot_uploading or avatar_uploading) else 10 if chat_uploading else 20
+                        5
+                        if (plot_uploading or avatar_uploading or feedback_uploading)
+                        else 10
+                        if chat_uploading
+                        else 20
                     )
                     if received > limit_mb * 1024**2 + 64 * 1024:
                         return await failure(

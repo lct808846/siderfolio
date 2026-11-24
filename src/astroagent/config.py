@@ -138,6 +138,9 @@ class LocalSettings(BaseSettings):
     plot_execution_enabled: bool = False
     plot_executor_url: str = "http://plot-executor:8090"
     plot_executor_token: SecretStr = SecretStr("")
+    plot_executor_boundary: Literal["docker-desktop-wsl2-v1", "linux-rootless-v1"] = (
+        "docker-desktop-wsl2-v1"
+    )
 
     @field_validator("plot_executor_url")
     @classmethod

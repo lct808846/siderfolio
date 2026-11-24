@@ -38,6 +38,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List All Feedback */
+        get: operations["list_all_feedback_api_v1_admin_feedback_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/feedback/{feedback_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admin Feedback Detail */
+        get: operations["admin_feedback_detail_api_v1_admin_feedback__feedback_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Handle Feedback */
+        patch: operations["handle_feedback_api_v1_admin_feedback__feedback_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/feedback/{feedback_id}/screenshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admin Feedback Screenshot */
+        get: operations["admin_feedback_screenshot_api_v1_admin_feedback__feedback_id__screenshot_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/mail": {
         parameters: {
             query?: never;
@@ -47,6 +99,23 @@ export interface paths {
         };
         /** Mail */
         get: operations["mail_api_v1_admin_mail_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/mail/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mail Usage */
+        get: operations["mail_usage_api_v1_admin_mail_usage_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -874,6 +943,58 @@ export interface paths {
         put?: never;
         /** 导出完整客户端查询快照与可选 Gaia 图表 */
         post: operations["export_api_v1_exports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Feedback */
+        get: operations["list_feedback_api_v1_feedback_get"];
+        put?: never;
+        /** Submit Feedback */
+        post: operations["submit_feedback_api_v1_feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/feedback/{feedback_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Feedback Detail */
+        get: operations["feedback_detail_api_v1_feedback__feedback_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/feedback/{feedback_id}/screenshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Feedback Screenshot */
+        get: operations["feedback_screenshot_api_v1_feedback__feedback_id__screenshot_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2342,6 +2463,25 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** Body_submit_feedback_api_v1_feedback_post */
+        Body_submit_feedback_api_v1_feedback_post: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "bug" | "suggestion" | "usage" | "calculation" | "other";
+            /** Description */
+            description: string;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+            /** Screenshot */
+            screenshot?: string | null;
+            /** Title */
+            title: string;
+        };
         /** Body_upload_avatar_api_v1_profile_avatar_post */
         Body_upload_avatar_api_v1_profile_avatar_post: {
             /** File */
@@ -3626,6 +3766,120 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** FeedbackDetail */
+        FeedbackDetail: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "bug" | "suggestion" | "usage" | "calculation" | "other";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string;
+            /** Has Screenshot */
+            has_screenshot: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Replies */
+            replies: components["schemas"]["FeedbackReply"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "in_progress" | "resolved" | "closed";
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** User Id */
+            user_id: string;
+        };
+        /** FeedbackPage */
+        FeedbackPage: {
+            /** Has More */
+            has_more: boolean;
+            /** Items */
+            items: components["schemas"]["FeedbackSummary"][];
+        };
+        /** FeedbackReply */
+        FeedbackReply: {
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /** FeedbackSummary */
+        FeedbackSummary: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "bug" | "suggestion" | "usage" | "calculation" | "other";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Has Screenshot */
+            has_screenshot: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "in_progress" | "resolved" | "closed";
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** User Id */
+            user_id: string;
+        };
+        /** FeedbackUpdate */
+        FeedbackUpdate: {
+            /**
+             * Expected Updated At
+             * Format: date-time
+             */
+            expected_updated_at: string;
+            /** Reply */
+            reply?: string | null;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "in_progress" | "resolved" | "closed";
+        };
         /** FileRecord */
         FileRecord: {
             /** Bytes */
@@ -4632,6 +4886,25 @@ export interface components {
              * Format: password
              */
             password: string;
+        };
+        /** MailQuotaUsage */
+        MailQuotaUsage: {
+            /** Limit */
+            limit: number;
+            /**
+             * Period
+             * @enum {string}
+             */
+            period: "hour" | "day" | "month";
+            /**
+             * Resets At
+             * Format: date-time
+             */
+            resets_at: string;
+            /** Used */
+            used: number;
+            /** Warning */
+            warning: boolean;
         };
         /** Membership */
         Membership: {
@@ -6791,6 +7064,138 @@ export interface operations {
             };
         };
     };
+    list_all_feedback_api_v1_admin_feedback_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                category?: ("bug" | "suggestion" | "usage" | "calculation" | "other") | null;
+                status?: ("pending" | "in_progress" | "resolved" | "closed") | null;
+                created_from?: string | null;
+                created_before?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_feedback_detail_api_v1_admin_feedback__feedback_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    handle_feedback_api_v1_admin_feedback__feedback_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeedbackUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_feedback_screenshot_api_v1_admin_feedback__feedback_id__screenshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     mail_api_v1_admin_mail_get: {
         parameters: {
             query?: {
@@ -6818,6 +7223,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mail_usage_api_v1_admin_mail_usage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MailQuotaUsage"][];
                 };
             };
         };
@@ -9355,6 +9780,132 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_feedback_api_v1_feedback_get: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_feedback_api_v1_feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_submit_feedback_api_v1_feedback_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    feedback_detail_api_v1_feedback__feedback_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    feedback_screenshot_api_v1_feedback__feedback_id__screenshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

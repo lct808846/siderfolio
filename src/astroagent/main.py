@@ -18,6 +18,8 @@ from astroagent.api.compute import status_router as compute_status_router
 from astroagent.api.conversations import router as conversations_router
 from astroagent.api.exports import ExportBodyLimit
 from astroagent.api.exports import router as exports_router
+from astroagent.api.feedback import admin_router as admin_feedback_router
+from astroagent.api.feedback import router as feedback_router
 from astroagent.api.health import router as health_router
 from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
@@ -95,6 +97,8 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(model_providers_router)
 app.include_router(admin_router)
+app.include_router(admin_feedback_router)
+app.include_router(feedback_router)
 app.include_router(chat_router)
 app.include_router(attachments_router)
 app.include_router(exports_router)
@@ -158,6 +162,17 @@ async def service_error_handler(request: Request, exc: ServiceError):
 
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(request: Request, exc: RequestValidationError):
+    if request.url.path.startswith(("/api/v1/feedback", "/api/v1/admin/feedback")):
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "invalid_feedback_request",
+                    "message": "反馈参数无效，请核对输入内容和长度。",
+                    "retryable": False,
+                }
+            },
+        )
     if request.url.path.startswith("/api/v1/admin/model-providers"):
         return JSONResponse(
             status_code=422,

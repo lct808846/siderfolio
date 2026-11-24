@@ -9,7 +9,7 @@ from uuid import UUID
 
 from astroagent.errors import ServiceError
 from astroagent.local_model_client import strict_json
-from astroagent.plot_sandbox import IMAGE, MAX_OUTPUT, configured, unavailable
+from astroagent.plot_sandbox import DESKTOP_BOUNDARY, IMAGE, MAX_OUTPUT, configured, unavailable
 
 MAX_REQUEST = 8 * 1024**2
 MAX_RESPONSE = 24 * 1024**2
@@ -31,6 +31,7 @@ def decoded(value, maximum):
 class ExecutorClient:
     def __init__(self, settings):
         self.settings = settings
+        self.boundary = getattr(settings, "plot_executor_boundary", DESKTOP_BOUNDARY)
         self.available = bool(
             configured(settings) and len(settings.plot_executor_token.get_secret_value()) == 64
         )
@@ -107,6 +108,8 @@ class ExecutorClient:
 
     def probe(self):
         value = self.request("/v1/status", timeout=5)
+        if value.get("isolation", DESKTOP_BOUNDARY) != self.boundary:
+            raise unavailable()
         images = value.get("images", {})
         for engine in ("python", "gnuplot"):
             image = images.get(engine, {})
@@ -142,7 +145,7 @@ class ExecutorClient:
         if (
             runtime.get("image_id") != admitted[1]
             or runtime.get("network") != "none"
-            or runtime.get("isolation") != "docker-desktop-wsl2-v1"
+            or runtime.get("isolation") != self.boundary
         ):
             raise unavailable()
         return output, runtime

@@ -1,4 +1,4 @@
-"""Trusted Docker Desktop broker using isolated, temporary input volumes."""
+"""Trusted plotting brokers using isolated, temporary input volumes."""
 
 import io
 import json
@@ -11,8 +11,10 @@ from contextlib import contextmanager
 from astroagent.plot_sandbox import Sandbox, unavailable
 
 
-class DockerDesktopSandbox(Sandbox):
-    """Trusted, internal broker over the local Desktop socket; never expose it to jobs."""
+class DockerVolumeSandbox(Sandbox):
+    """Use the broker's dedicated socket and never expose it to a job."""
+
+    socket = "unix:///var/run/docker.sock"
 
     def __init__(self, settings, owner):
         Sandbox.__init__(self, settings)
@@ -31,7 +33,7 @@ class DockerDesktopSandbox(Sandbox):
         env = {key: os.environ[key] for key in ("PATH", "LANG") if key in os.environ}
         env["DOCKER_CONFIG"] = "/tmp/empty-docker-config"
         result = subprocess.run(
-            [self.docker, "--host", "unix:///var/run/docker.sock", *args],
+            [self.docker, "--host", self.socket, *args],
             input=input,
             capture_output=True,
             timeout=min(timeout, 3) if cleanup else timeout,
@@ -40,12 +42,6 @@ class DockerDesktopSandbox(Sandbox):
         if result.returncode or len(result.stdout) > 20 * 1024**2:
             raise unavailable()
         return result.stdout
-
-    def admit(self, engine):
-        info = json.loads(self.call("info", "--format", "{{json .}}"))
-        if "docker desktop" not in str(info.get("OperatingSystem", "")).lower():
-            raise unavailable()
-        return Sandbox.admit(self, engine)
 
     def volume_name(self, run_id):
         return "astroagent-input-" + self.owner + "-" + run_id
@@ -137,3 +133,25 @@ class DockerDesktopSandbox(Sandbox):
             return True
         except Exception:
             return False
+
+
+class DockerDesktopSandbox(DockerVolumeSandbox):
+    def admit(self, engine):
+        info = json.loads(self.call("info", "--format", "{{json .}}"))
+        if "docker desktop" not in str(info.get("OperatingSystem", "")).lower():
+            raise unavailable()
+        return super().admit(engine)
+
+
+class RootlessDockerSandbox(DockerVolumeSandbox):
+    socket = "unix:///run/plot-engine/docker.sock"
+
+    def admit(self, engine):
+        info = json.loads(self.call("info", "--format", "{{json .}}"))
+        if (
+            "name=rootless" not in info.get("SecurityOptions", [])
+            or info.get("CgroupDriver") != "systemd"
+            or str(info.get("CgroupVersion")) != "2"
+        ):
+            raise unavailable()
+        return super().admit(engine)

@@ -13,6 +13,7 @@ from astroagent.auth_security import email_address
 from astroagent.auth_store import AUTH_LOCK, AuthStore
 from astroagent.config import LocalSettings
 from astroagent.errors import ServiceError
+from astroagent.feedback import install_feedback_schema
 from astroagent.postgres import COLUMNS, LOCK_ID
 
 BUSINESS_TABLES = set(COLUMNS) | {
@@ -73,6 +74,7 @@ def main():
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("generate-key")
     sub.add_parser("initialize")
+    sub.add_parser("install-feedback")
     for name in ("bootstrap-admin", "recover-admin-totp", "claim-legacy"):
         entry = sub.add_parser(name)
         entry.add_argument("--email", required=True)
@@ -91,6 +93,12 @@ def main():
         print(Fernet.generate_key().decode())
         return
     store = AuthStore(LocalSettings(), AuthSettings())
+    if args.action == "install-feedback":
+        with store.connect() as db:
+            db.execute("SELECT pg_advisory_xact_lock(%s)", (AUTH_LOCK,))
+            installed = install_feedback_schema(db)
+        print("已安装反馈表。" if installed else "反馈表已存在。")
+        return
     with store.connect() as db:
         # Both old and new services must be stopped. These are session locks.
         for lock in (LOCK_ID, AUTH_LOCK + 1):

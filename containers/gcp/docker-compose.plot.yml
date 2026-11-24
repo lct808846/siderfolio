@@ -1,0 +1,12 @@
+services:
+  backend:
+    environment:
+      ASTROAGENT_PLOT_EXECUTION_ENABLED: "true"
+      ASTROAGENT_PLOT_EXECUTOR_BOUNDARY: linux-rootless-v1
+      ASTROAGENT_PLOT_EXECUTOR_TOKEN: "${PLOT_EXECUTOR_TOKEN:?Set the private executor credential}"
+      ASTROAGENT_PLOT_PYTHON_IMAGE: "${PLOT_PYTHON_IMAGE:?Pin the Python executor image}"
+      ASTROAGENT_PLOT_GNUPLOT_IMAGE: "${PLOT_GNUPLOT_IMAGE:?Pin the Gnuplot executor image}"
+    networks: [plotting]
+
+networks:
+  plotting: {external: true, name: astroagent-gcp_plotting}

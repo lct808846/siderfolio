@@ -550,6 +550,7 @@ def test_encrypted_outbox_submission_and_expired_mail(identity_client, monkeypat
     with client.store.connect() as db:
         state = db.execute("SELECT state,payload FROM public.auth_outbox").fetchone()
         assert state == {"state": "submitted", "payload": ""}
+        db.execute("UPDATE public.auth_outbox SET created_at=now()-interval '61 seconds'")
     post(client, "auth/resend", {"email": "observer@example.org", "request_id": str(uuid4())})
     row = worker.take()
     with client.store.connect() as db:

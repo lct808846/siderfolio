@@ -11,8 +11,10 @@ from psycopg.rows import dict_row
 
 from astroagent.auth_security import cipher, digest, keyed, opaque
 from astroagent.errors import ServiceError
+from astroagent.feedback import install_feedback_schema
 
 AUTH_LOCK = 831049000
+EMAIL_COOLDOWN_SECONDS = 60
 DDL = (
     "CREATE TABLE public.auth_meta (key text PRIMARY KEY, value text NOT NULL)",
     (
@@ -220,6 +222,7 @@ class AuthStore:
                 "INSERT INTO public.auth_meta VALUES ('version','1'),('key_identity',%s)",
                 (keyed(self.settings, "key", "identity-v1"),),
             )
+            install_feedback_schema(db)
             self.audit(db, None, "identity_initialized", "ok")
 
     def audit(self, db, actor, event, result, target=None, source=None, reason=None):
@@ -231,29 +234,40 @@ class AuthStore:
             (actor, target, event, result, source, reason),
         )
 
-    def rate(self, action, source, account="", limit=10, seconds=600):
-        import time
-
-        bucket = int(time.time()) // seconds
+    def rate(self, action, source, account="", limit=10, seconds=600, *, account_limit=None):
         exceeded = False
+        entries = [("source:" + source, limit)]
+        if account:
+            entries.insert(0, ("account:" + account, account_limit or limit))
         with self.connect() as db:
-            for value in {
-                "source:" + source,
-                "account:" + account if account else "source:" + source,
-            }:
-                key = keyed(self.settings, "rate:" + action, value)
-                row = db.execute(
-                    (
-                        "INSERT INTO public.auth_rates VALUES (%s,%s,1,%s) "
-                        "ON CONFLICT(key,bucket) DO UPDATE SET hits=auth_rates.hits+1 "
-                        "RETURNING hits"
-                    ),
-                    (key, bucket, datetime.now(UTC) + timedelta(seconds=seconds * 2)),
-                ).fetchone()
-                exceeded |= row["hits"] > limit
+            for value, maximum in entries:
+                exceeded |= self.increment_rate(db, action, value, seconds) > maximum
             db.execute("DELETE FROM public.auth_rates WHERE expires_at<now()")
         if exceeded:
             raise ServiceError(429, "identity_rate_limit", "操作过于频繁，请稍后再试。")
+
+    def increment_rate(self, db, action, value, seconds):
+        now = datetime.now(UTC)
+        key = keyed(self.settings, "rate:" + action, value)
+        row = db.execute(
+            "INSERT INTO public.auth_rates VALUES (%s,%s,1,%s) "
+            "ON CONFLICT(key,bucket) DO UPDATE SET hits=auth_rates.hits+1 RETURNING hits",
+            (key, int(now.timestamp()) // seconds, now + timedelta(seconds=seconds * 2)),
+        ).fetchone()
+        return row["hits"]
+
+    def enqueue_mail(self, db, user_id, request_id, payload):
+        db.execute(
+            "INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) "
+            "VALUES (%s,%s,%s,%s,%s)",
+            (
+                str(uuid4()),
+                user_id,
+                request_id,
+                payload["purpose"],
+                self.crypto.encrypt(json.dumps(payload).encode()).decode(),
+            ),
+        )
 
     def token(self, db, user, purpose, request_id):
         if db.execute(
@@ -291,19 +305,7 @@ class AuthStore:
             "url": f"{self.settings.origin}/{page}#token={token}",
             "minutes": self.settings.token_seconds // 60,
         }
-        db.execute(
-            (
-                "INSERT INTO public.auth_outbox(id,user_id,request_id,purpose,payload) VALUES"
-                " (%s,%s,%s,%s,%s)"
-            ),
-            (
-                str(uuid4()),
-                user["id"],
-                request_id,
-                purpose,
-                self.crypto.encrypt(json.dumps(payload).encode()).decode(),
-            ),
-        )
+        self.enqueue_mail(db, user["id"], request_id, payload)
 
     def login_backoff(self, account, source, failed=False):
         blocked = False

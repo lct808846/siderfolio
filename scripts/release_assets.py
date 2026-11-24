@@ -320,6 +320,9 @@ def deploy_ssh(version, sha, repository, registry_user):
     rag = bool(settings.get("EMBEDDING_MODEL_DIR") and settings.get("EMBEDDING_MODEL_SHA256"))
     if rag:
         compose.extend(("-f", str(directory / "docker-compose.rag.yml")))
+    plotting = settings.get("PLOT_ENABLED", "0") == "1"
+    if plotting:
+        compose.extend(("-f", str(directory / "docker-compose.plot.yml")))
     site = subprocess.run(
         [sys.executable, str(directory / "deploy_env.py"), "verify"],
         input=compose_config("--format", "json"),
@@ -429,6 +432,22 @@ def deploy_ssh(version, sha, repository, registry_user):
         if rag:
             verify.append("--rag")
         subprocess.run([*verify, "verify"], check=True, timeout=240, env=runtime)
+        if plotting:
+            subprocess.run(
+                [
+                    *pull,
+                    "exec",
+                    "-T",
+                    "backend",
+                    "python",
+                    "-c",
+                    "from astroagent.config import LocalSettings; "
+                    "from astroagent.plot_executor_client import ExecutorClient; "
+                    "ExecutorClient(LocalSettings()).probe()",
+                ],
+                check=True,
+                timeout=30,
+            )
 
 
 def main():

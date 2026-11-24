@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import FeedbackPanel from '../components/FeedbackPanel.vue'
 import SettingsSelect from '../components/SettingsSelect.vue'
 import { identityRequest, identityUser } from '../identity-state'
 import type { components } from '../types/generated'
@@ -36,17 +38,21 @@ type Overview = {
   mail_hour_limit: number
   registration_limit: number
 }
-type AdminTab = 'users' | 'mail' | 'audit'
+type AdminTab = 'users' | 'mail' | 'audit' | 'feedback'
 type UserFilter = 'all' | 'active' | 'pending' | 'disabled' | 'admin'
 type AccountUsage = components['schemas']['AccountUsage']
 type ComputeCapacity = components['schemas']['ComputeCapacity']
+type MailQuotaUsage = components['schemas']['MailQuotaUsage']
 
-const tab = ref<AdminTab>('users')
+const route = useRoute()
+const tab = ref<AdminTab>(route.query.section === 'feedback' ? 'feedback' : 'users')
 const page = ref(1)
 const overview = ref<Overview | null>(null)
 const computeCapacity = ref<ComputeCapacity | null>(null)
 const users = ref<User[]>([])
 const mails = ref<Mail[]>([])
+const mailUsage = ref<MailQuotaUsage[]>([])
+const mailPeriods = { hour: '本小时', day: '今日', month: '本月' }
 const events = ref<Audit[]>([])
 const busy = ref(false)
 const error = ref('')
@@ -96,6 +102,7 @@ const reasonOptions = [
 const tabItems: readonly { id: AdminTab; label: string }[] = [
   { id: 'users', label: '用户' },
   { id: 'mail', label: '邮件状态' },
+  { id: 'feedback', label: '用户反馈管理' },
   { id: 'audit', label: '审计日志' },
 ]
 
@@ -187,10 +194,14 @@ function mailPurposeLabel(purpose: string): string {
   const map: Record<string, string> = {
     activate: '账号激活',
     activation: '账号激活',
+    reset: '密码重置',
     reset_password: '密码重置',
     password_reset: '密码重置',
     verify: '邮箱验证',
     security_alert: '安全通知',
+    security: '安全通知',
+    feedback_received: '新反馈通知',
+    feedback_reply: '反馈回复通知',
   }
   return map[purpose] || purpose
 }
@@ -214,7 +225,14 @@ async function load() {
     overview.value = await identityRequest<Overview>('admin/overview')
     computeCapacity.value = await identityRequest<ComputeCapacity>('admin/capacity').catch(() => null)
     if (tab.value === 'users') users.value = await identityRequest<User[]>('admin/users?page=' + page.value)
-    if (tab.value === 'mail') mails.value = await identityRequest<Mail[]>('admin/mail?page=' + page.value)
+    if (tab.value === 'mail') {
+      const [queue, usage] = await Promise.all([
+        identityRequest<Mail[]>('admin/mail?page=' + page.value),
+        identityRequest<MailQuotaUsage[]>('admin/mail/usage'),
+      ])
+      mails.value = queue
+      mailUsage.value = usage
+    }
     if (tab.value === 'audit') events.value = await identityRequest<Audit[]>('admin/audit?page=' + page.value)
   } catch (e) {
     error.value = e instanceof Error ? e.message : '管理状态读取失败。'
@@ -344,7 +362,7 @@ function onReauthToggle(event: Event) {
 onMounted(() => {
   void load()
   countdownTimer = window.setInterval(() => {
-    if (reauthUntil.value > Date.now()) {
+    if (reauthUntil.value > nowTick.value) {
       nowTick.value = Date.now()
     }
   }, 1000)
@@ -546,12 +564,13 @@ onBeforeUnmount(() => {
                 >
                   <svg v-if="item.id === 'users'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                   <svg v-else-if="item.id === 'mail'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m4 7 8 6 8-6" /></svg>
+                  <svg v-else-if="item.id === 'feedback'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4v-4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" /><path d="M8 9h8m-8 4h5" /></svg>
                   <svg v-else class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z" /><path d="M14 3v6h6" /><path d="M8 13h8" /><path d="M8 17h5" /></svg>
                   {{ item.label }}
                 </button>
               </nav>
 
-              <div class="admin-ops-controls">
+              <div v-if="tab !== 'feedback'" class="admin-ops-controls">
                 <label class="admin-search-box">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
                   <input
@@ -578,7 +597,19 @@ onBeforeUnmount(() => {
               </button>
             </div>
 
-            <div class="admin-table-wrap">
+            <FeedbackPanel v-if="tab === 'feedback'" admin :can-handle="reauthRemainingSec > 0" />
+            <div v-if="tab === 'mail' && mailUsage.length" class="admin-filter-row" aria-label="全站发信配额">
+              <span
+                v-for="item in mailUsage"
+                :key="item.period"
+                class="ui-pill"
+                :class="item.warning ? 'ui-pill-warning' : 'ui-pill-neutral'"
+                :title="'重置时间 ' + formatDateTime(item.resets_at)"
+              >
+                {{ mailPeriods[item.period] }} {{ item.used }} / {{ item.limit }}{{ item.warning ? ' · 接近上限' : '' }}
+              </span>
+            </div>
+            <div v-if="tab !== 'feedback'" class="admin-table-wrap">
               <table v-if="tab === 'users'" class="admin-table">
                 <thead>
                   <tr>
@@ -731,7 +762,7 @@ onBeforeUnmount(() => {
               </table>
             </div>
 
-            <div v-if="showPagination" class="admin-pagination">
+            <div v-if="tab !== 'feedback' && showPagination" class="admin-pagination">
               <button type="button" :disabled="busy || page <= 1" @click="page--; void load()">上一页</button>
               <span class="admin-page-indicator">第 {{ page }} 页</span>
               <button type="button" :disabled="busy || !hasMore" @click="page++; void load()">下一页</button>

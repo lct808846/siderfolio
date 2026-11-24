@@ -16,6 +16,8 @@ from astroagent.errors import ServiceError
 
 IMAGE = re.compile(r"(?:sha256:|[a-zA-Z0-9./_:-]+@sha256:)[0-9a-f]{64}$")
 MAX_OUTPUT = 8 * 1024**2
+DESKTOP_BOUNDARY = "docker-desktop-wsl2-v1"
+ROOTLESS_BOUNDARY = "linux-rootless-v1"
 
 
 def configured(settings):

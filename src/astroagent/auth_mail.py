@@ -7,7 +7,14 @@ import threading
 from email.message import EmailMessage
 from urllib.parse import parse_qs, urlsplit
 
+from astroagent.auth_mail_quota import MailQuotaReached, reserve_mail_slot
 from astroagent.auth_security import digest
+
+NOTICE_SUBJECTS = {
+    "security": "Siderfolio 安全通知",
+    "feedback_received": "Siderfolio 收到新反馈",
+    "feedback_reply": "Siderfolio 反馈已回复",
+}
 
 
 class MailWorker:
@@ -29,7 +36,9 @@ class MailWorker:
             row = db.execute(
                 "SELECT * FROM public.auth_outbox WHERE ((state IN ('pending','failed') AND "
                 "available_at<=now()) OR (state='sending' AND lease_until<now())) AND "
-                "attempts<5 ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1"
+                "attempts<5 AND payload<>'' "
+                "ORDER BY (purpose NOT IN ('activate','reset','security')), "
+                "created_at FOR UPDATE SKIP LOCKED LIMIT 1"
             ).fetchone()
             if row:
                 db.execute(
@@ -45,12 +54,15 @@ class MailWorker:
 
     def deliver(self, row):
         payload = json.loads(self.store.crypto.decrypt(row["payload"].encode()).decode())
+        purpose = payload["purpose"]
         with self.store.connect() as db:
             user = db.execute(
                 "SELECT active,disabled FROM public.auth_users WHERE id=%s", (row["user_id"],)
             ).fetchone()
             valid = user and not user["disabled"]
-            if payload["purpose"] != "security":
+            if purpose.startswith("feedback_"):
+                valid = valid and user["active"] and self.settings.feedback_mail_ready
+            elif purpose not in NOTICE_SUBJECTS:
                 token = parse_qs(urlsplit(payload["url"]).fragment).get("token", [""])[0]
                 valid = (
                     valid
@@ -59,7 +71,7 @@ class MailWorker:
                             "SELECT 1 FROM public.auth_tokens WHERE hash=%s AND purpose=%s AND "
                             "consumed_at IS NULL AND expires_at>now()"
                         ),
-                        (digest(token), payload["purpose"]),
+                        (digest(token), purpose),
                     ).fetchone()
                 )
             if not valid:
@@ -71,22 +83,21 @@ class MailWorker:
                     (row["id"],),
                 )
                 return
-        self.store.rate("smtp-global", "server", limit=self.settings.mail_hour_limit, seconds=3600)
+        reserve_mail_slot(self.store)
         message = EmailMessage()
         message["From"], message["To"] = self.settings.smtp_from, payload["email"]
-        message["Message-ID"] = f"<{row['id']}@astroagent.invalid>"
-        message["Subject"] = (
-            "Siderfolio 安全通知"
-            if payload["purpose"] == "security"
-            else "Siderfolio 邮箱验证"
-            if payload["purpose"] == "activate"
-            else "Siderfolio 重置密码"
+        domain = urlsplit(self.settings.origin).hostname
+        message["Message-ID"] = f"<{row['id']}@{domain}>"
+        if self.settings.smtp_host.lower() == "smtp.resend.com":
+            message["Resend-Idempotency-Key"] = f"siderfolio/{row['id']}"
+        message["Subject"] = NOTICE_SUBJECTS.get(purpose) or (
+            "Siderfolio 邮箱验证" if purpose == "activate" else "Siderfolio 重置密码"
         )
         message.set_content(
             "Siderfolio\n\n"
             + (
                 payload["message"]
-                if payload["purpose"] == "security"
+                if purpose in NOTICE_SUBJECTS
                 else (
                     f"请打开以下链接并主动确认。有效期{payload['minutes']}分钟。\n\n"
                     f"{payload['url']}\n\n如果不是您发起的操作，请忽略。"
@@ -137,8 +148,9 @@ class MailWorker:
                         (self.settings.audit_days,),
                     )
                     db.execute(
-                        "UPDATE public.auth_outbox SET payload='' "
-                        "WHERE created_at<now()-interval '1 day'"
+                        "UPDATE public.auth_outbox SET state='cancelled',payload='',"
+                        "error_class='payload_expired',lease_until=NULL "
+                        "WHERE payload<>'' AND created_at<now()-interval '1 day'"
                     )
                     db.execute(
                         "UPDATE public.auth_outbox SET "
@@ -157,15 +169,20 @@ class MailWorker:
                     )
                     try:
                         with self.store.connect() as db:
-                            db.execute(
-                                (
+                            if isinstance(exc, MailQuotaReached):
+                                db.execute(
+                                    "UPDATE public.auth_outbox SET state='pending',"
+                                    "error_class='quota_deferred',lease_until=NULL,"
+                                    "attempts=attempts-1,available_at=%s WHERE id=%s",
+                                    (exc.resets_at, row["id"]),
+                                )
+                            else:
+                                db.execute(
                                     "UPDATE public.auth_outbox SET "
                                     "state='failed',error_class=%s,lease_until=NULL,"
-                                    "available_at=now()+interval "
-                                    "'5 minutes' WHERE id=%s"
-                                ),
-                                (category, row["id"]),
-                            )
+                                    "available_at=now()+interval '5 minutes' WHERE id=%s",
+                                    (category, row["id"]),
+                                )
                     except Exception:
                         pass
             self.stop.wait(5)
