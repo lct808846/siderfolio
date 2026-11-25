@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from 'vue'
 import AttachmentPreview from './AttachmentPreview.vue'
+import StatusNotice from './StatusNotice.vue'
 import type { ChatAttachment } from '../types'
 
 const props = defineProps<{ text: string; disabled?: boolean; attachments?: ChatAttachment[] }>()
@@ -30,6 +31,6 @@ onBeforeUnmount(() => { if (timer) clearTimeout(timer) })
       <button type="button" aria-label="复制问题" title="复制问题" :disabled="copying" @click="copy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button>
       <button type="button" aria-label="编辑问题" title="编辑后作为新消息发送" :disabled="disabled" @click="$emit('edit', text)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5.5 4 4M4 20l4.5-1 12-12a2.8 2.8 0 0 0-4-4l-12 12L4 20Zm7 0h9" /></svg></button>
     </div>
-    <p v-if="error" class="message-copy-error" role="alert">{{ error }}</p>
+    <StatusNotice v-if="error" title="复制未完成" :message="error" @dismiss="error = ''" />
   </div>
 </template>

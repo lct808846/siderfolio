@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ResultPanel from './ResultPanel.vue'
+import StatusNotice from './StatusNotice.vue'
 import { api, ApiError } from '../api'
 import { knowledgeApi, uploadDocument } from '../api/knowledge'
 import { exportProject, projectsApi } from '../api/projects'
@@ -639,10 +640,7 @@ defineExpose({ open, close })
           </div>
 
           <div class="project-drawer-body">
-            <div v-if="error" class="notice danger" role="alert">
-              <p>{{ error }}</p>
-              <code v-if="errorCode">{{ errorCode }}</code>
-            </div>
+            <StatusNotice v-if="error" title="项目操作未完成" :message="error" :code="errorCode" @dismiss="error = ''; errorCode = ''" />
             <p v-if="message" class="notice info" role="status">{{ message }}</p>
             <p v-if="loading && !current" class="processing" role="status">正在读取项目配置与关联记录…</p>
             <p v-if="busy" class="processing" role="status">{{ sourceProgress || '正在处理，请稍候。不会自动重复提交。' }}</p>

@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { plottingApi, savePlotFile, type PlotOperation } from '../api/plotting'
 import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileViewer.vue'
+import StatusNotice from './StatusNotice.vue'
 
 const props = defineProps<{
   projectId: string
@@ -161,7 +162,7 @@ watch(
 
 <template>
   <div class="plot-result-panel">
-    <div v-if="error" class="plot-alert" role="alert">{{ error }}</div>
+    <StatusNotice v-if="error" title="科研绘图操作未完成" :message="error" @dismiss="error = ''" />
 
     <div v-if="loading && !previewItems.length" class="plot-empty-card">
       <p>正在加载科研绘图产物…</p>

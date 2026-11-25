@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { sessionFetch } from '../session-http'
+import StatusNotice from './StatusNotice.vue'
 
 export interface ArtifactPreviewItem {
   id: string
@@ -282,11 +283,13 @@ onBeforeUnmount(() => {
         </div>
       </header>
 
+      <StatusNotice v-if="loadError" title="文件预览加载失败" :message="loadError" @dismiss="loadError = ''" />
+
       <div v-if="loading" class="afv-loading" role="status">
         <span class="thinking-shimmer-text">正在加载文件预览…</span>
       </div>
 
-      <p v-else-if="loadError" class="notice danger" role="alert">{{ loadError }}</p>
+      <p v-else-if="loadError" class="small muted">文件暂时无法预览，可尝试直接下载查看。</p>
 
       <div v-else-if="activeCategory === 'image' && effectiveImageSrc" class="afv-image-wrap">
         <button type="button" class="afv-image-trigger" aria-label="点击放大查看图片" @click="zoomDialog?.showModal()">

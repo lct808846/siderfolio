@@ -199,7 +199,7 @@ onMounted(() => { void load() })
 <template>
   <div class="model-providers-settings">
     <SuccessToast v-model:message="message" />
-    <StatusNotice v-if="error && !editor?.open && !deleteDialog?.open" title="模型服务操作未完成" :message="error" />
+    <StatusNotice v-if="error && !editor?.open && !deleteDialog?.open" title="模型服务操作未完成" :message="error" @dismiss="error = ''" />
     <p class="settings-footnote">配置模型服务，供查询、科研绘图与文献问答使用。选择与服务商对应的 API 协议，密钥加密保存在服务端。</p>
     <div class="provider-section-heading"><h3>模型服务商</h3></div>
     <p v-if="loading" role="status">正在读取服务商…</p>
@@ -230,7 +230,7 @@ onMounted(() => { void load() })
 
     <dialog ref="editor" class="project-dialog provider-dialog" aria-labelledby="provider-edit-title" @close="apiKey = ''" @cancel="busy && $event.preventDefault()">
       <header class="provider-dialog-heading"><h2 id="provider-edit-title">{{ editing ? '编辑模型服务商' : '添加模型服务商' }}</h2><button type="button" class="provider-close" aria-label="关闭服务商编辑" :disabled="busy" @click="editor?.close()">×</button></header>
-      <StatusNotice v-if="error" title="请检查服务商设置" :message="error" />
+      <StatusNotice v-if="error" title="请检查服务商设置" :message="error" @dismiss="error = ''" />
       <form class="provider-form" autocomplete="off" @submit.prevent="save">
         <label>显示名称<input v-model="form.name" maxlength="60" required placeholder="例如：我的模型服务" :disabled="busy" /></label>
         <div class="provider-field"><span>API 协议</span><SettingsSelect v-model="form.protocol" label="API 协议" :options="protocols" :disabled="busy" /></div>
@@ -327,7 +327,7 @@ onMounted(() => { void load() })
     </dialog>
     <dialog ref="deleteDialog" class="project-dialog provider-auth-dialog" aria-labelledby="provider-delete-title" @cancel="busy && $event.preventDefault()">
       <h2 id="provider-delete-title">删除 {{ deleting?.name }}？</h2><p>将移除此服务商和它的可选模型，已有会话与科研记录保留。默认模型被移除时会选择下一个已启用模型。</p>
-      <StatusNotice v-if="error" title="删除未完成" :message="error" />
+      <StatusNotice v-if="error" title="删除未完成" :message="error" @dismiss="error = ''" />
       <div class="project-actions"><button type="button" :disabled="busy" @click="deleteDialog?.close()">取消</button><button type="button" class="button-danger" :disabled="busy" @click="remove">删除服务商</button></div>
     </dialog>
   </div>

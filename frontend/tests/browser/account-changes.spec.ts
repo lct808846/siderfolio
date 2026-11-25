@@ -11,7 +11,52 @@ test.beforeEach(async ({ page }) => {
     const json = (value: unknown, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(value) })
     if (endpoint.endsWith('/session')) return signedIn ? json({ user, csrf_token: 'synthetic-csrf', idle_seconds: 315360000, absolute_seconds: 315360000 }) : json({ error: { message: 'Login required' } }, 401)
     if (endpoint.endsWith('/csrf')) return json({ csrf_token: 'synthetic-csrf', registration_available: true })
-    if (endpoint.endsWith('/sessions')) return json([{ id: 'synthetic-current', current: true, created_at: '2026-11-14T00:00:00Z', last_seen: '2026-11-14T00:00:00Z', expires_at: '2036-11-14T00:00:00Z' }, ...(otherSession ? [{ id: 'synthetic-other', current: false, created_at: '2026-11-14T00:00:00Z', last_seen: '2026-11-14T00:00:00Z', expires_at: '2036-11-14T00:00:00Z' }] : [])])
+    if (endpoint.endsWith('/sessions')) {
+      return json([
+        {
+          id: 'synthetic-current',
+          current: true,
+          created_at: '2026-11-14T00:00:00Z',
+          last_seen: '2026-11-14T00:00:00Z',
+          expires_at: '2036-11-14T00:00:00Z',
+          mfa_verified: false,
+          login_ip: '198.51.100.10',
+          last_ip: '198.51.100.10',
+          login_location: '中国 · Shanghai',
+          last_location: '中国 · Shanghai',
+          device_type: 'desktop',
+          device_name: 'Windows 10/11 · Chrome 131',
+          browser: 'Chrome 131',
+          os: 'Windows 10/11',
+          user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0.0.0',
+          is_anomalous: false,
+          anomaly_reasons: [],
+        },
+        ...(otherSession
+          ? [
+              {
+                id: 'synthetic-other',
+                current: false,
+                created_at: '2026-11-14T00:00:00Z',
+                last_seen: '2026-11-14T00:00:00Z',
+                expires_at: '2036-11-14T00:00:00Z',
+                mfa_verified: false,
+                login_ip: '203.0.113.45',
+                last_ip: '203.0.113.45',
+                login_location: '日本 · Tokyo',
+                last_location: '日本 · Tokyo',
+                device_type: 'mobile',
+                device_name: 'iPhone (iOS 18.1) · Safari 18',
+                browser: 'Safari 18',
+                os: 'iOS 18.1',
+                user_agent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) Safari/604.1',
+                is_anomalous: true,
+                anomaly_reasons: ['different_location', 'new_device'],
+              },
+            ]
+          : []),
+      ])
+    }
     if (endpoint.endsWith('/sessions/revoke')) {
       if (route.request().postDataJSON().password !== 'Synthetic password 2048') return json({ error: { message: '当前密码不正确' } }, 403)
       otherSession = false; return json({ message: '所选浏览器会话已退出。' })
@@ -99,18 +144,21 @@ test('username propagates to sidebar, menu closes and logout clears private brow
 
 test('activity dialog only revokes the selected other browser after password confirmation', async ({ page }) => {
   await page.goto('/settings?section=security')
-  await page.getByRole('button', { name: /2 个会话/ }).click()
+  await page.getByRole('button', { name: /2 台设备/ }).click()
   const dialog = page.getByRole('dialog')
-  await expect(dialog.getByText('当前会话', { exact: true })).toBeVisible()
-  await expect(dialog.getByRole('button', { name: '退出此浏览器会话', exact: true })).toHaveCount(1)
-  await dialog.getByRole('button', { name: '退出此浏览器会话', exact: true }).click()
+  await expect(dialog.getByText('当前设备', { exact: true })).toBeVisible()
+  await expect(dialog.getByText('iPhone (iOS 18.1) · Safari 18')).toBeVisible()
+  await expect(dialog.getByText('异地登录', { exact: true })).toBeVisible()
+  const revokeButton = dialog.getByRole('button', { name: '强制退出 iPhone (iOS 18.1) · Safari 18', exact: true })
+  await expect(revokeButton).toHaveCount(1)
+  await revokeButton.click()
   await dialog.getByLabel('当前密码', { exact: true }).fill('wrong-password')
-  await dialog.getByRole('button', { name: '退出此会话', exact: true }).click()
+  await dialog.getByRole('button', { name: '确认强制退出', exact: true }).click()
   await expect(dialog.getByRole('alert')).toContainText('密码不正确')
   await dialog.getByLabel('当前密码', { exact: true }).fill('Synthetic password 2048')
-  await dialog.getByRole('button', { name: '退出此会话', exact: true }).click()
-  await expect(dialog.getByText('当前会话', { exact: true })).toBeVisible()
-  await expect(dialog.getByRole('button', { name: '退出此浏览器会话', exact: true })).toHaveCount(0)
+  await dialog.getByRole('button', { name: '确认强制退出', exact: true }).click()
+  await expect(dialog.getByText('当前设备', { exact: true })).toBeVisible()
+  await expect(revokeButton).toHaveCount(0)
   await expect(page).toHaveURL(/section=security/)
 })
 

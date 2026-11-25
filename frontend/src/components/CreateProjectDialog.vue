@@ -4,6 +4,7 @@ import { uploadDocument } from '../api/knowledge'
 import { projectsApi } from '../api/projects'
 import { useProjects } from '../stores/projects'
 import type { Project } from '../types'
+import StatusNotice from './StatusNotice.vue'
 
 interface QueuedSource {
   id: string
@@ -333,7 +334,7 @@ defineExpose({ open, close })
         </label>
 
         <p v-if="progress" class="processing" role="status">{{ progress }}</p>
-        <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
+        <StatusNotice v-if="error" title="项目创建未完成" :message="error" @dismiss="error = ''" />
       </div>
 
       <div class="project-actions dialog-footer">

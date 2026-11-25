@@ -964,3 +964,75 @@ def test_current_email_continue_flow_and_resend_cooldown(identity_client):
             "ON u.id=o.user_id WHERE u.email_key='new@example.org'"
         ).fetchone()["n"]
         assert count == 1
+
+
+def test_multidevice_details_anomaly_email_non_revoking_and_revoke_others(identity_client):
+    client = identity_client
+    win_ua = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    )
+    iphone_ua = (
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 "
+        "(KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1"
+    )
+    client.headers.update({"User-Agent": win_ua})
+    account(client)
+
+    # Simulate an active prior session from a different network/country and device.
+    with client.store.connect() as db:
+        db.execute(
+            "UPDATE public.auth_sessions SET source_hash='known-cn-source', "
+            "login_ip='198.51.100.10', last_ip='198.51.100.10', "
+            "network_prefix='198.51.100.0/24', country_code='CN', "
+            "login_location='中国 · Shanghai', last_location='中国 · Shanghai'"
+        )
+
+    other = client.fresh()
+    third = client.fresh()
+    try:
+        other.headers.update({"User-Agent": iphone_ua})
+        resp = post(other, "auth/login", {"email": "observer@example.org", "password": PASSWORD})
+        assert resp.status_code == 200, resp.text
+        # Both devices stay logged in simultaneously; anomaly does NOT force logout.
+        assert client.get("/api/v1/auth/session").status_code == 200
+        assert other.get("/api/v1/auth/session").status_code == 200
+
+        with client.store.connect() as db:
+            mail_row = db.execute(
+                "SELECT payload FROM public.auth_outbox WHERE purpose='security' "
+                "ORDER BY created_at DESC LIMIT 1"
+            ).fetchone()
+            assert mail_row is not None
+            payload = json.loads(client.store.crypto.decrypt(mail_row["payload"].encode()))
+            assert payload["subject"] == "Siderfolio 异常登录提醒"
+            assert "iPhone" in payload["message"]
+            assert "不会强制退出" in payload["message"]
+
+        third.headers.update({"User-Agent": win_ua})
+        assert (
+            post(
+                third, "auth/login", {"email": "observer@example.org", "password": PASSWORD}
+            ).status_code
+            == 200
+        )
+
+        device_list = client.get("/api/v1/auth/sessions").json()
+        assert len(device_list) == 3
+        assert device_list[0]["current"] is True
+        assert device_list[0]["device_type"] == "desktop"
+        assert "Chrome" in device_list[0]["browser"]
+        mobile_item = next(item for item in device_list if item["device_type"] == "mobile")
+        assert mobile_item["is_anomalous"] is True
+        assert "new_device" in mobile_item["anomaly_reasons"]
+        assert "iPhone" in mobile_item["user_agent"]
+
+        revoked = post(client, "auth/sessions/revoke-others", {"password": PASSWORD})
+        assert revoked.status_code == 200, revoked.text
+        assert revoked.json()["revoked_count"] == 2
+        assert client.get("/api/v1/auth/session").status_code == 200
+        assert other.get("/api/v1/auth/session").status_code == 401
+        assert third.get("/api/v1/auth/session").status_code == 401
+    finally:
+        other.close()
+        third.close()

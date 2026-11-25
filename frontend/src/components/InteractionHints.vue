@@ -57,13 +57,14 @@ function removeDescription() {
 }
 function hide() {
   revision++
-  clearTimeout(showTimer)
-  clearTimeout(leaveTimer)
+  if (showTimer !== undefined) { clearTimeout(showTimer); showTimer = undefined }
+  if (leaveTimer !== undefined) { clearTimeout(leaveTimer); leaveTimer = undefined }
   removeDescription()
-  if (typeof tooltip.value?.hidePopover === 'function' && tooltip.value.matches(':popover-open')) tooltip.value.hidePopover()
+  if (visible.value && typeof tooltip.value?.hidePopover === 'function' && tooltip.value.matches(':popover-open')) tooltip.value.hidePopover()
   visible.value = false
 }
 function release() {
+  if (!current && !visible.value && showTimer === undefined && leaveTimer === undefined) return
   hide()
   if (current && originalTitle !== null && !current.hasAttribute('title')) current.setAttribute('title', originalTitle)
   current = null; originalTitle = null; dismissed = false; overTooltip = false
@@ -134,6 +135,7 @@ function focusOut(event: FocusEvent) {
 function pointerDown(event: PointerEvent) {
   touchInput = event.pointerType === 'touch'
   dismissed = true
+  if (!visible.value && !current && showTimer === undefined && leaveTimer === undefined) return
   hide()
 }
 function keyDown(event: KeyboardEvent) {
@@ -155,7 +157,7 @@ onMounted(() => {
   document.addEventListener('focusout', focusOut)
   document.addEventListener('keydown', keyDown, true)
   window.addEventListener('scroll', release, { capture: true, passive: true })
-  window.addEventListener('resize', release)
+  window.addEventListener('resize', release, { passive: true })
 })
 onBeforeUnmount(() => {
   release()

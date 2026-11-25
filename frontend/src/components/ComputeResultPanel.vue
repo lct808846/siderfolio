@@ -12,6 +12,7 @@ import {
 import { sessionFetch } from '../session-http'
 import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileViewer.vue'
 import NBodyProgressVisual from './NBodyProgressVisual.vue'
+import StatusNotice from './StatusNotice.vue'
 
 const props = defineProps<{
   projectId: string
@@ -420,7 +421,7 @@ const engineDisplay = (engine: ComputeParameters['engine'] = 'rebound') => (engi
 
 <template>
   <div class="compute-panel">
-    <div v-if="error" class="compute-alert" role="alert">{{ error }}</div>
+    <StatusNotice v-if="error" title="N 体模拟操作未完成" :message="error" @dismiss="error = ''" />
 
     <div v-if="loading && !task" class="compute-empty-card">
       <p>正在加载空间 N 体模拟记录…</p>
@@ -493,7 +494,7 @@ const engineDisplay = (engine: ComputeParameters['engine'] = 'rebound') => (engi
       />
 
       <div v-if="task.error" class="compute-alert" role="alert">{{ task.error }}</div>
-      <div v-if="resultError" class="compute-alert" role="alert">{{ resultError }}</div>
+      <StatusNotice v-if="resultError" title="模拟结果读取失败" :message="resultError" @dismiss="resultError = ''" />
 
       <template v-if="task.state === 'succeeded' && result && metrics">
         <!-- Clean Segmented Mode Switcher -->

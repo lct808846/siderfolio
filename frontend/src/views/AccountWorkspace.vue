@@ -4,6 +4,7 @@ import { clearPrivateBrowserData, identityRequest, identityUser, logout, refresh
 import { buildOtpAuthUri, encodeQrCode } from '../utils/qrcode'
 import StatusNotice from '../components/StatusNotice.vue'
 import SuccessToast from '../components/SuccessToast.vue'
+import type { RevokeOthersResponse, SessionInfo } from '../types'
 
 const props = withDefaults(defineProps<{
   mode?: 'all' | 'security' | 'account'
@@ -30,7 +31,7 @@ watch(
 
 // 2FA / TOTP enrollment state
 const dialog = ref<HTMLDialogElement | null>(null)
-const panel = ref<'profile' | 'password' | 'mfa-enable' | 'mfa-disable' | 'sessions' | 'revoke'>('profile')
+const panel = ref<'profile' | 'password' | 'mfa-enable' | 'mfa-disable' | 'sessions' | 'revoke' | 'revoke-others'>('profile')
 const dialogOpen = ref(false)
 const sessionsLoading = ref(false), sessionsLoaded = ref(false)
 const totpPassword = ref('')
@@ -67,9 +68,63 @@ const qrCode = computed(() => {
   }
 })
 
-const sessions = ref<{ id: string; current: boolean; created_at: string; last_seen: string; expires_at: string }[]>([])
-type SessionList = typeof sessions.value
-const selectedSession = ref<SessionList[number] | null>(null)
+const sessions = ref<SessionInfo[]>([])
+const selectedSession = ref<SessionInfo | null>(null)
+const otherSessionsCount = computed(() => sessions.value.filter(item => !item.current).length)
+const anomalousSessionsCount = computed(() => sessions.value.filter(item => item.is_anomalous).length)
+
+const ANOMALY_LABELS: Record<string, string> = {
+  different_location: '异地登录',
+  new_network: '新网络登录',
+  new_device: '新设备登录',
+}
+
+const DEVICE_TYPE_LABELS: Record<string, string> = {
+  desktop: '桌面端',
+  mobile: '移动端',
+  tablet: '平板',
+  unknown: '未知设备',
+}
+
+function deviceTitle(item: SessionInfo) {
+  if (item.device_name && item.device_name.trim()) return item.device_name
+  return item.current ? '当前设备（升级前会话）' : '其他设备（升级前会话）'
+}
+
+function deviceTypeLabel(item: SessionInfo) {
+  return DEVICE_TYPE_LABELS[item.device_type] || '未知设备'
+}
+
+function anomalyTagLabel(reason: string) {
+  return ANOMALY_LABELS[reason] || reason
+}
+
+function systemBrowserSummary(item: SessionInfo) {
+  const parts = [item.os, item.browser].filter(value => Boolean(value && value.trim()))
+  return parts.length ? parts.join(' · ') : '升级前登录，未记录系统与浏览器'
+}
+
+function hasNetworkChanged(item: SessionInfo) {
+  const ipChanged = Boolean(item.last_ip && item.login_ip && item.last_ip !== item.login_ip)
+  const locChanged = Boolean(item.last_location && item.login_location && item.last_location !== item.login_location)
+  return ipChanged || locChanged
+}
+
+function formatBeijing(iso: string) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  return date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false })
+}
+
+function formatRelative(iso: string) {
+  const ts = new Date(iso).getTime()
+  if (Number.isNaN(ts)) return ''
+  const diffSec = Math.max(0, Math.floor((Date.now() - ts) / 1000))
+  if (diffSec < 60) return '刚刚活跃'
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)} 分钟前`
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} 小时前`
+  return `${Math.floor(diffSec / 86400)} 天前`
+}
 
 function clearFeedback() {
   error.value = ''
@@ -242,6 +297,28 @@ async function revokeSelectedSession() {
   }
 }
 
+async function revokeOtherSessions() {
+  if (busy.value || !revokePassword.value || otherSessionsCount.value === 0) return
+  busy.value = true
+  clearFeedback()
+  try {
+    const value = await identityRequest<RevokeOthersResponse>('auth/sessions/revoke-others', 'POST', {
+      password: revokePassword.value,
+      code: revokeCode.value.trim(),
+    })
+    message.value = value.message
+    revokePassword.value = ''
+    revokeCode.value = ''
+    sessions.value = sessions.value.filter(item => item.current)
+    panel.value = 'sessions'
+    await loadSessions()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : '操作未完成，请核对当前密码与验证信息。'
+  } finally {
+    busy.value = false
+  }
+}
+
 async function handleLogout() {
   if (busy.value) return
   busy.value = true
@@ -255,13 +332,30 @@ async function handleLogout() {
   }
 }
 
-const panelTitle = computed(() => ({ profile: '修改用户名', password: '修改登录密码', 'mfa-enable': recovery.value.length ? '保存恢复码' : '启用身份验证器', 'mfa-disable': '关闭多因素身份验证', sessions: '活动会话', revoke: '退出所选会话' })[panel.value])
-function selectSession(item: SessionList[number]) {
+const panelTitle = computed(() => ({
+  profile: '修改用户名',
+  password: '修改登录密码',
+  'mfa-enable': recovery.value.length ? '保存恢复码' : '启用身份验证器',
+  'mfa-disable': '关闭多因素身份验证',
+  sessions: '已登录设备',
+  revoke: '强制退出所选设备',
+  'revoke-others': '强制退出其他全部设备',
+})[panel.value])
+
+function selectSession(item: SessionInfo) {
   if (busy.value || item.current) return
   selectedSession.value = item
   revokePassword.value = ''; revokeCode.value = ''
   clearFeedback()
   panel.value = 'revoke'
+}
+
+function openRevokeOthers() {
+  if (busy.value || otherSessionsCount.value === 0) return
+  selectedSession.value = null
+  revokePassword.value = ''; revokeCode.value = ''
+  clearFeedback()
+  panel.value = 'revoke-others'
 }
 async function openPanel(value: typeof panel.value) {
   if (busy.value) return
@@ -301,9 +395,9 @@ async function loadSessions() {
   if (sessionsLoading.value) return
   sessionsLoading.value = true
   try {
-    sessions.value = await identityRequest<SessionList>('auth/sessions')
+    sessions.value = await identityRequest<SessionInfo[]>('auth/sessions')
     sessionsLoaded.value = true
-  } catch (e) { sessionsLoaded.value = false; error.value = e instanceof Error ? e.message : '登录会话读取失败。' }
+  } catch (e) { sessionsLoaded.value = false; error.value = e instanceof Error ? e.message : '登录设备读取失败。' }
   finally { sessionsLoading.value = false }
 }
 onMounted(() => { void loadSessions() })
@@ -311,14 +405,14 @@ onMounted(() => { void loadSessions() })
 <template>
   <div class="account-preferences">
     <SuccessToast v-model:message="message" />
-    <StatusNotice v-if="error && !dialogOpen" title="账号操作未完成" :message="error" />
+    <StatusNotice v-if="error && !dialogOpen" title="账号操作未完成" :message="error" @dismiss="error = ''" />
 
     <template v-if="showSecurity">
       <section class="account-preferences-group" aria-labelledby="account-advice-title">
         <h3 id="account-advice-title">安全建议</h3>
         <div
           class="account-security-advice"
-          :class="!identityUser?.totp_enabled || (identityUser?.admin && !identityUser?.mfa_verified) ? 'is-warn' : 'is-ok'"
+          :class="!identityUser?.totp_enabled || (identityUser?.admin && !identityUser?.mfa_verified) || anomalousSessionsCount > 0 ? 'is-warn' : 'is-ok'"
         >
           <div>
             <template v-if="!identityUser?.totp_enabled">
@@ -329,15 +423,20 @@ onMounted(() => { void loadSessions() })
               <strong>当前会话尚未经过双因素验证</strong>
               <p>管理员账号须退出并使用 6 位动态验证码重新登录后，才可访问控制台与系统设置。</p>
             </template>
+            <template v-else-if="anomalousSessionsCount > 0">
+              <strong>有 {{ anomalousSessionsCount }} 台设备存在异常登录标记</strong>
+              <p>异常登录已发送提醒邮件且未强制退出。请核对设备详情，如非本人操作请及时强制退出并修改密码。</p>
+              <button type="button" class="account-recovery-reminder" @click="openPanel('sessions')">查看并核对登录设备 →</button>
+            </template>
             <template v-else>
               <strong>当前没有需要处理的安全建议</strong>
-              <p>暂无安全建议。</p>
+              <p>多设备登录状态正常，异常登录将通过邮件及时通知。</p>
             </template>
           </div>
           <span class="account-advice-shield" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6z" />
-              <path v-if="identityUser?.totp_enabled && (!identityUser?.admin || identityUser?.mfa_verified)" d="m9 12 2 2 4-4" />
+              <path v-if="identityUser?.totp_enabled && (!identityUser?.admin || identityUser?.mfa_verified) && anomalousSessionsCount === 0" d="m9 12 2 2 4-4" />
               <path v-else d="M12 8.5v4m0 3.2h.01" />
             </svg>
           </span>
@@ -363,15 +462,24 @@ onMounted(() => { void loadSessions() })
       </section>
 
       <section class="account-preferences-group" aria-labelledby="account-sessions-title">
-        <h3 id="account-sessions-title">登录会话</h3>
+        <h3 id="account-sessions-title">登录设备与会话</h3>
         <div class="settings-row">
-          <div><h4>活动会话</h4><p>查看已登录的浏览器与最近活动时间</p></div>
-          <button type="button" class="account-value-action" :disabled="busy" @click="openPanel('sessions')">{{ sessionsLoading ? '正在读取…' : sessionsLoaded ? sessions.length + ' 个会话' : '查看会话' }}<span aria-hidden="true">›</span></button>
+          <div>
+            <h4>已登录设备</h4>
+            <p>支持多设备同时登录；查看各设备系统、浏览器、IP、位置详情并可强制登出指定设备</p>
+          </div>
+          <div class="account-sessions-entry">
+            <span v-if="anomalousSessionsCount > 0" class="ui-pill ui-pill-warning">含异常登录</span>
+            <button type="button" class="account-value-action" :disabled="busy" @click="openPanel('sessions')">
+              {{ sessionsLoading ? '正在读取…' : sessionsLoaded ? `${sessions.length} 台设备` : '查看设备' }}<span aria-hidden="true">›</span>
+            </button>
+          </div>
         </div>
         <div class="settings-row">
-          <div><h4>退出当前登录</h4><p>结束当前浏览器上的 Siderfolio 登录会话</p></div>
+          <div><h4>退出当前登录</h4><p>仅结束当前设备上的 Siderfolio 登录会话，其他设备不受影响</p></div>
           <button type="button" :disabled="busy" @click="handleLogout">退出登录</button>
         </div>
+        <p class="settings-footnote">异常登录（如异地登录、新网络或新设备登录）会向您的邮箱发送包含登录详情的安全提醒，不会自动强制下线任何设备。</p>
       </section>
     </template>
 
@@ -397,9 +505,9 @@ onMounted(() => { void loadSessions() })
       </section>
     </template>
 
-    <dialog ref="dialog" class="project-dialog account-preferences-dialog" :class="{ 'account-dialog-wide': panel === 'mfa-enable' && (!!secret || !!recovery.length) }" aria-labelledby="account-panel-title" @close="dialogClosed" @cancel="busy && $event.preventDefault()">
+    <dialog ref="dialog" class="project-dialog account-preferences-dialog" :class="{ 'account-dialog-wide': panel === 'sessions' || (panel === 'mfa-enable' && (!!secret || !!recovery.length)) }" aria-labelledby="account-panel-title" @close="dialogClosed" @cancel="busy && $event.preventDefault()">
       <header class="account-dialog-heading"><h2 id="account-panel-title">{{ panelTitle }}</h2><button type="button" class="account-dialog-close" aria-label="关闭" :disabled="busy" @click="closeDialog">×</button></header>
-      <StatusNotice v-if="error" title="操作未完成" :message="error" />
+      <StatusNotice v-if="error && dialogOpen" title="操作未完成" :message="error" @dismiss="error = ''" />
 
       <form v-if="panel === 'profile'" class="identity-form" @submit.prevent="saveProfile">
         <label>用户名<input v-model="usernameDraft" type="text" autocomplete="nickname" maxlength="32" required :disabled="busy" /></label>
@@ -437,23 +545,125 @@ onMounted(() => { void loadSessions() })
         <div class="project-actions"><button type="button" :disabled="busy" @click="closeDialog">取消</button><button class="button-danger" :disabled="busy || !totpPassword || !totpCurrentCode.trim() || !!identityUser?.admin">{{ busy ? '正在关闭…' : '关闭 MFA 并退出' }}</button></div>
       </form>
       <div v-else-if="panel === 'sessions'" class="account-session-detail">
-        <p v-if="sessionsLoading" role="status">正在读取登录会话…</p>
-        <div v-else-if="sessionsLoaded" class="account-session-list">
-          <div v-for="item in sessions" :key="item.id" class="settings-row">
-            <div><h4>{{ item.current ? '当前浏览器' : '其他浏览器' }}</h4><p>登录：{{ new Date(item.created_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) }}</p><p>最近活动：{{ new Date(item.last_seen).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) }}（北京时间）</p></div>
-            <span v-if="item.current" class="tag">当前会话</span>
-            <button v-else type="button" :disabled="busy || sessionsLoading" aria-label="退出此浏览器会话" @click="selectSession(item)">退出</button>
+        <div class="account-session-toolbar">
+          <span class="small muted">
+            {{ sessionsLoaded ? `共 ${sessions.length} 台设备在线${otherSessionsCount > 0 ? `（含其他 ${otherSessionsCount} 台）` : '（仅当前设备）'}` : '正在同步登录设备…' }}
+          </span>
+          <div v-if="otherSessionsCount > 0" class="account-session-toolbar-actions">
+            <button
+              type="button"
+              class="button-danger"
+              :disabled="busy || sessionsLoading"
+              @click="openRevokeOthers"
+            >
+              退出其他全部设备
+            </button>
           </div>
-          <p v-if="!sessions.length">没有读取到有效会话。</p>
         </div>
-        <p class="settings-footnote">当前浏览器会话不能在此退出。其他会话可单独选择退出。</p>
+        <p v-if="sessionsLoading && !sessions.length" role="status" class="small muted">正在读取登录设备详情…</p>
+        <div v-else-if="sessionsLoaded && sessions.length" class="account-session-list">
+          <article
+            v-for="item in sessions"
+            :key="item.id"
+            class="account-device-card"
+            :class="{ 'is-current': item.current, 'is-anomalous': item.is_anomalous }"
+          >
+            <div class="account-device-head">
+              <span class="account-device-icon" aria-hidden="true">
+                <svg v-if="item.device_type === 'mobile'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="2.5" width="10" height="19" rx="2.2" />
+                  <path d="M11 18.5h2" />
+                </svg>
+                <svg v-else-if="item.device_type === 'tablet'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="3" width="16" height="18" rx="2.2" />
+                  <path d="M11 18h2" />
+                </svg>
+                <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="12" rx="2" />
+                  <path d="M8 20h8M12 16v4" />
+                </svg>
+              </span>
+              <div class="account-device-title-wrap">
+                <h4>{{ deviceTitle(item) }}</h4>
+                <div class="ui-pill-list">
+                  <span v-if="item.current" class="ui-pill ui-pill-success">当前设备</span>
+                  <span class="ui-pill ui-pill-neutral">{{ deviceTypeLabel(item) }}</span>
+                  <span v-if="item.mfa_verified" class="ui-pill ui-pill-accent">已通过 MFA</span>
+                  <span
+                    v-for="reason in item.anomaly_reasons || []"
+                    :key="reason"
+                    class="ui-pill ui-pill-warning"
+                  >
+                    {{ anomalyTagLabel(reason) }}
+                  </span>
+                </div>
+              </div>
+              <span v-if="item.current" class="ui-pill ui-pill-success account-device-status">当前使用</span>
+              <button
+                v-else
+                type="button"
+                class="button-danger account-device-revoke"
+                :disabled="busy || sessionsLoading"
+                :aria-label="`强制退出 ${deviceTitle(item)}`"
+                @click="selectSession(item)"
+              >
+                强制退出
+              </button>
+            </div>
+            <dl class="account-device-meta">
+              <div>
+                <dt>系统与浏览器</dt>
+                <dd>{{ systemBrowserSummary(item) }}</dd>
+              </div>
+              <div>
+                <dt>登录位置与 IP</dt>
+                <dd>
+                  <span>{{ item.login_location || '位置未记录' }}</span>
+                  <code v-if="item.login_ip" class="account-device-ip">{{ item.login_ip }}</code>
+                </dd>
+              </div>
+              <div v-if="hasNetworkChanged(item)">
+                <dt>最近活动网络</dt>
+                <dd>
+                  <span>{{ item.last_location || '位置未记录' }}</span>
+                  <code v-if="item.last_ip" class="account-device-ip">{{ item.last_ip }}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>登录时间（北京时间）</dt>
+                <dd class="tabular">{{ formatBeijing(item.created_at) }}</dd>
+              </div>
+              <div>
+                <dt>最近活动</dt>
+                <dd class="tabular">{{ formatRelative(item.last_seen) }} · {{ formatBeijing(item.last_seen) }}</dd>
+              </div>
+            </dl>
+            <details v-if="item.user_agent" class="account-device-ua">
+              <summary>原始浏览器标识 (User-Agent)</summary>
+              <code>{{ item.user_agent }}</code>
+            </details>
+          </article>
+        </div>
+        <p v-else-if="sessionsLoaded">没有读取到有效登录设备。</p>
+        <p class="settings-footnote">支持多设备同时登录；当前设备不能在此强退，其他设备可单独或一键强制退出。检测到异地、新网络或新设备登录时会发邮件告知，不会自动强制下线。</p>
       </div>
       <form v-else-if="panel === 'revoke'" class="identity-form" @submit.prevent="revokeSelectedSession">
-        <p>仅退出所选浏览器，当前浏览器与其他会话保持登录。</p>
-        <p v-if="selectedSession" class="settings-footnote">所选会话登录于 {{ new Date(selectedSession.created_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) }}（北京时间）。</p>
+        <p>仅强制退出所选设备，当前设备及其他已登录设备保持在线。</p>
+        <div v-if="selectedSession" class="account-revoke-preview">
+          <strong>{{ deviceTitle(selectedSession) }}</strong>
+          <p>系统与浏览器：{{ systemBrowserSummary(selectedSession) }}</p>
+          <p>登录位置与 IP：{{ selectedSession.login_location || '位置未记录' }}<template v-if="selectedSession.login_ip"> · <code>{{ selectedSession.login_ip }}</code></template></p>
+          <p>登录时间：{{ formatBeijing(selectedSession.created_at) }}（北京时间）</p>
+        </div>
         <label>当前密码<input v-model="revokePassword" type="password" autocomplete="current-password" maxlength="128" required :disabled="busy" /></label>
         <label v-if="identityUser?.totp_enabled">验证码或恢复码<input v-model="revokeCode" type="text" autocomplete="one-time-code" maxlength="80" required :disabled="busy" /></label>
-        <div class="project-actions"><button type="button" :disabled="busy" @click="panel = 'sessions'; selectedSession = null; revokePassword = ''; revokeCode = ''; clearFeedback()">取消</button><button class="button-danger" :disabled="busy || !selectedSession || !!selectedSession.current || !revokePassword || (!!identityUser?.totp_enabled && !revokeCode.trim())">{{ busy ? '正在退出…' : '退出此会话' }}</button></div>
+        <div class="project-actions"><button type="button" :disabled="busy" @click="panel = 'sessions'; selectedSession = null; revokePassword = ''; revokeCode = ''; clearFeedback()">取消</button><button class="button-danger" :disabled="busy || !selectedSession || !!selectedSession.current || !revokePassword || (!!identityUser?.totp_enabled && !revokeCode.trim())">{{ busy ? '正在退出…' : '确认强制退出' }}</button></div>
+      </form>
+      <form v-else-if="panel === 'revoke-others'" class="identity-form" @submit.prevent="revokeOtherSessions">
+        <p>将强制退出除当前设备外的其余 <strong>{{ otherSessionsCount }}</strong> 台已登录设备，当前设备保持登录。</p>
+        <label>当前密码<input v-model="revokePassword" type="password" autocomplete="current-password" maxlength="128" required :disabled="busy" /></label>
+        <label v-if="identityUser?.totp_enabled">验证码或恢复码<input v-model="revokeCode" type="text" autocomplete="one-time-code" maxlength="80" required :disabled="busy" /></label>
+        <div class="project-actions"><button type="button" :disabled="busy" @click="panel = 'sessions'; revokePassword = ''; revokeCode = ''; clearFeedback()">取消</button><button class="button-danger" :disabled="busy || otherSessionsCount === 0 || !revokePassword || (!!identityUser?.totp_enabled && !revokeCode.trim())">{{ busy ? '正在退出…' : `退出其他 ${otherSessionsCount} 台设备` }}</button></div>
       </form>
     </dialog>
   </div>

@@ -3,6 +3,7 @@ import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import WorkspaceSpaceBar from '../components/WorkspaceSpaceBar.vue'
 import PanelSwitcher from '../components/PanelSwitcher.vue'
+import StatusNotice from '../components/StatusNotice.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiError, apiUrl } from '../api'
@@ -217,7 +218,8 @@ watch(() => route.fullPath, () => {
     <main class="project-main workflow-main">
       <WorkspacePaneHeader :title="editing ? '新建科研流程' : run?.name || '科研流程'" :level="1"><template #actions><WorkspaceSpaceBar section="workflows" :project-id="activeProjectId" /></template></WorkspacePaneHeader>
       <div class="workspace-pane-body">
-      <div class="workflow-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在处理。断线不会取消已提交的执行，可重新打开页面查看当前步骤。</p></div>
+      <StatusNotice v-if="error" title="科研流程操作未完成" :message="error" @dismiss="error = ''" />
+      <div v-if="message || busy" class="workflow-notices"><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">正在处理。断线不会取消已提交的执行，可重新打开页面查看当前步骤。</p></div>
       <form v-if="editing" class="project-form workflow-form" @submit.prevent="create">
         <h2>参数设置</h2><p class="small muted">创建只保存参数。执行需另行确认。</p>
         <fieldset :disabled="busy || !project">

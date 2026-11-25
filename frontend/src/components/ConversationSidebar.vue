@@ -9,6 +9,7 @@ import { useProjects } from '../stores/projects'
 import { useWorkbench } from '../stores/workbench'
 import type { Conversation, Project } from '../types'
 import CreateProjectDialog from './CreateProjectDialog.vue'
+import StatusNotice from './StatusNotice.vue'
 import SuccessToast from './SuccessToast.vue'
 
 const props = defineProps<{ activeProjectId?: string }>()
@@ -58,13 +59,32 @@ const thumbTop = computed(() => {
 let listObserver: ResizeObserver | undefined
 let scrollDrag: { pointer: number; y: number; offset: number } | null = null
 let scrollTimer: ReturnType<typeof setTimeout> | undefined
+let measureFrame = 0
+function isCoarsePointer() {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
+}
 function measureList() {
   const element = listScroller.value
-  if (element) scrollMetrics.value = { height: element.clientHeight, content: element.scrollHeight, offset: element.scrollTop }
+  if (!element) return
+  const height = element.clientHeight
+  const content = element.scrollHeight
+  const offset = element.scrollTop
+  const prev = scrollMetrics.value
+  if (prev.height !== height || prev.content !== content || prev.offset !== offset) {
+    scrollMetrics.value = { height, content, offset }
+  }
+}
+function scheduleMeasureList() {
+  if (measureFrame) return
+  measureFrame = requestAnimationFrame(() => {
+    measureFrame = 0
+    measureList()
+  })
 }
 function revealScrollbar() {
-  measureList()
-  scrolling.value = true
+  if (isCoarsePointer() && !scrollDrag) return
+  scheduleMeasureList()
+  if (!scrolling.value) scrolling.value = true
   clearTimeout(scrollTimer)
   scrollTimer = setTimeout(() => { scrolling.value = false }, 900)
 }
@@ -160,11 +180,13 @@ function projectMenuKey(event: KeyboardEvent) {
   }
 }
 function outside(event: PointerEvent) {
+  if (!menuId.value && !projectMenuId.value && !userMenuOpen.value) return
   if (event.target instanceof Node && !menu.value?.contains(event.target) && !menuTrigger?.contains(event.target)) closeMenu(false)
   if (event.target instanceof Node && !projectMenu.value?.contains(event.target) && !projectMenuTrigger?.contains(event.target)) closeProjectMenu(false)
   if (event.target instanceof Node && !userMenuRef.value?.contains(event.target) && !userMenuTrigger.value?.contains(event.target)) userMenuOpen.value = false
 }
 function dismissMenu(event: Event) {
+  if (!menuId.value && !projectMenuId.value) return
   if (event.target instanceof Node && (menu.value?.contains(event.target) || projectMenu.value?.contains(event.target))) return
   closeMenu(false)
   closeProjectMenu(false)
@@ -413,17 +435,18 @@ watch(() => store.conversations, items => {
 })
 onMounted(() => {
   void projectsStore.load().catch(() => undefined)
-  listObserver = new ResizeObserver(measureList)
+  listObserver = new ResizeObserver(scheduleMeasureList)
   if (listScroller.value) listObserver.observe(listScroller.value)
   if (listContent.value) listObserver.observe(listContent.value)
   measureList()
   document.addEventListener('pointerdown', outside)
-  window.addEventListener('resize', dismissMenu)
-  window.addEventListener('scroll', dismissMenu, true)
+  window.addEventListener('resize', dismissMenu, { passive: true })
+  window.addEventListener('scroll', dismissMenu, { capture: true, passive: true })
 })
 onBeforeUnmount(() => {
   listObserver?.disconnect()
   scrollDrag = null
+  if (measureFrame) { cancelAnimationFrame(measureFrame); measureFrame = 0 }
   clearTimeout(scrollTimer)
   document.removeEventListener('pointerdown', outside)
   window.removeEventListener('resize', dismissMenu)
@@ -572,7 +595,7 @@ onBeforeUnmount(() => {
             <Transition name="history-control"><button v-if="store.conversations.length && !selecting" ref="selectionToggle" class="history-icon-button history-manage" :inert="selecting" :disabled="locked" aria-label="多选管理会话" data-tooltip="多选管理会话" @click="enterSelection()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="1.5" /><circle cx="5" cy="12" r="1.5" /><circle cx="5" cy="18" r="1.5" /><path d="M11 6h9M11 12h9M11 18h9" /></svg></button></Transition>
           </div>
           <p v-if="message" class="sidebar-feedback" role="status">{{ message }}</p>
-          <p v-if="error && !dialog?.open" class="sidebar-feedback danger" role="alert">{{ error }}</p>
+          <StatusNotice v-if="error && !dialog?.open" title="会话操作未完成" :message="error" @dismiss="error = ''" />
           <Transition name="history-mode">
             <div v-show="recentVisible" id="recent-conversations" :inert="!recentVisible">
               <nav class="conversation-list" aria-label="本地会话">
@@ -725,7 +748,7 @@ onBeforeUnmount(() => {
           <ul><li v-for="target in targets" :key="target.id">{{ target.title }}</li></ul>
           <p>将删除所选会话及其中的消息，无法在页面撤销。已经保存的项目快照和下载文件保留。</p>
         </template>
-        <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
+        <StatusNotice v-if="error" title="会话操作未完成" :message="error" @dismiss="error = ''" />
         <div class="project-actions">
           <button type="button" :disabled="busy" @click="closeDialog">取消</button>
           <button type="submit" :class="action==='delete' ? 'button-danger' : 'button-primary'" :disabled="busy || (action==='rename' && !title.trim())">{{ busy ? '正在处理…' : action==='rename' ? '保存名称' : action==='assign-project' ? '保存归属' : action==='export' ? '确认下载 JSON' : '确认删除' }}</button>

@@ -11,8 +11,9 @@ const props = withDefaults(defineProps<{
   advisory?: boolean
   busy?: boolean
   canRetry?: boolean
-}>(), { code: '', operation: false, announce: false, advisory: false, busy: false, canRetry: false })
-defineEmits<{ retry: [] }>()
+  inline?: boolean
+}>(), { code: '', operation: false, announce: false, advisory: false, busy: false, canRetry: false, inline: false })
+defineEmits<{ retry: []; dismiss: [] }>()
 const billing = computed(() => ['gemini_billing_required', 'model_billing_required'].includes(props.code))
 const limited = computed(() => props.code === 'model_rate_limited')
 const timeout = computed(() => props.code.includes('timeout'))
@@ -30,7 +31,16 @@ const warning = computed(() => props.advisory || billing.value || limited.value 
 </script>
 
 <template>
-  <StatusNotice class="conversation-error" :title="title" :message="message" :tone="warning ? 'warning' : 'danger'" :announce="announce">
+  <StatusNotice
+    :class="inline ? 'conversation-error' : 'conversation-error-popup'"
+    :title="title"
+    :message="message"
+    :tone="warning ? 'warning' : 'danger'"
+    :announce="announce"
+    :inline="inline"
+    :persistent="canRetry || !!$slots.actions"
+    @dismiss="$emit('dismiss')"
+  >
     <template v-if="code || canRetry || $slots.actions" #default>
       <div class="conversation-error-tools">
         <ModelBillingLink v-if="code === 'gemini_billing_required'" />

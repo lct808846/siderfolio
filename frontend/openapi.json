@@ -10674,6 +10674,24 @@
         "title": "Revision",
         "type": "object"
       },
+      "RevokeOthersResponse": {
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "revoked_count": {
+            "title": "Revoked Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "message",
+          "revoked_count"
+        ],
+        "title": "RevokeOthersResponse",
+        "type": "object"
+      },
       "RunSpan": {
         "properties": {
           "correlation_id": {
@@ -10999,6 +11017,115 @@
           "started_at"
         ],
         "title": "RunTrace",
+        "type": "object"
+      },
+      "SessionInfo": {
+        "properties": {
+          "anomaly_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Anomaly Reasons",
+            "type": "array"
+          },
+          "browser": {
+            "default": "",
+            "title": "Browser",
+            "type": "string"
+          },
+          "country_code": {
+            "default": "",
+            "title": "Country Code",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "current": {
+            "title": "Current",
+            "type": "boolean"
+          },
+          "device_name": {
+            "default": "",
+            "title": "Device Name",
+            "type": "string"
+          },
+          "device_type": {
+            "default": "unknown",
+            "enum": [
+              "desktop",
+              "mobile",
+              "tablet",
+              "unknown"
+            ],
+            "title": "Device Type",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "is_anomalous": {
+            "default": false,
+            "title": "Is Anomalous",
+            "type": "boolean"
+          },
+          "last_ip": {
+            "default": "",
+            "title": "Last Ip",
+            "type": "string"
+          },
+          "last_location": {
+            "default": "",
+            "title": "Last Location",
+            "type": "string"
+          },
+          "last_seen": {
+            "format": "date-time",
+            "title": "Last Seen",
+            "type": "string"
+          },
+          "login_ip": {
+            "default": "",
+            "title": "Login Ip",
+            "type": "string"
+          },
+          "login_location": {
+            "default": "",
+            "title": "Login Location",
+            "type": "string"
+          },
+          "mfa_verified": {
+            "default": false,
+            "title": "Mfa Verified",
+            "type": "boolean"
+          },
+          "os": {
+            "default": "",
+            "title": "Os",
+            "type": "string"
+          },
+          "user_agent": {
+            "default": "",
+            "title": "User Agent",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "current",
+          "created_at",
+          "last_seen",
+          "expires_at"
+        ],
+        "title": "SessionInfo",
         "type": "object"
       },
       "SessionRevokeInput": {
@@ -13122,7 +13249,7 @@
   },
   "info": {
     "title": "Siderfolio",
-    "version": "2.0.6"
+    "version": "2.0.7"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -14720,7 +14847,13 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionInfo"
+                  },
+                  "title": "Response Sessions Api V1 Auth Sessions Get",
+                  "type": "array"
+                }
               }
             },
             "description": "Successful Response"
@@ -14805,6 +14938,47 @@
           }
         },
         "summary": "Revoke All",
+        "tags": [
+          "identity"
+        ]
+      }
+    },
+    "/api/v1/auth/sessions/revoke-others": {
+      "post": {
+        "operationId": "revoke_other_sessions_api_v1_auth_sessions_revoke_others_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProofInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeOthersResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revoke Other Sessions",
         "tags": [
           "identity"
         ]

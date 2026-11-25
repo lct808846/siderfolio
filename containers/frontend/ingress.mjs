@@ -15,7 +15,7 @@ const server = http.createServer((request, response) => {
     response.writeHead(local ? 200 : 404); response.end(local ? 'ok' : ''); return
   }
   const headers = { ...request.headers, 'x-astroagent-edge-client': request.socket.remoteAddress || '' }
-  for (const name of ['x-astroagent-client-address', 'connection', 'keep-alive', 'proxy-connection', 'upgrade']) delete headers[name]
+  for (const name of ['x-astroagent-client-address', 'x-astroagent-client-country', 'x-astroagent-client-region', 'x-astroagent-client-city', 'x-astroagent-edge-country', 'x-astroagent-edge-region', 'x-astroagent-edge-city', 'connection', 'keep-alive', 'proxy-connection', 'upgrade']) delete headers[name]
   const upstream = http.request({ hostname: 'frontend', port: 5173, agent: frontendAgent, method: request.method, path: request.url, headers }, reply => {
     response.writeHead(reply.statusCode || 502, reply.headers)
     if (reply.headers['content-type']?.includes('text/event-stream')) response.flushHeaders()

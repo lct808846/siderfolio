@@ -187,6 +187,7 @@ onMounted(() => { void loadSummary() })
         class="profile-notice"
         title="操作或读取未完成"
         :message="error"
+        @dismiss="error = ''"
       />
 
       <section class="profile-hero-centered" aria-label="个人身份与头像">

@@ -6,6 +6,7 @@ import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import WorkspaceSpaceBar from '../components/WorkspaceSpaceBar.vue'
 import PanelSwitcher from '../components/PanelSwitcher.vue'
+import StatusNotice from '../components/StatusNotice.vue'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ApiError } from '../api'
@@ -139,7 +140,8 @@ watch(()=>route.fullPath,()=>{navigation++;resolvedProjectId.value=typeof route.
   <div class="rag-workspace workspace-panes" :data-panel="panel">
     <WorkspaceHeader title="文献知识问答" />
     <PanelSwitcher v-model="panel" label="问答面板" :options="[{ value: 'question', label: '问题与历史' }, { value: 'evidence', label: '本次发送预览' }, { value: 'answer', label: '回答与原文' }]" />
-    <div v-if="error || message || busy" class="rag-notices"><p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="notice info" role="status">{{ retrieving ? `正在本机检索，已等待 ${retrievalSeconds} 秒，请勿重复提交。` : '正在处理。断线后请使用原请求编号核对；不自动重发新请求。' }}</p></div>
+    <StatusNotice v-if="error" title="文献问答操作未完成" :message="error" @dismiss="error = ''" />
+    <div v-if="message || busy" class="rag-notices"><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="notice info" role="status">{{ retrieving ? `正在本机检索，已等待 ${retrievalSeconds} 秒，请勿重复提交。` : '正在处理。断线后请使用原请求编号核对；不自动重发新请求。' }}</p></div>
     <aside class="rag-question">
       <WorkspacePaneHeader title="文献问答" :level="1" />
       <div class="workspace-pane-body">

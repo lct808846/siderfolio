@@ -60,7 +60,7 @@ function backToApp() {
   }
 }
 const sections = [
-  { id: 'security', group: 'account', label: '账户安全与登录', description: '管理你的登录方式、多因素验证与活动会话。', keywords: '登录 密码 身份 验证器 二维码 双因素 TOTP MFA 恢复码 安全 建议 会话 设备 退出', icon: 'M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4' },
+  { id: 'security', group: 'account', label: '账户安全与登录', description: '管理你的登录方式、多因素验证与已登录设备。', keywords: '登录 密码 身份 验证器 二维码 双因素 TOTP MFA 恢复码 安全 建议 会话 设备 强制 退出 异地 异常 IP 浏览器', icon: 'M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4' },
   { id: 'account', group: 'account', label: '账户', description: '查看并管理你的个人资料与账户详情。', keywords: '账户 账号 详情 用户名 邮箱 角色 资料', icon: 'M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5.5 19.2a7 7 0 0 1 13 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z' },
   { id: 'appearance', group: 'app', label: '外观与主题', description: '自定义配色主题、天文动态背景、界面密度、字号、排版与视觉性能开关。', keywords: '外观 主题 配色 暗黑 暗夜 深色 浅色 红光 护眼 天文 背景 星空 轨道 动态 圆角 密度 字体 字号 排版 毛玻璃 模糊 阴影 光影 性能 省电 流畅 动效', icon: 'M12 3a9 9 0 1 0 0 18 1.5 1.5 0 0 0 1.5-1.5c0-.4-.15-.77-.4-1.05-.25-.28-.4-.65-.4-1.05a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-7.9-9-7.9ZM7.5 10.5h.01M10.5 7.5h.01M14.5 7.5h.01M17 10.5h.01' },
   { id: 'general', group: 'app', label: '概览', description: '查看当前工作环境、服务状态与 Astronomy MCP 查询通道。', keywords: '常规 状态 环境 版本 MCP mcp 天文 通道 直连 切换', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
@@ -349,7 +349,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
             <AppearanceSettings />
           </div>
           <template v-if="canManage">
-          <StatusNotice v-if="error && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'data'" class="settings-load-error" title="本机状态读取失败" :message="error" />
+          <StatusNotice v-if="error && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'data'" class="settings-load-error" title="本机状态读取失败" :message="error" @dismiss="error = ''" />
           <p v-if="busy && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'data'" class="settings-loading" role="status">正在读取本机状态…</p>
 
           <div v-show="active.id === 'general'">
@@ -394,7 +394,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
                 <span class="ui-pill" :class="mcpTransportPillClass"><span class="ui-dot" aria-hidden="true" />{{ mcpTransportLabel }}</span>
               </div>
               <SuccessToast v-model:message="mcpSuccess" />
-              <StatusNotice v-if="mcpError" class="settings-load-error" title="天文查询通道切换未完成" :message="mcpError" />
+              <StatusNotice v-if="mcpError" class="settings-load-error" title="天文查询通道切换未完成" :message="mcpError" @dismiss="mcpError = ''" />
               <label class="settings-row settings-switch-row">
                 <div>
                   <h4>通过本地 MCP 执行天文查询</h4>
@@ -461,7 +461,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
 
           <div v-show="active.id === 'data'">
             <SuccessToast v-model:message="archivedMessage" />
-            <StatusNotice v-if="archivedError" class="settings-load-error" title="数据管理操作未完成" :message="archivedError" />
+            <StatusNotice v-if="archivedError" class="settings-load-error" title="数据管理操作未完成" :message="archivedError" @dismiss="archivedError = ''" />
             <section class="settings-group" aria-labelledby="settings-archived-chats">
               <div class="settings-group-head">
                 <h3 id="settings-archived-chats">已归档会话</h3>

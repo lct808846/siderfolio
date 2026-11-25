@@ -5,6 +5,7 @@ import { centerOfMassReset, systemDiagnostics } from '../compute-presets'
 import { useProjects } from '../stores/projects'
 import type { NBodyProposalResult } from '../types'
 import NBodyProgressVisual from './NBodyProgressVisual.vue'
+import StatusNotice from './StatusNotice.vue'
 
 export interface ComputeResultPayload {
   kind: 'compute'
@@ -472,7 +473,7 @@ onBeforeUnmount(() => {
     <p v-if="validationError" class="tool-inline-alert is-danger" role="alert">{{ validationError }}</p>
     <p v-if="computeDisabled" class="tool-inline-alert is-info" role="status">当前服务端暂未启用 N 体计算执行器；仍可审阅并调整参数。</p>
     <p v-else-if="!engineAvailable" class="tool-inline-alert is-info" role="status">当前计算服务暂未就绪所选引擎「{{ draftParams.engine }}」，请切换引擎或检查 compute-worker 容器。</p>
-    <p v-if="error" class="tool-inline-alert is-danger" role="alert">{{ error }}</p>
+    <StatusNotice v-if="error" title="N 体模拟操作未完成" :message="error" @dismiss="error = ''" />
     <p v-if="task?.error" class="tool-inline-alert is-danger" role="alert">{{ task.error }}</p>
 
     <!-- Visual N-Body Progress -->

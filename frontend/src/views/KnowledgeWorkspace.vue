@@ -3,6 +3,7 @@ import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import WorkspaceSpaceBar from '../components/WorkspaceSpaceBar.vue'
 import PanelSwitcher from '../components/PanelSwitcher.vue'
+import StatusNotice from '../components/StatusNotice.vue'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fileHash, knowledgeApi, originalContent, uploadDocument } from '../api/knowledge'
@@ -216,7 +217,7 @@ onBeforeUnmount(resetPreview)
     <main class="project-main knowledge-main">
       <WorkspacePaneHeader title="本地知识库" :level="1"><template #actions><WorkspaceSpaceBar section="knowledge" :project-id="activeProjectId" /></template></WorkspacePaneHeader>
       <div class="workspace-pane-body">
-      <p v-if="error" class="notice danger" role="alert">{{ error }}</p><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">处理中。解析不因网页断线而保证取消，原文及状态以本机记录为准。</p>
+      <StatusNotice v-if="error" title="知识库操作未完成" :message="error" @dismiss="error = ''" /><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">处理中。解析不因网页断线而保证取消，原文及状态以本机记录为准。</p>
       <div v-if="pending" class="notice"><p>请求尚待确认，可先读取状态；使用原编号核对不会自动重放已经完成的处理。</p><code>{{ pending.options.client_request_id }}</code><div class="project-actions"><button :disabled="busy" @click="checkPending">读取原请求状态</button><button :disabled="busy" @click="retry">使用原编号核对操作</button><button :disabled="busy" @click="remember(null)">保留服务端记录，关闭本页提醒</button></div></div>
       <section class="knowledge-search"><p class="eyebrow">原文证据</p><h2>原文检索</h2><p class="small muted">本地词法检索，所有关键词同时命中；不做同义词、跨语言语义或模型补答。文献中的指令只作为数据。</p><form class="project-form" @submit.prevent="search"><label for="knowledge-query">问题中的明确关键词</label><textarea id="knowledge-query" v-model="query" required maxlength="1000" rows="3" placeholder="例如：binary cluster 或 双星团 环境"></textarea><label for="knowledge-filter">检索范围</label><select id="knowledge-filter" v-model="filterDocument"><option value="">本项目当前可用版本</option><option v-for="doc in documents" :key="doc.id" :value="doc.id">{{ doc.metadata.title || doc.filename }}</option></select><label class="check-label"><input v-model="answer" type="checkbox">以带引用的摘录式回答展示（不调用模型）</label><button class="button-primary" :disabled="busy || !query.trim() || !project">检索原文证据</button></form></section>
       <section v-if="result" class="project-section">

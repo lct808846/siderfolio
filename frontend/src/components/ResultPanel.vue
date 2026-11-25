@@ -7,6 +7,7 @@ import type { ArtifactInfo, ChatAttachment, Manifest, PlotSpec, Turn } from '../
 import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileViewer.vue'
 import ComputeResultPanel from './ComputeResultPanel.vue'
 import PlotResultPanel from './PlotResultPanel.vue'
+import StatusNotice from './StatusNotice.vue'
 
 export type ResultViewKey = 'overview' | 'compute' | 'plot' | 'gaia' | 'ads' | 'simbad' | 'files' | 'export'
 
@@ -1129,7 +1130,7 @@ async function save() {
             <button :disabled="busy" class="button-secondary" @click="generate">{{ busy ? '正在生成…' : '生成预览与数据包' }}</button>
             <button v-if="artifact" class="button-primary" @click="save">下载 ZIP</button>
           </div>
-          <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
+          <StatusNotice v-if="error" title="结果导出未完成" :message="error" @dismiss="error = ''" />
           <template v-if="artifact">
             <p class="small muted">导出{{ artifact.export_status === 'partial' ? '部分完成' : '完成' }} · {{ artifact.exporter_version }}<br>有效期至 {{ artifact.expires_at }}</p>
             <ArtifactFileViewer

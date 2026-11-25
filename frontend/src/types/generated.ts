@@ -636,6 +636,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/sessions/revoke-others": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke Other Sessions */
+        post: operations["revoke_other_sessions_api_v1_auth_sessions_revoke_others_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/totp/confirm": {
         parameters: {
             query?: never;
@@ -6220,6 +6237,13 @@ export interface components {
             /** Expected Revision */
             expected_revision: number;
         };
+        /** RevokeOthersResponse */
+        RevokeOthersResponse: {
+            /** Message */
+            message: string;
+            /** Revoked Count */
+            revoked_count: number;
+        };
         /** RunSpan */
         RunSpan: {
             /** Correlation Id */
@@ -6300,6 +6324,91 @@ export interface components {
             /** Turn Id */
             turn_id: string;
             usage?: components["schemas"]["ModelUsageSummary"] | null;
+        };
+        /** SessionInfo */
+        SessionInfo: {
+            /** Anomaly Reasons */
+            anomaly_reasons?: string[];
+            /**
+             * Browser
+             * @default
+             */
+            browser: string;
+            /**
+             * Country Code
+             * @default
+             */
+            country_code: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Current */
+            current: boolean;
+            /**
+             * Device Name
+             * @default
+             */
+            device_name: string;
+            /**
+             * Device Type
+             * @default unknown
+             * @enum {string}
+             */
+            device_type: "desktop" | "mobile" | "tablet" | "unknown";
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Is Anomalous
+             * @default false
+             */
+            is_anomalous: boolean;
+            /**
+             * Last Ip
+             * @default
+             */
+            last_ip: string;
+            /**
+             * Last Location
+             * @default
+             */
+            last_location: string;
+            /**
+             * Last Seen
+             * Format: date-time
+             */
+            last_seen: string;
+            /**
+             * Login Ip
+             * @default
+             */
+            login_ip: string;
+            /**
+             * Login Location
+             * @default
+             */
+            login_location: string;
+            /**
+             * Mfa Verified
+             * @default false
+             */
+            mfa_verified: boolean;
+            /**
+             * Os
+             * @default
+             */
+            os: string;
+            /**
+             * User Agent
+             * @default
+             */
+            user_agent: string;
         };
         /** SessionRevokeInput */
         SessionRevokeInput: {
@@ -8244,7 +8353,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["SessionInfo"][];
                 };
             };
         };
@@ -8302,6 +8411,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_other_sessions_api_v1_auth_sessions_revoke_others_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProofInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevokeOthersResponse"];
                 };
             };
             /** @description Validation Error */

@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiError, safeLink } from '../api'
 import { literatureApi } from '../api/literature'
+import StatusNotice from '../components/StatusNotice.vue'
 import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import type { LiteratureItem, LiteratureListResponse } from '../types'
 
@@ -420,7 +421,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <p v-if="listError" class="lit-side-alert" role="alert">{{ listError }}</p>
+        <StatusNotice v-if="listError" title="文献列表读取失败" :message="listError" @dismiss="listError = ''" />
 
         <div class="lit-list-scroll" :aria-busy="listLoading">
           <div v-if="listLoading && !(listing.items || []).length" class="lit-list-skeleton" role="status">
@@ -549,7 +550,8 @@ onBeforeUnmount(() => {
           </div>
 
           <div v-else-if="detailError" class="lit-detail-state">
-            <p class="notice danger" role="alert">{{ detailError }}</p>
+            <StatusNotice title="文献详情读取失败" :message="detailError" @dismiss="detailError = ''" />
+            <p class="small muted">当前文献详情暂时无法读取。</p>
             <button type="button" class="lit-quiet-action" @click="router.replace('/literature')">返回文献列表</button>
           </div>
 
@@ -750,12 +752,19 @@ onBeforeUnmount(() => {
               </label>
 
               <p v-if="saveNotice" class="lit-save-feedback is-success" role="status">{{ saveNotice }}</p>
-              <div v-if="saveError" class="lit-save-feedback is-danger" role="alert">
-                <span>{{ saveError }}</span>
-                <button v-if="conflictDetected" type="button" class="lit-conflict-reload" @click="loadDetail(activeItem.id)">
-                  重新载入最新版本
-                </button>
-              </div>
+              <StatusNotice
+                v-if="saveError"
+                title="文献保存未完成"
+                :message="saveError"
+                :persistent="conflictDetected"
+                @dismiss="saveError = ''"
+              >
+                <template v-if="conflictDetected && activeItem" #actions>
+                  <button type="button" class="status-notice-action" @click="loadDetail(activeItem.id)">
+                    重新载入最新版本
+                  </button>
+                </template>
+              </StatusNotice>
 
               <div class="lit-save-bar">
                 <span class="lit-sync-status" :class="{ 'is-dirty': isDirty }">
@@ -782,7 +791,7 @@ onBeforeUnmount(() => {
       <p class="small muted">
         将从您的个人文献库中删除「{{ activeItem?.title || activeItem?.bibcode }}」及其个人标签与备注；已有的会话记录不会被修改。
       </p>
-      <p v-if="deleteError" class="lit-save-feedback is-danger" role="alert">{{ deleteError }}</p>
+      <StatusNotice v-if="deleteError" title="文献删除未完成" :message="deleteError" @dismiss="deleteError = ''" />
       <div class="lit-dialog-actions">
         <button type="button" class="lit-quiet-action" :disabled="deleting" @click="closeDeleteDialog">取消</button>
         <button type="button" class="lit-danger-confirm" :disabled="deleting" @click="confirmDelete">

@@ -91,6 +91,15 @@ class LocalAccess:
                 scope.setdefault("state", {})["trusted_client_address"] = address
             except ValueError:
                 pass
+            country = headers.get(b"x-astroagent-client-country", "").strip().upper()
+            if re.fullmatch(r"[A-Z]{2}|T1", country) and country != "XX":
+                scope.setdefault("state", {})["trusted_client_country"] = country
+            region = headers.get(b"x-astroagent-client-region", "").strip()[:64]
+            if region:
+                scope.setdefault("state", {})["trusted_client_region"] = region
+            city = headers.get(b"x-astroagent-client-city", "").strip()[:64]
+            if city:
+                scope.setdefault("state", {})["trusted_client_city"] = city
         if api and origin is not None and origin not in settings.allowed_origins:
             return await failure(403, "origin_not_allowed", "此网页来源未获允许。")
         if api and scope["method"] == "OPTIONS":

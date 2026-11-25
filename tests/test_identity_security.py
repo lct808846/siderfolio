@@ -116,6 +116,91 @@ def test_secure_session_cookie_flags():
     assert "Max-Age=" in cookie.split("astroagent_preauth")[0]
 
 
+def test_device_parsing_and_anomaly_detection():
+    from types import SimpleNamespace
+
+    from astroagent.auth_device import (
+        build_anomalous_login_email,
+        detect_login_anomalies,
+        extract_client_context,
+    )
+
+    desktop_req = SimpleNamespace(
+        headers={
+            "user-agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+            ),
+            "sec-ch-ua-platform": '"Windows"',
+            "sec-ch-ua-mobile": "?0",
+        },
+        state=SimpleNamespace(
+            trusted_client_country="CN",
+            trusted_client_region="Shanghai",
+            trusted_client_city="",
+        ),
+    )
+    desktop_ctx = extract_client_context(desktop_req, "198.51.100.10")
+    assert desktop_ctx.device_type == "desktop"
+    assert desktop_ctx.os == "Windows 10/11"
+    assert desktop_ctx.browser == "Chrome 131"
+    assert desktop_ctx.country_code == "CN"
+    assert desktop_ctx.location == "中国 · Shanghai"
+    assert desktop_ctx.network_prefix == "198.51.100.0/24"
+
+    mobile_req = SimpleNamespace(
+        headers={
+            "user-agent": (
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 "
+                "(KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1"
+            ),
+        },
+        state=SimpleNamespace(
+            trusted_client_country="JP",
+            trusted_client_region="Tokyo",
+            trusted_client_city="",
+        ),
+    )
+    mobile_ctx = extract_client_context(mobile_req, "203.0.113.45")
+    assert mobile_ctx.device_type == "mobile"
+    assert "iPhone" in mobile_ctx.device_name
+    assert "Safari" in mobile_ctx.browser
+    assert mobile_ctx.location == "日本 · Tokyo"
+
+    history = [
+        {
+            "source_hash": "hash-cn",
+            "network_prefix": desktop_ctx.network_prefix,
+            "country_code": desktop_ctx.country_code,
+            "login_location": desktop_ctx.location,
+            "last_location": desktop_ctx.location,
+            "device_type": desktop_ctx.device_type,
+            "device_name": desktop_ctx.device_name,
+            "os": desktop_ctx.os,
+            "browser": desktop_ctx.browser,
+        }
+    ]
+    assert (
+        detect_login_anomalies(
+            current=desktop_ctx, current_source_hash="hash-cn", recent_sessions=history
+        )
+        == []
+    )
+    anomalies = detect_login_anomalies(
+        current=mobile_ctx, current_source_hash="hash-jp", recent_sessions=history
+    )
+    assert "different_location" in anomalies and "new_device" in anomalies
+    mail_body = build_anomalous_login_email(
+        current=mobile_ctx,
+        reasons=anomalies,
+        mfa_used=True,
+        when_beijing="2026-11-25 08:30:00",
+    )
+    assert "203.0.113.45" in mail_body
+    assert "日本 · Tokyo" in mail_body
+    assert "不会强制退出" in mail_body
+
+
 def test_revocation_between_download_chunks_stops_delivery():
     from types import SimpleNamespace
 

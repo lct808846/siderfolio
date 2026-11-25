@@ -90,8 +90,10 @@ class MailWorker:
         message["Message-ID"] = f"<{row['id']}@{domain}>"
         if self.settings.smtp_host.lower() == "smtp.resend.com":
             message["Resend-Idempotency-Key"] = f"siderfolio/{row['id']}"
-        message["Subject"] = NOTICE_SUBJECTS.get(purpose) or (
-            "Siderfolio 邮箱验证" if purpose == "activate" else "Siderfolio 重置密码"
+        message["Subject"] = (
+            payload.get("subject")
+            or NOTICE_SUBJECTS.get(purpose)
+            or ("Siderfolio 邮箱验证" if purpose == "activate" else "Siderfolio 重置密码")
         )
         message.set_content(
             "Siderfolio\n\n"

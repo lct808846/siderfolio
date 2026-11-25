@@ -5,6 +5,7 @@ import { plottingApi, savePlotFile, type PlotOperation } from '../api/plotting'
 import { useAttachments } from '../stores/attachments'
 import { useProjects } from '../stores/projects'
 import type { ChatAttachment, PlotProposalResult, Turn } from '../types'
+import StatusNotice from './StatusNotice.vue'
 
 export interface PlotResultPayload {
   kind: 'plot'
@@ -445,8 +446,9 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
-    <div v-if="error" class="tool-inline-alert is-danger" role="alert">
-      <p>{{ error }}</p>
+    <StatusNotice v-if="error" title="绘图操作未完成" :message="error" @dismiss="error = ''" />
+
+    <div v-if="diagnosticText || runOp?.state === 'failed'" class="tool-inline-alert is-info">
       <details v-if="diagnosticText" class="plot-diag-details">
         <summary>查看容器运行日志</summary>
         <pre>{{ diagnosticText }}</pre>

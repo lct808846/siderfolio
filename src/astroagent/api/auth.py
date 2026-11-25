@@ -4,13 +4,20 @@ import base64
 import hmac
 import secrets
 import unicodedata
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from urllib.parse import quote
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
+from astroagent.auth_device import (
+    DeviceType,
+    build_anomalous_login_email,
+    detect_login_anomalies,
+    extract_client_context,
+    parse_anomaly_reasons,
+)
 from astroagent.auth_security import (
     PASSWORDS,
     digest,
@@ -82,6 +89,35 @@ class SessionRevokeInput(ProofInput):
 
 class CodeInput(Input):
     code: str = Field(min_length=6, max_length=6)
+
+
+class SessionInfo(BaseModel):
+    id: str
+    current: bool
+    created_at: datetime
+    last_seen: datetime
+    expires_at: datetime
+    mfa_verified: bool = False
+    device_type: DeviceType = "unknown"
+    device_name: str = ""
+    os: str = ""
+    browser: str = ""
+    user_agent: str = ""
+    login_ip: str = ""
+    last_ip: str = ""
+    login_location: str = ""
+    last_location: str = ""
+    country_code: str = ""
+    anomaly_reasons: list[str] = Field(default_factory=list)
+    is_anomalous: bool = False
+
+
+class RevokeOthersResponse(BaseModel):
+    message: str
+    revoked_count: int
+
+
+BEIJING_TZ = timezone(timedelta(hours=8))
 
 
 def runtime(request):
@@ -181,6 +217,13 @@ def session(request: Request, response: Response):
     token = request.cookies.get(COOKIE, "")
     if token:
         set_session(response, service.settings, token)
+    service.store.refresh_session_client(
+        user["session_hash"],
+        extract_client_context(request, source(request)),
+        current_device_name=user.get("session_device_name", ""),
+        current_last_ip=user.get("session_last_ip", ""),
+        current_last_location=user.get("session_last_location", ""),
+    )
     return {
         "user": service.store.public_user(user),
         "csrf_token": service.csrf(token),
@@ -438,43 +481,78 @@ def login(body: LoginInput, request: Request, response: Response):
         )
         if valid and user["totp_secret"] and not mfa:
             valid = False
-        current_source = service.source_hash(source(request))
+        current_ip = source(request)
+        current_source = service.source_hash(current_ip)
+        client_ctx = extract_client_context(request, current_ip)
         if not valid:
             service.store.audit(db, None, "login", "denied", source=current_source)
         else:
-            previous_login = db.execute(
+            recent_sessions = db.execute(
                 (
-                    "SELECT source_hash FROM public.auth_sessions WHERE user_id=%s AND NOT revoked "
-                    "AND source_hash IS NOT NULL AND expires_at>now() "
-                    "AND last_seen>now()-(%s * interval '1 second') "
-                    "ORDER BY created_at DESC LIMIT 1"
+                    "SELECT source_hash,network_prefix,country_code,login_location,"
+                    "last_location,device_type,device_name,os,browser "
+                    "FROM public.auth_sessions WHERE user_id=%s "
+                    "AND created_at>now()-interval '30 days' "
+                    "ORDER BY created_at DESC LIMIT 50"
                 ),
-                (user["id"], service.settings.idle_seconds),
-            ).fetchone()
+                (user["id"],),
+            ).fetchall()
+            # Rotate only the current browser's prior session; other devices stay logged in.
             old = getattr(request.state, "principal", None)
             if old:
                 db.execute(
                     "UPDATE public.auth_sessions SET revoked=true WHERE hash=%s",
                     (old["session_hash"],),
                 )
-            if previous_login and previous_login["source_hash"] != current_source:
+            anomalies = detect_login_anomalies(
+                current=client_ctx,
+                current_source_hash=current_source,
+                recent_sessions=recent_sessions,
+            )
+            anomaly_reason = ",".join(anomalies)
+            if anomalies:
+                recently_notified = db.execute(
+                    (
+                        "SELECT 1 FROM public.auth_audit WHERE actor=%s "
+                        "AND event='anomalous_login' AND source=%s AND reason=%s "
+                        "AND created_at>now()-interval '10 minutes' LIMIT 1"
+                    ),
+                    (user["id"], current_source, anomaly_reason),
+                ).fetchone()
                 service.store.audit(
                     db,
                     user["id"],
-                    "anomalous_location_login",
+                    "anomalous_login",
                     "observed",
                     source=current_source,
-                    reason="different_network_source",
+                    reason=anomaly_reason,
                 )
-                service.store.security_mail(
-                    db, user, "检测到新的网络位置登录。请在账号安全中核对活动会话。"
-                )
+                if not recently_notified:
+                    when_beijing = datetime.now(BEIJING_TZ).strftime("%Y-%m-%d %H:%M:%S")
+                    service.store.security_mail(
+                        db,
+                        user,
+                        build_anomalous_login_email(
+                            current=client_ctx,
+                            reasons=anomalies,
+                            mfa_used=mfa,
+                            when_beijing=when_beijing,
+                        ),
+                        subject="Siderfolio 异常登录提醒",
+                    )
             if PASSWORDS.check_needs_rehash(user["password_hash"]):
                 db.execute(
                     "UPDATE public.auth_users SET password_hash=%s WHERE id=%s",
                     (PASSWORDS.hash(unicodedata.normalize("NFC", password)), user["id"]),
                 )
-            token = service.store.session(db, user["id"], mfa, source_hash=current_source)
+            token = service.store.session(
+                db,
+                user["id"],
+                mfa,
+                source_hash=current_source,
+                client=client_ctx,
+                anomaly_reason=anomaly_reason,
+            )
             db.execute("UPDATE public.auth_users SET last_login=now() WHERE id=%s", (user["id"],))
             service.store.audit(db, user["id"], "login", "ok", source=current_source)
     if not valid:
@@ -553,29 +631,60 @@ def change_password(body: ChangePasswordInput, request: Request, response: Respo
     return {"message": "密码已修改，请重新登录。"}
 
 
-@router.get("/sessions")
+@router.get("/sessions", response_model=list[SessionInfo])
 def sessions(request: Request):
     service, user = runtime(request), actor(request)
+    service.store.refresh_session_client(
+        user["session_hash"],
+        extract_client_context(request, source(request)),
+        current_device_name=user.get("session_device_name", ""),
+        current_last_ip=user.get("session_last_ip", ""),
+        current_last_location=user.get("session_last_location", ""),
+    )
     with service.store.connect() as db:
         rows = db.execute(
             (
-                "SELECT hash,created_at,last_seen,expires_at FROM public.auth_sessions WHERE "
+                "SELECT hash,created_at,last_seen,expires_at,mfa_at,"
+                "device_type,device_name,os,browser,user_agent,"
+                "login_ip,last_ip,login_location,last_location,country_code,anomaly_reason "
+                "FROM public.auth_sessions WHERE "
                 "user_id=%s AND NOT revoked AND expires_at>now() "
-                "AND last_seen>now()-(%s*interval '1 second') ORDER BY created_at DESC "
-                "LIMIT 100"
+                "AND last_seen>now()-(%s*interval '1 second') "
+                "ORDER BY last_seen DESC, created_at DESC LIMIT 100"
             ),
             (user["id"], service.settings.idle_seconds),
         ).fetchall()
     result = []
     for row in rows:
         session_hash = row.pop("hash")
+        mfa_at = row.pop("mfa_at", None)
+        reasons = parse_anomaly_reasons(row.pop("anomaly_reason", ""))
+        raw_device_type = row.get("device_type") or "unknown"
+        if raw_device_type not in {"desktop", "mobile", "tablet", "unknown"}:
+            raw_device_type = "unknown"
         result.append(
-            {
-                "id": keyed(service.settings, "session-management", f"{user['id']}:{session_hash}"),
-                "current": hmac.compare_digest(session_hash, user["session_hash"]),
-                **row,
-            }
+            SessionInfo(
+                id=keyed(service.settings, "session-management", f"{user['id']}:{session_hash}"),
+                current=hmac.compare_digest(session_hash, user["session_hash"]),
+                created_at=row["created_at"],
+                last_seen=row["last_seen"],
+                expires_at=row["expires_at"],
+                mfa_verified=bool(mfa_at),
+                device_type=raw_device_type,
+                device_name=row.get("device_name") or "",
+                os=row.get("os") or "",
+                browser=row.get("browser") or "",
+                user_agent=row.get("user_agent") or "",
+                login_ip=row.get("login_ip") or "",
+                last_ip=row.get("last_ip") or "",
+                login_location=row.get("login_location") or "",
+                last_location=row.get("last_location") or "",
+                country_code=row.get("country_code") or "",
+                anomaly_reasons=reasons,
+                is_anomalous=bool(reasons),
+            )
         )
+    result.sort(key=lambda item: (not item.current,))
     return result
 
 
@@ -605,17 +714,39 @@ def revoke_session(body: SessionRevokeInput, request: Request):
             None,
         )
         if target is None:
-            raise ServiceError(404, "session_not_found", "该会话已退出或失效，请刷新列表。")
+            raise ServiceError(404, "session_not_found", "该登录设备已退出或失效，请刷新列表。")
         if hmac.compare_digest(target, user["session_hash"]):
             raise ServiceError(
-                409, "current_session_protected", "不能在活动会话列表中退出当前浏览器。"
+                409, "current_session_protected", "不能在登录设备列表中强制退出当前设备。"
             )
         db.execute(
             "UPDATE public.auth_sessions SET revoked=true WHERE user_id=%s AND hash=%s",
             (user["id"], target),
         )
         service.store.audit(db, user["id"], "session_revoked", "ok", target=user["id"])
-    return {"message": "所选浏览器会话已退出。"}
+    return {"message": "已强制退出所选登录设备。"}
+
+
+@router.post("/sessions/revoke-others", response_model=RevokeOthersResponse)
+def revoke_other_sessions(body: ProofInput, request: Request):
+    service, user = runtime(request), actor(request)
+    service.store.rate("revoke_other_sessions", source(request), user["id"], limit=8)
+    with service.store.connect() as db:
+        proof(service, request, body, db)
+        revoked_count = service.store.revoke_others(db, user["id"], user["session_hash"])
+        service.store.audit(
+            db,
+            user["id"],
+            "other_sessions_revoked",
+            "ok",
+            reason=f"count={revoked_count}",
+        )
+    message = (
+        f"已强制退出其他 {revoked_count} 台登录设备，当前设备保持登录。"
+        if revoked_count > 0
+        else "当前没有其他已登录设备。"
+    )
+    return RevokeOthersResponse(message=message, revoked_count=revoked_count)
 
 
 @router.post("/sessions/revoke-all")
@@ -716,8 +847,13 @@ def confirm_totp(body: CodeInput, request: Request, response: Response):
                 "INSERT INTO public.auth_recovery VALUES (%s,%s,NULL)", (digest(code), user["id"])
             )
         service.store.revoke(db, user["id"])
+        current_ip = source(request)
         token = service.store.session(
-            db, user["id"], True, source_hash=service.source_hash(source(request))
+            db,
+            user["id"],
+            True,
+            source_hash=service.source_hash(current_ip),
+            client=extract_client_context(request, current_ip),
         )
         service.store.audit(db, user["id"], "totp_bound", "ok")
     set_session(response, service.settings, token)

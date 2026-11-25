@@ -49,8 +49,8 @@ async function show() {
   top.value = below >= Math.min(size, 220) ? rect.bottom + 6 : Math.max(12, rect.top - size - 6)
   positioned.value = true
   document.addEventListener('pointerdown', outside, true)
-  window.addEventListener('resize', resized)
-  document.addEventListener('scroll', scrolled, true)
+  window.addEventListener('resize', resized, { passive: true })
+  document.addEventListener('scroll', scrolled, { capture: true, passive: true })
   await focusOption()
 }
 function choose(value: T) { emit('update:modelValue', value); close(true) }

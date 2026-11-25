@@ -1174,10 +1174,159 @@ input[type=file]::file-selector-button:hover {
 .success-toast::backdrop { background: transparent; pointer-events: none; }
 .success-toast svg { width: 22px; height: 22px; flex: none; color: var(--success); }
 .success-toast p { margin: 0; color: var(--ink); font: 400 14px/1.65 var(--font-ui); overflow-wrap: anywhere; }
+.status-notice-toast {
+  position: fixed;
+  inset: 20px auto auto 50%;
+  display: none;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: max-content;
+  min-width: min(300px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 32%, var(--line-strong));
+  border-radius: var(--radius-surface);
+  background:
+    radial-gradient(ellipse 90% 80% at 8% 0%, color-mix(in srgb, var(--danger) 12%, transparent), transparent 65%),
+    var(--surface-glass-float);
+  -webkit-backdrop-filter: blur(26px) saturate(185%);
+  backdrop-filter: blur(26px) saturate(185%);
+  color: var(--ink);
+  box-shadow:
+    inset 0 1px 0 var(--inset-highlight),
+    var(--shadow-float);
+  opacity: 0;
+  transform: translate(-50%, -8px);
+  transition:
+    opacity 220ms var(--ease-out),
+    transform 220ms var(--ease-out),
+    top 220ms var(--ease-out);
+  pointer-events: auto;
+  overflow: visible;
+}
+.status-notice-toast:popover-open { display: flex; }
+.status-notice-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+.status-notice-toast::backdrop { background: transparent; pointer-events: none; }
+.status-notice-toast[data-tone="warning"] {
+  border-color: color-mix(in srgb, var(--warning) 34%, var(--line-strong));
+  background:
+    radial-gradient(ellipse 90% 80% at 8% 0%, color-mix(in srgb, var(--warning) 13%, transparent), transparent 65%),
+    var(--surface-glass-float);
+}
+.status-notice-toast .status-notice-icon {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  margin-top: 1px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--danger) 13%, var(--danger-soft));
+  border: 1px solid color-mix(in srgb, var(--danger) 24%, transparent);
+  color: var(--danger);
+}
+.status-notice-toast[data-tone="warning"] .status-notice-icon {
+  background: color-mix(in srgb, var(--warning) 14%, var(--warning-soft));
+  border-color: color-mix(in srgb, var(--warning) 26%, transparent);
+  color: var(--warning);
+}
+.status-notice-toast .status-notice-icon svg { width: 16px; height: 16px; }
+.status-notice-toast .status-notice-copy { flex: 1 1 auto; min-width: 0; align-self: center; }
+.status-notice-toast .status-notice-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.status-notice-toast .status-notice-message {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary, var(--muted));
+  overflow-wrap: anywhere;
+}
+.status-notice-toast .status-notice-message:first-child {
+  margin-top: 0;
+  color: var(--ink);
+  font-size: 13.5px;
+}
+.status-notice-toast .status-notice-code {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font: 11px/1.5 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.status-notice-toast .status-notice-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: 8px;
+}
+.status-notice-toast .status-notice-extra { margin-top: 6px; }
+.status-notice-toast .status-notice-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex: none;
+  align-self: center;
+  min-height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line-strong));
+  background: var(--paper);
+  color: var(--ink);
+  font: 550 12px/1.4 var(--font-ui);
+  box-shadow: none;
+  white-space: nowrap;
+}
+.status-notice-toast .status-notice-action:hover:not(:disabled) {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.status-notice-toast .status-notice-close {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  flex: none;
+  padding: 0;
+  margin: -2px -4px 0 2px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+.status-notice-toast .status-notice-close:hover {
+  background: var(--hover-veil, rgb(127 127 127 / 12%));
+  color: var(--ink);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
-  .success-toast { transition: none; transform: translateX(-50%); }
+  .success-toast,
+  .status-notice-toast { transition: none; transform: translateX(-50%); }
 }
 @media (max-width: 680px) {
+  .status-notice-toast {
+    width: calc(100vw - 24px);
+    min-width: 0;
+    max-width: calc(100vw - 24px);
+    padding: 10px 12px;
+  }
   .status-notice { flex-wrap: wrap; }
   .status-notice-copy { flex-basis: calc(100% - 44px); }
   .status-notice .status-notice-action { margin-left: 44px; max-width: calc(100% - 44px); white-space: normal; }
@@ -2025,8 +2174,6 @@ input[type=file]::file-selector-button:hover {
   border-radius: 11px;
   border-color: var(--line-strong);
   background: var(--specular-spot), var(--surface-glass-card);
-  -webkit-backdrop-filter: blur(16px) saturate(170%);
-  backdrop-filter: blur(16px) saturate(170%);
   color: var(--ink);
   box-shadow: var(--shadow-card);
   font-weight: 550;
@@ -4295,6 +4442,10 @@ a.ui-pill:hover {
   :root[data-glass="off"] .conversation-layout.workbench > .history-panel {
     background: var(--surface-card);
   }
+  .conversation-layout.workbench:not([data-panel="history"]) > .history-panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   .conversation-layout.workbench > .results-panel {
     position: fixed;
     left: 0;
@@ -4311,10 +4462,12 @@ a.ui-pill:hover {
     border-inline: 0;
     border-bottom: 0;
     background: var(--surface-card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: 0 -18px 48px -12px rgb(0 0 0 / 32%);
     clip-path: none;
     opacity: 0;
-    transform: translateY(104%);
+    transform: translate3d(0, 104%, 0);
     visibility: hidden;
     pointer-events: none;
     transition:
@@ -4324,9 +4477,10 @@ a.ui-pill:hover {
   }
   .conversation-layout.workbench[data-results-open="true"] > .results-panel {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     visibility: visible;
     pointer-events: auto;
+    will-change: transform, opacity;
     transition-delay: 0s;
   }
   .conversation-layout.workbench > .results-panel > .results-header {
@@ -5206,6 +5360,53 @@ a.ui-pill:hover {
   background: var(--astro-pane-bg);
 }
 
+/* Mobile & touch rendering performance (preserves all visual effects) */
+button,
+a,
+summary,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+label,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+.chat-scroll,
+.results-body,
+.settings-detail,
+.settings-nav-scroll,
+.profile-scroll,
+.lit-list-scroll,
+.lit-detail-scroll {
+  overscroll-behavior: contain;
+  contain: layout style;
+}
+.history-scroll {
+  overscroll-behavior: contain;
+}
+.conversation-layout .chat-scroll > .turn {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 220px;
+}
+.profile-model-card,
+.lit-item {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 116px;
+}
+@media (hover: none) {
+  .ui-card-interactive,
+  .welcome-launch-card,
+  .conversation-layout .new-conversation,
+  .conversation-layout .view-results,
+  button,
+  .button-primary,
+  .plot-primary {
+    transition-property: background-color, border-color, color, opacity, transform;
+  }
+}
+
 :root[data-glass="off"] *,
 :root[data-glass="off"] *::backdrop {
   -webkit-backdrop-filter: none !important;
@@ -5718,6 +5919,7 @@ a.ui-pill:hover {
 :root[data-shadows="off"] .chat-tool-card,
 :root[data-shadows="off"] .nbody-progress-card,
 :root[data-shadows="off"] .status-notice.conversation-error,
+:root[data-shadows="off"] .status-notice-toast,
 :root[data-shadows="off"] .lit-glass-card,
 :root[data-shadows="off"] .lit-guide-card {
   box-shadow: none;

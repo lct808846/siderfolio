@@ -829,14 +829,25 @@ async function applyWorkbenchHandoff() {
     input.value?.focus()
   }
 }
-watch(() => store.pendingTurn?.streamedText, async value => {
-  if (!value) return
-  const el = chatScroll.value
-  if (!el) return
-  const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 140
-  if (!nearBottom) return
-  await nextTick()
-  el.scrollTop = el.scrollHeight
+let streamScrollFrame = 0
+let resizeComposerFrame = 0
+function scheduleResizeComposer() {
+  if (resizeComposerFrame) return
+  resizeComposerFrame = requestAnimationFrame(() => {
+    resizeComposerFrame = 0
+    resizeComposer()
+  })
+}
+watch(() => store.pendingTurn?.streamedText, value => {
+  if (!value || streamScrollFrame) return
+  streamScrollFrame = requestAnimationFrame(() => {
+    streamScrollFrame = 0
+    const el = chatScroll.value
+    if (!el) return
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 140) {
+      el.scrollTop = el.scrollHeight
+    }
+  })
 })
 watch(() => route.fullPath, () => {
   if (compactLayout.value && store.panel === 'history') store.panel = 'chat'
@@ -845,7 +856,7 @@ watch(() => route.fullPath, () => {
 onMounted(async () => {
   layoutQuery = window.matchMedia('(max-width: 980px)')
   updateLayout(); layoutQuery.addEventListener('change', updateLayout)
-  window.addEventListener('resize', resizeComposer)
+  window.addEventListener('resize', scheduleResizeComposer, { passive: true })
   window.addEventListener('keydown', onWorkbenchKeydown)
   resizeComposer()
   void applyWorkbenchHandoff()
@@ -864,8 +875,10 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   restoreRevision++
   cancelAnimationFrame(restoreFrame)
+  if (streamScrollFrame) cancelAnimationFrame(streamScrollFrame)
+  if (resizeComposerFrame) cancelAnimationFrame(resizeComposerFrame)
   layoutQuery?.removeEventListener('change', updateLayout)
-  window.removeEventListener('resize', resizeComposer)
+  window.removeEventListener('resize', scheduleResizeComposer)
   window.removeEventListener('keydown', onWorkbenchKeydown)
 })
 </script>
@@ -990,6 +1003,7 @@ onBeforeUnmount(() => {
               <p v-if="turn.execution_status==='running'" class="thinking-status"><span class="thinking-shimmer-text">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</span></p>
               <ConversationErrorNotice
                 v-if="turn.error"
+                inline
                 :message="turn.error.message"
                 :code="turn.error.code"
                 :announce="turn.turn_id === failedTurnId"
@@ -1025,7 +1039,7 @@ onBeforeUnmount(() => {
                 :key="receipt.receipt_id"
                 :receipt="receipt"
               />
-              <ConversationErrorNotice v-for="warning in turn.response?.warnings || []" :key="`${warning.code}:${warning.message}`" :message="warning.message" :code="warning.code" advisory />
+              <ConversationErrorNotice v-for="warning in turn.response?.warnings || []" :key="`${warning.code}:${warning.message}`" inline :message="warning.message" :code="warning.code" advisory />
               <div
                 v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.attachments?.length || turn.response?.sources?.length"
                 class="turn-footer-group"
@@ -1131,7 +1145,7 @@ onBeforeUnmount(() => {
               <button type="button" :disabled="store.pending || store.loading" @click="store.resendSameRequest()">用原请求编号核对</button>
             </template>
           </ConversationErrorNotice>
-          <ConversationErrorNotice v-else :message="store.error" :code="store.errorCode" operation announce :can-retry="retryAvailable" :busy="!submissionReady" @retry="retry">
+          <ConversationErrorNotice v-else :message="store.error" :code="store.errorCode" operation announce :can-retry="retryAvailable" :busy="!submissionReady" @retry="retry" @dismiss="store.error = ''">
             <template v-if="!conversationReady && conversationId" #actions>
               <button type="button" :disabled="store.loading" @click="store.load(conversationId)">重新读取会话</button>
             </template>

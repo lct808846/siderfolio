@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import StatusNotice from '../components/StatusNotice.vue'
 import { identityError, identityRequest, refreshIdentity, safeReturn } from '../identity-state'
 
 const route = useRoute(), router = useRouter()
@@ -269,7 +270,7 @@ async function submit() {
         <h1>{{ title }}</h1>
         <p class="auth-status-desc">{{ statusText }}</p>
 
-        <p v-if="error" class="auth-error-banner" role="alert">{{ error }}</p>
+        <StatusNotice v-if="error" title="操作未完成" :message="error" @dismiss="error = ''" />
         <p v-if="resentNotice" class="auth-resent-tip">{{ resentNotice }}</p>
 
         <button
@@ -296,9 +297,12 @@ async function submit() {
       <template v-else>
         <h1>{{ title }}</h1>
 
-        <p v-if="identityError || (error && !errorField)" class="auth-error-banner" role="alert">
-          {{ error || identityError }}
-        </p>
+        <StatusNotice
+          v-if="identityError || (error && !errorField)"
+          title="认证提示"
+          :message="error || identityError"
+          @dismiss="error = ''; identityError = ''"
+        />
 
         <form class="auth-form" novalidate @submit.prevent="submit">
           <div v-if="mode === 'login' && (loginStep === 'password' || loginStep === 'code')" class="auth-account-chip">

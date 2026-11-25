@@ -27,7 +27,7 @@ onMounted(() => { void act(localTitlesApi.status) })
 <template>
   <section class="settings-group local-settings-card">
     <h3>本机模型</h3>
-    <StatusNotice v-if="error" title="自动命名操作未完成" :message="error" />
+    <StatusNotice v-if="error" title="自动命名操作未完成" :message="error" @dismiss="error = ''" />
     <p v-if="busy" role="status">正在读取或更新本地模型状态…</p>
     <template v-if="state">
       <div class="settings-row">

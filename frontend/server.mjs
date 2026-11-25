@@ -26,21 +26,48 @@ async function ingressAddresses() {
   ingressCache = { addresses: next, expiresAt: now + 10000 }
   return next
 }
-async function clientAddress(req) {
+function cleanEdgeMeta(value, maxLength = 64) {
+  if (typeof value !== 'string') return ''
+  return value.replace(/\p{Cc}/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLength)
+}
+async function clientMeta(req) {
   const address = (req.socket.remoteAddress || '').replace(/^::ffff:/, '')
+  const meta = { address, country: '', region: '', city: '' }
   if (containerMode) {
     try {
       const trusted = await ingressAddresses()
-      const claimed = req.headers['x-astroagent-edge-client']
-      if (trusted.has(address) && typeof claimed === 'string' && isIP(claimed)) return claimed.replace(/^::ffff:/, '')
+      if (trusted.has(address)) {
+        const claimed = req.headers['x-astroagent-edge-client']
+        if (typeof claimed === 'string' && isIP(claimed)) meta.address = claimed.replace(/^::ffff:/, '')
+        const country = cleanEdgeMeta(req.headers['x-astroagent-edge-country'], 8).toUpperCase()
+        if (/^(?:[A-Z]{2}|T1)$/.test(country) && country !== 'XX') meta.country = country
+        meta.region = cleanEdgeMeta(req.headers['x-astroagent-edge-region'], 64)
+        meta.city = cleanEdgeMeta(req.headers['x-astroagent-edge-city'], 64)
+      }
     } catch { /* Unknown proxies never get to select an authentication source. */ }
   }
-  return address
+  return meta
 }
 async function signedIn(req) {
-  const address = containerMode ? await clientAddress(req) : ''
+  const meta = containerMode ? await clientMeta(req) : { address: '', country: '', region: '', city: '' }
   return new Promise(resolve => {
-    const check = http.request(new URL('/api/v1/auth/session', backend), { agent: backendAgent, headers: { host: '127.0.0.1:8000', cookie: req.headers.cookie || '', ...(containerMode ? { 'x-astroagent-proxy': proxyToken, 'x-astroagent-client-address': address } : {}) } }, reply => { reply.resume(); resolve(reply.statusCode || 503) })
+    const check = http.request(new URL('/api/v1/auth/session', backend), {
+      agent: backendAgent,
+      headers: {
+        host: '127.0.0.1:8000',
+        cookie: req.headers.cookie || '',
+        ...(req.headers['user-agent'] ? { 'user-agent': req.headers['user-agent'] } : {}),
+        ...(containerMode
+          ? {
+              'x-astroagent-proxy': proxyToken,
+              'x-astroagent-client-address': meta.address,
+              ...(meta.country ? { 'x-astroagent-client-country': meta.country } : {}),
+              ...(meta.region ? { 'x-astroagent-client-region': meta.region } : {}),
+              ...(meta.city ? { 'x-astroagent-client-city': meta.city } : {}),
+            }
+          : {}),
+      },
+    }, reply => { reply.resume(); resolve(reply.statusCode || 503) })
     check.setTimeout(5000, () => check.destroy())
     check.on('error', () => resolve(503)); check.end()
   })
@@ -78,9 +105,15 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/health') { res.writeHead(404); return res.end() }
   if (url.pathname.startsWith('/api/') || ['/health', '/docs', '/redoc', '/openapi.json', '/docs/oauth2-redirect'].includes(url.pathname)) {
     const headers = { ...req.headers, host: '127.0.0.1:8000' }
-    for (const name of ['x-astroagent-proxy', 'x-astroagent-client-address', 'x-astroagent-edge-client', 'forwarded', 'x-forwarded-host', 'x-forwarded-for', 'x-forwarded-proto', 'proxy-authorization', 'connection', 'upgrade']) delete headers[name]
-    if (containerMode) headers['x-astroagent-proxy'] = proxyToken
-    if (containerMode) headers['x-astroagent-client-address'] = await clientAddress(req)
+    for (const name of ['x-astroagent-proxy', 'x-astroagent-client-address', 'x-astroagent-client-country', 'x-astroagent-client-region', 'x-astroagent-client-city', 'x-astroagent-edge-client', 'x-astroagent-edge-country', 'x-astroagent-edge-region', 'x-astroagent-edge-city', 'forwarded', 'x-forwarded-host', 'x-forwarded-for', 'x-forwarded-proto', 'proxy-authorization', 'connection', 'upgrade']) delete headers[name]
+    if (containerMode) {
+      const meta = await clientMeta(req)
+      headers['x-astroagent-proxy'] = proxyToken
+      headers['x-astroagent-client-address'] = meta.address
+      if (meta.country) headers['x-astroagent-client-country'] = meta.country
+      if (meta.region) headers['x-astroagent-client-region'] = meta.region
+      if (meta.city) headers['x-astroagent-client-city'] = meta.city
+    }
     const upstream = http.request(new URL(url.pathname + url.search, backend), { agent: backendAgent, method: req.method, headers }, reply => {
       res.writeHead(reply.statusCode || 502, reply.headers)
       if (reply.headers['content-type']?.includes('text/event-stream')) res.flushHeaders()

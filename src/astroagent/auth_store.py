@@ -44,7 +44,13 @@ DDL = (
         "NULL REFERENCES public.auth_users(id), created_at timestamptz NOT NULL "
         "DEFAULT now(), last_seen timestamptz NOT NULL DEFAULT now(), expires_at "
         "timestamptz NOT NULL, revoked boolean NOT NULL DEFAULT false, mfa_at "
-        "timestamptz, reauth_at timestamptz, source_hash text)"
+        "timestamptz, reauth_at timestamptz, source_hash text, "
+        "login_ip text NOT NULL DEFAULT '', last_ip text NOT NULL DEFAULT '', "
+        "login_location text NOT NULL DEFAULT '', last_location text NOT NULL DEFAULT '', "
+        "country_code text NOT NULL DEFAULT '', network_prefix text NOT NULL DEFAULT '', "
+        "device_type text NOT NULL DEFAULT 'unknown', device_name text NOT NULL DEFAULT '', "
+        "browser text NOT NULL DEFAULT '', os text NOT NULL DEFAULT '', "
+        "user_agent text NOT NULL DEFAULT '', anomaly_reason text NOT NULL DEFAULT '')"
     ),
     "CREATE INDEX auth_session_user ON public.auth_sessions(user_id)",
     (
@@ -191,6 +197,23 @@ class AuthStore:
                 "content bytea NOT NULL, updated_at timestamptz NOT NULL DEFAULT now())"
             )
             db.execute("ALTER TABLE public.auth_sessions ADD COLUMN IF NOT EXISTS source_hash text")
+            for column_ddl in (
+                "login_ip text NOT NULL DEFAULT ''",
+                "last_ip text NOT NULL DEFAULT ''",
+                "login_location text NOT NULL DEFAULT ''",
+                "last_location text NOT NULL DEFAULT ''",
+                "country_code text NOT NULL DEFAULT ''",
+                "network_prefix text NOT NULL DEFAULT ''",
+                "device_type text NOT NULL DEFAULT 'unknown'",
+                "device_name text NOT NULL DEFAULT ''",
+                "browser text NOT NULL DEFAULT ''",
+                "os text NOT NULL DEFAULT ''",
+                "user_agent text NOT NULL DEFAULT ''",
+                "anomaly_reason text NOT NULL DEFAULT ''",
+            ):
+                db.execute(
+                    f"ALTER TABLE public.auth_sessions ADD COLUMN IF NOT EXISTS {column_ddl}"
+                )
             db.execute(
                 (
                     "UPDATE public.auth_sessions SET "
@@ -355,8 +378,9 @@ class AuthStore:
             row = db.execute(
                 (
                     "SELECT u.*,s.hash AS session_hash,s.mfa_at,s.reauth_at,s.last_seen AS "
-                    "session_last_seen,s.created_at AS "
-                    "session_created FROM public.auth_sessions s "
+                    "session_last_seen,s.created_at AS session_created, "
+                    "s.device_name AS session_device_name, s.last_ip AS session_last_ip, "
+                    "s.last_location AS session_last_location FROM public.auth_sessions s "
                     "JOIN public.auth_users u ON u.id=s.user_id WHERE s.hash=%s AND NOT s.revoked "
                     "AND s.expires_at>now() AND s.last_seen>now()-(%s * interval '1 second') "
                     "AND u.active AND NOT u.disabled"
@@ -379,10 +403,79 @@ class AuthStore:
                 )
             return row
 
-    def security_mail(self, db, user, message):
+    def refresh_session_client(
+        self,
+        session_hash,
+        client,
+        *,
+        current_device_name="",
+        current_last_ip="",
+        current_last_location="",
+    ):
+        """Backfill missing device metadata on legacy sessions and track roaming IP/location."""
+        if not session_hash or client is None:
+            return
+        needs_device = not (current_device_name or "").strip() and bool(client.device_name)
+        needs_ip = bool(client.ip) and client.ip != (current_last_ip or "")
+        needs_location = bool(client.location) and client.location != (current_last_location or "")
+        if not (needs_device or needs_ip or needs_location):
+            return
+        with self.connect() as db:
+            db.execute(
+                (
+                    "UPDATE public.auth_sessions SET "
+                    "last_ip = CASE WHEN %s <> '' THEN %s ELSE last_ip END, "
+                    "last_location = CASE WHEN %s <> '' THEN %s ELSE last_location END, "
+                    "login_ip = CASE WHEN login_ip = '' AND %s <> '' THEN %s ELSE login_ip END, "
+                    "login_location = CASE WHEN login_location = '' AND %s <> '' "
+                    "THEN %s ELSE login_location END, "
+                    "country_code = CASE WHEN country_code = '' AND %s <> '' "
+                    "THEN %s ELSE country_code END, "
+                    "network_prefix = CASE WHEN network_prefix = '' AND %s <> '' "
+                    "THEN %s ELSE network_prefix END, "
+                    "device_type = CASE WHEN device_name = '' AND %s <> '' "
+                    "THEN %s ELSE device_type END, "
+                    "device_name = CASE WHEN device_name = '' AND %s <> '' "
+                    "THEN %s ELSE device_name END, "
+                    "browser = CASE WHEN browser = '' AND %s <> '' THEN %s ELSE browser END, "
+                    "os = CASE WHEN os = '' AND %s <> '' THEN %s ELSE os END, "
+                    "user_agent = CASE WHEN user_agent = '' AND %s <> '' "
+                    "THEN %s ELSE user_agent END "
+                    "WHERE hash=%s AND NOT revoked"
+                ),
+                (
+                    client.ip,
+                    client.ip,
+                    client.location,
+                    client.location,
+                    client.ip,
+                    client.ip,
+                    client.location,
+                    client.location,
+                    client.country_code,
+                    client.country_code,
+                    client.network_prefix,
+                    client.network_prefix,
+                    client.device_name,
+                    client.device_type,
+                    client.device_name,
+                    client.device_name,
+                    client.browser,
+                    client.browser,
+                    client.os,
+                    client.os,
+                    client.user_agent,
+                    client.user_agent,
+                    session_hash,
+                ),
+            )
+
+    def security_mail(self, db, user, message, *, subject=None):
         if not self.settings.mail_ready:
             return
         payload = {"email": user["email_key"], "purpose": "security", "message": message}
+        if subject:
+            payload["subject"] = subject
         identifier = str(uuid4())
         db.execute(
             (
@@ -409,13 +502,16 @@ class AuthStore:
                 ).fetchone()
             )
 
-    def session(self, db, user_id, mfa=False, source_hash=None):
+    def session(self, db, user_id, mfa=False, source_hash=None, *, client=None, anomaly_reason=""):
         token = opaque()
         now = datetime.now(UTC)
         db.execute(
             (
-                "INSERT INTO public.auth_sessions(hash,user_id,expires_at,mfa_at,reauth_at,"
-                "source_hash) VALUES (%s,%s,%s,%s,%s,%s)"
+                "INSERT INTO public.auth_sessions("
+                "hash,user_id,expires_at,mfa_at,reauth_at,source_hash,"
+                "login_ip,last_ip,login_location,last_location,country_code,network_prefix,"
+                "device_type,device_name,browser,os,user_agent,anomaly_reason"
+                ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
             ),
             (
                 digest(token),
@@ -424,12 +520,34 @@ class AuthStore:
                 now if mfa else None,
                 now,
                 source_hash,
+                client.ip if client else "",
+                client.ip if client else "",
+                client.location if client else "",
+                client.location if client else "",
+                client.country_code if client else "",
+                client.network_prefix if client else "",
+                client.device_type if client else "unknown",
+                client.device_name if client else "",
+                client.browser if client else "",
+                client.os if client else "",
+                client.user_agent if client else "",
+                anomaly_reason or "",
             ),
         )
         return token
 
     def revoke(self, db, user_id):
         db.execute("UPDATE public.auth_sessions SET revoked=true WHERE user_id=%s", (user_id,))
+
+    def revoke_others(self, db, user_id, current_session_hash):
+        rows = db.execute(
+            (
+                "UPDATE public.auth_sessions SET revoked=true "
+                "WHERE user_id=%s AND hash<>%s AND NOT revoked RETURNING hash"
+            ),
+            (user_id, current_session_hash),
+        ).fetchall()
+        return len(rows)
 
     @staticmethod
     def public_user(user):

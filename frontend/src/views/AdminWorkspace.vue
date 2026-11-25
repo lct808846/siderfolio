@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import FeedbackPanel from '../components/FeedbackPanel.vue'
 import SettingsSelect from '../components/SettingsSelect.vue'
+import StatusNotice from '../components/StatusNotice.vue'
 import { identityRequest, identityUser } from '../identity-state'
 import type { components } from '../types/generated'
 
@@ -430,10 +431,7 @@ onBeforeUnmount(() => {
 
       <div class="admin-scroll">
         <div class="admin-reading">
-          <div v-if="error" class="notice danger admin-banner" role="alert">
-            <span>{{ error }}</span>
-            <button type="button" class="admin-banner-close" aria-label="关闭错误提示" @click="error = ''">×</button>
-          </div>
+          <StatusNotice v-if="error && !dialog?.open" title="管理操作未完成" :message="error" @dismiss="error = ''" />
           <div v-if="message" class="notice success admin-banner" role="status">
             <span>{{ message }}</span>
             <button type="button" class="admin-banner-close" aria-label="关闭状态提示" @click="message = ''">×</button>
@@ -797,7 +795,7 @@ onBeforeUnmount(() => {
           <SettingsSelect v-model="reason" label="操作原因" :options="reasonOptions" :disabled="busy" />
         </div>
 
-        <p v-if="error" class="notice danger" role="alert">{{ error }}</p>
+        <StatusNotice v-if="error" title="操作未完成" :message="error" @dismiss="error = ''" />
 
         <div class="project-actions">
           <button type="button" :disabled="busy" @click="closeActionDialog">取消</button>
@@ -819,7 +817,7 @@ onBeforeUnmount(() => {
           <span class="admin-dialog-label">{{ field.label }}</span>
           <input v-model.number="quota.limits[field.key]" type="number" :min="field.min" :max="field.max" step="1" required :disabled="busy">
         </label>
-        <p v-if="quotaError" class="notice danger" role="alert">{{ quotaError }}</p>
+        <StatusNotice v-if="quotaError" title="配额保存未完成" :message="quotaError" @dismiss="quotaError = ''" />
         <div class="project-actions">
           <button type="button" :disabled="busy" @click="quotaDialog?.close()">关闭</button>
           <button type="submit" class="button-primary" :disabled="busy">保存配额</button>
