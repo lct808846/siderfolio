@@ -141,6 +141,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/mcp/servers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List External Mcp Servers */
+        get: operations["list_external_mcp_servers_api_v1_admin_mcp_servers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/mcp/servers/{server_id}/discover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Discover External Mcp Server */
+        post: operations["discover_external_mcp_server_api_v1_admin_mcp_servers__server_id__discover_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/mcp/servers/{server_id}/toggle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Toggle External Mcp Server */
+        post: operations["toggle_external_mcp_server_api_v1_admin_mcp_servers__server_id__toggle_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/mcp/servers/{server_id}/tools/{remote_name}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve External Mcp Tool */
+        post: operations["approve_external_mcp_tool_api_v1_admin_mcp_servers__server_id__tools__remote_name__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/mcp/servers/{server_id}/tools/{remote_name}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke External Mcp Tool */
+        post: operations["revoke_external_mcp_tool_api_v1_admin_mcp_servers__server_id__tools__remote_name__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/model-providers": {
         parameters: {
             query?: never;
@@ -926,6 +1011,40 @@ export interface paths {
         put?: never;
         /** Generate */
         post: operations["generate_api_v1_conversations__conversation_id__turns__turn_id__artifacts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{conversation_id}/turns/{turn_id}/external-mcp/{confirmation_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel External Mcp */
+        post: operations["cancel_external_mcp_api_v1_conversations__conversation_id__turns__turn_id__external_mcp__confirmation_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{conversation_id}/turns/{turn_id}/external-mcp/{confirmation_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm External Mcp */
+        post: operations["confirm_external_mcp_api_v1_conversations__conversation_id__turns__turn_id__external_mcp__confirmation_id__confirm_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2301,6 +2420,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Skills */
+        get: operations["list_skills_api_v1_skills_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/skills/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Skill Preferences */
+        put: operations["update_skill_preferences_api_v1_skills_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/skills/tools": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List User Tools */
+        get: operations["list_user_tools_api_v1_skills_tools_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workflow-templates": {
         parameters: {
             query?: never;
@@ -2379,6 +2549,16 @@ export interface components {
             resets_at: string;
             /** Storage Bytes */
             storage_bytes: number;
+        };
+        /** AdminMcpServersResponse */
+        AdminMcpServersResponse: {
+            /**
+             * Feature Enabled
+             * @default false
+             */
+            feature_enabled: boolean;
+            /** Servers */
+            servers?: components["schemas"]["ExternalMcpServerStatus"][];
         };
         /**
          * AdsEvidenceParameters
@@ -2577,6 +2757,10 @@ export interface components {
         ChatResponse: {
             /** Answer */
             answer: string;
+            /** External Mcp Proposals */
+            external_mcp_proposals?: components["schemas"]["ExternalMcpProposal"][];
+            /** External Mcp Results */
+            external_mcp_results?: components["schemas"]["ExternalMcpResult"][];
             /** Gaia Results */
             gaia_results?: components["schemas"]["GaiaQueryResult"][];
             /** Literature Receipts */
@@ -2589,6 +2773,7 @@ export interface components {
             plot_proposals?: components["schemas"]["PlotProposalResult"][];
             /** Results */
             results?: components["schemas"]["QueryResult"][];
+            skill_resolution?: components["schemas"]["SkillResolution"] | null;
             /** Sources */
             sources?: components["schemas"]["Source"][];
             /**
@@ -2944,6 +3129,60 @@ export interface components {
             /** Revision */
             revision: number;
         };
+        /** DiscoveredExternalTool */
+        DiscoveredExternalTool: {
+            /**
+             * Approved
+             * @default false
+             */
+            approved: boolean;
+            /** Approved At */
+            approved_at?: string | null;
+            /**
+             * Approved Definition Sha256
+             * @default
+             */
+            approved_definition_sha256: string;
+            /**
+             * Definition Changed
+             * @default false
+             */
+            definition_changed: boolean;
+            /** Definition Sha256 */
+            definition_sha256: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Destructive Hint */
+            destructive_hint?: boolean | null;
+            /**
+             * Eligible Readonly
+             * @default false
+             */
+            eligible_readonly: boolean;
+            /** Input Schema */
+            input_schema?: {
+                [key: string]: unknown;
+            };
+            /** Output Schema */
+            output_schema?: {
+                [key: string]: unknown;
+            } | null;
+            /** Parameter Names */
+            parameter_names?: string[];
+            /** Read Only Hint */
+            read_only_hint?: boolean | null;
+            /** Remote Name */
+            remote_name: string;
+            /** Revoked At */
+            revoked_at?: string | null;
+            /** Title */
+            title: string;
+            /** Tool Id */
+            tool_id: string;
+        };
         /** DocumentAction */
         DocumentAction: {
             /** Client Request Id */
@@ -3207,6 +3446,10 @@ export interface components {
         ExportChatResponse: {
             /** Answer */
             answer: string;
+            /** External Mcp Proposals */
+            external_mcp_proposals?: components["schemas"]["ExportExternalMcpProposal"][];
+            /** External Mcp Results */
+            external_mcp_results?: components["schemas"]["ExportExternalMcpResult"][];
             /** Gaia Results */
             gaia_results: components["schemas"]["ExportGaiaQueryResult"][];
             /** Literature Receipts */
@@ -3219,6 +3462,8 @@ export interface components {
             plot_proposals?: components["schemas"]["ExportPlotProposalResult"][];
             /** Results */
             results: components["schemas"]["ExportQueryResult"][];
+            /** @default null */
+            skill_resolution: components["schemas"]["ExportSkillResolution"] | null;
             /** Sources */
             sources: components["schemas"]["ExportSource"][];
             /**
@@ -3237,6 +3482,92 @@ export interface components {
             message: string;
             /** Retryable */
             retryable: boolean;
+        };
+        /** ExportExternalMcpProposal */
+        ExportExternalMcpProposal: {
+            /** Arguments */
+            arguments: {
+                [key: string]: unknown;
+            };
+            /** Arguments Sha256 */
+            arguments_sha256: string;
+            /** Confirmation Id */
+            confirmation_id: string;
+            /** Conversation Id */
+            conversation_id: string;
+            /** Created At */
+            created_at: string;
+            /** Definition Sha256 */
+            definition_sha256: string;
+            /** Expires At */
+            expires_at: string;
+            /** Outbound Fields */
+            outbound_fields: string[];
+            /** Project Id */
+            project_id: string | null;
+            /** Protocol Version */
+            protocol_version: string;
+            /** Remote Name */
+            remote_name: string;
+            /** Server Host */
+            server_host: string;
+            /** Server Id */
+            server_id: string;
+            /** Server Title */
+            server_title: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending_confirmation" | "executed" | "failed" | "cancelled" | "expired";
+            /** Tool Id */
+            tool_id: string;
+            /** Tool Title */
+            tool_title: string;
+            /** Turn Id */
+            turn_id: string;
+        };
+        /** ExportExternalMcpResult */
+        ExportExternalMcpResult: {
+            /** Confirmation Id */
+            confirmation_id: string;
+            /** Duration Ms */
+            duration_ms: number | null;
+            /** Error Code */
+            error_code: string | null;
+            /** Error Message */
+            error_message: string | null;
+            /** Executed At */
+            executed_at: string;
+            /** Protocol Version */
+            protocol_version: string;
+            /** Remote Name */
+            remote_name: string;
+            /** Returned Count */
+            returned_count: number;
+            /** Server Id */
+            server_id: string;
+            /** Server Title */
+            server_title: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "success" | "error";
+            /** Structured Data */
+            structured_data: {
+                [key: string]: unknown;
+            } | unknown[] | null;
+            /** Summary */
+            summary: string;
+            /** Text Excerpt */
+            text_excerpt: string;
+            /** Tool Id */
+            tool_id: string;
+            /** Tool Title */
+            tool_title: string;
+            /** Truncated */
+            truncated: boolean;
         };
         /** ExportGaiaAnalysis */
         ExportGaiaAnalysis: {
@@ -3768,6 +4099,34 @@ export interface components {
             schema_version: "1";
             snapshot: components["schemas"]["ExportChatResponse"];
         };
+        /** ExportSkillResolution */
+        ExportSkillResolution: {
+            /** Available Tool Ids */
+            available_tool_ids: string[];
+            /** Candidate Skill Ids */
+            candidate_skill_ids: string[];
+            /** Clarification Note */
+            clarification_note: string | null;
+            /** Content Sha256 */
+            content_sha256: string | null;
+            /** Matched Reason */
+            matched_reason: string;
+            /**
+             * Selection Mode
+             * @enum {string}
+             */
+            selection_mode: "explicit" | "auto" | "disabled" | "none" | "ambiguous" | "auto_disabled";
+            /** Skill Id */
+            skill_id: string | null;
+            /** Skill Title */
+            skill_title: string | null;
+            /** Skill Version */
+            skill_version: string | null;
+            /** Tool Manifest Sha256 */
+            tool_manifest_sha256: string | null;
+            /** Unavailable Tools */
+            unavailable_tools: string[];
+        };
         /** ExportSource */
         ExportSource: {
             /**
@@ -3782,6 +4141,214 @@ export interface components {
             retrieved_at: string;
             /** Url */
             url: string;
+        };
+        /** ExternalMcpConfirmRequest */
+        ExternalMcpConfirmRequest: {
+            /** Client Request Id */
+            client_request_id: string;
+            /** Expected Arguments Sha256 */
+            expected_arguments_sha256: string;
+            /** Expected Definition Sha256 */
+            expected_definition_sha256: string;
+        };
+        /** ExternalMcpConfirmationRecord */
+        ExternalMcpConfirmationRecord: {
+            proposal: components["schemas"]["ExternalMcpProposal"];
+            result?: components["schemas"]["ExternalMcpResult"] | null;
+        };
+        /** ExternalMcpProposal */
+        ExternalMcpProposal: {
+            /** Arguments */
+            arguments?: {
+                [key: string]: unknown;
+            };
+            /** Arguments Sha256 */
+            arguments_sha256: string;
+            /** Confirmation Id */
+            confirmation_id: string;
+            /** Conversation Id */
+            conversation_id: string;
+            /** Created At */
+            created_at: string;
+            /** Definition Sha256 */
+            definition_sha256: string;
+            /** Expires At */
+            expires_at: string;
+            /** Outbound Fields */
+            outbound_fields?: string[];
+            /** Project Id */
+            project_id?: string | null;
+            /** Protocol Version */
+            protocol_version: string;
+            /** Remote Name */
+            remote_name: string;
+            /**
+             * Server Host
+             * @default
+             */
+            server_host: string;
+            /** Server Id */
+            server_id: string;
+            /** Server Title */
+            server_title: string;
+            /**
+             * Status
+             * @default pending_confirmation
+             * @enum {string}
+             */
+            status: "pending_confirmation" | "executed" | "failed" | "cancelled" | "expired";
+            /** Tool Id */
+            tool_id: string;
+            /** Tool Title */
+            tool_title: string;
+            /** Turn Id */
+            turn_id: string;
+        };
+        /** ExternalMcpResult */
+        ExternalMcpResult: {
+            /** Confirmation Id */
+            confirmation_id: string;
+            /** Duration Ms */
+            duration_ms?: number | null;
+            /** Error Code */
+            error_code?: string | null;
+            /** Error Message */
+            error_message?: string | null;
+            /** Executed At */
+            executed_at: string;
+            /** Protocol Version */
+            protocol_version: string;
+            /** Remote Name */
+            remote_name: string;
+            /**
+             * Returned Count
+             * @default 0
+             */
+            returned_count: number;
+            /** Server Id */
+            server_id: string;
+            /** Server Title */
+            server_title: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "success" | "error";
+            /** Structured Data */
+            structured_data?: {
+                [key: string]: unknown;
+            } | unknown[] | null;
+            /**
+             * Summary
+             * @default
+             */
+            summary: string;
+            /**
+             * Text Excerpt
+             * @default
+             */
+            text_excerpt: string;
+            /** Tool Id */
+            tool_id: string;
+            /** Tool Title */
+            tool_title: string;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+        };
+        /** ExternalMcpServerStatus */
+        ExternalMcpServerStatus: {
+            /**
+             * Auth Configured
+             * @default false
+             */
+            auth_configured: boolean;
+            /** Auth Env Ref */
+            auth_env_ref?: string | null;
+            /**
+             * Cache Stale
+             * @default true
+             */
+            cache_stale: boolean;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /** Endpoint Display */
+            endpoint_display: string;
+            /** Last Discovered At */
+            last_discovered_at?: string | null;
+            /**
+             * Last Error Code
+             * @default
+             */
+            last_error_code: string;
+            /**
+             * Last Error Message
+             * @default
+             */
+            last_error_message: string;
+            /**
+             * Last Sync Status
+             * @default never
+             * @enum {string}
+             */
+            last_sync_status: "never" | "ok" | "error" | "incompatible";
+            /**
+             * Negotiated Protocol Version
+             * @default
+             */
+            negotiated_protocol_version: string;
+            /** Protocol Version */
+            protocol_version: string;
+            /** Server Id */
+            server_id: string;
+            /**
+             * Server Name
+             * @default
+             */
+            server_name: string;
+            /**
+             * Server Version
+             * @default
+             */
+            server_version: string;
+            /** Title */
+            title: string;
+            /** Tools */
+            tools?: components["schemas"]["DiscoveredExternalTool"][];
+        };
+        /** ExternalToolPreview */
+        ExternalToolPreview: {
+            /** Definition Sha256 */
+            definition_sha256: string;
+            /** Description */
+            description: string;
+            /** Protocol Version */
+            protocol_version: string;
+            /** Remote Name */
+            remote_name: string;
+            /**
+             * Requires Confirmation
+             * @default true
+             */
+            requires_confirmation: boolean;
+            /** Server Id */
+            server_id: string;
+            /** Server Title */
+            server_title: string;
+            /** Title */
+            title: string;
+            /** Tool Id */
+            tool_id: string;
         };
         /** FeedbackDetail */
         FeedbackDetail: {
@@ -6253,20 +6820,22 @@ export interface components {
             /** Ended At */
             ended_at?: string | null;
             /** Error Category */
-            error_category?: ("none" | "validation" | "authorization" | "mcp_subprocess" | "mcp_protocol" | "upstream" | "not_found" | "timeout" | "rate_limit" | "storage" | "internal") | null;
+            error_category?: ("none" | "validation" | "authorization" | "mcp_subprocess" | "mcp_protocol" | "mcp_transport" | "budget_exceeded" | "upstream" | "not_found" | "timeout" | "rate_limit" | "storage" | "internal") | null;
             /** Error Code */
             error_code?: string | null;
             /**
              * Kind
              * @enum {string}
              */
-            kind: "turn" | "rag_context" | "model" | "tool_simbad" | "tool_ads" | "tool_gaia" | "tool_literature_save" | "tool_nbody_proposal" | "tool_plot_proposal" | "compute_task" | "plot_run";
+            kind: "turn" | "rag_context" | "model" | "tool_simbad" | "tool_ads" | "tool_gaia" | "tool_literature_save" | "tool_nbody_proposal" | "tool_plot_proposal" | "tool_external_mcp" | "compute_task" | "plot_run";
             /** Model */
             model?: string | null;
             /** Name */
             name: string;
             /** Parent Span Id */
             parent_span_id?: string | null;
+            /** Protocol Version */
+            protocol_version?: string | null;
             /** Provider */
             provider?: string | null;
             /** Result Count */
@@ -6284,8 +6853,10 @@ export interface components {
              * @enum {string}
              */
             status: "ok" | "partial" | "not_found" | "error" | "skipped" | "cancelled" | "interrupted" | "running" | "queued";
+            /** Tool Source */
+            tool_source?: ("builtin" | "local_mcp" | "external_mcp") | null;
             /** Transport */
-            transport?: ("direct" | "mcp" | "internal") | null;
+            transport?: ("direct" | "mcp" | "external_mcp" | "internal") | null;
             /** Truncated */
             truncated?: boolean | null;
             usage?: components["schemas"]["ModelUsageSummary"] | null;
@@ -6310,6 +6881,14 @@ export interface components {
              * @default 30
              */
             retention_days: number;
+            /** Skill Id */
+            skill_id?: string | null;
+            /** Skill Mode */
+            skill_mode?: ("explicit" | "auto" | "disabled" | "none" | "ambiguous" | "auto_disabled") | null;
+            /** Skill Title */
+            skill_title?: string | null;
+            /** Skill Version */
+            skill_version?: string | null;
             /** Spans */
             spans?: components["schemas"]["RunSpan"][];
             /** Started At */
@@ -6319,11 +6898,18 @@ export interface components {
              * @enum {string}
              */
             status: "ok" | "partial" | "error" | "interrupted" | "running";
+            /** Tool Manifest Sha256 */
+            tool_manifest_sha256?: string | null;
             /** Trace Id */
             trace_id: string;
             /** Turn Id */
             turn_id: string;
             usage?: components["schemas"]["ModelUsageSummary"] | null;
+        };
+        /** ServerToggleRequest */
+        ServerToggleRequest: {
+            /** Enabled */
+            enabled: boolean;
         };
         /** SessionInfo */
         SessionInfo: {
@@ -6534,6 +7120,102 @@ export interface components {
             /** Time */
             time: number;
         };
+        /** SkillMetadataSummary */
+        SkillMetadataSummary: {
+            /** Allowed Tools */
+            allowed_tools?: string[];
+            /**
+             * Boundaries
+             * @default
+             */
+            boundaries: string;
+            /**
+             * Category
+             * @default general
+             */
+            category: string;
+            /** Content Sha256 */
+            content_sha256: string;
+            /**
+             * Delivery Summary
+             * @default
+             */
+            delivery_summary: string;
+            /** Description */
+            description: string;
+            /**
+             * Enabled
+             * @default true
+             */
+            enabled: boolean;
+            /** Example Prompts */
+            example_prompts?: string[];
+            /** Id */
+            id: string;
+            /** Intent Keywords */
+            intent_keywords?: string[];
+            /**
+             * Required Tools Available
+             * @default true
+             */
+            required_tools_available: boolean;
+            /** Title */
+            title: string;
+            /** Unavailable Tools */
+            unavailable_tools?: string[];
+            /** Version */
+            version: string;
+        };
+        /** SkillPreferences */
+        SkillPreferences: {
+            /**
+             * Auto Match
+             * @default true
+             */
+            auto_match: boolean;
+            /** Disabled Skill Ids */
+            disabled_skill_ids?: string[];
+        };
+        /** SkillResolution */
+        SkillResolution: {
+            /** Available Tool Ids */
+            available_tool_ids?: string[];
+            /** Candidate Skill Ids */
+            candidate_skill_ids?: string[];
+            /** Clarification Note */
+            clarification_note?: string | null;
+            /** Content Sha256 */
+            content_sha256?: string | null;
+            /**
+             * Matched Reason
+             * @default
+             */
+            matched_reason: string;
+            /**
+             * Selection Mode
+             * @default none
+             * @enum {string}
+             */
+            selection_mode: "explicit" | "auto" | "disabled" | "none" | "ambiguous" | "auto_disabled";
+            /** Skill Id */
+            skill_id?: string | null;
+            /** Skill Title */
+            skill_title?: string | null;
+            /** Skill Version */
+            skill_version?: string | null;
+            /** Tool Manifest Sha256 */
+            tool_manifest_sha256?: string | null;
+            /** Unavailable Tools */
+            unavailable_tools?: string[];
+        };
+        /** SkillsCatalogResponse */
+        SkillsCatalogResponse: {
+            /** Approved External Tools */
+            approved_external_tools?: components["schemas"]["ExternalToolPreview"][];
+            preferences?: components["schemas"]["SkillPreferences"];
+            /** Skills */
+            skills?: components["schemas"]["SkillMetadataSummary"][];
+        };
         /** Snapshot */
         Snapshot: {
             /** Conversation Id */
@@ -6743,6 +7425,66 @@ export interface components {
              */
             token: string;
         };
+        /** ToolApproveRequest */
+        ToolApproveRequest: {
+            /** Expected Definition Sha256 */
+            expected_definition_sha256: string;
+        };
+        /** ToolCatalogItem */
+        ToolCatalogItem: {
+            /**
+             * Access Scope
+             * @enum {string}
+             */
+            access_scope: "account_readonly" | "account_write" | "project_draft" | "external_readonly";
+            /** Availability Conditions */
+            availability_conditions?: string[];
+            /**
+             * Available
+             * @default true
+             */
+            available: boolean;
+            /** Definition Sha256 */
+            definition_sha256: string;
+            /** Description */
+            description: string;
+            /** Failure Categories */
+            failure_categories?: string[];
+            /**
+             * Max Calls Per Turn
+             * @default 6
+             */
+            max_calls_per_turn: number;
+            /** Protocol Version */
+            protocol_version?: string | null;
+            /** Remote Name */
+            remote_name?: string | null;
+            /**
+             * Requires Confirmation
+             * @default false
+             */
+            requires_confirmation: boolean;
+            /** Server Id */
+            server_id?: string | null;
+            /** Server Title */
+            server_title?: string | null;
+            /**
+             * Side Effect Level
+             * @enum {string}
+             */
+            side_effect_level: "readonly" | "external_readonly" | "internal_write" | "draft_only";
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "builtin" | "local_mcp" | "external_mcp";
+            /** Title */
+            title: string;
+            /** Tool Id */
+            tool_id: string;
+            /** Unavailable Reason */
+            unavailable_reason?: string | null;
+        };
         /** Turn */
         Turn: {
             /** Attachments */
@@ -6772,6 +7514,7 @@ export interface components {
             /** Revision */
             revision: number;
             run_trace?: components["schemas"]["RunTrace"] | null;
+            skill_resolution?: components["schemas"]["SkillResolution"] | null;
             /**
              * Trace Status
              * @default not_recorded
@@ -6813,6 +7556,8 @@ export interface components {
             message: string;
             /** Model */
             model?: string | null;
+            /** Skill Id */
+            skill_id?: string | null;
             /** Tool Mode */
             tool_mode?: ("auto" | "plot" | "compute") | null;
         };
@@ -6847,6 +7592,13 @@ export interface components {
              * @enum {string}
              */
             reason: "user_request" | "security_incident" | "role_assignment" | "account_review";
+        };
+        /** UserToolCatalogResponse */
+        UserToolCatalogResponse: {
+            /** Tool Manifest Sha256 */
+            tool_manifest_sha256: string;
+            /** Tools */
+            tools?: components["schemas"]["ToolCatalogItem"][];
         };
         /** ValidationError */
         ValidationError: {
@@ -7383,6 +8135,484 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_external_mcp_servers_api_v1_admin_mcp_servers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMcpServersResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Gateway Timeout */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    discover_external_mcp_server_api_v1_admin_mcp_servers__server_id__discover_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                server_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalMcpServerStatus"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Gateway Timeout */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    toggle_external_mcp_server_api_v1_admin_mcp_servers__server_id__toggle_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                server_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServerToggleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalMcpServerStatus"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Gateway Timeout */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    approve_external_mcp_tool_api_v1_admin_mcp_servers__server_id__tools__remote_name__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                server_id: string;
+                remote_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ToolApproveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalMcpServerStatus"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Gateway Timeout */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    revoke_external_mcp_tool_api_v1_admin_mcp_servers__server_id__tools__remote_name__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                server_id: string;
+                remote_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalMcpServerStatus"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Gateway Timeout */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -9722,6 +10952,166 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArtifactInfo"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    cancel_external_mcp_api_v1_conversations__conversation_id__turns__turn_id__external_mcp__confirmation_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+                turn_id: string;
+                confirmation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalMcpConfirmationRecord"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    confirm_external_mcp_api_v1_conversations__conversation_id__turns__turn_id__external_mcp__confirmation_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+                turn_id: string;
+                confirmation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExternalMcpConfirmRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalMcpConfirmationRecord"];
                 };
             };
             /** @description Not Found */
@@ -17290,6 +18680,178 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SetupStatus"];
+                };
+            };
+        };
+    };
+    list_skills_api_v1_skills_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillsCatalogResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_skill_preferences_api_v1_skills_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillPreferences"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillsCatalogResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_user_tools_api_v1_skills_tools_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserToolCatalogResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

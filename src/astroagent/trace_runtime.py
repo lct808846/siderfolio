@@ -277,15 +277,34 @@ def classify_error_code(code: str | None) -> ErrorCategory:
         "mcp_response_too_large",
         "mcp_request_too_large",
         "mcp_protocol_mismatch",
+        "mcp_incompatible_protocol",
+        "mcp_protocol_error",
     }:
         return "mcp_protocol"
+    if lower in {
+        "mcp_transport_error",
+        "mcp_dns_failed",
+        "mcp_http_error",
+        "mcp_redirect_blocked",
+    }:
+        return "mcp_transport"
+    if "budget" in lower or lower == "agent_limit_reached":
+        return "budget_exceeded"
     if "timeout" in lower:
         return "timeout"
     if "rate_limit" in lower:
         return "rate_limit"
     if "not_found" in lower:
         return "not_found"
-    if "auth" in lower or "permission" in lower or "scope" in lower or "consumed" in lower:
+    if (
+        "auth" in lower
+        or "permission" in lower
+        or "scope" in lower
+        or "consumed" in lower
+        or "egress_blocked" in lower
+        or "revoked" in lower
+        or "definition_changed" in lower
+    ):
         return "authorization"
     if "invalid" in lower or "validation" in lower or "ambiguous" in lower:
         return "validation"
@@ -318,6 +337,11 @@ class TraceRecorder:
         self.spans: list[RunSpan] = []
         self.pricing_candidates: list[str] = []
         self.pricing_override: dict | None = None
+        self.skill_id: str | None = None
+        self.skill_title: str | None = None
+        self.skill_version: str | None = None
+        self.skill_mode: str | None = None
+        self.tool_manifest_sha256: str | None = None
 
     def start_span(
         self,
@@ -340,6 +364,8 @@ class TraceRecorder:
         name: str,
         status: SpanStatus,
         transport: str | None = None,
+        tool_source: str | None = None,
+        protocol_version: str | None = None,
         provider: str | None = None,
         model: str | None = None,
         correlation_id: str | None = None,
@@ -361,7 +387,13 @@ class TraceRecorder:
             started_at=started_at,
             ended_at=ended_at,
             duration_ms=duration_ms,
-            transport=transport if transport in ("direct", "mcp", "internal") else None,
+            transport=transport
+            if transport in ("direct", "mcp", "external_mcp", "internal")
+            else None,
+            tool_source=tool_source
+            if tool_source in ("builtin", "local_mcp", "external_mcp")
+            else None,
+            protocol_version=protocol_version,
             provider=provider,
             model=model,
             correlation_id=correlation_id,
@@ -416,6 +448,14 @@ class TraceRecorder:
             ended_at=_now_iso(),
             duration_ms=max(0, int((time.monotonic() - self._started_mono) * 1000)),
             astronomy_transport=self.astronomy_transport,
+            skill_id=self.skill_id,
+            skill_title=self.skill_title,
+            skill_version=self.skill_version,
+            skill_mode=self.skill_mode
+            if self.skill_mode
+            in ("explicit", "auto", "disabled", "none", "ambiguous", "auto_disabled")
+            else None,
+            tool_manifest_sha256=self.tool_manifest_sha256,
             spans=list(self.spans),
             usage=self._aggregate_usage(),
             available=True,

@@ -48,9 +48,19 @@ function statusClass(status: RunSpan['status'] | RunTrace['status']) {
 }
 
 function transportLabel(transport: string | null | undefined) {
+  if (transport === 'external_mcp') return '外部 MCP'
   if (transport === 'mcp') return 'MCP'
   if (transport === 'direct') return '直连'
   if (transport === 'internal') return '内置'
+  return ''
+}
+
+function skillModeLabel(mode: string | null | undefined) {
+  if (mode === 'explicit') return '显式技能'
+  if (mode === 'auto') return '自动匹配'
+  if (mode === 'ambiguous') return '多技能待澄清'
+  if (mode === 'disabled') return '本轮禁用技能'
+  if (mode === 'auto_disabled') return '自动匹配已关闭'
   return ''
 }
 
@@ -61,6 +71,7 @@ function categoryLabel(category: string | null | undefined) {
     validation: '参数校验',
     timeout: '超时',
     rate_limit: '限流',
+    budget_exceeded: '调用预算上限',
     upstream: '上游服务异常',
     upstream_error: '上游服务异常',
     not_found: '无匹配',
@@ -144,6 +155,13 @@ const hasErrorSpan = computed(() =>
             <span class="turn-trace-mono">{{ formatDuration(trace.duration_ms) }}</span>
             <span class="turn-trace-sep" aria-hidden="true">·</span>
             <span>{{ traceSpans.length }} 阶段</span>
+            <template v-if="trace.skill_title">
+              <span class="turn-trace-sep" aria-hidden="true">·</span>
+              <span class="turn-trace-transport is-mcp">
+                {{ skillModeLabel(trace.skill_mode) ? `${skillModeLabel(trace.skill_mode)}：` : '' }}{{ trace.skill_title }}
+                <template v-if="trace.skill_version"> v{{ trace.skill_version }}</template>
+              </span>
+            </template>
             <template v-if="trace.astronomy_transport">
               <span class="turn-trace-sep" aria-hidden="true">·</span>
               <span class="turn-trace-transport" :class="{ 'is-mcp': trace.astronomy_transport === 'mcp' }">
@@ -170,6 +188,14 @@ const hasErrorSpan = computed(() =>
     <div v-if="trace" class="turn-trace-body">
       <div class="turn-trace-overview">
         <span>追踪编号 <code>{{ trace.trace_id.slice(0, 8) }}</code></span>
+        <span v-if="trace.skill_id">
+          技能 <b>{{ trace.skill_title || trace.skill_id }}</b>
+          <template v-if="trace.skill_version"> <code>v{{ trace.skill_version }}</code></template>
+          <template v-if="skillModeLabel(trace.skill_mode)">（{{ skillModeLabel(trace.skill_mode) }}）</template>
+        </span>
+        <span v-if="trace.tool_manifest_sha256">
+          工具目录摘要 <code>{{ trace.tool_manifest_sha256.slice(0, 10) }}</code>
+        </span>
         <span>
           Token 用量：
           <template v-if="trace.usage?.usage_source === 'reported'">
@@ -197,8 +223,11 @@ const hasErrorSpan = computed(() =>
               <strong>{{ span.name }}</strong>
               <span v-if="span.provider" class="ui-pill ui-pill-neutral">{{ span.provider }}</span>
               <span v-if="span.model" class="ui-pill ui-pill-mono">{{ displayModelName(span.model) }}</span>
-              <span v-if="span.transport && span.transport !== 'internal'" class="ui-pill" :class="span.transport === 'mcp' ? 'ui-pill-compute' : 'ui-pill-neutral'">
+              <span v-if="span.transport && span.transport !== 'internal'" class="ui-pill" :class="span.transport === 'mcp' || span.transport === 'external_mcp' ? 'ui-pill-compute' : 'ui-pill-neutral'">
                 {{ transportLabel(span.transport) }}
+              </span>
+              <span v-if="span.protocol_version" class="ui-pill ui-pill-mono">
+                {{ span.protocol_version }}
               </span>
             </div>
             <span class="turn-trace-duration">{{ formatDuration(span.duration_ms) }}</span>

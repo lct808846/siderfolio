@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProjects } from '../stores/projects'
+import UiSelect from './UiSelect.vue'
 
 const props = defineProps<{
   section: 'knowledge' | 'rag' | 'workflows'
@@ -29,8 +30,7 @@ const isDefault = computed(() => !props.projectId || props.projectId === project
 const knowledgeHref = computed(() => (isDefault.value ? '/knowledge' : `/projects/${props.projectId}/knowledge`))
 const ragHref = computed(() => (isDefault.value ? '/rag' : `/projects/${props.projectId}/rag`))
 
-function switchSpace(event: Event) {
-  const targetId = (event.target as HTMLSelectElement).value
+function switchSpace(targetId: string) {
   if (!targetId || targetId === props.projectId) return
   if (targetId === projectsStore.defaultProjectId) {
     projectsStore.setActiveProject('')
@@ -48,11 +48,15 @@ function switchSpace(event: Event) {
       <RouterLink :to="knowledgeHref" :aria-current="section === 'knowledge' ? 'page' : undefined">本地知识库</RouterLink>
       <RouterLink :to="ragHref" :aria-current="section === 'rag' ? 'page' : undefined">文献问答</RouterLink>
     </div>
-    <label class="workspace-space-select">
-      <span>当前空间</span>
-      <select :value="projectId" aria-label="切换当前科研空间" @change="switchSpace">
-        <option v-for="space in spaces" :key="space.id" :value="space.id">{{ space.label }}</option>
-      </select>
-    </label>
+    <div class="workspace-space-select">
+      <UiSelect
+        variant="compact"
+        prefix="当前空间"
+        :model-value="projectId"
+        aria-label="切换当前科研空间"
+        :options="spaces.map(space => ({ value: space.id, label: space.label }))"
+        @update:model-value="switchSpace(String($event))"
+      />
+    </div>
   </div>
 </template>

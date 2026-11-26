@@ -18,6 +18,7 @@ from astroagent.api.compute import status_router as compute_status_router
 from astroagent.api.conversations import router as conversations_router
 from astroagent.api.exports import ExportBodyLimit
 from astroagent.api.exports import router as exports_router
+from astroagent.api.external_mcp import router as external_mcp_admin_router
 from astroagent.api.feedback import admin_router as admin_feedback_router
 from astroagent.api.feedback import router as feedback_router
 from astroagent.api.health import router as health_router
@@ -32,6 +33,7 @@ from astroagent.api.profile import router as profile_router
 from astroagent.api.projects import router as projects_router
 from astroagent.api.rag import router as rag_router
 from astroagent.api.setup import router as setup_router
+from astroagent.api.skills import router as skills_router
 from astroagent.api.workflows import router as workflows_router
 from astroagent.auth_access import IdentityAccess
 from astroagent.config import LocalSettings, Settings
@@ -97,6 +99,7 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(model_providers_router)
 app.include_router(admin_router)
+app.include_router(external_mcp_admin_router)
 app.include_router(admin_feedback_router)
 app.include_router(feedback_router)
 app.include_router(chat_router)
@@ -112,6 +115,7 @@ app.include_router(knowledge_router)
 app.include_router(links_router)
 app.include_router(rag_router)
 app.include_router(setup_router)
+app.include_router(skills_router)
 app.include_router(models_router)
 app.include_router(plotting_router)
 app.include_router(local_titles_router)
@@ -180,6 +184,28 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
                 "error": {
                     "code": "invalid_provider_request",
                     "message": "模型服务参数无效，请核对地址、密钥格式及模型 ID。",
+                    "retryable": False,
+                }
+            },
+        )
+    if request.url.path.startswith("/api/v1/skills"):
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "invalid_skill_request",
+                    "message": "技能配置参数无效，请核对输入。",
+                    "retryable": False,
+                }
+            },
+        )
+    if request.url.path.startswith("/api/v1/admin/mcp"):
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "invalid_mcp_admin_request",
+                    "message": "外部 MCP 管理参数无效，请核对输入。",
                     "retryable": False,
                 }
             },

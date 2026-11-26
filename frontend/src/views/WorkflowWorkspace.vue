@@ -4,6 +4,7 @@ import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import WorkspaceSpaceBar from '../components/WorkspaceSpaceBar.vue'
 import PanelSwitcher from '../components/PanelSwitcher.vue'
 import StatusNotice from '../components/StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from '../components/UiSelect.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiError, apiUrl } from '../api'
@@ -22,6 +23,10 @@ const run = ref<WorkflowDetail | null>(null), busy = ref(false), error = ref('')
 const editing = ref(!route.params.runId)
 const templateId = ref<'gaia_field' | 'ads_evidence'>('gaia_field'), name = ref('')
 const mode = ref<'name' | 'coordinates'>('coordinates'), objectName = ref(''), ra = ref(''), dec = ref('')
+const coordModeOptions: UiSelectOption<'coordinates' | 'name'>[] = [
+  { value: 'coordinates', label: '明确的ICRS坐标' },
+  { value: 'name', label: 'SIMBAD名称解析' },
+]
 const radius = ref(''), limit = ref(''), ruwe = ref(''), snr = ref(''), distance = ref(false)
 const parallaxMin = ref(''), parallaxMax = ref(''), pmraMin = ref(''), pmraMax = ref(''), pmdecMin = ref(''), pmdecMax = ref(''), gMagMax = ref('')
 const plots = ref<NonNullable<GaiaFieldParameters['plots']>>([])
@@ -240,10 +245,9 @@ watch(() => route.fullPath, () => {
             <small>{{ item.id === 'gaia_field' ? '视场圆锥查询、质量与自行筛选、自动留存快照与诊断图。' : '固定 ADS 检索式、书目摘要与结构化证据表导出。' }}</small>
           </button>
         </div>
-        <label class="sr-only" for="workflow-template">固定模板</label><select id="workflow-template" v-model="templateId" class="sr-only"><option v-for="item in catalog" :key="item.id" :value="item.id">{{ item.title }} · v{{ item.version }}</option></select>
           <label for="workflow-name">运行名称</label><input id="workflow-name" v-model="name" required maxlength="100">
           <template v-if="templateId==='gaia_field'">
-            <label for="workflow-mode">坐标来源（互斥）</label><select id="workflow-mode" v-model="mode"><option value="coordinates">明确的ICRS坐标</option><option value="name">SIMBAD名称解析</option></select>
+            <label for="workflow-mode">坐标来源（互斥）</label><UiSelect id="workflow-mode" v-model="mode" aria-label="坐标来源" :options="coordModeOptions" />
             <template v-if="mode==='name'"><label for="workflow-object">天体名称</label><input id="workflow-object" v-model="objectName" required maxlength="200"><p class="small muted">必须从实际SIMBAD结果取得坐标。主站失败时使用哈佛镜像。</p></template>
             <template v-else><label for="workflow-ra">ICRS赤经 / 度 [0,360)</label><input id="workflow-ra" v-model="ra" type="number" step="any" min="0" max="359.99999999999994" required><label for="workflow-dec">ICRS赤纬 / 度 [-90,90]</label><input id="workflow-dec" v-model="dec" type="number" step="any" min="-90" max="90" required></template>
             <label for="workflow-radius">圆锥半径 / 角分 (0,30]</label><input id="workflow-radius" v-model="radius" type="number" step="any" min="0.000000001" max="30" required>
@@ -267,7 +271,7 @@ watch(() => route.fullPath, () => {
               <label v-for="(title, kind) in plotNames" :key="kind" class="ui-chip-toggle"><input v-model="plots" type="checkbox" :value="kind">{{ title }}</label>
             </div>
           </template>
-          <template v-else><label for="workflow-query">实际ADS检索式</label><textarea id="workflow-query" v-model="query" required maxlength="1000" rows="4" placeholder="例如：title:&quot;binary cluster&quot; year:2020-2026"></textarea><p class="small muted">年份写入检索式；确认后原样提交，不翻译或扩展检索词。</p><label for="workflow-rows">本页篇数 / 1—10</label><input id="workflow-rows" v-model="rows" type="number" min="1" max="10" step="1" required><label for="workflow-start">起始偏移 / 0—90，偏移+篇数≤100</label><input id="workflow-start" v-model="start" type="number" min="0" max="90" step="1" required><label for="workflow-sort">排序</label><select id="workflow-sort" v-model="sort"><option value="date_desc">发表日期降序</option><option value="citation_count_desc">被引次数降序</option><option value="relevance">相关度降序</option></select></template>
+          <template v-else><label for="workflow-query">实际ADS检索式</label><textarea id="workflow-query" v-model="query" required maxlength="1000" rows="4" placeholder="例如：title:&quot;binary cluster&quot; year:2020-2026"></textarea><p class="small muted">年份写入检索式；确认后原样提交，不翻译或扩展检索词。</p><label for="workflow-rows">本页篇数 / 1—10</label><input id="workflow-rows" v-model="rows" type="number" min="1" max="10" step="1" required><label for="workflow-start">起始偏移 / 0—90，偏移+篇数≤100</label><input id="workflow-start" v-model="start" type="number" min="0" max="90" step="1" required><label for="workflow-sort">排序</label><UiSelect id="workflow-sort" v-model="sort" aria-label="排序" :options="[{ value: 'date_desc', label: '发表日期降序' }, { value: 'citation_count_desc', label: '被引次数降序' }, { value: 'relevance', label: '相关度降序' }] as UiSelectOption<AdsEvidenceParameters['sort']>[]" /></template>
           <details><summary>创建后的固定步骤</summary><ol><li v-for="step in template?.steps" :key="step.id">{{ step.title }}</li></ol></details>
           <p v-for="warning in template?.warnings" :key="warning" class="small muted">{{ warning }}</p>
           <button class="button-primary" :disabled="!name.trim() || runs.length>=50">创建待执行记录</button>

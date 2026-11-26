@@ -5,6 +5,7 @@ import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import AppearanceSettings from '../components/AppearanceSettings.vue'
 import LocalTitleSettings from '../components/LocalTitleSettings.vue'
 import ModelProvidersSettings from '../components/ModelProvidersSettings.vue'
+import SkillsSettings from '../components/SkillsSettings.vue'
 import AccountWorkspace from './AccountWorkspace.vue'
 import StatusNotice from '../components/StatusNotice.vue'
 import SuccessToast from '../components/SuccessToast.vue'
@@ -63,6 +64,7 @@ const sections = [
   { id: 'security', group: 'account', label: '账户安全与登录', description: '管理你的登录方式、多因素验证与已登录设备。', keywords: '登录 密码 身份 验证器 二维码 双因素 TOTP MFA 恢复码 安全 建议 会话 设备 强制 退出 异地 异常 IP 浏览器', icon: 'M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4' },
   { id: 'account', group: 'account', label: '账户', description: '查看并管理你的个人资料与账户详情。', keywords: '账户 账号 详情 用户名 邮箱 角色 资料', icon: 'M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5.5 19.2a7 7 0 0 1 13 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z' },
   { id: 'appearance', group: 'app', label: '外观与主题', description: '自定义配色主题、天文动态背景、界面密度、字号、排版与视觉性能开关。', keywords: '外观 主题 配色 暗黑 暗夜 深色 浅色 红光 护眼 天文 背景 星空 轨道 动态 圆角 密度 字体 字号 排版 毛玻璃 模糊 阴影 光影 性能 省电 流畅 动效', icon: 'M12 3a9 9 0 1 0 0 18 1.5 1.5 0 0 0 1.5-1.5c0-.4-.15-.77-.4-1.05-.25-.28-.4-.65-.4-1.05a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-7.9-9-7.9ZM7.5 10.5h.01M10.5 7.5h.01M14.5 7.5h.01M17 10.5h.01' },
+  { id: 'skills', group: 'app', label: '技能与工具', description: '管理内置科研技能的个人启停与自动匹配，查看当前获准使用的工具目录。', keywords: '技能 skill 自动匹配 科研 工具 目录 MCP 天体 文献 绘图 N体', icon: 'M12 3l2.2 5.2L19.5 10l-5.3 1.8L12 17l-2.2-5.2L4.5 10l5.3-1.8L12 3z' },
   { id: 'general', group: 'app', label: '概览', description: '查看当前工作环境、服务状态与 Astronomy MCP 查询通道。', keywords: '常规 状态 环境 版本 MCP mcp 天文 通道 直连 切换', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
   { id: 'models', group: 'app', label: '模型', description: '管理模型服务商，为工作台选择可用模型。', keywords: '远程 服务商 提供方 千问 deepseek qwen OpenAI API 密钥 默认', icon: 'm12 3 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8' },
   { id: 'assistant', group: 'app', label: '会话命名', description: '设置本地模型自动生成会话标题。', keywords: '本地 模型 自动 标题 命名 Ollama', icon: 'M9 3h6M12 3v3M5 6h14v14H5zM8 11h1M15 11h1M9 16h6M2 10v6M22 10v6' },
@@ -71,7 +73,7 @@ const sections = [
 ] as const
 type SectionId = typeof sections[number]['id']
 const canManage = computed(() => !!identityUser.value?.admin && identityUser.value.mfa_verified)
-const availableSections = computed(() => sections.filter(section => canManage.value || section.group === 'account' || section.id === 'appearance' || section.id === 'data'))
+const availableSections = computed(() => sections.filter(section => canManage.value || section.group === 'account' || section.id === 'appearance' || section.id === 'skills' || section.id === 'data'))
 const active = computed(() => availableSections.value.find(section => section.id === (route.path === '/account' ? 'account' : route.query.section))
   || availableSections.value[0] || sections[0])
 const isAccountGroup = (id: SectionId) => id === 'security' || id === 'account'
@@ -348,9 +350,12 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
           <div v-show="active.id === 'appearance'">
             <AppearanceSettings />
           </div>
+          <div v-if="active.id === 'skills'">
+            <SkillsSettings />
+          </div>
           <template v-if="canManage">
-          <StatusNotice v-if="error && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'data'" class="settings-load-error" title="本机状态读取失败" :message="error" @dismiss="error = ''" />
-          <p v-if="busy && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'data'" class="settings-loading" role="status">正在读取本机状态…</p>
+          <StatusNotice v-if="error && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'skills' && active.id !== 'data'" class="settings-load-error" title="本机状态读取失败" :message="error" @dismiss="error = ''" />
+          <p v-if="busy && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'skills' && active.id !== 'data'" class="settings-loading" role="status">正在读取本机状态…</p>
 
           <div v-show="active.id === 'general'">
             <div class="ui-kpi-grid" style="margin-bottom: 18px;">

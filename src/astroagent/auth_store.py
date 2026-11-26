@@ -12,6 +12,7 @@ from psycopg.rows import dict_row
 from astroagent.auth_security import cipher, digest, keyed, opaque
 from astroagent.errors import ServiceError
 from astroagent.feedback import install_feedback_schema
+from astroagent.mcp_registry_store import install_v21_mcp_schema
 
 AUTH_LOCK = 831049000
 EMAIL_COOLDOWN_SECONDS = 60
@@ -214,6 +215,7 @@ class AuthStore:
                 db.execute(
                     f"ALTER TABLE public.auth_sessions ADD COLUMN IF NOT EXISTS {column_ddl}"
                 )
+            install_v21_mcp_schema(db)
             db.execute(
                 (
                     "UPDATE public.auth_sessions SET "
@@ -246,6 +248,7 @@ class AuthStore:
                 (keyed(self.settings, "key", "identity-v1"),),
             )
             install_feedback_schema(db)
+            install_v21_mcp_schema(db)
             self.audit(db, None, "identity_initialized", "ok")
 
     def audit(self, db, actor, event, result, target=None, source=None, reason=None):

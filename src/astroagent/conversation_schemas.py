@@ -9,6 +9,7 @@ from astroagent.attachment_schemas import ChatAttachment
 from astroagent.export_schemas import PlotSpec
 from astroagent.literature_schemas import LiteratureSaveReceipt
 from astroagent.schemas import ChatResponse, ErrorInfo
+from astroagent.skill_schemas import SkillResolution
 from astroagent.trace_schemas import RunTrace
 
 
@@ -30,6 +31,7 @@ class TurnRequest(BaseModel):
     model: str | None = Field(default=None, min_length=1, max_length=128)
     attachments: list[ChatAttachment] = Field(default_factory=list, max_length=3)
     tool_mode: Literal["auto", "plot", "compute"] | None = Field(default=None)
+    skill_id: str | None = Field(default=None, min_length=1, max_length=64)
 
     @field_validator("client_request_id")
     @classmethod
@@ -81,6 +83,7 @@ class Turn(BaseModel):
     completed_at: str | None = None
     context: ContextRecord = Field(default_factory=ContextRecord)
     response: ChatResponse | None = None
+    skill_resolution: SkillResolution | None = None
     literature_receipts: list[LiteratureSaveReceipt] = Field(default_factory=list)
     run_trace: RunTrace | None = None
     trace_status: Literal["available", "unavailable", "not_recorded"] = "not_recorded"

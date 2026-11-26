@@ -76,6 +76,9 @@ class PreparedContext:
                         "plot_proposals": [
                             p.model_dump(mode="json") for p in response.plot_proposals
                         ],
+                        "external_mcp_results": [
+                            r.model_dump(mode="json") for r in (response.external_mcp_results or ())
+                        ],
                         "sources": [s.model_dump(mode="json") for s in response.sources],
                         "warnings": [w.model_dump(mode="json") for w in response.warnings],
                     },

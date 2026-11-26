@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
+import { chooseUiOption } from './ui-select'
 
 test('local documents can be uploaded, searched, cited and downloaded', async ({ page, request }, info) => {
   const project = await (await request.post('/api/v1/projects', { data: { name: '合成文献验收' } })).json()
@@ -24,16 +25,17 @@ test('local documents can be uploaded, searched, cited and downloaded', async ({
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(`/?project=${project.id}&manage=manage`)
     await expect(page.getByRole('heading', { name: '导出项目备份包（ZIP 迁移格式）' })).toBeVisible()
-    await expect(page.getByLabel('文献原文')).toBeVisible()
-    await expect(page.getByLabel('文献原文').locator('option[value="metadata"]')).toContainText('保留标题、检索词及记录')
-    await page.getByLabel('文献原文').selectOption('full')
+    const knowledgeMode = page.getByRole('button', { name: '文献原文备份方式', exact: true })
+    await expect(knowledgeMode).toBeVisible()
+    await expect(knowledgeMode).toContainText('保留标题、检索词及记录')
+    await chooseUiOption(page, knowledgeMode, /完整备份/)
     await page.getByRole('button', { name: '导出项目备份 ZIP' }).click()
     const dialog = page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: '导出含文献原文的完整备份？' }) })
     await expect(dialog.getByRole('heading', { name: '导出含文献原文的完整备份？' })).toBeVisible()
     await expect(dialog).toContainText('1 份文档')
     await expect(dialog).toContainText(`${raw.length} 字节`)
     await dialog.getByRole('button', { name: '取消' }).click()
-    await page.getByLabel('文献原文').selectOption('metadata')
+    await chooseUiOption(page, knowledgeMode, /仅元数据/)
     const [response, download] = await Promise.all([
       page.waitForResponse(response => response.url().endsWith(`/projects/${project.id}/archive`) && response.request().method() === 'POST'),
       page.waitForEvent('download'),

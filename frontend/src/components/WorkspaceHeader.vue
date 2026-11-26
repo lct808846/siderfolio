@@ -70,7 +70,7 @@ function current(path: string, descendants = false) {
           </svg>
         </span>
         <b>Siderfolio</b>
-        <span class="version">2.0</span>
+        <span class="version">2.1</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">

@@ -48,7 +48,7 @@ test('fixed workflows create, confirm, execute, display outputs and restore afte
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.getByRole('button', { name: '新建科研流程', exact: true }).click()
     await expect(page).toHaveURL(/\/workflows$/)
-    await page.getByLabel('固定模板').selectOption('ads_evidence')
+    await page.getByRole('group', { name: '选择固定科研流程模板' }).getByRole('button', { name: /ADS 文献/ }).click()
     await page.getByLabel('运行名称').fill('合成 ADS 证据表')
     await page.getByLabel('实际ADS检索式').fill('synthetic')
     await page.getByRole('button', { name: '创建待执行记录' }).click()

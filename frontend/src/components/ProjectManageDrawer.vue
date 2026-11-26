@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ResultPanel from './ResultPanel.vue'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from './UiSelect.vue'
 import { api, ApiError } from '../api'
 import { knowledgeApi, uploadDocument } from '../api/knowledge'
 import { exportProject, projectsApi } from '../api/projects'
@@ -67,6 +68,22 @@ const comparison = ref<Comparison | null>(null)
 const tool = ref('')
 const archiveFormat = ref<1 | 2 | 3 | 4 | 5 | 6>(6)
 const knowledgeMode = ref<'full' | 'metadata'>('metadata')
+const archiveFormatOptions = computed<UiSelectOption<1 | 2 | 3 | 4 | 5 | 6>[]>(() => {
+  const c = current.value
+  if (!c) return []
+  return [
+    { value: 6, label: '格式 6（含数据绘图与文献问答）' },
+    { value: 5, label: '格式 5（含文献问答，不含绘图）' },
+    { value: 4, label: 'V0.9 格式 4（含显式关联）', disabled: !!c.rag_answer_count || !!c.rag_request_count },
+    { value: 3, label: 'V0.8 格式 3（无关联历史）', disabled: c.link_count > 0 || c.link_request_count > 0 || c.rag_request_count > 0 },
+    { value: 2, label: 'V0.7 格式 2（无知识库）', disabled: c.document_count > 0 || c.knowledge_evidence_count > 0 || c.link_count > 0 || c.link_request_count > 0 || c.rag_request_count > 0 },
+    { value: 1, label: 'V0.6 格式 1（仅无流程项目）', disabled: c.workflow_count > 0 || c.document_count > 0 || c.knowledge_evidence_count > 0 || c.link_count > 0 || c.link_request_count > 0 || c.rag_request_count > 0 },
+  ]
+})
+const knowledgeModeOptions: UiSelectOption<'metadata' | 'full'>[] = [
+  { value: 'metadata', label: '仅元数据（保留标题、检索词及记录）' },
+  { value: 'full', label: '完整备份（含全部原文）' },
+]
 const pending = ref<{ project: string; snapshot: string; payload: RerunRequest } | null>(null)
 
 const confirmDialog = ref<HTMLDialogElement | null>(null)
@@ -810,15 +827,25 @@ defineExpose({ open, close })
                     <summary>从项目会话保存新快照</summary>
                     <form class="project-form" @submit.prevent="saveSnapshot">
                       <label for="drawer-save-conversation">项目内会话</label>
-                      <select id="drawer-save-conversation" v-model="saveConversation">
-                        <option value="">选择会话</option>
-                        <option v-for="c in members" :key="c.id" :value="c.id">{{ c.title }}</option>
-                      </select>
+                      <UiSelect
+                        id="drawer-save-conversation"
+                        v-model="saveConversation"
+                        aria-label="项目内会话"
+                        :options="[
+                          { value: '', label: '选择会话' },
+                          ...members.map(c => ({ value: c.id, label: c.title })),
+                        ]"
+                      />
                       <label for="drawer-save-turn">完整查询结果</label>
-                      <select id="drawer-save-turn" v-model="saveTurn">
-                        <option value="">选择查询结果</option>
-                        <option v-for="t in deliverable" :key="t.turn_id" :value="t.turn_id">{{ t.message.slice(0, 50) }} · {{ formatShortDate(t.received_at) }}</option>
-                      </select>
+                      <UiSelect
+                        id="drawer-save-turn"
+                        v-model="saveTurn"
+                        aria-label="完整查询结果"
+                        :options="[
+                          { value: '', label: '选择查询结果' },
+                          ...deliverable.map(t => ({ value: t.turn_id, label: `${t.message.slice(0, 50)} · ${formatShortDate(t.received_at)}` })),
+                        ]"
+                      />
                       <label for="drawer-snapshot-name">快照名称</label>
                       <input id="drawer-snapshot-name" v-model="snapshotName" maxlength="100" placeholder="例如：M45 Gaia DR3 5′ 基线样本">
                       <button type="submit" class="button-primary" :disabled="busy || !saveTurn || !snapshotName.trim()">保存完整快照</button>
@@ -859,10 +886,15 @@ defineExpose({ open, close })
                   </details>
                   <div class="project-form">
                     <label for="drawer-rerun-tool">选择单条工具查询重跑</label>
-                    <select id="drawer-rerun-tool" v-model="tool">
-                      <option value="">选择查询，先核对参数</option>
-                      <option v-for="t in tools" :key="t.value" :value="t.value">{{ t.label }}</option>
-                    </select>
+                    <UiSelect
+                      id="drawer-rerun-tool"
+                      v-model="tool"
+                      aria-label="选择单条工具查询重跑"
+                      :options="[
+                        { value: '', label: '选择查询，先核对参数' },
+                        ...tools.map(t => ({ value: t.value, label: t.label })),
+                      ]"
+                    />
                     <template v-if="selectedTool">
                       <pre class="drawer-pre">{{ format({ parameters: selectedTool.parameters, source: selectedTool.source }) }}</pre>
                       <p v-if="tool.startsWith('gaia:')" class="notice">Gaia 重跑沿用已记录的实际坐标与参数，不重新解析天体名称。历史来源时间见上方；需要重新解析时请返回对话独立查询 SIMBAD。</p>
@@ -875,8 +907,8 @@ defineExpose({ open, close })
                   <summary>比较两份快照</summary>
                   <div class="project-form">
                     <div class="compare-selectors">
-                      <label>左侧快照<select v-model="leftId"><option value="">选择快照</option><option v-for="s in current.snapshots" :key="s.id" :value="s.id">{{ s.name }} · {{ s.id.slice(0, 8) }}</option></select></label>
-                      <label>右侧快照<select v-model="rightId"><option value="">选择快照</option><option v-for="s in current.snapshots" :key="s.id" :value="s.id">{{ s.name }} · {{ s.id.slice(0, 8) }}</option></select></label>
+                      <label>左侧快照<UiSelect v-model="leftId" aria-label="左侧快照" :options="[{ value: '', label: '选择快照' }, ...current.snapshots.map(s => ({ value: s.id, label: `${s.name} · ${s.id.slice(0, 8)}` }))]" /></label>
+                      <label>右侧快照<UiSelect v-model="rightId" aria-label="右侧快照" :options="[{ value: '', label: '选择快照' }, ...current.snapshots.map(s => ({ value: s.id, label: `${s.name} · ${s.id.slice(0, 8)}` }))]" /></label>
                     </div>
                     <label class="match-identifiers"><input v-model="matchIds" type="checkbox">按精确 source_id / bibcode 比较交付编号</label>
                     <button type="button" :disabled="busy || !leftId || !rightId" @click="compareSnapshots">比较已存快照</button>
@@ -934,10 +966,16 @@ defineExpose({ open, close })
 
                   <form v-if="movable.length" class="drawer-assign-strip" @submit.prevent="move(moveId)">
                     <label class="sr-only" for="drawer-move-conversation">选择要加入的会话</label>
-                    <select id="drawer-move-conversation" v-model="moveId" :disabled="busy">
-                      <option value="">将已有会话归入本项目…</option>
-                      <option v-for="c in movable" :key="c.id" :value="c.id">{{ c.title }}{{ memberships[c.id] ? '（从其他项目移动）' : '（未归属项目）' }}</option>
-                    </select>
+                    <UiSelect
+                      id="drawer-move-conversation"
+                      v-model="moveId"
+                      aria-label="选择要加入的会话"
+                      :disabled="busy"
+                      :options="[
+                        { value: '', label: '将已有会话归入本项目…' },
+                        ...movable.map(c => ({ value: c.id, label: `${c.title}${memberships[c.id] ? '（从其他项目移动）' : '（未归属项目）'}` })),
+                      ]"
+                    />
                     <button type="submit" :disabled="busy || !moveId">加入项目</button>
                   </form>
                 </section>
@@ -952,21 +990,19 @@ defineExpose({ open, close })
                   <div class="project-form" style="margin-top: 10px;">
                     <label class="small">
                       备份格式
-                      <select v-model="archiveFormat" aria-label="项目备份格式">
-                        <option :value="6">格式 6（含数据绘图与文献问答）</option>
-                        <option :value="5">格式 5（含文献问答，不含绘图）</option>
-                        <option :value="4" :disabled="!!current.rag_answer_count || !!current.rag_request_count">V0.9 格式 4（含显式关联）</option>
-                        <option :value="3" :disabled="current.link_count > 0 || current.link_request_count > 0 || current.rag_request_count > 0">V0.8 格式 3（无关联历史）</option>
-                        <option :value="2" :disabled="current.document_count > 0 || current.knowledge_evidence_count > 0 || current.link_count > 0 || current.link_request_count > 0 || current.rag_request_count > 0">V0.7 格式 2（无知识库）</option>
-                        <option :value="1" :disabled="current.workflow_count > 0 || current.document_count > 0 || current.knowledge_evidence_count > 0 || current.link_count > 0 || current.link_request_count > 0 || current.rag_request_count > 0">V0.6 格式 1（仅无流程项目）</option>
-                      </select>
+                      <UiSelect
+                        v-model="archiveFormat"
+                        aria-label="项目备份格式"
+                        :options="archiveFormatOptions"
+                      />
                     </label>
                     <label v-if="archiveFormat >= 3" class="small">
                       文献原文
-                      <select v-model="knowledgeMode">
-                        <option value="metadata">仅元数据（保留标题、检索词及记录）</option>
-                        <option value="full">完整备份（含全部原文）</option>
-                      </select>
+                      <UiSelect
+                        v-model="knowledgeMode"
+                        aria-label="文献原文备份方式"
+                        :options="knowledgeModeOptions"
+                      />
                     </label>
                     <button type="button" :disabled="busy" @click="downloadArchive">导出项目备份 ZIP</button>
                   </div>

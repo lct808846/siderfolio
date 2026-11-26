@@ -6,6 +6,12 @@ import { useProjects } from '../stores/projects'
 import type { NBodyProposalResult } from '../types'
 import NBodyProgressVisual from './NBodyProgressVisual.vue'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from './UiSelect.vue'
+
+const nbodyEngineOptions: readonly UiSelectOption<'rebound' | 'petar'>[] = [
+  { value: 'rebound', label: 'REBOUND（IAS15 高精度少体）' },
+  { value: 'petar', label: 'PeTar（Tree + Hermite + SDAR）' },
+]
 
 export interface ComputeResultPayload {
   kind: 'compute'
@@ -376,10 +382,12 @@ onBeforeUnmount(() => {
         </label>
         <label>
           <span>模拟引擎</span>
-          <select v-model="draftParams.engine" :disabled="busy || isActive">
-            <option value="rebound">REBOUND（IAS15 高精度少体）</option>
-            <option value="petar">PeTar（Tree + Hermite + SDAR）</option>
-          </select>
+          <UiSelect
+            v-model="draftParams.engine"
+            :options="nbodyEngineOptions"
+            aria-label="模拟引擎"
+            :disabled="busy || isActive"
+          />
         </label>
         <label>
           <span>总时长 (yr)</span>

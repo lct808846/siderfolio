@@ -65,6 +65,7 @@ export interface PendingTurnState {
   attachments: ChatAttachment[]
   model?: string
   toolMode?: ChatToolMode
+  skillId?: string | null
   sentAt: string
   streamedText: string
   statusLabel: string
@@ -72,7 +73,7 @@ export interface PendingTurnState {
 }
 
 export const useWorkbench = defineStore('workbench', {
-  state: () => ({ conversations: [] as Conversation[], archived: [] as ArchivedConversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, pendingTurn: null as null | PendingTurnState, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', errorTurnId: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[]; toolMode?: ChatToolMode } }),
+  state: () => ({ conversations: [] as Conversation[], archived: [] as ArchivedConversation[], current: null as ConversationDetail | null, preparedConversation: null as ConversationDetail | null, turns: [] as Turn[], selectedTurnId: '', pending: false, pendingTurn: null as null | PendingTurnState, creating: false, loading: false, loadToken: 0, error: '', errorCode: '', errorTurnId: '', panel: 'chat' as 'chat' | 'history' | 'results', disconnectedRequest: null as null | { id: string; message: string; requestId: string; revision: number; model?: string; attachments?: ChatAttachment[]; toolMode?: ChatToolMode; skillId?: string | null } }),
   getters: {
     selectedTurn: state => state.turns.find(t => t.turn_id === state.selectedTurnId) || null,
     running: state => state.pending || state.turns.some(t => t.execution_status === 'running'),
@@ -231,14 +232,14 @@ export const useWorkbench = defineStore('workbench', {
         return createdId
       } finally { if (persist) this.creating = false }
     },
-    async send(message: string, expectedConversationId?: string, model?: string, attachments: ChatAttachment[] = [], toolMode?: ChatToolMode) {
+    async send(message: string, expectedConversationId?: string, model?: string, attachments: ChatAttachment[] = [], toolMode?: ChatToolMode, skillId?: string | null) {
       if (!this.current || this.running || this.creating || this.loading || !message.trim()) return
       if (expectedConversationId && this.current.id !== expectedConversationId) return
       if (this.disconnectedRequest) { this.report(new ApiError('connection_lost', '上一条请求的状态尚未核对，请先恢复会话。')); return }
       this.pending = true; this.clearError()
       const id = this.current.id
-      const request = { id, message: message.trim(), requestId: crypto.randomUUID(), revision: this.current.revision, model, attachments: attachments.map(item => ({ ...item, warnings: [...(item.warnings || [])] })), toolMode }
-      this.pendingTurn = { conversationId: id, message: request.message, attachments: request.attachments, model: request.model, toolMode: request.toolMode, sentAt: new Date().toISOString(), streamedText: '', statusLabel: '正在处理，请稍候…', statusPhase: 'thinking' }
+      const request = { id, message: message.trim(), requestId: crypto.randomUUID(), revision: this.current.revision, model, attachments: attachments.map(item => ({ ...item, warnings: [...(item.warnings || [])] })), toolMode, skillId: skillId ?? null }
+      this.pendingTurn = { conversationId: id, message: request.message, attachments: request.attachments, model: request.model, toolMode: request.toolMode, skillId: request.skillId, sentAt: new Date().toISOString(), streamedText: '', statusLabel: '正在处理，请稍候…', statusPhase: 'thinking' }
       let submitted = false
       try {
         const turn = await api.submitStream(id, request.message, request.requestId, request.revision, request.model, request.attachments, request.toolMode, {
@@ -255,7 +256,7 @@ export const useWorkbench = defineStore('workbench', {
             if (!this.pendingTurn || this.pendingTurn.conversationId !== id) return
             this.pendingTurn.streamedText = ''
           },
-        })
+        }, request.skillId)
         submitted = true
         this.archived = this.archived.filter(item => item.id !== id)
         if (this.current?.id === id) {
@@ -329,7 +330,7 @@ export const useWorkbench = defineStore('workbench', {
             if (!this.pendingTurn || this.pendingTurn.conversationId !== saved.id) return
             this.pendingTurn.streamedText = ''
           },
-        })
+        }, saved.skillId)
         this.selectedTurnId = turn.turn_id; this.disconnectedRequest = null
         if (this.current?.id === saved.id && !this.turns.some(item => item.turn_id === turn.turn_id)) {
           this.turns = [...this.turns, turn]

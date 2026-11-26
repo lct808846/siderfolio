@@ -28,6 +28,7 @@ from astroagent.conversation_schemas import (
 from astroagent.errors import ServiceError
 from astroagent.model_providers import configured_pricing_snapshot
 from astroagent.schemas import ErrorResponse
+from astroagent.tool_schemas import ExternalMcpConfirmationRecord, ExternalMcpConfirmRequest
 from astroagent.trace_runtime import enrich_trace_cost
 from astroagent.trace_schemas import RunTrace
 
@@ -287,3 +288,32 @@ def read_turn_trace(conversation_id: UUID, turn_id: UUID, service: Service):
 )
 def generate(conversation_id: UUID, turn_id: UUID, request: ArtifactRequest, service: Service):
     return service.artifacts.generate(str(conversation_id), str(turn_id), request)
+
+
+@router.post(
+    "/{conversation_id}/turns/{turn_id}/external-mcp/{confirmation_id}/confirm",
+    response_model=ExternalMcpConfirmationRecord,
+)
+def confirm_external_mcp(
+    conversation_id: UUID,
+    turn_id: UUID,
+    confirmation_id: UUID,
+    body: ExternalMcpConfirmRequest,
+    service: Service,
+):
+    return service.confirm_external_mcp(
+        str(conversation_id), str(turn_id), str(confirmation_id), body
+    )
+
+
+@router.post(
+    "/{conversation_id}/turns/{turn_id}/external-mcp/{confirmation_id}/cancel",
+    response_model=ExternalMcpConfirmationRecord,
+)
+def cancel_external_mcp(
+    conversation_id: UUID,
+    turn_id: UUID,
+    confirmation_id: UUID,
+    service: Service,
+):
+    return service.cancel_external_mcp(str(conversation_id), str(turn_id), str(confirmation_id))

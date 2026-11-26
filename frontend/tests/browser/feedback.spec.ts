@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
+import { chooseUiOption } from './ui-select'
 
 const id = '5b06c950-9744-4c2e-bd94-b20baeabc123'
 const created = '2026-11-24T12:00:00Z'
@@ -73,7 +74,7 @@ test('feedback retries safely and shows history, attachment and literal text on 
   await page.goto('/feedback')
   await expect(page.locator('html')).toHaveAttribute('data-theme-mode', 'dark')
   await expect(page.getByRole('heading', { name: '帮助与反馈', exact: true })).toBeVisible()
-  await page.getByRole('combobox', { name: '反馈类型', exact: true }).selectOption('calculation')
+  await chooseUiOption(page, page.getByRole('button', { name: '反馈类型', exact: true }), '科研计算问题')
   await page.getByLabel('标题', { exact: true }).fill(state.record.title)
   await page.getByLabel('详细描述', { exact: true }).fill(state.record.description)
   await page.getByLabel('截图附件（选填）').setInputFiles({ name: 'synthetic.png', mimeType: 'image/png', buffer: png })
@@ -95,8 +96,8 @@ test('admin filters and replies after identity confirmation on a light desktop',
   const state = await feedbackFixture(page, true)
   await page.goto('/admin?section=feedback')
   await expect(page.getByRole('button', { name: '用户反馈管理', exact: true })).toBeVisible()
-  await page.getByRole('combobox', { name: '类型', exact: true }).selectOption('calculation')
-  await page.getByRole('combobox', { name: '状态', exact: true }).selectOption('pending')
+  await chooseUiOption(page, page.getByRole('button', { name: '按类型筛选', exact: true }), '科研计算问题')
+  await chooseUiOption(page, page.getByRole('button', { name: '按状态筛选', exact: true }), '待处理')
   await page.getByLabel('开始日期').fill('2026-11-24')
   await page.getByLabel('结束日期').fill('2026-11-24')
   await page.getByRole('button', { name: '应用筛选' }).click()
@@ -104,7 +105,7 @@ test('admin filters and replies after identity confirmation on a light desktop',
   expect(state.filters.get('category')).toBe('calculation')
   expect(state.filters.get('status')).toBe('pending')
   await page.getByRole('button', { name: /合成科研反馈/ }).click()
-  await page.getByRole('combobox', { name: '处理状态', exact: true }).selectOption('resolved')
+  await chooseUiOption(page, page.getByRole('button', { name: '处理状态', exact: true }), '已解决')
   await page.getByLabel('给用户的回复').fill('合成验收回复')
   await expect(page.getByRole('button', { name: '保存并回复' })).toBeDisabled()
   await page.getByText('敏感操作重新认证', { exact: false }).click()

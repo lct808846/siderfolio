@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import AdminMcpPanel from '../components/AdminMcpPanel.vue'
 import FeedbackPanel from '../components/FeedbackPanel.vue'
 import SettingsSelect from '../components/SettingsSelect.vue'
 import StatusNotice from '../components/StatusNotice.vue'
@@ -39,14 +40,20 @@ type Overview = {
   mail_hour_limit: number
   registration_limit: number
 }
-type AdminTab = 'users' | 'mail' | 'audit' | 'feedback'
+type AdminTab = 'users' | 'mail' | 'mcp' | 'audit' | 'feedback'
 type UserFilter = 'all' | 'active' | 'pending' | 'disabled' | 'admin'
 type AccountUsage = components['schemas']['AccountUsage']
 type ComputeCapacity = components['schemas']['ComputeCapacity']
 type MailQuotaUsage = components['schemas']['MailQuotaUsage']
 
 const route = useRoute()
-const tab = ref<AdminTab>(route.query.section === 'feedback' ? 'feedback' : 'users')
+const tab = ref<AdminTab>(
+  route.query.section === 'feedback'
+    ? 'feedback'
+    : route.query.section === 'mcp'
+      ? 'mcp'
+      : 'users',
+)
 const page = ref(1)
 const overview = ref<Overview | null>(null)
 const computeCapacity = ref<ComputeCapacity | null>(null)
@@ -103,6 +110,7 @@ const reasonOptions = [
 const tabItems: readonly { id: AdminTab; label: string }[] = [
   { id: 'users', label: '用户' },
   { id: 'mail', label: '邮件状态' },
+  { id: 'mcp', label: 'MCP 工具' },
   { id: 'feedback', label: '用户反馈管理' },
   { id: 'audit', label: '审计日志' },
 ]
@@ -562,13 +570,14 @@ onBeforeUnmount(() => {
                 >
                   <svg v-if="item.id === 'users'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                   <svg v-else-if="item.id === 'mail'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m4 7 8 6 8-6" /></svg>
+                  <svg v-else-if="item.id === 'mcp'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z" /></svg>
                   <svg v-else-if="item.id === 'feedback'" class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4v-4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" /><path d="M8 9h8m-8 4h5" /></svg>
                   <svg v-else class="admin-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z" /><path d="M14 3v6h6" /><path d="M8 13h8" /><path d="M8 17h5" /></svg>
                   {{ item.label }}
                 </button>
               </nav>
 
-              <div v-if="tab !== 'feedback'" class="admin-ops-controls">
+              <div v-if="tab !== 'feedback' && tab !== 'mcp'" class="admin-ops-controls">
                 <label class="admin-search-box">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
                   <input
@@ -595,6 +604,7 @@ onBeforeUnmount(() => {
               </button>
             </div>
 
+            <AdminMcpPanel v-if="tab === 'mcp'" :can-handle="reauthRemainingSec > 0" />
             <FeedbackPanel v-if="tab === 'feedback'" admin :can-handle="reauthRemainingSec > 0" />
             <div v-if="tab === 'mail' && mailUsage.length" class="admin-filter-row" aria-label="全站发信配额">
               <span
@@ -760,7 +770,7 @@ onBeforeUnmount(() => {
               </table>
             </div>
 
-            <div v-if="tab !== 'feedback' && showPagination" class="admin-pagination">
+            <div v-if="tab !== 'feedback' && tab !== 'mcp' && showPagination" class="admin-pagination">
               <button type="button" :disabled="busy || page <= 1" @click="page--; void load()">上一页</button>
               <span class="admin-page-indicator">第 {{ page }} 页</span>
               <button type="button" :disabled="busy || !hasMore" @click="page++; void load()">下一页</button>

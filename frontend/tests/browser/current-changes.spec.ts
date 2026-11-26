@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { chooseUiOption } from './ui-select'
 
 test('inline N-body review routes a confirmed PeTar task and restores its result on refresh', async ({ page, request }) => {
   const projectResponse = await request.post('/api/v1/projects', { data: { name: '合成计算验收' } })
@@ -39,13 +40,14 @@ test('inline N-body review routes a confirmed PeTar task and restores its result
     return route.continue()
   })
   await page.goto('/?project=' + project.id)
-  await page.getByRole('button', { name: 'N 体模拟', exact: true }).click()
+  await chooseUiOption(page, page.getByRole('button', { name: /技能/ }), /科研绘图与 N 体实验准备/)
+  await expect(page.getByRole('button', { name: /科研绘图与 N 体实验准备/ })).toBeVisible()
   await page.getByRole('textbox', { name: '天文问题' }).fill('__qa_inline_nbody__ 双体圆轨道')
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
   const card = page.getByRole('region', { name: 'N 体模拟参数方案' })
   await expect(card.getByText('合成双体轨道', { exact: true })).toBeVisible()
   await card.getByRole('button', { name: '编辑参数' }).click()
-  await card.getByLabel('模拟引擎').selectOption('petar')
+  await chooseUiOption(page, card.getByRole('button', { name: '模拟引擎', exact: true }), /PeTar/i)
   expect([created, confirmed]).toEqual([0, 0])
   await card.getByRole('button', { name: '确认运行模拟' }).click()
   await expect(card.getByText('1.02 s', { exact: true })).toBeVisible()

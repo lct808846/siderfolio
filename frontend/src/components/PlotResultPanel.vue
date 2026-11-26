@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { plottingApi, savePlotFile, type PlotOperation } from '../api/plotting'
 import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileViewer.vue'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect from './UiSelect.vue'
 
 const props = defineProps<{
   projectId: string
@@ -176,17 +177,15 @@ watch(
     <template v-else>
       <header class="plot-toolbar">
         <div class="plot-toolbar-top">
-          <select
+          <UiSelect
             v-if="runs.length > 1"
             class="plot-run-select"
-            :value="effectiveRunId"
+            variant="compact"
+            :model-value="effectiveRunId"
             aria-label="切换本空间科研绘图记录"
-            @change="chooseRun(($event.target as HTMLSelectElement).value)"
-          >
-            <option v-for="run in runs" :key="run.id" :value="run.id">
-              {{ runTitle(run) }} ({{ run.files?.length || 0 }} 文件)
-            </option>
-          </select>
+            :options="runs.map(run => ({ value: run.id, label: `${runTitle(run)} (${run.files?.length || 0} 文件)` }))"
+            @update:model-value="chooseRun(String($event))"
+          />
           <h3 v-else class="plot-single-title">{{ selectedRun ? runTitle(selectedRun) : (initialTitle || '科研绘图产物') }}</h3>
         </div>
         <div class="plot-toolbar-bottom">

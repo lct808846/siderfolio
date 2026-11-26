@@ -9,6 +9,7 @@ from astroagent.postgres_knowledge import PostgresKnowledgeService
 from astroagent.project_links import ProjectLinks
 from astroagent.project_service import ProjectService
 from astroagent.rag_service import RagService
+from astroagent.skill_store import SkillStore
 from astroagent.trace_store import TraceStore
 from astroagent.workflow_service import WorkflowService
 
@@ -25,4 +26,5 @@ def compose(repository, settings):
     service.local_titles = LocalModelService(service, settings)
     service.literature = LiteratureService(service)
     service.traces = TraceStore(repository)
+    service.skills = SkillStore(repository)
     return service

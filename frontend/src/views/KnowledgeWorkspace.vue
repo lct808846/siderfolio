@@ -4,6 +4,7 @@ import WorkspacePaneHeader from '../components/WorkspacePaneHeader.vue'
 import WorkspaceSpaceBar from '../components/WorkspaceSpaceBar.vue'
 import PanelSwitcher from '../components/PanelSwitcher.vue'
 import StatusNotice from '../components/StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from '../components/UiSelect.vue'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fileHash, knowledgeApi, originalContent, uploadDocument } from '../api/knowledge'
@@ -20,6 +21,11 @@ const project = ref<ProjectDetail | null>(null), documents = ref<KnowledgeDocume
 const references = ref<EvidenceRecord[]>([]), result = ref<KnowledgeResult | null>(null), evidence = ref<EvidenceView | null>(null)
 const busy = ref(false), error = ref(''), message = ref(''), panel = ref('documents')
 const file = ref<File | null>(null), target = ref<'new' | 'version' | 'restore'>('new'), restoreVersion = ref('')
+const uploadTargetOptions = computed<UiSelectOption<'new' | 'version' | 'restore'>[]>(() => [
+  { value: 'new', label: '新文档' },
+  { value: 'version', label: '为选中文档新增版本', disabled: !document.value },
+  { value: 'restore', label: '恢复选中文档同哈希原文件', disabled: !document.value },
+])
 const title = ref(''), authors = ref(''), year = ref(''), doi = ref(''), allowDuplicate = ref(false)
 const query = ref(''), filterDocument = ref(''), answer = ref(true), pending = ref<Pending | null>(null)
 const dialog = ref<HTMLDialogElement | null>(null), action = ref<'delete' | 'reindex' | ''>(''), actionVersion = ref('')
@@ -206,8 +212,8 @@ onBeforeUnmount(resetPreview)
       <RouterLink v-for="doc in documents" :key="doc.id" class="project-item" :class="{selected:doc.id===document?.id}" :to="`${knowledgeBase}/${doc.id}`"><div class="ui-card-head" style="align-items: center; gap: 6px;"><span class="ui-file-badge">{{ docExt(doc.filename) }}</span><b style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ doc.metadata.title || doc.filename }}</b></div><div class="ui-pill-list" style="margin-top: 6px;"><span class="ui-pill" :class="statePillClass(doc.state)">{{ state(doc.state) }}</span><span class="ui-pill ui-pill-neutral">{{ doc.provenance==='local' ? '本机' : '导入' }}</span></div></RouterLink>
       <form class="project-form knowledge-upload" @submit.prevent="upload">
 <h2>上传参考来源</h2><p class="small muted">PDF / UTF-8 Markdown，单文件 ≤ 20 MiB。副本保存在本机数据库，项目内对话与文献问答可按需参考已就绪文档。</p><fieldset :disabled="busy || !project || !!pending">
-        <label for="knowledge-target">上传方式</label><select id="knowledge-target" v-model="target"><option value="new">新文档</option><option value="version" :disabled="!document">为选中文档新增版本</option><option value="restore" :disabled="!document">恢复选中文档同哈希原文件</option></select>
-        <template v-if="target==='restore'"><label for="knowledge-restore">原始版本</label><select id="knowledge-restore" v-model="restoreVersion"><option v-for="version in document?.versions" :key="version.id" :value="version.id">{{ version.filename }} · {{ version.id.slice(0,8) }}</option></select><p class="small muted">只接受相同SHA-256文件；不同内容请新增版本。</p></template>
+        <label for="knowledge-target">上传方式</label><UiSelect id="knowledge-target" v-model="target" aria-label="上传方式" :options="uploadTargetOptions" />
+        <template v-if="target==='restore'"><label for="knowledge-restore">原始版本</label><UiSelect id="knowledge-restore" v-model="restoreVersion" aria-label="原始版本" :options="(document?.versions || []).map(version => ({ value: version.id, label: `${version.filename} · ${version.id.slice(0, 8)}` }))" /><p class="small muted">只接受相同SHA-256文件；不同内容请新增版本。</p></template>
         <template v-if="target==='new'"><label for="knowledge-title">标题（可选，不从文件名推断）</label><input id="knowledge-title" v-model="title" maxlength="500"><label for="knowledge-authors">作者（可选，分号分隔）</label><textarea id="knowledge-authors" v-model="authors" rows="2"></textarea><label for="knowledge-year">年份（可选）</label><input id="knowledge-year" v-model="year" inputmode="numeric" maxlength="4"><label for="knowledge-doi">DOI（可选）</label><input id="knowledge-doi" v-model="doi" maxlength="300"><label class="check-label"><input v-model="allowDuplicate" type="checkbox">相同文件也创建独立文档</label></template>
         <button class="button-primary" :disabled="!file || (target!=='new' && !document)">保存文件并本地解析</button>
       </fieldset><label for="knowledge-file">选择文件（断线后可重选同一文件核对）</label><input id="knowledge-file" type="file" accept=".pdf,.md,.markdown" :disabled="busy" @change="pick">
@@ -219,7 +225,7 @@ onBeforeUnmount(resetPreview)
       <div class="workspace-pane-body">
       <StatusNotice v-if="error" title="知识库操作未完成" :message="error" @dismiss="error = ''" /><p v-if="message" class="notice info" role="status">{{ message }}</p><p v-if="busy" class="processing" role="status">处理中。解析不因网页断线而保证取消，原文及状态以本机记录为准。</p>
       <div v-if="pending" class="notice"><p>请求尚待确认，可先读取状态；使用原编号核对不会自动重放已经完成的处理。</p><code>{{ pending.options.client_request_id }}</code><div class="project-actions"><button :disabled="busy" @click="checkPending">读取原请求状态</button><button :disabled="busy" @click="retry">使用原编号核对操作</button><button :disabled="busy" @click="remember(null)">保留服务端记录，关闭本页提醒</button></div></div>
-      <section class="knowledge-search"><p class="eyebrow">原文证据</p><h2>原文检索</h2><p class="small muted">本地词法检索，所有关键词同时命中；不做同义词、跨语言语义或模型补答。文献中的指令只作为数据。</p><form class="project-form" @submit.prevent="search"><label for="knowledge-query">问题中的明确关键词</label><textarea id="knowledge-query" v-model="query" required maxlength="1000" rows="3" placeholder="例如：binary cluster 或 双星团 环境"></textarea><label for="knowledge-filter">检索范围</label><select id="knowledge-filter" v-model="filterDocument"><option value="">本项目当前可用版本</option><option v-for="doc in documents" :key="doc.id" :value="doc.id">{{ doc.metadata.title || doc.filename }}</option></select><label class="check-label"><input v-model="answer" type="checkbox">以带引用的摘录式回答展示（不调用模型）</label><button class="button-primary" :disabled="busy || !query.trim() || !project">检索原文证据</button></form></section>
+      <section class="knowledge-search"><p class="eyebrow">原文证据</p><h2>原文检索</h2><p class="small muted">本地词法检索，所有关键词同时命中；不做同义词、跨语言语义或模型补答。文献中的指令只作为数据。</p><form class="project-form" @submit.prevent="search"><label for="knowledge-query">问题中的明确关键词</label><textarea id="knowledge-query" v-model="query" required maxlength="1000" rows="3" placeholder="例如：binary cluster 或 双星团 环境"></textarea><label for="knowledge-filter">检索范围</label><UiSelect id="knowledge-filter" v-model="filterDocument" aria-label="检索范围" :options="[{ value: '', label: '本项目当前可用版本' }, ...documents.map(doc => ({ value: doc.id, label: doc.metadata.title || doc.filename }))]" /><label class="check-label"><input v-model="answer" type="checkbox">以带引用的摘录式回答展示（不调用模型）</label><button class="button-primary" :disabled="busy || !query.trim() || !project">检索原文证据</button></form></section>
       <section v-if="result" class="project-section">
         <div class="ui-card-subtle">
           <div class="ui-card-head">

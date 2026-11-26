@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { identityRequest } from '../identity-state'
 import { sessionFetch } from '../session-http'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from './UiSelect.vue'
 import type { components } from '../types/generated'
 
 type Detail = components['schemas']['FeedbackDetail']
@@ -56,6 +57,16 @@ const statuses: Record<Status, string> = {
   resolved: '已解决',
   closed: '已关闭',
 }
+
+const categoryFilterOptions: UiSelectOption<string>[] = [
+  { value: '', label: '全部类型' },
+  ...(Object.entries(categories) as [Category, string][]).map(([value, label]) => ({ value, label })),
+]
+
+const statusFilterOptions: UiSelectOption<string>[] = [
+  { value: '', label: '全部状态' },
+  ...(Object.entries(statuses) as [Status, string][]).map(([value, label]) => ({ value, label })),
+]
 
 const tones: Record<Status, string> = {
   pending: 'ui-pill-warning',
@@ -273,24 +284,26 @@ onMounted(() => {
     <form v-if="admin" class="feedback-filter-bar" aria-label="反馈筛选" @submit.prevent="run(() => load(1))">
       <div class="feedback-filter-field">
         <label :for="filterCategoryId">类型</label>
-        <div class="feedback-select-wrap">
-          <select :id="filterCategoryId" v-model="filterCategory" :disabled="busy">
-            <option value="">全部类型</option>
-            <option v-for="(label, value) in categories" :key="value" :value="value">{{ label }}</option>
-          </select>
-          <svg class="feedback-select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
-        </div>
+        <UiSelect
+          :id="filterCategoryId"
+          v-model="filterCategory"
+          variant="compact"
+          aria-label="按类型筛选"
+          :disabled="busy"
+          :options="categoryFilterOptions"
+        />
       </div>
 
       <div class="feedback-filter-field">
         <label :for="filterStatusId">状态</label>
-        <div class="feedback-select-wrap">
-          <select :id="filterStatusId" v-model="filterStatus" :disabled="busy">
-            <option value="">全部状态</option>
-            <option v-for="(label, value) in statuses" :key="value" :value="value">{{ label }}</option>
-          </select>
-          <svg class="feedback-select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
-        </div>
+        <UiSelect
+          :id="filterStatusId"
+          v-model="filterStatus"
+          variant="compact"
+          aria-label="按状态筛选"
+          :disabled="busy"
+          :options="statusFilterOptions"
+        />
       </div>
 
       <div class="feedback-filter-field">
@@ -333,12 +346,13 @@ onMounted(() => {
                 <label :for="categoryId">反馈类型</label>
                 <span class="ui-pill feedback-category-tag" :class="categoryTones[category]">{{ categories[category] }}</span>
               </div>
-              <div class="feedback-select-wrap">
-                <select :id="categoryId" v-model="category">
-                  <option v-for="(label, value) in categories" :key="value" :value="value">{{ label }}</option>
-                </select>
-                <svg class="feedback-select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
-              </div>
+              <UiSelect
+                :id="categoryId"
+                v-model="category"
+                aria-label="反馈类型"
+                :disabled="busy"
+                :options="(Object.entries(categories) as [Category, string][]).map(([value, label]) => ({ value, label })) as UiSelectOption<Category>[]"
+              />
               <p class="feedback-field-hint">{{ categoryHints[category] }}</p>
             </div>
 
@@ -629,12 +643,13 @@ onMounted(() => {
           <fieldset :disabled="busy">
             <div class="feedback-field">
               <label :for="replyStatusId">处理状态</label>
-              <div class="feedback-select-wrap">
-                <select :id="replyStatusId" v-model="status">
-                  <option v-for="(label, value) in statuses" :key="value" :value="value">{{ label }}</option>
-                </select>
-                <svg class="feedback-select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
-              </div>
+              <UiSelect
+                :id="replyStatusId"
+                v-model="status"
+                aria-label="处理状态"
+                :disabled="busy"
+                :options="(Object.entries(statuses) as [Status, string][]).map(([value, label]) => ({ value, label })) as UiSelectOption<Status>[]"
+              />
             </div>
 
             <div class="feedback-field">

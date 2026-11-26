@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ApiError, safeLink } from '../api'
 import { literatureApi } from '../api/literature'
 import StatusNotice from '../components/StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from '../components/UiSelect.vue'
 import WorkspaceHeader from '../components/WorkspaceHeader.vue'
 import type { LiteratureItem, LiteratureListResponse } from '../types'
 
@@ -20,6 +21,10 @@ const mobilePane = ref<'list' | 'detail'>(
 const searchText = ref('')
 const selectedYear = ref<number | ''>('')
 const selectedTag = ref('')
+const yearOptions = computed<UiSelectOption<number | ''>[]>(() => [
+  { value: '', label: '全部' },
+  ...(listing.value.available_years || []).map(yr => ({ value: yr, label: String(yr) })),
+])
 const page = ref(1)
 const pageSize = 20
 
@@ -384,17 +389,20 @@ onBeforeUnmount(() => {
           </label>
 
           <div class="lit-filter-bar">
-            <label class="lit-year-pill">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="16" rx="3" />
-                <path d="M16 3v4M8 3v4M3 10h18" />
-              </svg>
-              <span class="lit-year-label">年份</span>
-              <select v-model="selectedYear" aria-label="按年份筛选">
-                <option value="">全部</option>
-                <option v-for="yr in listing.available_years || []" :key="yr" :value="yr">{{ yr }}</option>
-              </select>
-            </label>
+            <UiSelect
+              v-model="selectedYear"
+              variant="pill"
+              prefix="年份"
+              aria-label="按年份筛选"
+              :options="yearOptions"
+            >
+              <template #prefix>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="3" />
+                  <path d="M16 3v4M8 3v4M3 10h18" />
+                </svg>
+              </template>
+            </UiSelect>
 
             <button
               v-if="hasActiveFilter"

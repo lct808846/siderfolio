@@ -13,6 +13,7 @@ import { sessionFetch } from '../session-http'
 import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileViewer.vue'
 import NBodyProgressVisual from './NBodyProgressVisual.vue'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect from './UiSelect.vue'
 
 const props = defineProps<{
   projectId: string
@@ -436,17 +437,15 @@ const engineDisplay = (engine: ComputeParameters['engine'] = 'rebound') => (engi
       <!-- Single Compact Command Header (No nested boxes, no ugly horizontal scrollbar) -->
       <header class="compute-toolbar">
         <div class="compute-toolbar-top">
-          <select
+          <UiSelect
             v-if="visibleTasks.length > 1"
             class="compute-task-select"
-            :value="task.id"
+            variant="compact"
+            :model-value="task.id"
             aria-label="切换本次对话 N 体模拟记录"
-            @change="chooseTask(($event.target as HTMLSelectElement).value)"
-          >
-            <option v-for="item in visibleTasks" :key="item.id" :value="item.id">
-              {{ item.name }} · {{ labels[item.state] }} ({{ formatTime(item.updated_at) }})
-            </option>
-          </select>
+            :options="visibleTasks.map(item => ({ value: item.id, label: `${item.name} · ${labels[item.state]} (${formatTime(item.updated_at)})` }))"
+            @update:model-value="chooseTask(String($event))"
+          />
           <h3 v-else class="compute-single-title">{{ task.name }}</h3>
           <span class="ui-pill" :class="statePillClass(task.state)">{{ labels[task.state] }}</span>
         </div>
@@ -568,12 +567,14 @@ const engineDisplay = (engine: ComputeParameters['engine'] = 'rebound') => (engi
         <section v-else-if="activeSubView === 'compare'" class="compute-stage-card">
           <label class="compute-compare-select">
             <span>选择同空间已完成实验进行对比</span>
-            <select v-model="compareId">
-              <option value="">请选择对照实验…</option>
-              <option v-for="item in succeededOthers" :key="item.id" :value="item.id">
-                {{ item.name }} · {{ formatTime(item.updated_at) }}
-              </option>
-            </select>
+            <UiSelect
+              v-model="compareId"
+              aria-label="选择同空间已完成实验进行对比"
+              :options="[
+                { value: '', label: '请选择对照实验…' },
+                ...succeededOthers.map(item => ({ value: item.id, label: `${item.name} · ${formatTime(item.updated_at)}` })),
+              ]"
+            />
           </label>
           <p v-if="compareError" class="compute-alert">{{ compareError }}</p>
           <template v-if="comparisonRows.length === 2">

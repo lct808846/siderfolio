@@ -8,6 +8,7 @@ import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileView
 import ComputeResultPanel from './ComputeResultPanel.vue'
 import PlotResultPanel from './PlotResultPanel.vue'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from './UiSelect.vue'
 
 export type ResultViewKey = 'overview' | 'compute' | 'plot' | 'gaia' | 'ads' | 'simbad' | 'files' | 'export'
 
@@ -954,11 +955,17 @@ async function save() {
         <!-- Gaia DR3 -->
         <section v-if="view === 'gaia' && response?.gaia_results?.length" class="source-section">
           <label v-if="response.gaia_results.length > 1" class="field-label" for="query-index">Gaia 查询批次</label>
-          <select v-if="response.gaia_results.length > 1" id="query-index" v-model="index">
-            <option v-for="(result, i) in response.gaia_results" :key="i" :value="i">
-              第 {{ i + 1 }} 次 · {{ result.status === 'success' ? `${result.returned_count} 行 · 成功` : result.status === 'not_found' ? '0 行 · 条件下无匹配' : '未取得数据' }}
-            </option>
-          </select>
+          <UiSelect
+            v-if="response.gaia_results.length > 1"
+            id="query-index"
+            v-model="index"
+            variant="compact"
+            aria-label="Gaia 查询批次"
+            :options="response.gaia_results.map((result, i) => ({
+              value: i,
+              label: `第 ${i + 1} 次 · ${result.status === 'success' ? `${result.returned_count} 行 · 成功` : result.status === 'not_found' ? '0 行 · 条件下无匹配' : '未取得数据'}`,
+            })) as UiSelectOption<number>[]"
+          />
           <template v-if="gaia">
             <p v-if="gaia.error" class="notice" :class="{ danger: !querySucceeded }">{{ gaia.error.message }} <code>{{ gaia.error.code }}</code></p>
             <p v-if="!querySucceeded" class="notice" role="status">本次未取得可用数据，不能据此判断视场中没有天体。交付数量和截断状态不适用；可核对条件后手动重试，旧记录保留。</p>

@@ -49,6 +49,7 @@ async function submitTurnStream(
     model?: string
     attachments?: ChatAttachment[]
     tool_mode?: ChatToolMode
+    skill_id?: string
   },
   handlers: TurnStreamHandlers = {},
 ): Promise<Turn> {
@@ -161,8 +162,8 @@ export const api = {
   archive: (id: string) => request<ArchivedConversation>(`/api/v1/conversations/${id}/archive`, 'POST'),
   unarchive: (id: string) => request<Conversation>(`/api/v1/conversations/${id}/archive`, 'DELETE'),
   delete: (id: string) => request<void>(`/api/v1/conversations/${id}`, 'DELETE'),
-  submit: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[], tool_mode?: ChatToolMode) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision, model, attachments, ...(tool_mode && tool_mode !== 'auto' ? { tool_mode } : {}) }),
-  submitStream: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[], tool_mode?: ChatToolMode, handlers?: TurnStreamHandlers) => submitTurnStream(id, { message, client_request_id, expected_revision, model, attachments, ...(tool_mode && tool_mode !== 'auto' ? { tool_mode } : {}) }, handlers),
+  submit: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[], tool_mode?: ChatToolMode, skill_id?: string | null) => request<Turn>(`/api/v1/conversations/${id}/turns`, 'POST', { message, client_request_id, expected_revision, model, attachments, ...(tool_mode && tool_mode !== 'auto' ? { tool_mode } : {}), ...(skill_id ? { skill_id } : {}) }),
+  submitStream: (id: string, message: string, client_request_id: string, expected_revision: number, model?: string, attachments?: ChatAttachment[], tool_mode?: ChatToolMode, handlers?: TurnStreamHandlers, skill_id?: string | null) => submitTurnStream(id, { message, client_request_id, expected_revision, model, attachments, ...(tool_mode && tool_mode !== 'auto' ? { tool_mode } : {}), ...(skill_id ? { skill_id } : {}) }, handlers),
   turn: (id: string, turn: string) => request<Turn>(`/api/v1/conversations/${id}/turns/${turn}`),
   artifact: (id: string, turn: string, plots: PlotSpec[]) => request<ArtifactInfo>(`/api/v1/conversations/${id}/turns/${turn}/artifacts`, 'POST', { plots }),
   manifest: (path: string) => request<Manifest>(path),

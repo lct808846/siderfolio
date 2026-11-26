@@ -108,6 +108,27 @@ class LocalSettings(BaseSettings):
     mcp_max_request_bytes: int = Field(default=256 * 1024, ge=4 * 1024, le=1024 * 1024)
     mcp_pool_size: int = Field(default=2, ge=1, le=4)
     mcp_acquire_timeout_seconds: float = Field(default=5.0, ge=0.1, le=60.0)
+    external_mcp_enabled: bool = False
+    external_mcp_servers_json: str = ""
+    external_mcp_max_calls_per_turn: int = Field(default=2, ge=1, le=4)
+
+    @property
+    def external_mcp_servers(self):
+        import json
+
+        from astroagent.external_mcp_schemas import ExternalMcpServerConfig
+
+        raw = (self.external_mcp_servers_json or "").strip()
+        if not raw:
+            return ()
+        parsed = json.loads(raw)
+        if not isinstance(parsed, list):
+            raise ValueError("ASTROAGENT_EXTERNAL_MCP_SERVERS_JSON must be a JSON array")
+        configs = [ExternalMcpServerConfig.model_validate(item) for item in parsed[:16]]
+        ids = [cfg.id for cfg in configs]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Duplicate external MCP server IDs in configuration")
+        return tuple(configs)
 
     @field_validator("local_model_url")
     @classmethod

@@ -11,13 +11,15 @@ from astroagent.auth_mail import MailWorker
 from astroagent.auth_security import PASSWORDS, blocklist, keyed, normalize_client_source, opaque
 from astroagent.auth_store import AUTH_LOCK, AuthStore
 from astroagent.errors import ServiceError
+from astroagent.mcp_registry_store import ExternalMcpRegistryService
 from astroagent.postgres import PostgresRepository
 
 
 class TenantServices:
-    def __init__(self, store, local, control_guard):
+    def __init__(self, store, local, control_guard, external_mcp=None):
         self.store, self.local = store, local
         self.control_guard = control_guard
+        self.external_mcp = external_mcp
         self.services = {}
         self.lock = threading.RLock()
 
@@ -81,6 +83,8 @@ class TenantServices:
                 service.local_titles.store.initialize()
                 service.literature.store.initialize()
                 service.traces.initialize()
+                service.skills.initialize()
+                service.external_mcp = self.external_mcp
             except BaseException:
                 repository.close()
                 raise
@@ -122,7 +126,10 @@ class IdentityRuntime:
         self.control_mutex = threading.Lock()
         try:
             self.dummy_hash = PASSWORDS.hash(opaque())
-            self.tenants = TenantServices(self.store, local, self.ensure_control_lock)
+            self.external_mcp = ExternalMcpRegistryService(self.store, local)
+            self.tenants = TenantServices(
+                self.store, local, self.ensure_control_lock, external_mcp=self.external_mcp
+            )
             self.mail = MailWorker(self.store, self.ensure_control_lock)
             self.mail.start()
         except BaseException as exc:

@@ -8,9 +8,11 @@ import AttachmentButton from '../components/AttachmentButton.vue'
 import AttachmentTray from '../components/AttachmentTray.vue'
 import ConversationSidebar from '../components/ConversationSidebar.vue'
 import ComposerProjectPicker from '../components/ComposerProjectPicker.vue'
+import ComposerSkillPicker from '../components/ComposerSkillPicker.vue'
 import CreateProjectDialog from '../components/CreateProjectDialog.vue'
 import ChatNBodyCard, { type ComputeResultPayload } from '../components/ChatNBodyCard.vue'
 import ChatPlotCard, { type PlotResultPayload } from '../components/ChatPlotCard.vue'
+import ChatExternalMcpCard from '../components/ChatExternalMcpCard.vue'
 import LiteratureReceiptCard from '../components/LiteratureReceiptCard.vue'
 import TurnTracePanel from '../components/TurnTracePanel.vue'
 import ProjectManageDrawer, { type DrawerTab } from '../components/ProjectManageDrawer.vue'
@@ -20,6 +22,7 @@ import { useWorkbench } from '../stores/workbench'
 import { useModels } from '../stores/models'
 import { useAttachments } from '../stores/attachments'
 import { useProjects } from '../stores/projects'
+import { useSkills } from '../stores/skills'
 import ResultPanel from '../components/ResultPanel.vue'
 import MarkdownAnswer from '../components/MarkdownAnswer'
 import UserMessage from '../components/UserMessage.vue'
@@ -34,24 +37,27 @@ import { api, safeLink } from '../api'
 import { computeApi, type ComputeStatus } from '../api/compute'
 import { projectsApi } from '../api/projects'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
-import type { ChatAttachment, ChatToolMode, LiteratureSaveReceipt, Project, Snapshot, Turn } from '../types'
+import type { ChatAttachment, ChatToolMode, ExternalMcpResult, LiteratureSaveReceipt, Project, SkillResolution, Snapshot, Turn } from '../types'
 
 type Submission = {
   message: string
   files: ChatAttachment[]
   toolMode: ChatToolMode
   projectId: string
+  skillId?: string | null
 }
 
 const store = useWorkbench(), route = useRoute(), router = useRouter()
 const models = useModels()
 const attachments = useAttachments()
 const projectsStore = useProjects()
+const skillsStore = useSkills()
 const unarchiving = ref(false)
 const dragDepth = ref(0)
 const draft = ref(''), composing = ref(false)
 const chatScroll = ref<HTMLElement | null>(null)
 const toolMode = ref<ChatToolMode>('auto')
+const selectedSkillId = ref<string | null>(null)
 const draftProjectId = ref('')
 const switchingProject = ref(false)
 const composerCreateProjectDialog = ref<InstanceType<typeof CreateProjectDialog> | null>(null)
@@ -71,14 +77,15 @@ const inspectedSnapshotTurn = computed<Turn | null>(() => inspectedSnapshot.valu
 let pendingDrawerRequest: { projectId: string; tab: DrawerTab; snapshotId?: string; promptDelete?: boolean } | null = null
 const profileMode = computed(() => route.path === '/profile')
 const computeStatus = ref<ComputeStatus | null>(null)
-const computeDisabled = computed(() => computeStatus.value !== null && !computeStatus.value.enabled)
-function toggleToolMode(mode: 'plot' | 'compute') {
-  if (store.running || store.creating || store.loading || sending.value || store.disconnectedRequest) return
-  toolMode.value = toolMode.value === mode ? 'auto' : mode
-  void nextTick(() => { resizeComposer(); input.value?.focus() })
+function selectSkill(nextSkillId: string | null) {
+  selectedSkillId.value = nextSkillId
+  if (nextSkillId !== 'scientific-plotting-nbody-prep') {
+    toolMode.value = 'auto'
+  }
 }
 function handleInlineRefine(mode: 'plot' | 'compute', promptText: string) {
   toolMode.value = mode
+  selectedSkillId.value = 'scientific-plotting-nbody-prep'
   draft.value = promptText
   void nextTick(() => {
     resizeComposer()
@@ -94,6 +101,11 @@ const composerPlaceholder = computed(() => {
 const composerHint = computed(() => {
   if (toolMode.value === 'plot') return '模型将自动编写绘图配置与脚本供你核对或修改，确认后在无网容器中隔离出图。'
   if (toolMode.value === 'compute') return '模型将根据需求自动计算并填写初始条件（AU / yr / M☉），核对或修改后再确认运行。'
+  if (selectedSkillId.value === 'none') return '本轮已临时关闭科研技能，将按常规单 Agent 对话回答。'
+  if (selectedSkillId.value) {
+    const chosen = skillsStore.byId(selectedSkillId.value)
+    if (chosen) return `本轮已指定科研技能「${chosen.title}」，将按技能研究步骤与允许工具范围执行。`
+  }
   return '模型回答需对照原始数据核查；位置候选源不等于星团成员。'
 })
 const editingTurn = ref<number | null>(null), draftBeforeEdit = ref('')
@@ -414,6 +426,29 @@ function turnReceipts(turn: Turn): LiteratureSaveReceipt[] {
   }
   return merged
 }
+function turnSkillResolution(turn: Turn): SkillResolution | null {
+  return turn.skill_resolution || turn.response?.skill_resolution || null
+}
+const needsInitialBottomScroll = ref(false)
+function scrollChatToBottom() {
+  const el = chatScroll.value
+  if (!el) return
+  const prev = el.style.scrollBehavior
+  el.style.scrollBehavior = 'auto'
+  el.scrollTop = el.scrollHeight
+  el.style.scrollBehavior = prev
+}
+function externalMcpResultFor(turn: Turn, confirmationId: string): ExternalMcpResult | null {
+  return turn.response?.external_mcp_results?.find(item => item.confirmation_id === confirmationId) || null
+}
+async function handleExternalMcpUpdated(targetConversationId: string) {
+  if (!targetConversationId) return
+  try {
+    await store.load(targetConversationId, true)
+  } catch (reason) {
+    store.report(reason)
+  }
+}
 interface TurnSourceItem {
   url: string
   safeUrl: string | null
@@ -539,8 +574,19 @@ watch(() => store.panel, async () => { await nextTick(); resizeComposer() })
 watch(() => store.pending, async active => {
   if (!active) return
   await nextTick()
-  if (chatScroll.value) chatScroll.value.scrollTop = chatScroll.value.scrollHeight
+  scrollChatToBottom()
 })
+watch(
+  [() => store.current?.id, () => store.turns.length, chatScroll, () => store.panel],
+  () => {
+    if (!needsInitialBottomScroll.value) return
+    const id = conversationId.value
+    if (!id || !chatScroll.value || store.current?.id !== id || !store.turns.length) return
+    scrollChatToBottom()
+    needsInitialBottomScroll.value = false
+  },
+  { flush: 'post' },
+)
 // Desktop reveal leaves typing focus alone; a compact panel needs an accessible return action.
 function revealResultsAutomatically() {
   const id = route.params.id
@@ -624,6 +670,7 @@ function send() {
     files: attachedFiles.value,
     toolMode: toolMode.value,
     projectId: draftProjectId.value,
+    skillId: selectedSkillId.value,
   }, true)
 }
 function retry() {
@@ -635,6 +682,7 @@ function clearSubmittedDraft(scope: string) {
   draft.value = ''
   attachments.clear(scope)
   toolMode.value = 'auto'
+  selectedSkillId.value = null
   editingTurn.value = null
   draftBeforeEdit.value = ''
 }
@@ -683,7 +731,7 @@ async function submit(submission: Submission, fromComposer: boolean) {
     if (route.path !== destination || store.current?.id !== id) return
     if (fromComposer) clearSubmittedDraft(id)
     models.select(id, selectedModel)
-    const result = await store.send(submission.message, id, selectedModel, submission.files, submission.toolMode)
+    const result = await store.send(submission.message, id, selectedModel, submission.files, submission.toolMode, submission.skillId)
     if (route.path !== destination || store.current?.id !== id) return
     if (result === 'rejected') failedSubmission.value = submission
     void nextTick(() => input.value?.focus())
@@ -719,6 +767,7 @@ watch(() => route.params.id, async id => {
   const revision = ++restoreRevision
   cancelAnimationFrame(restoreFrame)
   restoringResults.value = true
+  needsInitialBottomScroll.value = typeof id === 'string' && Boolean(id)
   knownResults = new Set()
   // Apply saved geometry before fetching history; loading must not replay an open animation.
   const isCompactNow = typeof window !== 'undefined' && window.matchMedia('(max-width: 980px)').matches
@@ -746,6 +795,10 @@ watch(() => route.params.id, async id => {
   }
   await nextTick()
   if (revision !== restoreRevision) return
+  if (typeof id === 'string' && store.current?.id === id) {
+    scrollChatToBottom()
+    needsInitialBottomScroll.value = false
+  }
   // Paint the restored state with transitions disabled, then allow manual/new-result motion.
   restoreFrame = requestAnimationFrame(() => {
     if (revision !== restoreRevision) return
@@ -769,7 +822,10 @@ async function applyWorkbenchHandoff() {
   const requestedTurn = typeof q.plot_turn === 'string' ? q.plot_turn : ''
   const requestedPlotSnapshot = typeof q.plot_snapshot === 'string' ? q.plot_snapshot : ''
   const hasToolQuery = !!requestedTool || !!requestedResult || !!requestedComputeTask || !!requestedPlotRun || !!requestedProject || !!requestedManage || !!requestedSnapshotId || !!requestedTurn || !!requestedPlotSnapshot || typeof q.plot_query === 'string' || typeof q.plot_dataset === 'string'
-  if (requestedTool) toolMode.value = requestedTool
+  if (requestedTool) {
+    toolMode.value = requestedTool
+    selectedSkillId.value = 'scientific-plotting-nbody-prep'
+  }
   if (requestedProject && !conversationId.value && requestedProject !== projectsStore.defaultProjectId) {
     draftProjectId.value = requestedProject
   }
@@ -870,6 +926,7 @@ onMounted(async () => {
     await Promise.all([store.refreshList(), models.load()])
     void store.refreshArchived().catch(() => undefined)
     void projectsStore.load().catch(() => undefined)
+    void skillsStore.load().catch(() => undefined)
   } catch (error) { store.report(error) }
 })
 onBeforeUnmount(() => {
@@ -999,7 +1056,14 @@ onBeforeUnmount(() => {
             <div class="turn-label"><time class="ui-pill ui-pill-mono" :datetime="turn.received_at">{{ new Date(turn.received_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) }}</time><span v-if="turn.turn_id!==newest" class="ui-pill ui-pill-neutral">历史记录</span></div>
             <UserMessage :text="turn.message" :attachments="turn.attachments" :disabled="attachmentDisabled" @edit="editQuestion($event, turn.revision, turn.conversation_id)" />
             <div class="answer">
-              <div class="answer-label"><span class="mini-star" aria-hidden="true">✳</span><b>Siderfolio</b><span v-if="turn.response && turn.response.status !== 'success'" class="tag" :class="turn.response.status">{{ turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span></div>
+              <div class="answer-label">
+                <span class="mini-star" aria-hidden="true">✳</span>
+                <b>Siderfolio</b>
+                <span v-if="turn.response && turn.response.status !== 'success'" class="tag" :class="turn.response.status">{{ turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span>
+              </div>
+              <p v-if="turnSkillResolution(turn)?.clarification_note" class="turn-skill-note">
+                {{ turnSkillResolution(turn)!.clarification_note }}
+              </p>
               <p v-if="turn.execution_status==='running'" class="thinking-status"><span class="thinking-shimmer-text">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</span></p>
               <ConversationErrorNotice
                 v-if="turn.error"
@@ -1038,6 +1102,13 @@ onBeforeUnmount(() => {
                 v-for="receipt in turnReceipts(turn)"
                 :key="receipt.receipt_id"
                 :receipt="receipt"
+              />
+              <ChatExternalMcpCard
+                v-for="proposal in turn.response?.external_mcp_proposals || []"
+                :key="proposal.confirmation_id"
+                :proposal="proposal"
+                :initial-result="externalMcpResultFor(turn, proposal.confirmation_id)"
+                @updated="handleExternalMcpUpdated(turn.conversation_id)"
               />
               <ConversationErrorNotice v-for="warning in turn.response?.warnings || []" :key="`${warning.code}:${warning.message}`" inline :message="warning.message" :code="warning.code" advisory />
               <div
@@ -1161,8 +1232,11 @@ onBeforeUnmount(() => {
               @update:model-value="selectComposerProject"
               @create="composerCreateProjectDialog?.open()"
             />
-            <button type="button" class="composer-task-button composer-plot-toggle" :class="{ active: toolMode === 'plot' }" :aria-pressed="toolMode === 'plot'" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" :data-tooltip="toolMode === 'plot' ? '已选中科研绘图工具（再次点击取消）' : '告诉模型调用科研绘图工具：根据需求自动生成并审阅绘图脚本'" @click="toggleToolMode('plot')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M7 15l4-5 4 3 5-7" /><circle cx="11" cy="10" r="1" /></svg><span>科研绘图</span></button>
-            <button type="button" class="composer-task-button composer-nbody-toggle" :class="{ active: toolMode === 'compute', 'is-unavailable': computeDisabled }" :aria-pressed="toolMode === 'compute'" :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest" :data-tooltip="toolMode === 'compute' ? '已选中 N 体模拟工具（再次点击取消）' : computeDisabled ? '告诉模型生成 N 体模拟初始条件参数（服务端暂未启用计算执行器）' : '告诉模型调用 N 体模拟工具：根据需求自动填写初始参数并由你确认运行'" @click="toggleToolMode('compute')"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><circle cx="5" cy="6" r="1.5" /><circle cx="19" cy="17" r="1.5" /><path d="M6.3 7.2l3.4 2.9m4.7 3.8 3.4 2M18.5 8a8 8 0 0 0-9-3m-4 8a8 8 0 0 0 9 7" /></svg><span>N 体模拟</span><span v-if="computeDisabled" class="composer-status-pill">未启用</span></button>
+            <ComposerSkillPicker
+              :model-value="selectedSkillId"
+              :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest"
+              @update:model-value="selectSkill"
+            />
           </div>
           <div class="composer-tools">
             <ModelSelector
@@ -1219,3 +1293,16 @@ onBeforeUnmount(() => {
     />
 </div>
 </template>
+
+<style scoped>
+.turn-skill-note {
+  margin: 0 0 10px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+</style>

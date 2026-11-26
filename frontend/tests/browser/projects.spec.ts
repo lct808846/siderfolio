@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { mkdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { chooseUiOption } from './ui-select'
 
 test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preserved conversations', async ({ page, request, browser }, info) => {
   info.annotations.push({ type: 'browser_version', description: browser.version() })
@@ -35,13 +36,15 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
     await page.goto('/settings?section=data')
     const drawer = await openManager(projectName, id)
     await drawer.getByRole('tab', { name: /会话与备份/ }).click()
-    await page.getByLabel('选择要加入的会话').selectOption(c.id)
+    await chooseUiOption(page, page.getByRole('button', { name: '选择要加入的会话', exact: true }), '项目验收100行')
     await page.getByRole('button', { name: '加入项目', exact: true }).click()
     await expect(drawer.getByRole('button', { name: '移出', exact: true })).toBeVisible()
     await drawer.getByRole('tab', { name: /快照与复核/ }).click()
     await page.getByText('从项目会话保存新快照', { exact: true }).click()
-    await page.getByLabel('项目内会话').selectOption(c.id)
-    await expect(page.getByLabel('完整查询结果').locator('option')).toHaveCount(2)
+    await chooseUiOption(page, page.getByRole('button', { name: '项目内会话', exact: true }), '项目验收100行')
+    await page.getByRole('button', { name: '完整查询结果', exact: true }).click()
+    await expect(page.getByRole('listbox').last().getByRole('option')).toHaveCount(2)
+    await page.keyboard.press('Escape')
     await page.getByLabel('快照名称', { exact: true }).fill('原始完整样本')
     await page.getByRole('button', { name: '保存完整快照', exact: true }).click()
     await page.getByRole('button', { name: '查看快照 原始完整样本' }).click()
@@ -55,7 +58,7 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
     await expect(page.getByRole('img', { name: '自行散点图.png', exact: true })).toBeVisible()
     await page.locator('.project-drawer-body').evaluate(el => { el.scrollTop = 0 }); await screenshot('desktop')
     let rerunRequests = 0; page.on('request', r => { if (r.method() === 'POST' && r.url().endsWith('/reruns')) rerunRequests++ })
-    await page.getByLabel('选择单条工具查询重跑').selectOption('gaia:0')
+    await chooseUiOption(page, page.getByRole('button', { name: '选择单条工具查询重跑', exact: true }), 'Gaia DR3 第1次查询')
     await page.getByRole('button', { name: '核对并重跑单条查询' }).click()
     const rerunDialog = page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: '确认执行这条工具查询？' }) })
     await expect(rerunDialog).toBeVisible(); expect(rerunRequests).toBe(0)
@@ -70,7 +73,8 @@ test('projects: full snapshots, explicit rerun, compare, ZIP recovery and preser
     for (const cid of p.conversation_ids) ownedConversations.add(cid)
     expect(original.id).not.toBe(newer.id)
     await page.getByText('比较两份快照', { exact: true }).click()
-    await page.getByLabel('左侧快照').selectOption(original.id); await page.getByLabel('右侧快照').selectOption(newer.id)
+    await chooseUiOption(page, page.getByRole('button', { name: '左侧快照', exact: true }), new RegExp(`原始完整样本 · ${original.id.slice(0, 8)}`))
+    await chooseUiOption(page, page.getByRole('button', { name: '右侧快照', exact: true }), new RegExp(`重跑 · gaia · ${newer.id.slice(0, 8)}`))
     await page.getByLabel('按精确 source_id / bibcode 比较交付编号').check()
     await page.getByRole('button', { name: '比较已存快照' }).click()
     await expect(page.getByText('仅比较交付样本与查询元数据；不表示总体增减、显著性或成员变化。')).toBeVisible(); await screenshot('comparison')

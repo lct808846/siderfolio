@@ -3,15 +3,30 @@
 import inspect
 import logging
 import threading
+import time
+from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 from astroagent.context import PreparedContext
 from astroagent.conversations import utc_now
 from astroagent.errors import ServiceError
 from astroagent.execution import MODEL_TASK_SLOTS
+from astroagent.external_mcp_client import arguments_digest
 from astroagent.literature_auth import analyze_save_permit
 from astroagent.mcp_client import McpAdsAdapter
 from astroagent.model_providers import configured_pricing_snapshot
-from astroagent.trace_runtime import TraceRecorder, enrich_trace_cost
+from astroagent.skill_schemas import SkillPreferences
+from astroagent.skill_store import merge_confirmations_into_turn
+from astroagent.skills import resolve_turn_skill
+from astroagent.tool_catalog import build_turn_tool_catalog
+from astroagent.tool_schemas import (
+    ExternalMcpConfirmationRecord,
+    ExternalMcpConfirmRequest,
+    ExternalMcpProposal,
+    ExternalMcpResult,
+)
+from astroagent.trace_runtime import TraceRecorder, classify_error_code, enrich_trace_cost
+from astroagent.trace_schemas import RunSpan
 from astroagent.usage import require_storage
 
 LOGGER = logging.getLogger(__name__)
@@ -26,6 +41,8 @@ class ConversationService:
         self.local_titles = None
         self.literature = None
         self.traces = None
+        self.skills = None
+        self.external_mcp = None
 
     def delete(self, identifier):
         with self.gate:
@@ -35,6 +52,11 @@ class ConversationService:
             if self.traces is not None:
                 try:
                     self.traces.delete_conversation(identifier)
+                except Exception:
+                    pass
+            if self.skills is not None:
+                try:
+                    self.skills.delete_conversation(identifier)
                 except Exception:
                     pass
 
@@ -54,9 +76,21 @@ class ConversationService:
         if turn.response is not None:
             turn.response.literature_receipts = list(merged)
 
-    def _apply_turn_enrichment(self, turn, persisted_receipts, trace, *, pricing_snapshot=None):
+    def _apply_turn_enrichment(
+        self,
+        turn,
+        persisted_receipts,
+        trace,
+        *,
+        pricing_snapshot=None,
+        external_records=None,
+    ):
         if persisted_receipts or turn.literature_receipts:
             self._merge_receipts(turn, persisted_receipts)
+        if external_records:
+            merge_confirmations_into_turn(turn, external_records)
+        if turn.skill_resolution is None and turn.response is not None:
+            turn.skill_resolution = turn.response.skill_resolution
         if trace is not None:
             if pricing_snapshot is not None:
                 pricing, aliases = pricing_snapshot
@@ -71,6 +105,7 @@ class ConversationService:
     def enrich_turn(self, conversation_id: str, turn):
         persisted = []
         trace = None
+        external_records = []
         with self.repository.connection() as db:
             if self.literature is not None:
                 try:
@@ -84,9 +119,20 @@ class ConversationService:
                     trace = self.traces.get_with_db(db, conversation_id, turn.turn_id)
                 except Exception:
                     trace = None
+            if self.skills is not None:
+                try:
+                    external_records = self.skills.records_for_turn_with_db(
+                        db, conversation_id, turn.turn_id
+                    )
+                except Exception:
+                    external_records = []
         pricing_snapshot = configured_pricing_snapshot() if trace is not None else None
         return self._apply_turn_enrichment(
-            turn, persisted, trace, pricing_snapshot=pricing_snapshot
+            turn,
+            persisted,
+            trace,
+            pricing_snapshot=pricing_snapshot,
+            external_records=external_records,
         )
 
     def turn_enriched(self, conversation_id: str, turn_id: str):
@@ -102,6 +148,7 @@ class ConversationService:
             turn = Turn.model_validate_json(row[0])
             persisted = []
             trace = None
+            external_records = []
             if self.literature is not None:
                 try:
                     persisted = self.literature.store.receipts_for_turn_with_db(
@@ -114,9 +161,20 @@ class ConversationService:
                     trace = self.traces.get_with_db(db, conversation_id, turn.turn_id)
                 except Exception:
                     trace = None
+            if self.skills is not None:
+                try:
+                    external_records = self.skills.records_for_turn_with_db(
+                        db, conversation_id, turn.turn_id
+                    )
+                except Exception:
+                    external_records = []
         pricing_snapshot = configured_pricing_snapshot() if trace is not None else None
         return self._apply_turn_enrichment(
-            turn, persisted, trace, pricing_snapshot=pricing_snapshot
+            turn,
+            persisted,
+            trace,
+            pricing_snapshot=pricing_snapshot,
+            external_records=external_records,
         )
 
     def bundle(self, identifier: str) -> dict:
@@ -133,6 +191,7 @@ class ConversationService:
             ]
             receipts_map = {}
             traces_map = {}
+            external_map = {}
             if turns:
                 if self.literature is not None:
                     try:
@@ -146,6 +205,11 @@ class ConversationService:
                         traces_map = self.traces.get_for_conversation_with_db(db, identifier)
                     except Exception:
                         traces_map = {}
+                if self.skills is not None:
+                    try:
+                        external_map = self.skills.records_for_conversation_with_db(db, identifier)
+                    except Exception:
+                        external_map = {}
         pricing_snapshot = configured_pricing_snapshot() if traces_map else None
         enriched_turns = [
             self._apply_turn_enrichment(
@@ -153,6 +217,7 @@ class ConversationService:
                 receipts_map.get(turn.turn_id, []),
                 traces_map.get(turn.turn_id),
                 pricing_snapshot=pricing_snapshot,
+                external_records=external_map.get(turn.turn_id, []),
             )
             for turn in turns
         ]
@@ -251,9 +316,10 @@ class ConversationService:
             )
             turn.context = context.record
             agent = agent_factory()
-            recorder.astronomy_transport = (
+            astro_transport = (
                 "mcp" if isinstance(getattr(agent, "ads", None), McpAdsAdapter) else "direct"
             )
+            recorder.astronomy_transport = astro_transport
             if turn.model is None:
                 config = getattr(agent, "settings", None)
                 turn.model = getattr(config, "selected_model_id", "") or getattr(
@@ -277,6 +343,111 @@ class ConversationService:
                         ads_service=getattr(agent, "ads", None),
                     )
 
+            project_id = None
+            project_hint = ""
+            if isinstance(project_sources, dict):
+                project_id = project_sources.get("project_id")
+                project_hint = str(project_sources.get("instructions") or "")
+            if not project_id and getattr(self, "projects", None) is not None:
+                try:
+                    with self.repository.connection() as db:
+                        prow = db.execute(
+                            "SELECT project_id FROM project_conversations WHERE conversation_id=?",
+                            (identifier,),
+                        ).fetchone()
+                        if prow:
+                            project_id = prow[0]
+                except Exception:
+                    project_id = None
+
+            skill_prefs = (
+                self.skills.get_preferences() if self.skills is not None else SkillPreferences()
+            )
+            external_entries = (
+                self.external_mcp.approved_tool_entries() if self.external_mcp is not None else []
+            )
+            max_tool_calls = getattr(getattr(agent, "settings", None), "agent_max_tool_calls", 6)
+            base_catalog = build_turn_tool_catalog(
+                astronomy_transport=astro_transport,
+                include_literature_save=literature_saver is not None,
+                max_calls_per_turn=max_tool_calls,
+                external_entries=external_entries,
+            )
+            skill_def, skill_resolution = resolve_turn_skill(
+                request.message,
+                requested_skill_id=getattr(request, "skill_id", None),
+                preferences=skill_prefs,
+                available_tool_ids=set(base_catalog.tool_ids),
+                tool_mode=request.tool_mode,
+                has_attachments=bool(request.attachments),
+                project_hint=project_hint,
+            )
+            turn_catalog = build_turn_tool_catalog(
+                astronomy_transport=astro_transport,
+                include_literature_save=literature_saver is not None,
+                max_calls_per_turn=max_tool_calls,
+                external_entries=external_entries,
+                external_max_calls_per_turn=getattr(
+                    getattr(self.external_mcp, "local_settings", None),
+                    "external_mcp_max_calls_per_turn",
+                    2,
+                ),
+                skill_allowed_tools=skill_def.allowed_tools if skill_def is not None else None,
+            )
+            skill_resolution.available_tool_ids = turn_catalog.tool_ids
+            skill_resolution.tool_manifest_sha256 = turn_catalog.manifest_sha256
+            turn.skill_resolution = skill_resolution
+            recorder.skill_id = skill_resolution.skill_id
+            recorder.skill_title = skill_resolution.skill_title
+            recorder.skill_version = skill_resolution.skill_version
+            recorder.skill_mode = skill_resolution.selection_mode
+            recorder.tool_manifest_sha256 = turn_catalog.manifest_sha256
+
+            if on_event is not None and skill_def is not None:
+                mode_tag = (
+                    "已选技能" if skill_resolution.selection_mode == "explicit" else "自动匹配技能"
+                )
+                on_event(
+                    {
+                        "type": "status",
+                        "phase": "skill",
+                        "label": f"{mode_tag}：{skill_def.title}（v{skill_def.version}）",
+                    }
+                )
+
+            external_mcp_proposer = None
+            if self.skills is not None and self.external_mcp is not None:
+
+                def external_mcp_proposer(entry, sanitized_args):
+                    self.external_mcp.verify_live_execution_authorization(
+                        server_id=entry.server_id or "",
+                        tool_id=entry.tool_id,
+                        expected_definition_sha256=entry.definition_sha256,
+                    )
+                    now_dt = datetime.now(UTC)
+                    proposal = ExternalMcpProposal(
+                        confirmation_id=str(uuid4()),
+                        conversation_id=identifier,
+                        turn_id=turn.turn_id,
+                        project_id=project_id,
+                        server_id=entry.server_id or "",
+                        server_title=entry.server_title or entry.server_id or "",
+                        server_host=entry.server_host,
+                        tool_id=entry.tool_id,
+                        remote_name=entry.remote_name or "",
+                        tool_title=entry.title,
+                        protocol_version=entry.protocol_version or "",
+                        definition_sha256=entry.definition_sha256,
+                        arguments=sanitized_args,
+                        arguments_sha256=arguments_digest(sanitized_args),
+                        outbound_fields=sorted(sanitized_args.keys()),
+                        status="pending_confirmation",
+                        expires_at=(now_dt + timedelta(minutes=15)).isoformat(),
+                        created_at=now_dt.isoformat(),
+                    )
+                    self.skills.save_proposal(proposal)
+                    return proposal
+
             converse_params = inspect.signature(agent.converse).parameters
             converse_kwargs = {}
             if on_event is not None and "on_event" in converse_params:
@@ -285,7 +456,17 @@ class ConversationService:
                 converse_kwargs["literature_saver"] = literature_saver
             if "trace_recorder" in converse_params:
                 converse_kwargs["trace_recorder"] = recorder
+            if "skill_definition" in converse_params:
+                converse_kwargs["skill_definition"] = skill_def
+            if "skill_resolution" in converse_params:
+                converse_kwargs["skill_resolution"] = skill_resolution
+            if "tool_catalog" in converse_params:
+                converse_kwargs["tool_catalog"] = turn_catalog
+            if "external_mcp_proposer" in converse_params:
+                converse_kwargs["external_mcp_proposer"] = external_mcp_proposer
             turn.response = agent.converse(request.message, context, **converse_kwargs)
+            if turn.response is not None and turn.response.skill_resolution is None:
+                turn.response.skill_resolution = skill_resolution
             turn.execution_status = "completed"
         except ServiceError as exc:
             failure = exc
@@ -353,3 +534,193 @@ class ConversationService:
             failure.turn_id = turn.turn_id
             raise failure
         return turn, 200
+
+    def _append_external_trace_span(
+        self,
+        conversation_id: str,
+        turn_id: str,
+        *,
+        proposal: ExternalMcpProposal,
+        status: str,
+        started_at: str,
+        duration_ms: int,
+        returned_count: int = 0,
+        truncated: bool = False,
+        error_code: str | None = None,
+    ) -> None:
+        if self.traces is None:
+            return
+        try:
+            trace = self.traces.get(conversation_id, turn_id)
+            if trace is None:
+                return
+            span = RunSpan(
+                span_id=str(uuid4()),
+                kind="tool_external_mcp",
+                name=f"外部 MCP 调用：{proposal.tool_title}",
+                status="ok"
+                if status == "ok"
+                else "cancelled"
+                if status == "cancelled"
+                else "error",
+                started_at=started_at,
+                ended_at=datetime.now(UTC).isoformat(),
+                duration_ms=max(0, duration_ms),
+                transport="external_mcp",
+                tool_source="external_mcp",
+                protocol_version=proposal.protocol_version,
+                provider=proposal.server_title or proposal.server_id,
+                truncated=truncated,
+                result_count=returned_count,
+                error_code=error_code,
+                error_category=classify_error_code(error_code) if error_code else None,
+                result_ref={
+                    "type": "external_mcp",
+                    "confirmation_id": proposal.confirmation_id,
+                },
+            )
+            trace.spans.append(span)
+            self.traces.save(trace)
+        except Exception:
+            LOGGER.warning("Failed to append external MCP span for turn %s", turn_id)
+
+    def confirm_external_mcp(
+        self,
+        conversation_id: str,
+        turn_id: str,
+        confirmation_id: str,
+        body: ExternalMcpConfirmRequest,
+    ) -> ExternalMcpConfirmationRecord:
+        if self.skills is None or self.external_mcp is None:
+            raise ServiceError(503, "external_mcp_unavailable", "外部 MCP 确认服务暂不可用。")
+        self.repository.turn(conversation_id, turn_id)
+        with self.gate:
+            record, existing_req_id = self.skills.get_confirmation(
+                conversation_id, turn_id, confirmation_id
+            )
+            prop = record.proposal
+            # Idempotent replay with same client_request_id returns stored result.
+            if (
+                existing_req_id
+                and existing_req_id == body.client_request_id
+                and prop.status in ("executed", "failed")
+            ):
+                return record
+            if prop.status != "pending_confirmation":
+                raise ServiceError(
+                    409,
+                    "confirmation_already_consumed",
+                    "该外部查询确认已处理或已取消，无法重复提交。",
+                )
+            try:
+                expires_dt = datetime.fromisoformat(prop.expires_at)
+                if expires_dt.tzinfo is None:
+                    expires_dt = expires_dt.replace(tzinfo=UTC)
+            except ValueError:
+                expires_dt = datetime.now(UTC) - timedelta(seconds=1)
+            if datetime.now(UTC) > expires_dt:
+                prop.status = "expired"
+                self.skills.update_confirmation(record)
+                raise ServiceError(
+                    409,
+                    "confirmation_expired",
+                    "该外部查询确认已过期，请重新发起查询并核对参数。",
+                )
+            if (
+                body.expected_definition_sha256 != prop.definition_sha256
+                or body.expected_arguments_sha256 != prop.arguments_sha256
+            ):
+                raise ServiceError(
+                    409,
+                    "confirmation_mismatch",
+                    "确认绑定的工具定义或外发参数已变化，请重新核对。",
+                )
+            # Re-check live admin approval & schema digest before any network I/O.
+            config, entry = self.external_mcp.verify_live_execution_authorization(
+                server_id=prop.server_id,
+                tool_id=prop.tool_id,
+                expected_definition_sha256=prop.definition_sha256,
+            )
+
+        started_at = datetime.now(UTC).isoformat()
+        started_mono = time.monotonic()
+        try:
+            result = self.external_mcp.client.call_tool(
+                config,
+                confirmation_id=prop.confirmation_id,
+                tool_id=prop.tool_id,
+                remote_name=prop.remote_name,
+                tool_title=prop.tool_title,
+                arguments=prop.arguments,
+                input_schema=entry.input_schema,
+            )
+            prop.status = "executed" if result.status == "success" else "failed"
+            updated = ExternalMcpConfirmationRecord(proposal=prop, result=result)
+            self.skills.update_confirmation(updated, client_request_id=body.client_request_id)
+            self._append_external_trace_span(
+                conversation_id,
+                turn_id,
+                proposal=prop,
+                status="ok" if result.status == "success" else "error",
+                started_at=started_at,
+                duration_ms=result.duration_ms or int((time.monotonic() - started_mono) * 1000),
+                returned_count=result.returned_count,
+                truncated=result.truncated,
+                error_code=result.error_code,
+            )
+            return updated
+        except ServiceError as exc:
+            duration_ms = max(0, int((time.monotonic() - started_mono) * 1000))
+            prop.status = "failed"
+            failed_result = ExternalMcpResult(
+                confirmation_id=prop.confirmation_id,
+                server_id=prop.server_id,
+                server_title=prop.server_title,
+                tool_id=prop.tool_id,
+                remote_name=prop.remote_name,
+                tool_title=prop.tool_title,
+                protocol_version=prop.protocol_version,
+                status="error",
+                summary=exc.error.message,
+                executed_at=datetime.now(UTC).isoformat(),
+                duration_ms=duration_ms,
+                error_code=exc.error.code,
+                error_message=exc.error.message,
+            )
+            updated = ExternalMcpConfirmationRecord(proposal=prop, result=failed_result)
+            self.skills.update_confirmation(updated, client_request_id=body.client_request_id)
+            self._append_external_trace_span(
+                conversation_id,
+                turn_id,
+                proposal=prop,
+                status="error",
+                started_at=started_at,
+                duration_ms=duration_ms,
+                error_code=exc.error.code,
+            )
+            raise
+
+    def cancel_external_mcp(
+        self,
+        conversation_id: str,
+        turn_id: str,
+        confirmation_id: str,
+    ) -> ExternalMcpConfirmationRecord:
+        if self.skills is None:
+            raise ServiceError(503, "external_mcp_unavailable", "外部 MCP 确认服务暂不可用。")
+        self.repository.turn(conversation_id, turn_id)
+        with self.gate:
+            record, _ = self.skills.get_confirmation(conversation_id, turn_id, confirmation_id)
+            if record.proposal.status != "pending_confirmation":
+                return record
+            record.proposal.status = "cancelled"
+            self.skills.update_confirmation(record)
+            self._append_external_trace_span(
+                conversation_id,
+                turn_id,
+                proposal=record.proposal,
+                status="cancelled",
+                started_at=datetime.now(UTC).isoformat(),
+                duration_ms=0,
+            )
+            return record

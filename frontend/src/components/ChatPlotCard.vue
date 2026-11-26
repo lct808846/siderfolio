@@ -6,6 +6,18 @@ import { useAttachments } from '../stores/attachments'
 import { useProjects } from '../stores/projects'
 import type { ChatAttachment, PlotProposalResult, Turn } from '../types'
 import StatusNotice from './StatusNotice.vue'
+import UiSelect, { type UiSelectOption } from './UiSelect.vue'
+
+const plotEngineOptions: readonly UiSelectOption<'python' | 'gnuplot'>[] = [
+  { value: 'python', label: 'Python (Matplotlib)' },
+  { value: 'gnuplot', label: 'Gnuplot' },
+]
+const plotChartOptions: readonly UiSelectOption<'scatter' | 'line' | 'histogram' | 'errorbar'>[] = [
+  { value: 'scatter', label: '散点图 (scatter)' },
+  { value: 'line', label: '折线图 (line)' },
+  { value: 'histogram', label: '直方图 (histogram)' },
+  { value: 'errorbar', label: '误差棒图 (errorbar)' },
+]
 
 export interface PlotResultPayload {
   kind: 'plot'
@@ -399,19 +411,11 @@ onBeforeUnmount(() => {
         </label>
         <label>
           <span>绘图引擎</span>
-          <select v-model="draftEngine" :disabled="busy">
-            <option value="python">Python (Matplotlib)</option>
-            <option value="gnuplot">Gnuplot</option>
-          </select>
+          <UiSelect v-model="draftEngine" :options="plotEngineOptions" aria-label="绘图引擎" :disabled="busy" />
         </label>
         <label>
           <span>图种</span>
-          <select v-model="draftChart" :disabled="busy">
-            <option value="scatter">散点图 (scatter)</option>
-            <option value="line">折线图 (line)</option>
-            <option value="histogram">直方图 (histogram)</option>
-            <option value="errorbar">误差棒图 (errorbar)</option>
-          </select>
+          <UiSelect v-model="draftChart" :options="plotChartOptions" aria-label="图种" :disabled="busy" />
         </label>
       </div>
       <label class="plot-script-label">

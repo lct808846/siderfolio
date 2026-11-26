@@ -11,6 +11,7 @@ import type { Conversation, Project } from '../types'
 import CreateProjectDialog from './CreateProjectDialog.vue'
 import StatusNotice from './StatusNotice.vue'
 import SuccessToast from './SuccessToast.vue'
+import UiSelect from './UiSelect.vue'
 
 const props = defineProps<{ activeProjectId?: string }>()
 const emit = defineEmits<{
@@ -733,10 +734,16 @@ onBeforeUnmount(() => {
         <template v-else-if="action==='assign-project'">
           <p class="small muted">{{ targets[0]?.title }}</p>
           <label for="sidebar-assign-project">选择所属科研项目</label>
-          <select id="sidebar-assign-project" v-model="assignProjectId" :disabled="busy">
-            <option value="">不归属任何课题项目</option>
-            <option v-for="project in projectsStore.customProjects" :key="project.id" :value="project.id">{{ project.name }}</option>
-          </select>
+          <UiSelect
+            id="sidebar-assign-project"
+            v-model="assignProjectId"
+            aria-label="选择所属科研项目"
+            :disabled="busy"
+            :options="[
+              { value: '', label: '不归属任何课题项目' },
+              ...projectsStore.customProjects.map(project => ({ value: project.id, label: project.name })),
+            ]"
+          />
           <p v-if="!projectsStore.customProjects.length" class="small muted">尚未创建科研项目，可先点击左侧「项目」旁的 ＋ 创建。</p>
         </template>
         <template v-else-if="action==='export'">

@@ -27,6 +27,9 @@ def _strict_type(annotation):
                     "nbody_proposals",
                     "plot_proposals",
                     "literature_receipts",
+                    "skill_resolution",
+                    "external_mcp_proposals",
+                    "external_mcp_results",
                 ):
                     field.default = ...
                     field.default_factory = None

@@ -28,6 +28,7 @@ SpanKind = Literal[
     "tool_literature_save",
     "tool_nbody_proposal",
     "tool_plot_proposal",
+    "tool_external_mcp",
     "compute_task",
     "plot_run",
 ]
@@ -50,6 +51,8 @@ ErrorCategory = Literal[
     "authorization",
     "mcp_subprocess",
     "mcp_protocol",
+    "mcp_transport",
+    "budget_exceeded",
     "upstream",
     "not_found",
     "timeout",
@@ -68,7 +71,9 @@ class RunSpan(BaseModel):
     started_at: str
     ended_at: str | None = None
     duration_ms: int | None = Field(default=None, ge=0)
-    transport: Literal["direct", "mcp", "internal"] | None = None
+    transport: Literal["direct", "mcp", "external_mcp", "internal"] | None = None
+    tool_source: Literal["builtin", "local_mcp", "external_mcp"] | None = None
+    protocol_version: str | None = None
     provider: str | None = None
     model: str | None = None
     correlation_id: str | None = None
@@ -89,6 +94,13 @@ class RunTrace(BaseModel):
     ended_at: str | None = None
     duration_ms: int | None = Field(default=None, ge=0)
     astronomy_transport: Literal["direct", "mcp"] | None = None
+    skill_id: str | None = None
+    skill_title: str | None = None
+    skill_version: str | None = None
+    skill_mode: (
+        Literal["explicit", "auto", "disabled", "none", "ambiguous", "auto_disabled"] | None
+    ) = None
+    tool_manifest_sha256: str | None = None
     spans: list[RunSpan] = Field(default_factory=list)
     usage: ModelUsageSummary | None = None
     available: bool = True

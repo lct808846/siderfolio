@@ -7,7 +7,9 @@ from urllib.parse import quote_plus
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator
 
 from astroagent.literature_schemas import LiteratureSaveReceipt
+from astroagent.skill_schemas import SkillResolution
 from astroagent.source_schemas import Source
+from astroagent.tool_schemas import ExternalMcpProposal, ExternalMcpResult
 
 
 class ChatRequest(BaseModel):
@@ -626,5 +628,8 @@ class ChatResponse(BaseModel):
     nbody_proposals: list[NBodyProposalResult] = Field(default_factory=list)
     plot_proposals: list[PlotProposalResult] = Field(default_factory=list)
     literature_receipts: list[LiteratureSaveReceipt] = Field(default_factory=list)
+    skill_resolution: SkillResolution | None = None
+    external_mcp_proposals: list[ExternalMcpProposal] = Field(default_factory=list)
+    external_mcp_results: list[ExternalMcpResult] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     warnings: list[ErrorInfo] = Field(default_factory=list)

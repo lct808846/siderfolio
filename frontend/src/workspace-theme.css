@@ -1687,7 +1687,7 @@ input[type=file]::file-selector-button:hover {
 .settings-workflow li + li { margin-top: var(--space-2); }
 .settings-switch-row { cursor: pointer; }
 .settings-switch-row:has(input:disabled) { cursor: default; }
-.settings-switch-row .settings-switch {
+.settings-switch {
   appearance: none;
   position: relative;
   flex: 0 0 40px;
@@ -5386,9 +5386,11 @@ textarea {
 .history-scroll {
   overscroll-behavior: contain;
 }
-.conversation-layout .chat-scroll > .turn {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 220px;
+.conversation-layout .chat-scroll {
+  scroll-behavior: auto;
+}
+.conversation-layout.workbench[data-results-restoring="true"] .chat-scroll > .turn {
+  animation: none;
 }
 .profile-model-card,
 .lit-item {
