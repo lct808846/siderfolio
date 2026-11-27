@@ -259,8 +259,10 @@ class ProjectRepository:
             self._idle(db, identifier)
             if getattr(db, "dialect", None) == "postgresql":
                 from astroagent.compute_tasks import remove_project
+                from astroagent.memory_store import MemoryStore
 
                 remove_project(db, identifier)
+                MemoryStore(self.repo).on_project_deleted_with_db(db, identifier)
             for row in db.execute(
                 "SELECT conversation_id FROM project_conversations WHERE project_id=?",
                 (identifier,),
@@ -307,6 +309,12 @@ class ProjectRepository:
                 invalidate_conversation(
                     db, source, conversation_id, "conversation_moved_or_removed"
                 )
+                if getattr(db, "dialect", None) == "postgresql":
+                    from astroagent.memory_store import MemoryStore
+
+                    MemoryStore(self.repo).on_conversation_moved_with_db(
+                        db, source, conversation_id
+                    )
             db.execute(
                 "DELETE FROM project_conversations WHERE conversation_id=?", (conversation_id,)
             )

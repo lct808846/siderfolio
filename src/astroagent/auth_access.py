@@ -30,7 +30,7 @@ PUBLIC = {
 
 
 def administrator(user, recent=False):
-    if not user or not user["admin"] or not user["totp_secret"] or not user.get("mfa_at"):
+    if not user or not user["admin"] or (user["totp_secret"] and not user.get("mfa_at")):
         raise ServiceError(403, "access_denied", "无权访问此功能。")
     if recent and (
         not user.get("reauth_at") or user["reauth_at"] < datetime.now(UTC) - timedelta(minutes=5)
@@ -105,13 +105,6 @@ class IdentityAccess:
                     )
                 ):
                     return await fail(403, "csrf_invalid", "页面验证已失效，请刷新后重试。")
-            if (
-                user
-                and user["admin"]
-                and (not user["totp_secret"] or not user["mfa_at"])
-                and not path.startswith("/api/v1/auth/")
-            ):
-                return await fail(403, "mfa_required", "管理员须先完成双因素认证。")
             if path in {
                 "/docs",
                 "/redoc",

@@ -326,7 +326,7 @@ async function authenticate() {
     message.value = (
       await identityRequest('auth/reauthenticate', 'POST', {
         password: password.value,
-        code: code.value,
+        code: identityUser.value?.totp_enabled ? code.value : '',
       })
     ).message
     password.value = ''
@@ -543,7 +543,7 @@ onBeforeUnmount(() => {
                   maxlength="128"
                 />
               </label>
-              <label class="admin-reauth-field">
+              <label v-if="identityUser?.totp_enabled" class="admin-reauth-field">
                 <span>验证码或恢复码</span>
                 <input
                   v-model="code"
@@ -617,7 +617,7 @@ onBeforeUnmount(() => {
                 {{ mailPeriods[item.period] }} {{ item.used }} / {{ item.limit }}{{ item.warning ? ' · 接近上限' : '' }}
               </span>
             </div>
-            <div v-if="tab !== 'feedback'" class="admin-table-wrap">
+            <div v-if="tab !== 'feedback' && tab !== 'mcp'" class="admin-table-wrap">
               <table v-if="tab === 'users'" class="admin-table">
                 <thead>
                   <tr>

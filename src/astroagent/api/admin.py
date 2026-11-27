@@ -52,9 +52,9 @@ def writable(db, user):
         (
             "SELECT u.* FROM public.auth_users u JOIN public.auth_sessions s ON "
             "s.user_id=u.id WHERE u.id=%s AND s.hash=%s AND NOT s.revoked AND "
-            "s.expires_at>now() AND s.reauth_at>now()-interval '5 minutes' AND s.mfa_at "
-            "IS NOT NULL AND u.admin AND u.active AND NOT u.disabled AND u.totp_secret IS"
-            " NOT NULL FOR UPDATE OF u"
+            "s.expires_at>now() AND s.reauth_at>now()-interval '5 minutes' AND "
+            "(u.totp_secret IS NULL OR s.mfa_at IS NOT NULL) AND u.admin AND u.active "
+            "AND NOT u.disabled FOR UPDATE OF u"
         ),
         (user["id"], user["session_hash"]),
     ).fetchone()
@@ -177,10 +177,10 @@ def update_user(user_id: UUID, body: UserAction, request: Request):
             and not target["disabled"]
         ):
             count = db.execute(
-                "SELECT count(*) AS n FROM public.auth_users WHERE admin AND active AND NOT "
-                "disabled AND totp_secret IS NOT NULL"
+                "SELECT count(*) AS n FROM public.auth_users "
+                "WHERE admin AND active AND NOT disabled"
             ).fetchone()["n"]
-            if target["totp_secret"] and count <= 1:
+            if count <= 1:
                 raise ServiceError(409, "last_administrator", "不能禁用或降权最后一位有效管理员。")
         if body.action == "grant_admin" and (not target["active"] or target["disabled"]):
             raise ServiceError(409, "user_not_active", "只能授权已激活且未禁用的账号。")

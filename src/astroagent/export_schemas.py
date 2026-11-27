@@ -30,6 +30,7 @@ def _strict_type(annotation):
                     "skill_resolution",
                     "external_mcp_proposals",
                     "external_mcp_results",
+                    "memory_receipts",
                 ):
                     field.default = ...
                     field.default_factory = None

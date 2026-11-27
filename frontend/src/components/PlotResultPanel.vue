@@ -171,7 +171,7 @@ watch(
 
     <div v-else-if="!previewItems.length" class="plot-empty-card">
       <strong>当前空间尚无已生成的科研绘图</strong>
-      <p>在对话中勾选「科研绘图」或在绘图审阅卡片点击「确认执行隔离绘图」后，高清 PNG、矢量 PDF 与独立复现脚本会直接展示在这里。</p>
+      <p>在对话中直接描述科研绘图需求（或选用「科研绘图与 N 体实验准备」技能），并在绘图审阅卡片点击「确认执行隔离绘图」后，高清 PNG、矢量 PDF 与独立复现脚本会直接展示在这里。</p>
     </div>
 
     <template v-else>
@@ -285,12 +285,12 @@ watch(
 }
 
 .plot-empty-card {
-  padding: 20px 16px;
-  border-radius: 14px;
-  border: 1px dashed var(--border-strong);
-  background: color-mix(in srgb, var(--surface-muted) 45%, transparent);
+  padding: 28px 16px;
+  border: 0;
+  background: transparent;
   text-align: center;
   display: grid;
+  justify-items: center;
   gap: 6px;
 }
 

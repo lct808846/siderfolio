@@ -36,7 +36,7 @@ const allTargets = computed(() => overview.value ? [...overview.value.conversati
 const chosen = computed(() => allTargets.value.find(t => key(t) === targetKey.value))
 const canCreate = computed(() => chosen.value?.available && evidence.value?.evidence.validity === 'available' && evidence.value.evidence.id === evidenceId.value && !pending.value)
 const pretty = (v: unknown) => JSON.stringify(v, null, 2)
-function report(e: unknown) { error.value = e instanceof Error ? e.message : '操作未确认，请刷新记录核对。' }
+function report(e: unknown) { error.value = e instanceof Error ? e.message : '操作未确认，请稍后重试或重新进入页面核对。' }
 function storageKey(project: string) { return `astroagent.project-link.request.${project}` }
 function remember(value: typeof pending.value, project = String(route.params.projectId)) {
   if (route.params.projectId === project) pending.value = value
@@ -82,7 +82,7 @@ async function loadPage(after?: string) {
     const value = await linksApi.list(project, { ...(after ? { after } : {}), ...(filter.value ? { target_type: filter.value as LinkTarget['type'] } : {}) })
     if (route.params.projectId !== project) return
     page.value = value
-    if (value.project_revision !== overview.value?.project.revision) message.value = '项目已更新；编辑前请刷新总览核对修订号。分页按不可变关联ID排序。'
+    if (value.project_revision !== overview.value?.project.revision) message.value = '项目已更新；编辑前请重新进入页面核对最新修订号。分页按不可变关联ID排序。'
     panel.value = 'results'
   })
 }

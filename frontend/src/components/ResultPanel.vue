@@ -60,13 +60,14 @@ const props = defineProps<{
   plotRunId?: string
   plotTitle?: string
   plotFiles?: string[]
-  expandable?: boolean
-  expanded?: boolean
+  resizable?: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
-  'toggle-expand': []
+  'resize-start': [event: PointerEvent]
+  'resize-step': [delta: number]
+  'resize-reset': []
   'select-turn': [turnId: string]
   'select-compute-task': [taskId: string]
   'select-plot-run': [runId: string]
@@ -258,11 +259,14 @@ const conversationUploads = computed<ArtifactPreviewItem[]>(() => {
     if (seen.has(dedupeKey)) return
     seen.add(dedupeKey)
     const raw = attachmentsStore.rawFile(att.sha256)
+    const isImageAtt = Boolean(att.media_type?.startsWith('image/') && att.image_data_url)
     list.push({
       id: `upload:${dedupeKey}`,
       name: att.filename,
       subtitle: `${originLabel} · ${att.media_type}`,
+      category: isImageAtt ? 'image' : undefined,
       mediaType: att.media_type,
+      url: isImageAtt ? (att.image_data_url ?? undefined) : undefined,
       blob: raw,
       text: att.text,
     })
@@ -715,7 +719,21 @@ async function save() {
 </script>
 
 <template>
-  <aside class="results-panel" :class="{ 'is-expanded': expanded }" aria-label="结果与文件">
+  <aside class="results-panel" aria-label="结果与文件">
+    <div
+      v-if="resizable"
+      class="workbench-resizer workbench-resizer-right"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="拖拽调整右侧边栏宽度（双击恢复默认）"
+      title="拖拽调整右侧边栏宽度，双击恢复默认"
+      tabindex="0"
+      @pointerdown="emit('resize-start', $event)"
+      @dblclick="emit('resize-reset')"
+      @keydown.left.prevent="emit('resize-step', 20)"
+      @keydown.right.prevent="emit('resize-step', -20)"
+      @keydown.home.prevent="emit('resize-reset')"
+    />
     <div class="results-sheet-handle" aria-hidden="true"><span /></div>
     <header class="pane-heading workspace-pane-header results-header">
       <div class="results-title-block">
@@ -723,18 +741,6 @@ async function save() {
       </div>
       <div class="results-header-actions">
         <span v-if="historical" class="tag">历史</span>
-        <button
-          v-if="expandable"
-          type="button"
-          class="result-icon-action result-expand-btn"
-          :aria-pressed="expanded"
-          :aria-label="expanded ? '恢复标准宽度' : '加宽展开结果栏'"
-          :title="expanded ? '恢复标准宽度' : '加宽展开结果栏'"
-          @click="emit('toggle-expand')"
-        >
-          <svg v-if="!expanded" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h5v5m-6 1 6-6M9 20H4v-5m6-1-6 6" /></svg>
-          <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="M20 9h-5V4m0 5 5-5M4 15h5v5m0-5-5 5" /></svg>
-        </button>
         <button v-if="dismissible" type="button" class="result-icon-action result-close" aria-label="收起结果面板" title="收起结果栏" @click="emit('close')">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
         </button>
@@ -1644,10 +1650,6 @@ async function save() {
     height: 4px;
     border-radius: 999px;
     background: color-mix(in srgb, var(--muted) 36%, transparent);
-  }
-
-  .result-expand-btn {
-    display: none;
   }
 
   .result-close {

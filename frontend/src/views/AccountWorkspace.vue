@@ -166,7 +166,12 @@ async function enrollTotp() {
     secret.value = value.secret
     otpauthUri.value =
       value.otpauth_uri ||
-      buildOtpAuthUri(identityUser.value?.email || 'user', value.secret, 'Siderfolio')
+      buildOtpAuthUri(
+        identityUser.value?.email || 'user',
+        value.secret,
+        'Siderfolio',
+        typeof window !== 'undefined' ? `${window.location.origin}/siderfolio-logo.png` : undefined,
+      )
     totpPassword.value = ''
     totpCurrentCode.value = ''
     confirmCode.value = ''
@@ -377,11 +382,11 @@ function dialogClosed() { dialogOpen.value = false; selectedSession.value = null
 function toggleMfa(event: Event) {
   const enabled = !!identityUser.value?.totp_enabled
   ;(event.target as HTMLInputElement).checked = enabled
-  if (busy.value || (enabled && identityUser.value?.admin)) return
+  if (busy.value) return
   void openPanel(enabled ? 'mfa-disable' : 'mfa-enable')
 }
 async function disableMfa() {
-  if (busy.value || !totpPassword.value || !totpCurrentCode.value.trim() || identityUser.value?.admin) return
+  if (busy.value || !totpPassword.value || !totpCurrentCode.value.trim()) return
   busy.value = true; clearFeedback()
   try {
     await identityRequest('auth/totp/disable', 'POST', { password: totpPassword.value, code: totpCurrentCode.value.trim() })
@@ -412,16 +417,12 @@ onMounted(() => { void loadSessions() })
         <h3 id="account-advice-title">安全建议</h3>
         <div
           class="account-security-advice"
-          :class="!identityUser?.totp_enabled || (identityUser?.admin && !identityUser?.mfa_verified) || anomalousSessionsCount > 0 ? 'is-warn' : 'is-ok'"
+          :class="!identityUser?.totp_enabled || anomalousSessionsCount > 0 ? 'is-warn' : 'is-ok'"
         >
           <div>
             <template v-if="!identityUser?.totp_enabled">
               <strong>建议启用多因素身份验证 (MFA)</strong>
               <p>开启身份验证器一次性验证码，可有效防止密码泄露导致的未授权登录。</p>
-            </template>
-            <template v-else-if="identityUser?.admin && !identityUser?.mfa_verified">
-              <strong>当前会话尚未经过双因素验证</strong>
-              <p>管理员账号须退出并使用 6 位动态验证码重新登录后，才可访问控制台与系统设置。</p>
             </template>
             <template v-else-if="anomalousSessionsCount > 0">
               <strong>有 {{ anomalousSessionsCount }} 台设备存在异常登录标记</strong>
@@ -436,7 +437,7 @@ onMounted(() => { void loadSessions() })
           <span class="account-advice-shield" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6z" />
-              <path v-if="identityUser?.totp_enabled && (!identityUser?.admin || identityUser?.mfa_verified) && anomalousSessionsCount === 0" d="m9 12 2 2 4-4" />
+              <path v-if="identityUser?.totp_enabled && anomalousSessionsCount === 0" d="m9 12 2 2 4-4" />
               <path v-else d="M12 8.5v4m0 3.2h.01" />
             </svg>
           </span>
@@ -455,9 +456,9 @@ onMounted(() => { void loadSessions() })
         <h3 id="account-mfa-title">多因素身份验证 (MFA)</h3>
         <div class="settings-row settings-switch-row">
           <div><h4><label for="account-mfa-switch">身份验证器应用</label></h4><p id="account-mfa-description">使用身份验证器应用生成的一次性验证码</p></div>
-          <input id="account-mfa-switch" class="settings-switch" type="checkbox" role="switch" :checked="!!identityUser?.totp_enabled" :disabled="busy || (!!identityUser?.admin && !!identityUser?.totp_enabled)" aria-describedby="account-mfa-description account-mfa-policy" @change="toggleMfa" />
+          <input id="account-mfa-switch" class="settings-switch" type="checkbox" role="switch" :checked="!!identityUser?.totp_enabled" :disabled="busy" aria-describedby="account-mfa-description account-mfa-policy" @change="toggleMfa" />
         </div>
-        <p id="account-mfa-policy" class="settings-footnote">{{ identityUser?.admin ? identityUser.totp_enabled ? '管理员账号须保持 MFA 开启，以保护管理操作。' : '管理员账号须先开启 MFA，才能使用工作台与管理功能。' : '开启时需扫码并验证；关闭时需确认密码及验证码，并重新登录。' }}</p>
+        <p id="account-mfa-policy" class="settings-footnote">开启时需扫码并验证；关闭时需确认密码及验证码，并重新登录。</p>
         <button v-if="recovery.length" type="button" class="account-recovery-reminder" @click="openPanel('mfa-enable')">查看并保存本次恢复码 →</button>
       </section>
 
@@ -542,7 +543,7 @@ onMounted(() => { void loadSessions() })
         <p>关闭后登录将不再要求动态验证码，现有恢复码会失效，所有旧会话会退出。</p>
         <label>当前密码<input v-model="totpPassword" type="password" autocomplete="current-password" maxlength="128" required :disabled="busy" /></label>
         <label>验证码或恢复码<input v-model="totpCurrentCode" type="text" autocomplete="one-time-code" maxlength="80" required :disabled="busy" /></label>
-        <div class="project-actions"><button type="button" :disabled="busy" @click="closeDialog">取消</button><button class="button-danger" :disabled="busy || !totpPassword || !totpCurrentCode.trim() || !!identityUser?.admin">{{ busy ? '正在关闭…' : '关闭 MFA 并退出' }}</button></div>
+        <div class="project-actions"><button type="button" :disabled="busy" @click="closeDialog">取消</button><button class="button-danger" :disabled="busy || !totpPassword || !totpCurrentCode.trim()">{{ busy ? '正在关闭…' : '关闭 MFA 并退出' }}</button></div>
       </form>
       <div v-else-if="panel === 'sessions'" class="account-session-detail">
         <div class="account-session-toolbar">

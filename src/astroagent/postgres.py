@@ -461,6 +461,7 @@ class PostgresRepository(ConversationRepository):
     def _used(db):
         from astroagent.literature_store import used as literature_used
         from astroagent.local_model_store import used as local_used
+        from astroagent.memory_store import used as memory_used
         from astroagent.plot_store import used
         from astroagent.rag_store import used_bytes
         from astroagent.trace_store import used as trace_used
@@ -472,6 +473,7 @@ class PostgresRepository(ConversationRepository):
             + local_used(db)
             + literature_used(db)
             + trace_used(db)
+            + memory_used(db)
         )
 
     def close(self):

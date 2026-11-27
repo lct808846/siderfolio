@@ -7,7 +7,7 @@ import time
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
-from astroagent.context import PreparedContext
+from astroagent.context import PreparedContext, select_omitted_completed_turns
 from astroagent.conversations import utc_now
 from astroagent.errors import ServiceError
 from astroagent.execution import MODEL_TASK_SLOTS
@@ -42,6 +42,7 @@ class ConversationService:
         self.literature = None
         self.traces = None
         self.skills = None
+        self.memory = None
         self.external_mcp = None
 
     def delete(self, identifier):
@@ -57,6 +58,11 @@ class ConversationService:
             if self.skills is not None:
                 try:
                     self.skills.delete_conversation(identifier)
+                except Exception:
+                    pass
+            if self.memory is not None:
+                try:
+                    self.memory.store.on_conversation_deleted(identifier)
                 except Exception:
                     pass
 
@@ -91,6 +97,11 @@ class ConversationService:
             merge_confirmations_into_turn(turn, external_records)
         if turn.skill_resolution is None and turn.response is not None:
             turn.skill_resolution = turn.response.skill_resolution
+        if turn.response is not None:
+            if turn.memory_receipts and not turn.response.memory_receipts:
+                turn.response.memory_receipts = list(turn.memory_receipts)
+            elif turn.response.memory_receipts and not turn.memory_receipts:
+                turn.memory_receipts = list(turn.response.memory_receipts)
         if trace is not None:
             if pricing_snapshot is not None:
                 pricing, aliases = pricing_snapshot
@@ -307,12 +318,107 @@ class ConversationService:
                         provider="pgvector",
                         error_code="rag_context_failed",
                     )
+            project_id = None
+            project_hint = ""
+            conversation_title = ""
+            if isinstance(project_sources, dict):
+                project_id = project_sources.get("project_id")
+                project_hint = str(project_sources.get("instructions") or "")
+            try:
+                with self.repository.connection() as db:
+                    crow = db.execute(
+                        "SELECT title FROM conversations WHERE id=?",
+                        (identifier,),
+                    ).fetchone()
+                    if crow:
+                        conversation_title = str(crow[0] or "")
+                    if not project_id and getattr(self, "projects", None) is not None:
+                        prow = db.execute(
+                            "SELECT project_id FROM project_conversations WHERE conversation_id=?",
+                            (identifier,),
+                        ).fetchone()
+                        if prow:
+                            project_id = prow[0]
+            except Exception:
+                pass
+
+            omitted_completed = select_omitted_completed_turns(history)
+            memory_bundle = None
+            if self.memory is not None:
+                mem_span = recorder.start_span(kind="memory_context", name="记忆与跨会话检索")
+                sum_span = (
+                    recorder.start_span(kind="conversation_summary", name="长对话历史摘要压缩")
+                    if omitted_completed
+                    else None
+                )
+                try:
+                    memory_bundle = self.memory.prepare_turn_memory(
+                        conversation_id=identifier,
+                        project_id=project_id,
+                        message=request.message,
+                        omitted_completed=omitted_completed,
+                    )
+                    mtrace = memory_bundle.trace
+                    if (
+                        mtrace.retrieval_mode != "disabled"
+                        or mtrace.memory_count > 0
+                        or mtrace.history_count > 0
+                    ):
+                        recorder.record_span(
+                            span_id=mem_span[0],
+                            started_at=mem_span[1],
+                            started_mono=mem_span[2],
+                            kind="memory_context",
+                            name="记忆与跨会话检索",
+                            status="partial" if mtrace.degraded_reasons else "ok",
+                            transport="internal",
+                            provider=mtrace.retrieval_mode,
+                            result_count=mtrace.memory_count + mtrace.history_count,
+                        )
+                    if sum_span is not None:
+                        recorder.record_span(
+                            span_id=sum_span[0],
+                            started_at=sum_span[1],
+                            started_mono=sum_span[2],
+                            kind="conversation_summary",
+                            name="长对话历史摘要压缩",
+                            status="ok" if memory_bundle.summary is not None else "error",
+                            transport="internal",
+                            provider=(
+                                memory_bundle.summary.generation_mode
+                                if memory_bundle.summary is not None
+                                else "local_rule"
+                            ),
+                            result_count=mtrace.summary_covered_count,
+                            error_code=(
+                                "summary_unavailable" if memory_bundle.summary is None else None
+                            ),
+                        )
+                except Exception:
+                    memory_bundle = None
+                    recorder.record_span(
+                        span_id=mem_span[0],
+                        started_at=mem_span[1],
+                        started_mono=mem_span[2],
+                        kind="memory_context",
+                        name="记忆与跨会话检索",
+                        status="error",
+                        transport="internal",
+                        error_code="memory_context_failed",
+                    )
+
             context = PreparedContext(
                 history,
                 request.message,
                 attachments=request.attachments,
                 project_sources=project_sources,
                 tool_mode=request.tool_mode,
+                memory_items=memory_bundle.memories if memory_bundle is not None else None,
+                history_snippets=(
+                    memory_bundle.history_snippets if memory_bundle is not None else None
+                ),
+                conversation_summary=memory_bundle.summary if memory_bundle is not None else None,
+                memory_trace=memory_bundle.trace if memory_bundle is not None else None,
             )
             turn.context = context.record
             agent = agent_factory()
@@ -343,23 +449,6 @@ class ConversationService:
                         ads_service=getattr(agent, "ads", None),
                     )
 
-            project_id = None
-            project_hint = ""
-            if isinstance(project_sources, dict):
-                project_id = project_sources.get("project_id")
-                project_hint = str(project_sources.get("instructions") or "")
-            if not project_id and getattr(self, "projects", None) is not None:
-                try:
-                    with self.repository.connection() as db:
-                        prow = db.execute(
-                            "SELECT project_id FROM project_conversations WHERE conversation_id=?",
-                            (identifier,),
-                        ).fetchone()
-                        if prow:
-                            project_id = prow[0]
-                except Exception:
-                    project_id = None
-
             skill_prefs = (
                 self.skills.get_preferences() if self.skills is not None else SkillPreferences()
             )
@@ -373,6 +462,7 @@ class ConversationService:
                 max_calls_per_turn=max_tool_calls,
                 external_entries=external_entries,
             )
+            memory_hint = memory_bundle.memory_hint if memory_bundle is not None else ""
             skill_def, skill_resolution = resolve_turn_skill(
                 request.message,
                 requested_skill_id=getattr(request, "skill_id", None),
@@ -381,7 +471,16 @@ class ConversationService:
                 tool_mode=request.tool_mode,
                 has_attachments=bool(request.attachments),
                 project_hint=project_hint,
+                memory_hint=memory_hint,
             )
+            if (
+                context.memory_trace is not None
+                and skill_resolution.matched_reason
+                and "记忆协同" in skill_resolution.matched_reason
+            ):
+                context.memory_trace.skill_assisted_by_memory = True
+                turn.context.memory_context = context.memory_trace
+            recorder.memory_context = context.memory_trace
             turn_catalog = build_turn_tool_catalog(
                 astronomy_transport=astro_transport,
                 include_literature_save=literature_saver is not None,
@@ -468,6 +567,22 @@ class ConversationService:
             if turn.response is not None and turn.response.skill_resolution is None:
                 turn.response.skill_resolution = skill_resolution
             turn.execution_status = "completed"
+            turn.context = context.record
+            recorder.memory_context = context.memory_trace
+            if self.memory is not None:
+                try:
+                    memory_receipts = self.memory.process_completed_turn(
+                        conversation_id=identifier,
+                        project_id=project_id,
+                        turn=turn,
+                        conversation_title=conversation_title,
+                    )
+                    if memory_receipts:
+                        turn.memory_receipts = list(memory_receipts)
+                        if turn.response is not None:
+                            turn.response.memory_receipts = list(memory_receipts)
+                except Exception:
+                    LOGGER.warning("Post-turn memory processing failed for turn %s", turn.turn_id)
         except ServiceError as exc:
             failure = exc
             turn.execution_status = "failed"

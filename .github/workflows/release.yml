@@ -237,8 +237,13 @@ jobs:
           set -euo pipefail
           export GIT_TERMINAL_PROMPT=0 GIT_TRACE_REDACT=1
           cd -- "$1"
+          origin_url="$(git remote get-url origin)"
+          if [[ "$origin_url" == "https://github.com/lct808846/astroagent.git" && "$4" == "lct808846/siderfolio" ]]; then
+            git remote set-url origin "https://github.com/$4.git"
+            origin_url="$(git remote get-url origin)"
+          fi
           [[ "$(git rev-parse --show-toplevel)" == "$(pwd -P)" &&
-             "$(git remote get-url origin)" == "https://github.com/$4.git" &&
+             "$origin_url" == "https://github.com/$4.git" &&
              -z "$(git status --porcelain --untracked-files=no)" ]] || {
             echo 'Use a clean production checkout of the expected repository.' >&2
             exit 1
@@ -279,6 +284,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorization.outputs.sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           name: release-manifest
@@ -289,10 +300,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.authorization.outputs.version }}
+          REVISION: ${{ needs.authorization.outputs.sha }}
         run: |
           if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" --json isDraft,assets > existing-release.json; then
             jq -e '(.isDraft == false) and ([.assets[].name] | contains(["release.json", "deployment-report.log"]))' existing-release.json >/dev/null
           else
+            python scripts/release_assets.py notes "$VERSION" "$REVISION" "${GITHUB_REPOSITORY,,}" release-notes.md
             gh release create "$VERSION" release.json deployment-report.log --repo "$GITHUB_REPOSITORY" \
-              --verify-tag --title "Siderfolio $VERSION" --generate-notes
+              --verify-tag --title "Siderfolio $VERSION" --notes-file release-notes.md
           fi

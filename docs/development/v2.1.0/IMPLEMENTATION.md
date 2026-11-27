@@ -1,6 +1,7 @@
 # Siderfolio V2.1.0 实施说明
 
-**版本**：`2.1.0`　**日期**：2026-11-25　**基线**：`v2.0.7`（`6694ce4`）　**状态**：源码与本机开发预览已完成，自动化测试与功能/视觉验收**待验收**
+**版本**：`2.1.0`　**日期**：2026-11-26　**基线**：`v2.0.7`（`6694ce4`）　**当前提交**：`5873ba8`（`v2.1.0`）  
+**状态**：`v2.1.0` 本地测试与隔离库验收已通过并留证；云端发布/生产真实第三方外部 MCP 联调、目视复核与会后工作区增量收尾**待验收**
 
 依据 [Siderfolio V2.1 开发文档](../../PROJECT_PLAN_V2.1.md) 与 [UI 设计规范](../../UI_DESIGN_SPEC.md)，本版本在不改变单 Agent 架构的前提下，交付了统一服务端工具目录、首批三个内置 `SKILL.md` 科研技能、受控外部 Streamable HTTP MCP 接入链路，以及对应的前端交互、个人设置、管理后台与运行追踪。
 
@@ -38,7 +39,8 @@
   - 版本号更新至 `2.1.0`（`pyproject.toml`、`src/astroagent/__init__.py`、`frontend/package.json`、`frontend/package-lock.json`），同步重新生成 `frontend/openapi.json`、`frontend/src/types/generated.ts` 并在 `frontend/src/types/index.ts` 统一导出。
 - **前端组件与页面**：
   - `frontend/src/api/skills.ts`、`frontend/src/stores/skills.ts`、`frontend/src/api/index.ts`、`frontend/src/stores/workbench.ts`
-  - `frontend/src/components/ComposerSkillPicker.vue`、`frontend/src/components/ChatExternalMcpCard.vue`、`frontend/src/views/App.vue`：查询工作台输入区提供「技能」选择器（支持自动匹配、显式指定、本轮不用），回答区展示本轮技能命中方式与版本标签、澄清提示以及外部 MCP 只读查询外发字段确认卡片。
+  - `frontend/src/components/ComposerSkillPicker.vue`、`frontend/src/components/SkillDetailDialog.vue`、`frontend/src/components/ChatExternalMcpCard.vue`、`frontend/src/components/UiSelect.vue`、`frontend/src/views/App.vue`：查询工作台输入区提供「技能」选择器（统一承接绘图/N 体与科研技能，移除冗余独立快捷按钮），回答区精简阅读表面（技能命中方式与版本收进可展开 `TurnTracePanel`，打开/切换会话直接定位于底部无滑动动画），外部只读查询展示外发字段确认卡片，全站原生 `<select>` 统一替换为 `UiSelect` 毛玻璃顶层浮层。
+  - `src/astroagent/literature_auth.py`：扩展口语化个人文献直接入库指令（如「把引用最高的 3 篇加入我的文献」）及引用/时间排序识别，继续严格拦截否定/假设/非个人库表述。
   - `frontend/src/components/SkillsSettings.vue`、`frontend/src/views/SettingsWorkspace.vue`：所有登录用户均可在「设置 → 技能与工具」管理自动匹配开关、单个内置技能启停并查看当前获准工具目录。
   - `frontend/src/components/AdminMcpPanel.vue`、`frontend/src/views/AdminWorkspace.vue`：后台新增「MCP 工具」管理区，支持服务启停、重新发现工具、核对定义摘要并逐项批准/撤销；遵循无独立「刷新」按钮与 `StatusNotice` 顶部浮层错误提示规范。
 
@@ -48,16 +50,28 @@
 - 控制面（`public` schema）：`public.mcp_external_servers`、`public.mcp_external_tool_approvals` 及 `public.auth_meta` 键 `v21_mcp_schema=1`。
 - 租户数据面（`aa_<hex>` schema）：`skill_meta`、`skill_preferences`、`external_mcp_confirmations`（按需首次写入自动建表，历史记录零迁移风险）。
 
-## 3. 测试文件与待验收事项
+## 3. 测试文件与验收状态
 
-新增离线与 PostgreSQL 集成测试文件（开发阶段按仓库规范未主动执行）：
+新增离线与 PostgreSQL 集成测试文件：
 - `tests/test_skills_and_catalog.py`
 - `tests/test_external_mcp.py`
 - `tests/test_v21_postgres.py`
 
-**待验收清单**：
-- [ ] 后端 `python -m pytest -q` 与 `python -m ruff check / format --check src tests scripts`（**待验收**）
-- [ ] 独立测试数据库 PostgreSQL 集成与多账号隔离验收：`ASTROAGENT_RUN_POSTGRES_TESTS=1` 运行 `tests/test_v21_postgres.py`（**待验收**）
-- [ ] 前端 `npm run typecheck`、`npm run lint`、`npm test`、`npm run build` 及 Playwright 浏览器测试（**待验收**）
-- [ ] 桌面端与 390px 移动端视觉核查（技能选择器、设置页、管理后台 MCP 工具页、外部确认卡片与运行追踪）（**待验收**）
-- [ ] 受控 HTTPS 外部 MCP 端点端到端联调与 V2.0.7 vs V2.1.0 科学样例对照留证（写入 `docs/test-records/v2.1.0/`）（**待验收**）
+**`v2.1.0`（`5873ba8`）本地验收留证**：[20261126T015700Z 验收记录](../../test-records/v2.1.0/acceptance/20261126T015700Z/README.md)
+
+- [x] 版本号一致（`2.1.0`）与 `python scripts/generate_frontend_types.py --check`（**已验证通过**）
+- [x] Python `compileall`、`ruff check / format --check src tests scripts`、`pip check` 及离线 `pytest`（697 passed, 4 skipped, 0 failed）（**已验证通过**）
+- [x] 独立测试库 PostgreSQL + 真实绘图（`pytest -m "postgres and not live"` + `scripts/ci_verify.py postgres`，98 passed, 0 skipped, 0 failed，含 `test_v21_postgres.py` 2/2 多账号隔离与审计）及计算沙箱 `scripts/ci_verify.py compute`（**已验证通过**）
+- [x] 前端 `npm run typecheck`、`npm run lint`、`npm test`（47/47）、安全审计、`npm run build`、Playwright 浏览器套件（86 passed, 4 skipped）与邮件导航套件（12/12）（**已验证通过**）
+- [x] 本机开发容器 `.\scripts\dev.ps1 -Action Update`（`astroagent-dev` 6 容器健康运行于 `http://127.0.0.1:5173`）（**已验证通过**）
+- [ ] Linux 全量 Buildx 镜像与 `pip-audit` 校验（交由 GitHub Actions CI / Release 流水线，**待云端确认**）
+- [ ] 桌面端与真机 390px 移动端目视复核（**待验收**）
+- [ ] 生产环境真实第三方 HTTPS 外部 MCP 端点联调（默认关闭 `ASTROAGENT_EXTERNAL_MCP_ENABLED=false`，**待运营配置后验收**）
+
+## 4. `v2.1.0` 会后工作区增量收尾（未提交，待验收）
+
+在 `5873ba8` 之后，本机工作区补充了以下增量改进，**均尚未提交，也尚未重新运行自动化测试套件**：
+
+- **文案一致性清理**：更新 `ComputeResultPanel.vue`、`ConversationSidebar.vue`、`PlotResultPanel.vue`、`ProjectOverview.vue`、`RagWorkspace.vue`、`WorkflowWorkspace.vue`，移除残留的旧输入区按钮指引与「请刷新核对」措辞（仅确认本机 Vite HMR 无报错，**待验收**）。
+- **本地受控 HTTPS MCP 测试端点与端到端用例**：新增 `scripts/mock_external_mcp_server.py`、`tests/test_external_mcp.py::test_external_mcp_real_local_https_end_to_end` 及 [V2.1 运维手册](OPERATIONS.md) 第 4 节（**未运行 `pytest` / `ruff`，待验收**）。
+- **N 体浏览器测试适配**：`frontend/tests/compute-browser/compute.spec.ts` 已将 4 处 `.selectOption(...)` 替换为 `chooseUiOption(...)`，但第 61 行仍点击已移除的 `button[name='N 体模拟']`，**尚未适配且未运行，待验收**。

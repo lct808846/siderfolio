@@ -1,7 +1,7 @@
 {
   "enabled": false,
   "project_dir": "/srv/astroagent/containers/gcp",
-  "repository": "lct808846/astroagent",
+  "repository": "lct808846/siderfolio",
   "compute": false,
   "rag": false,
   "auto_rollback": false

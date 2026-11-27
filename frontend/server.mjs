@@ -95,9 +95,10 @@ const server = http.createServer(async (req, res) => {
   try { url = new URL(req.url || '/', 'http://127.0.0.1') } catch { res.writeHead(400); return res.end() }
   // Email links are cross-site document navigations. Loading their public page
   // must not activate/reset anything; writes still require same-origin CSRF.
+  const publicBrandAsset = ['GET', 'HEAD'].includes(req.method) && ['/siderfolio-logo.png', '/favicon.svg', '/favicon.ico'].includes(url.pathname)
   const publicNavigation = ['GET', 'HEAD'].includes(req.method) && publicPages.has(url.pathname)
     && req.headers['sec-fetch-mode'] === 'navigate' && req.headers['sec-fetch-dest'] === 'document'
-  if (req.headers['sec-fetch-site'] === 'cross-site' && !publicNavigation) { res.writeHead(403); return res.end('Unsupported request origin') }
+  if (req.headers['sec-fetch-site'] === 'cross-site' && !publicNavigation && !publicBrandAsset) { res.writeHead(403); return res.end('Unsupported request origin') }
   if (url.pathname === '/__internal/health') {
     const local = ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress || '')
     res.writeHead(local ? 200 : 404); return res.end(local ? 'ok' : '')
@@ -158,7 +159,7 @@ const server = http.createServer(async (req, res) => {
       'Content-Type': asset.contentType,
       'Content-Length': String(body.length),
       ...(useGzip ? { 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' } : {}),
-      'Cache-Control': isImmutableBundle ? 'public, max-age=31536000, immutable' : 'no-store',
+      'Cache-Control': isImmutableBundle ? 'public, max-age=31536000, immutable' : publicBrandAsset ? 'public, max-age=86400' : 'no-store',
       'Referrer-Policy': 'no-referrer',
       'X-Content-Type-Options': 'nosniff',
       'Content-Security-Policy': "default-src 'self'; img-src 'self' blob: data:; frame-src 'self' blob:; style-src 'self' 'unsafe-inline'; connect-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",

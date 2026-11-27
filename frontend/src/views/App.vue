@@ -8,12 +8,12 @@ import AttachmentButton from '../components/AttachmentButton.vue'
 import AttachmentTray from '../components/AttachmentTray.vue'
 import ConversationSidebar from '../components/ConversationSidebar.vue'
 import ComposerProjectPicker from '../components/ComposerProjectPicker.vue'
-import ComposerSkillPicker from '../components/ComposerSkillPicker.vue'
 import CreateProjectDialog from '../components/CreateProjectDialog.vue'
 import ChatNBodyCard, { type ComputeResultPayload } from '../components/ChatNBodyCard.vue'
 import ChatPlotCard, { type PlotResultPayload } from '../components/ChatPlotCard.vue'
 import ChatExternalMcpCard from '../components/ChatExternalMcpCard.vue'
 import LiteratureReceiptCard from '../components/LiteratureReceiptCard.vue'
+import MemoryReceiptCard from '../components/MemoryReceiptCard.vue'
 import TurnTracePanel from '../components/TurnTracePanel.vue'
 import ProjectManageDrawer, { type DrawerTab } from '../components/ProjectManageDrawer.vue'
 import { defineAsyncComponent, onMounted, onBeforeUnmount, provide, ref, watch, computed, nextTick } from 'vue'
@@ -22,7 +22,6 @@ import { useWorkbench } from '../stores/workbench'
 import { useModels } from '../stores/models'
 import { useAttachments } from '../stores/attachments'
 import { useProjects } from '../stores/projects'
-import { useSkills } from '../stores/skills'
 import ResultPanel from '../components/ResultPanel.vue'
 import MarkdownAnswer from '../components/MarkdownAnswer'
 import UserMessage from '../components/UserMessage.vue'
@@ -37,27 +36,24 @@ import { api, safeLink } from '../api'
 import { computeApi, type ComputeStatus } from '../api/compute'
 import { projectsApi } from '../api/projects'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
-import type { ChatAttachment, ChatToolMode, ExternalMcpResult, LiteratureSaveReceipt, Project, SkillResolution, Snapshot, Turn } from '../types'
+import type { ChatAttachment, ChatToolMode, ExternalMcpResult, LiteratureSaveReceipt, MemorySaveReceipt, Project, SkillResolution, Snapshot, Turn } from '../types'
 
 type Submission = {
   message: string
   files: ChatAttachment[]
   toolMode: ChatToolMode
   projectId: string
-  skillId?: string | null
 }
 
 const store = useWorkbench(), route = useRoute(), router = useRouter()
 const models = useModels()
 const attachments = useAttachments()
 const projectsStore = useProjects()
-const skillsStore = useSkills()
 const unarchiving = ref(false)
 const dragDepth = ref(0)
 const draft = ref(''), composing = ref(false)
 const chatScroll = ref<HTMLElement | null>(null)
 const toolMode = ref<ChatToolMode>('auto')
-const selectedSkillId = ref<string | null>(null)
 const draftProjectId = ref('')
 const switchingProject = ref(false)
 const composerCreateProjectDialog = ref<InstanceType<typeof CreateProjectDialog> | null>(null)
@@ -77,15 +73,8 @@ const inspectedSnapshotTurn = computed<Turn | null>(() => inspectedSnapshot.valu
 let pendingDrawerRequest: { projectId: string; tab: DrawerTab; snapshotId?: string; promptDelete?: boolean } | null = null
 const profileMode = computed(() => route.path === '/profile')
 const computeStatus = ref<ComputeStatus | null>(null)
-function selectSkill(nextSkillId: string | null) {
-  selectedSkillId.value = nextSkillId
-  if (nextSkillId !== 'scientific-plotting-nbody-prep') {
-    toolMode.value = 'auto'
-  }
-}
 function handleInlineRefine(mode: 'plot' | 'compute', promptText: string) {
   toolMode.value = mode
-  selectedSkillId.value = 'scientific-plotting-nbody-prep'
   draft.value = promptText
   void nextTick(() => {
     resizeComposer()
@@ -101,11 +90,6 @@ const composerPlaceholder = computed(() => {
 const composerHint = computed(() => {
   if (toolMode.value === 'plot') return '模型将自动编写绘图配置与脚本供你核对或修改，确认后在无网容器中隔离出图。'
   if (toolMode.value === 'compute') return '模型将根据需求自动计算并填写初始条件（AU / yr / M☉），核对或修改后再确认运行。'
-  if (selectedSkillId.value === 'none') return '本轮已临时关闭科研技能，将按常规单 Agent 对话回答。'
-  if (selectedSkillId.value) {
-    const chosen = skillsStore.byId(selectedSkillId.value)
-    if (chosen) return `本轮已指定科研技能「${chosen.title}」，将按技能研究步骤与允许工具范围执行。`
-  }
   return '模型回答需对照原始数据核查；位置候选源不等于星团成员。'
 })
 const editingTurn = ref<number | null>(null), draftBeforeEdit = ref('')
@@ -135,7 +119,143 @@ const resultComputeTaskId = ref('')
 const resultPlotRunId = ref('')
 const resultPlotTitle = ref('')
 const resultPlotFiles = ref<string[]>([])
-const resultsExpanded = ref(false)
+const SIDEBAR_WIDTHS_KEY = 'astroagent.workbench.sidebar_widths.v1'
+const MIN_LEFT_SIDEBAR = 188
+const MAX_LEFT_SIDEBAR = 440
+const DEFAULT_LEFT_SIDEBAR = 248
+const MIN_RIGHT_SIDEBAR = 280
+const MAX_RIGHT_SIDEBAR = 920
+const MIN_CENTER_CHAT = 360
+
+function readSavedSidebarWidths(): { left: number | null; right: number | null } {
+  try {
+    const raw = localStorage.getItem(SIDEBAR_WIDTHS_KEY)
+    if (!raw) return { left: null, right: null }
+    const parsed = JSON.parse(raw) as { left?: unknown; right?: unknown }
+    const left = typeof parsed.left === 'number' && Number.isFinite(parsed.left) ? Math.round(parsed.left) : null
+    const right = typeof parsed.right === 'number' && Number.isFinite(parsed.right) ? Math.round(parsed.right) : null
+    return { left, right }
+  } catch {
+    return { left: null, right: null }
+  }
+}
+
+const savedWidths = readSavedSidebarWidths()
+const leftSidebarWidth = ref<number | null>(savedWidths.left)
+const rightSidebarWidth = ref<number | null>(savedWidths.right)
+const viewportWidth = ref(typeof window === 'undefined' ? 1440 : window.innerWidth)
+const resizingSide = ref<'left' | 'right' | null>(null)
+let activeResizeCleanup: (() => void) | null = null
+
+function persistSidebarWidths() {
+  try {
+    localStorage.setItem(
+      SIDEBAR_WIDTHS_KEY,
+      JSON.stringify({ left: leftSidebarWidth.value, right: rightSidebarWidth.value }),
+    )
+  } catch {
+    // Ignore storage unavailability.
+  }
+}
+
+function clampLeftSidebarWidth(raw: number): number {
+  const vw = viewportWidth.value
+  const rightOpenDocked = !profileMode.value && store.panel === 'results' && vw >= 1440
+  const rightReserved = rightOpenDocked ? (rightSidebarWidth.value ?? Math.min(520, Math.max(400, Math.round(vw * 0.34)))) + 10 : 0
+  const maxAllowed = Math.max(MIN_LEFT_SIDEBAR, Math.min(MAX_LEFT_SIDEBAR, vw - rightReserved - MIN_CENTER_CHAT - 30))
+  return Math.round(Math.min(maxAllowed, Math.max(MIN_LEFT_SIDEBAR, raw)))
+}
+
+function clampRightSidebarWidth(raw: number): number {
+  const vw = viewportWidth.value
+  const leftVisible = !sidebarCollapsed.value && vw >= 981
+  const leftReserved = leftVisible ? (leftSidebarWidth.value ?? DEFAULT_LEFT_SIDEBAR) + 10 : 0
+  const maxAllowed = vw >= 1440
+    ? Math.max(MIN_RIGHT_SIDEBAR, Math.min(MAX_RIGHT_SIDEBAR, vw - leftReserved - MIN_CENTER_CHAT - 30))
+    : Math.max(MIN_RIGHT_SIDEBAR, Math.min(MAX_RIGHT_SIDEBAR, vw - leftReserved - 32))
+  return Math.round(Math.min(maxAllowed, Math.max(MIN_RIGHT_SIDEBAR, raw)))
+}
+
+const workbenchResizeStyle = computed<Record<string, string>>(() => {
+  if (compactLayout.value) return {}
+  const style: Record<string, string> = {}
+  if (leftSidebarWidth.value !== null) {
+    style['--sidebar-width'] = `${clampLeftSidebarWidth(leftSidebarWidth.value)}px`
+  }
+  if (rightSidebarWidth.value !== null) {
+    style['--inspector-width'] = `${clampRightSidebarWidth(rightSidebarWidth.value)}px`
+  }
+  return style
+})
+
+function startResize(side: 'left' | 'right', event: PointerEvent) {
+  if (event.button !== 0 || compactLayout.value) return
+  event.preventDefault()
+  activeResizeCleanup?.()
+  viewportWidth.value = window.innerWidth
+  const target = event.currentTarget as HTMLElement | null
+  const panelEl = document.getElementById(side === 'left' ? 'conversation-history' : 'workbench-results')
+  const startWidth = panelEl
+    ? Math.round(panelEl.getBoundingClientRect().width)
+    : (side === 'left' ? (leftSidebarWidth.value ?? DEFAULT_LEFT_SIDEBAR) : (rightSidebarWidth.value ?? 420))
+  const startX = event.clientX
+  resizingSide.value = side
+  document.body.classList.add('workbench-is-resizing')
+  try {
+    target?.setPointerCapture(event.pointerId)
+  } catch {
+    // Pointer capture may not be supported on synthetic events.
+  }
+
+  const onMove = (moveEvent: PointerEvent) => {
+    const delta = moveEvent.clientX - startX
+    if (side === 'left') {
+      leftSidebarWidth.value = clampLeftSidebarWidth(startWidth + delta)
+    } else {
+      rightSidebarWidth.value = clampRightSidebarWidth(startWidth - delta)
+    }
+  }
+
+  const finish = () => {
+    window.removeEventListener('pointermove', onMove)
+    window.removeEventListener('pointerup', finish)
+    window.removeEventListener('pointercancel', finish)
+    document.body.classList.remove('workbench-is-resizing')
+    resizingSide.value = null
+    activeResizeCleanup = null
+    persistSidebarWidths()
+  }
+
+  activeResizeCleanup = finish
+  window.addEventListener('pointermove', onMove)
+  window.addEventListener('pointerup', finish)
+  window.addEventListener('pointercancel', finish)
+}
+
+function stepResize(side: 'left' | 'right', delta: number) {
+  if (compactLayout.value) return
+  viewportWidth.value = window.innerWidth
+  const panelEl = document.getElementById(side === 'left' ? 'conversation-history' : 'workbench-results')
+  const current = panelEl
+    ? Math.round(panelEl.getBoundingClientRect().width)
+    : (side === 'left' ? (leftSidebarWidth.value ?? DEFAULT_LEFT_SIDEBAR) : (rightSidebarWidth.value ?? 420))
+  if (side === 'left') {
+    leftSidebarWidth.value = clampLeftSidebarWidth(current + delta)
+  } else {
+    rightSidebarWidth.value = clampRightSidebarWidth(current + delta)
+  }
+  persistSidebarWidths()
+}
+
+function resetResize(side: 'left' | 'right') {
+  if (side === 'left') leftSidebarWidth.value = null
+  else rightSidebarWidth.value = null
+  persistSidebarWidths()
+}
+
+function syncViewportWidth() {
+  viewportWidth.value = window.innerWidth
+}
 const effectiveResultProjectId = computed(() => resultProjectId.value || activeSpaceProjectId.value || projectsStore.defaultProjectId || '')
 const defaultSpaceSources = computed(() => projectsStore.defaultProjectId ? projectsStore.sourceCounts[projectsStore.defaultProjectId] : undefined)
 const currentProjectSources = computed(() => effectiveProject.value ? projectsStore.sourceCounts[effectiveProject.value.id] : defaultSpaceSources.value)
@@ -305,6 +425,21 @@ function dropFiles(event: DragEvent) {
   event.preventDefault(); dragDepth.value = 0
   if (!attachmentDisabled.value) void attachments.add(modelScope.value, Array.from(event.dataTransfer?.files || []))
 }
+function onComposerPaste(event: ClipboardEvent) {
+  if (attachmentDisabled.value) return
+  const items = Array.from(event.clipboardData?.items || [])
+  const pastedImages: File[] = []
+  for (const item of items) {
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      const file = item.getAsFile()
+      if (file) pastedImages.push(file)
+    }
+  }
+  if (pastedImages.length) {
+    event.preventDefault()
+    void attachments.add(modelScope.value, pastedImages)
+  }
+}
 const conversationTitle = computed(() => conversationId.value
   ? (store.current?.id === conversationId.value ? store.current.title : store.conversations.find(item => item.id === conversationId.value)?.title) || '会话'
   : '新会话')
@@ -419,6 +554,17 @@ function turnReceipts(turn: Turn): LiteratureSaveReceipt[] {
   const merged: LiteratureSaveReceipt[] = []
   const seen = new Set<string>()
   for (const item of [...(turn.literature_receipts || []), ...(turn.response?.literature_receipts || [])]) {
+    if (!seen.has(item.receipt_id)) {
+      seen.add(item.receipt_id)
+      merged.push(item)
+    }
+  }
+  return merged
+}
+function turnMemoryReceipts(turn: Turn): MemorySaveReceipt[] {
+  const merged: MemorySaveReceipt[] = []
+  const seen = new Set<string>()
+  for (const item of [...(turn.memory_receipts || []), ...(turn.response?.memory_receipts || [])]) {
     if (!seen.has(item.receipt_id)) {
       seen.add(item.receipt_id)
       merged.push(item)
@@ -665,12 +811,15 @@ async function afterRemoval(ids: string[]) {
 }
 function send() {
   if (!canSend.value || preparingConversation) return
+  const defaultAttachmentPrompt =
+    attachedFiles.value.length > 0 && attachedFiles.value.every(item => item.media_type.startsWith('image/'))
+      ? '请查看并分析这张图片。'
+      : '请阅读附件并概括要点。'
   return submit({
-    message: draft.value.trim() || '请阅读附件并概括要点。',
+    message: draft.value.trim() || defaultAttachmentPrompt,
     files: attachedFiles.value,
     toolMode: toolMode.value,
     projectId: draftProjectId.value,
-    skillId: selectedSkillId.value,
   }, true)
 }
 function retry() {
@@ -682,7 +831,6 @@ function clearSubmittedDraft(scope: string) {
   draft.value = ''
   attachments.clear(scope)
   toolMode.value = 'auto'
-  selectedSkillId.value = null
   editingTurn.value = null
   draftBeforeEdit.value = ''
 }
@@ -731,7 +879,7 @@ async function submit(submission: Submission, fromComposer: boolean) {
     if (route.path !== destination || store.current?.id !== id) return
     if (fromComposer) clearSubmittedDraft(id)
     models.select(id, selectedModel)
-    const result = await store.send(submission.message, id, selectedModel, submission.files, submission.toolMode, submission.skillId)
+    const result = await store.send(submission.message, id, selectedModel, submission.files, submission.toolMode)
     if (route.path !== destination || store.current?.id !== id) return
     if (result === 'rejected') failedSubmission.value = submission
     void nextTick(() => input.value?.focus())
@@ -824,7 +972,6 @@ async function applyWorkbenchHandoff() {
   const hasToolQuery = !!requestedTool || !!requestedResult || !!requestedComputeTask || !!requestedPlotRun || !!requestedProject || !!requestedManage || !!requestedSnapshotId || !!requestedTurn || !!requestedPlotSnapshot || typeof q.plot_query === 'string' || typeof q.plot_dataset === 'string'
   if (requestedTool) {
     toolMode.value = requestedTool
-    selectedSkillId.value = 'scientific-plotting-nbody-prep'
   }
   if (requestedProject && !conversationId.value && requestedProject !== projectsStore.defaultProjectId) {
     draftProjectId.value = requestedProject
@@ -913,6 +1060,7 @@ onMounted(async () => {
   layoutQuery = window.matchMedia('(max-width: 980px)')
   updateLayout(); layoutQuery.addEventListener('change', updateLayout)
   window.addEventListener('resize', scheduleResizeComposer, { passive: true })
+  window.addEventListener('resize', syncViewportWidth, { passive: true })
   window.addEventListener('keydown', onWorkbenchKeydown)
   resizeComposer()
   void applyWorkbenchHandoff()
@@ -926,7 +1074,6 @@ onMounted(async () => {
     await Promise.all([store.refreshList(), models.load()])
     void store.refreshArchived().catch(() => undefined)
     void projectsStore.load().catch(() => undefined)
-    void skillsStore.load().catch(() => undefined)
   } catch (error) { store.report(error) }
 })
 onBeforeUnmount(() => {
@@ -934,8 +1081,10 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(restoreFrame)
   if (streamScrollFrame) cancelAnimationFrame(streamScrollFrame)
   if (resizeComposerFrame) cancelAnimationFrame(resizeComposerFrame)
+  activeResizeCleanup?.()
   layoutQuery?.removeEventListener('change', updateLayout)
   window.removeEventListener('resize', scheduleResizeComposer)
+  window.removeEventListener('resize', syncViewportWidth)
   window.removeEventListener('keydown', onWorkbenchKeydown)
 })
 </script>
@@ -947,7 +1096,7 @@ onBeforeUnmount(() => {
   <ProjectOverview v-else-if="route.path.endsWith('/overview')" />
   <KnowledgeWorkspace v-else-if="route.path.includes('/knowledge')" />
   <WorkflowWorkspace v-else-if="route.path.includes('/workflows')" />
-  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :data-panel="profileMode ? (store.panel === 'history' ? 'history' : 'chat') : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && store.panel==='results'" :data-results-wide="resultsExpanded && !profileMode && store.panel==='results'" :data-results-restoring="restoringResults">
+  <div v-else class="workbench workspace-panes primary-workspace conversation-layout" :style="workbenchResizeStyle" :data-panel="profileMode ? (store.panel === 'history' ? 'history' : 'chat') : store.panel" :data-sidebar-collapsed="sidebarCollapsed" :data-results-open="!profileMode && store.panel==='results'" :data-results-restoring="restoringResults" :data-resizing="resizingSide || undefined">
     <WorkspaceHeader title="本地科研工作台" />
     <div
       v-if="mobileOverlayOpen"
@@ -965,6 +1114,20 @@ onBeforeUnmount(() => {
       @removed="afterRemoval"
       @select-project="selectSidebarProject"
       @manage-project="(id, tab, del) => openProjectManager(id, tab, del)"
+    />
+    <div
+      v-if="!compactLayout && !sidebarCollapsed"
+      class="workbench-resizer workbench-resizer-left"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="拖拽调整左侧边栏宽度（双击恢复默认）"
+      title="拖拽调整左侧边栏宽度，双击恢复默认"
+      tabindex="0"
+      @pointerdown="startResize('left', $event)"
+      @dblclick="resetResize('left')"
+      @keydown.left.prevent="stepResize('left', -20)"
+      @keydown.right.prevent="stepResize('left', 20)"
+      @keydown.home.prevent="resetResize('left')"
     />
     <main class="chat-panel" :inert="mobileOverlayOpen" :aria-hidden="mobileOverlayOpen">
       <header class="chat-heading">
@@ -1103,6 +1266,11 @@ onBeforeUnmount(() => {
                 :key="receipt.receipt_id"
                 :receipt="receipt"
               />
+              <MemoryReceiptCard
+                v-for="receipt in turnMemoryReceipts(turn)"
+                :key="receipt.receipt_id"
+                :receipt="receipt"
+              />
               <ChatExternalMcpCard
                 v-for="proposal in turn.response?.external_mcp_proposals || []"
                 :key="proposal.confirmation_id"
@@ -1205,10 +1373,10 @@ onBeforeUnmount(() => {
       </div>
       <form class="composer" :class="{ 'composer-dragging': dragDepth > 0, 'composer-plot-mode': toolMode !== 'auto' }" @submit.prevent="send" @dragenter="dragEnter" @dragover="dragOver" @dragleave="dragDepth = Math.max(0, dragDepth - 1)" @drop="dropFiles">
         <AttachmentTray :scope="modelScope" :disabled="attachmentDisabled" />
-        <p v-if="dragDepth > 0" class="attachment-drop-hint">松开添加附件（支持 CSV / TSV / PDF / Markdown 等）</p>
+        <p v-if="dragDepth > 0" class="attachment-drop-hint">松开添加附件（支持图片 PNG/JPG/WebP/GIF 及 CSV / PDF / Markdown 等）</p>
         <div v-if="editingTurn!==null" class="composer-editing"><p>正在编辑问题，发送后将追加一条消息。{{ draftBeforeEdit ? '取消编辑可恢复原草稿。' : '' }}</p><button type="button" :disabled="sending || store.running" @click="cancelEdit">取消编辑</button></div>
         <label class="sr-only" for="question">天文问题</label>
-        <textarea id="question" ref="input" v-model="draft" rows="2" maxlength="4000" :placeholder="composerPlaceholder" :disabled="store.running || store.creating || sending || !!store.disconnectedRequest" @keydown="keydown" @compositionstart="composing=true" @compositionend="composing=false"></textarea>
+        <textarea id="question" ref="input" v-model="draft" rows="2" maxlength="4000" :placeholder="composerPlaceholder" :disabled="store.running || store.creating || sending || !!store.disconnectedRequest" @keydown="keydown" @paste="onComposerPaste" @compositionstart="composing=true" @compositionend="composing=false"></textarea>
         <div v-if="store.disconnectedRequest || (store.error && !failedTurnId)" class="composer-notices">
           <ConversationErrorNotice v-if="store.disconnectedRequest" :message="store.error || '断线前的请求状态尚未确认，请先恢复会话。'" :code="store.errorCode || 'connection_lost'" operation announce>
             <template #actions>
@@ -1231,11 +1399,6 @@ onBeforeUnmount(() => {
               :busy="switchingProject"
               @update:model-value="selectComposerProject"
               @create="composerCreateProjectDialog?.open()"
-            />
-            <ComposerSkillPicker
-              :model-value="selectedSkillId"
-              :disabled="sending || store.running || store.creating || store.loading || !!store.disconnectedRequest"
-              @update:model-value="selectSkill"
             />
           </div>
           <div class="composer-tools">
@@ -1275,10 +1438,11 @@ onBeforeUnmount(() => {
       :plot-run-id="resultPlotRunId"
       :plot-title="resultPlotTitle"
       :plot-files="resultPlotFiles"
-      :expanded="resultsExpanded"
-      expandable
+      :resizable="!compactLayout"
       dismissible
-      @toggle-expand="resultsExpanded = !resultsExpanded"
+      @resize-start="startResize('right', $event)"
+      @resize-step="stepResize('right', $event)"
+      @resize-reset="resetResize('right')"
       @select-turn="store.selectedTurnId = $event"
       @select-compute-task="resultComputeTaskId = $event"
       @select-plot-run="resultPlotRunId = $event"

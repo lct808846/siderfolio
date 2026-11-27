@@ -262,6 +262,7 @@ def _score_skill_intent(
     tool_mode: str | None = None,
     has_attachments: bool = False,
     project_hint: str = "",
+    memory_hint: str = "",
 ) -> tuple[int, list[str]]:
     score = 0
     reasons: list[str] = []
@@ -298,6 +299,18 @@ def _score_skill_intent(
             score += 1
             reasons.append("项目上下文协同")
 
+    if memory_hint and score > 0:
+        lower_mem = memory_hint.lower()
+        if any(kw.lower() in lower_mem for kw in skill.intent_keywords[:8]) or (
+            skill.id == "astronomy-literature-curation"
+            and any(
+                topic in lower_mem
+                for topic in ("研究", "星团", "星系", "动力学", "演化", "模拟", "观测", "天文")
+            )
+        ):
+            score += 1
+            reasons.append("记忆协同")
+
     return score, reasons
 
 
@@ -310,6 +323,7 @@ def resolve_turn_skill(
     tool_mode: str | None = None,
     has_attachments: bool = False,
     project_hint: str = "",
+    memory_hint: str = "",
 ) -> tuple[SkillDefinition | None, SkillResolution]:
     """Select at most one skill for the current turn using short metadata only."""
     prefs = preferences or SkillPreferences()
@@ -372,13 +386,7 @@ def resolve_turn_skill(
             clarification_note=note,
         )
 
-    # 2. Automatic matching (respects personal auto_match setting).
-    if not prefs.auto_match:
-        return None, SkillResolution(
-            selection_mode="auto_disabled",
-            matched_reason="个人设置已关闭技能自动匹配，按普通对话执行。",
-        )
-
+    # 2. Automatic matching is always enforced by the system (respects disabled_skill_ids).
     scored: list[tuple[int, SkillDefinition, list[str]]] = []
     for skill in builtin_skills():
         if skill.id in disabled:
@@ -389,6 +397,7 @@ def resolve_turn_skill(
             tool_mode=tool_mode,
             has_attachments=has_attachments,
             project_hint=project_hint,
+            memory_hint=memory_hint,
         )
         if score >= 3:
             scored.append((score, skill, reasons))
@@ -412,7 +421,7 @@ def resolve_turn_skill(
             candidate_skill_ids=candidates,
             clarification_note=(
                 f"当前问题同时涉及「{titles}」，本次按综合普通对话处理；"
-                "如需严格按某一科研流程执行，可在输入区显式指定技能。"
+                "如需聚焦某一研究流程，可拆分为单独问题发送。"
             ),
         )
 

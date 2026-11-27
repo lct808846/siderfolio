@@ -21,24 +21,13 @@ function openToolsCatalog() {
   void detailDialog.value?.openTools()
 }
 
-async function toggleAutoMatch(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked
-  const ok = await skillsStore.updatePreferences({
-    auto_match: checked,
-    disabled_skill_ids: [...(skillsStore.preferences.disabled_skill_ids || [])],
-  })
-  if (ok) {
-    notice.value = checked ? '已开启科研技能自动匹配。' : '已关闭科研技能自动匹配。'
-  }
-}
-
 async function toggleSkill(skillId: string, event: Event) {
   const checked = (event.target as HTMLInputElement).checked
   const current = new Set(skillsStore.preferences.disabled_skill_ids || [])
   if (checked) current.delete(skillId)
   else current.add(skillId)
   const ok = await skillsStore.updatePreferences({
-    auto_match: skillsStore.preferences.auto_match !== false,
+    auto_match: true,
     disabled_skill_ids: Array.from(current),
   })
   if (ok) {
@@ -63,31 +52,6 @@ onMounted(() => {
       :message="skillsStore.error"
       @dismiss="skillsStore.error = ''"
     />
-
-    <section class="settings-group" aria-labelledby="skills-matching-title">
-      <div class="settings-group-head">
-        <h3 id="skills-matching-title">技能匹配</h3>
-        <span class="ui-pill" :class="skillsStore.preferences.auto_match !== false ? 'ui-pill-success' : 'ui-pill-neutral'">
-          <span class="ui-dot" aria-hidden="true" />
-          {{ skillsStore.preferences.auto_match !== false ? '自动匹配已开启' : '仅手动选择' }}
-        </span>
-      </div>
-      <label class="settings-row settings-switch-row">
-        <div>
-          <h4>根据问题与项目上下文自动匹配技能</h4>
-          <p>每轮最多自动载入一个清晰匹配的技能，也可在输入框手动指定或临时取消</p>
-        </div>
-        <input
-          class="settings-switch"
-          type="checkbox"
-          role="switch"
-          aria-label="自动匹配科研技能"
-          :checked="skillsStore.preferences.auto_match !== false"
-          :disabled="skillsStore.saving || skillsStore.loading"
-          @change="toggleAutoMatch"
-        />
-      </label>
-    </section>
 
     <section class="settings-group" aria-labelledby="skills-builtin-title">
       <div class="settings-group-head">

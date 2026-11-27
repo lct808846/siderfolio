@@ -214,7 +214,7 @@ onMounted(() => {
 
     <p v-if="loading && !servers.length" class="small muted" role="status">正在同步外部 MCP 服务状态…</p>
 
-    <div v-else-if="!featureEnabled" class="ui-empty-card">
+    <div v-else-if="!featureEnabled" class="ui-empty-inline">
       <h3>外部 MCP 接入默认关闭</h3>
       <p>
         如需接入运营者预配的只读 Streamable HTTP 科研 MCP 服务，请在服务端私有配置中启用
@@ -223,7 +223,7 @@ onMounted(() => {
       </p>
     </div>
 
-    <div v-else-if="!servers.length" class="ui-empty-card">
+    <div v-else-if="!servers.length" class="ui-empty-inline">
       <h3>尚未配置外部 MCP 服务</h3>
       <p>已开启外部 MCP 开关，但 <code>ASTROAGENT_EXTERNAL_MCP_SERVERS_JSON</code> 中暂无预配服务。</p>
     </div>

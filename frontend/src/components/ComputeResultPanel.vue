@@ -297,7 +297,7 @@ async function runAction(fn: () => Promise<void>) {
   try {
     await fn()
   } catch (reason) {
-    error.value = reason instanceof Error ? reason.message : '操作失败，请刷新核对。'
+    error.value = reason instanceof Error ? reason.message : '操作未确认，请稍后重试或重新进入页面核对。'
   } finally {
     busy.value = false
   }
@@ -430,7 +430,7 @@ const engineDisplay = (engine: ComputeParameters['engine'] = 'rebound') => (engi
 
     <div v-else-if="!task" class="compute-empty-card">
       <strong>当前空间尚无 N 体模拟记录</strong>
-      <p>在左侧输入框点击「N 体模拟」并描述天体系统，模型会自动生成参数方案并在此展示图表与守恒诊断。</p>
+      <p>在左侧对话中直接描述 N 体模拟需求（或选用「科研绘图与 N 体实验准备」技能），模型会自动生成参数方案，确认运行后在此展示图表与守恒诊断。</p>
     </div>
 
     <template v-else>
@@ -789,12 +789,12 @@ const engineDisplay = (engine: ComputeParameters['engine'] = 'rebound') => (engi
 }
 
 .compute-empty-card {
-  padding: 20px 16px;
-  border-radius: 14px;
-  border: 1px dashed var(--border-strong);
-  background: color-mix(in srgb, var(--surface-muted) 45%, transparent);
+  padding: 28px 16px;
+  border: 0;
+  background: transparent;
   text-align: center;
   display: grid;
+  justify-items: center;
   gap: 6px;
 }
 

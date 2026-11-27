@@ -77,7 +77,7 @@ const resultTurn = computed<Turn | null>(() => run.value && response.value ? {
 const pictures = computed(() => run.value?.outputs.filter(o => o.media_type === 'image/png') || [])
 const evidence = computed(() => run.value?.steps.find(s => s.id === 'evidence_table')?.attempts?.slice().reverse().find(a => a.state === 'succeeded')?.output)
 const canExecute = computed(() => run.value && run.value.provenance === 'local' && !['running', 'succeeded'].includes(run.value.state) && !pending.value)
-function report(e: unknown) { error.value = e instanceof Error ? e.message : '操作未确认，请刷新记录核对。' }
+function report(e: unknown) { error.value = e instanceof Error ? e.message : '操作未确认，请稍后重试或重新进入页面核对。' }
 function key(projectId: string, runId: string) { return `astroagent.workflow.request.${projectId}.${runId}` }
 function persist(projectId: string, runId: string, payload: WorkflowExecute | null) {
   try { if (payload) sessionStorage.setItem(key(projectId, runId), JSON.stringify(payload)); else sessionStorage.removeItem(key(projectId, runId)) }

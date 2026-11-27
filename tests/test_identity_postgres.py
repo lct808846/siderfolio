@@ -175,13 +175,17 @@ def test_disable_mfa_clears_secrets_revokes_sessions_and_requires_proof(identity
     assert response.status_code == 200 and "totp_required" not in response.text
 
 
-def test_admin_cannot_disable_required_mfa(identity_client):
+def test_admin_can_disable_optional_mfa_and_keep_admin_access(identity_client):
     client = identity_client
     recovery = synthetic_admin(client)
     response = post(client, "auth/totp/disable", {"password": PASSWORD, "code": recovery[0]})
-    assert response.status_code == 403
-    assert response.json()["error"]["code"] == "admin_mfa_required"
-    assert client.get("/api/v1/auth/session").json()["user"]["totp_enabled"]
+    assert response.status_code == 200, response.text
+    assert client.get("/api/v1/auth/session").status_code == 401
+    relogin = post(client, "auth/login", {"email": "observer@example.org", "password": PASSWORD})
+    assert relogin.status_code == 200, relogin.text
+    session = client.get("/api/v1/auth/session").json()["user"]
+    assert session["admin"] is True and session["totp_enabled"] is False
+    assert client.get("/api/v1/admin/overview").status_code == 200
 
 
 def test_provider_admin_boundary_encryption_revision_and_secret_retention(identity_client):
@@ -193,10 +197,7 @@ def test_provider_admin_boundary_encryption_revision_and_secret_retention(identi
     assert client.get("/api/v1/" + path).status_code == 403
     with client.store.connect() as db:
         db.execute("UPDATE public.auth_users SET admin=true")
-    assert client.get("/api/v1/" + path).status_code == 403
-    enrollment = post(client, "auth/totp/enroll", {"password": PASSWORD})
-    code = otp(enrollment.json()["secret"], int(time.time()) // 30)
-    assert post(client, "auth/totp/confirm", {"code": code}).status_code == 200
+    assert client.get("/api/v1/" + path).status_code == 200
     with client.store.connect() as db:
         db.execute("UPDATE public.auth_sessions SET reauth_at=NULL")
     value = client.get("/api/v1/" + path).json()
@@ -546,7 +547,17 @@ def test_encrypted_outbox_submission_and_expired_mail(identity_client, monkeypat
 
     monkeypatch.setattr("astroagent.auth_mail.smtplib.SMTP_SSL", smtp)
     worker.deliver(row)
-    assert len(sent) == 1 and token in sent[0].get_content()
+    assert len(sent) == 1
+    plain_part = sent[0].get_body(preferencelist=("plain",))
+    html_part = sent[0].get_body(preferencelist=("html",))
+    assert plain_part is not None and token in plain_part.get_content()
+    assert html_part is not None and token in html_part.get_content()
+    assert "cid:siderfolio-logo@siderfolio" in html_part.get_content()
+    assert any(
+        part.get_content_type() == "image/png"
+        and part.get("Content-ID") == "<siderfolio-logo@siderfolio>"
+        for part in sent[0].walk()
+    )
     with client.store.connect() as db:
         state = db.execute("SELECT state,payload FROM public.auth_outbox").fetchone()
         assert state == {"state": "submitted", "payload": ""}
@@ -615,7 +626,7 @@ def test_concurrent_email_confirmation_is_one_use(identity_client):
     assert sorted(results) == [200, 422]
 
 
-def test_admin_requires_totp_recent_proof_and_one_use_recovery(identity_client):
+def test_admin_optional_totp_recent_proof_and_one_use_recovery(identity_client):
     client = identity_client
     account(client)
     assert client.get("/api/v1/admin/overview").status_code == 403
@@ -623,7 +634,9 @@ def test_admin_requires_totp_recent_proof_and_one_use_recovery(identity_client):
     # Explicit fixture promotion, never a first-user production default.
     with client.store.connect() as db:
         db.execute("UPDATE public.auth_users SET admin=true WHERE id=%s", (user["id"],))
-    assert client.get("/api/v1/conversations").status_code == 403
+    assert client.get("/api/v1/conversations").status_code == 200
+    assert client.get("/api/v1/admin/overview").status_code == 200
+    assert post(client, "auth/reauthenticate", {"password": PASSWORD}).status_code == 200
     enrollment = post(client, "auth/totp/enroll", {"password": PASSWORD})
     assert enrollment.status_code == 200, enrollment.text
     code = otp(enrollment.json()["secret"], int(time.time()) // 30)
@@ -943,6 +956,7 @@ def test_enrollment_uri_roundtrip_matches_returned_secret(identity_client):
     assert query["secret"] == [value["secret"]]
     assert query["issuer"] == ["Siderfolio"]
     assert query["digits"] == ["6"] and query["period"] == ["30"]
+    assert query["image"] == [f"{ORIGIN}/siderfolio-logo.png"]
 
 
 def test_current_email_continue_flow_and_resend_cooldown(identity_client):

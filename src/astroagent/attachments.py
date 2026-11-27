@@ -1,5 +1,6 @@
-"""Offline, bounded file-to-text conversion. No model call or original-file archive."""
+"""Offline, bounded file-to-text and image sanitization. No model call or original-file archive."""
 
+import base64
 import hashlib
 import io
 import threading
@@ -7,10 +8,18 @@ import zipfile
 from pathlib import PurePosixPath
 from xml.etree import ElementTree
 
-from astroagent.attachment_schemas import MAX_FILE_BYTES, MAX_TEXT_BYTES, ChatAttachment
+from astroagent.attachment_schemas import (
+    IMAGE_MEDIA_TYPES,
+    MAX_FILE_BYTES,
+    MAX_TEXT_BYTES,
+    ChatAttachment,
+)
 from astroagent.errors import ServiceError
 
 PARSER_SLOTS = threading.BoundedSemaphore(2)
+MAX_IMAGE_EDGE = 1600
+MAX_IMAGE_PIXELS = 40_000_000
+MAX_ENCODED_IMAGE_BYTES = 750 * 1024
 MEDIA = {
     ".pdf": "application/pdf",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -20,7 +29,113 @@ MEDIA = {
     ".csv": "text/csv",
     ".tsv": "text/tab-separated-values",
     ".json": "application/json",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
 }
+
+
+def _sanitize_image_attachment(name: str, content: bytes, declared_media: str) -> ChatAttachment:
+    from PIL import Image, ImageOps
+
+    previous_limit = Image.MAX_IMAGE_PIXELS
+    Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
+    try:
+        with Image.open(io.BytesIO(content)) as probe:
+            probe.verify()
+        with Image.open(io.BytesIO(content)) as opened:
+            img = ImageOps.exif_transpose(opened)
+            if getattr(img, "is_animated", False):
+                img.seek(0)
+            orig_w, orig_h = img.size
+            if orig_w <= 0 or orig_h <= 0 or orig_w * orig_h > MAX_IMAGE_PIXELS:
+                raise ValueError("Invalid image dimensions")
+
+            warnings: list[str] = []
+            resized = False
+            if max(orig_w, orig_h) > MAX_IMAGE_EDGE:
+                img.thumbnail((MAX_IMAGE_EDGE, MAX_IMAGE_EDGE), Image.Resampling.LANCZOS)
+                resized = True
+
+            has_alpha = img.mode in ("RGBA", "LA") or (
+                img.mode == "P" and "transparency" in img.info
+            )
+            work = img.convert("RGBA" if has_alpha else "RGB")
+
+            def encode_candidate(candidate, fmt: str, quality: int = 86) -> bytes:
+                buf = io.BytesIO()
+                if fmt == "PNG":
+                    candidate.save(buf, format="PNG", optimize=True)
+                elif fmt == "WEBP":
+                    candidate.save(buf, format="WEBP", quality=quality, method=4)
+                else:
+                    rgb = candidate.convert("RGB")
+                    if candidate.mode == "RGBA":
+                        bg = Image.new("RGB", candidate.size, (255, 255, 255))
+                        bg.paste(candidate, mask=candidate.getchannel("A"))
+                        rgb = bg
+                    rgb.save(buf, format="JPEG", quality=quality, optimize=True)
+                return buf.getvalue()
+
+            out_bytes: bytes | None = None
+            out_media = declared_media
+            if declared_media == "image/png" or has_alpha:
+                png_bytes = encode_candidate(work, "PNG")
+                if len(png_bytes) <= MAX_ENCODED_IMAGE_BYTES:
+                    out_bytes = png_bytes
+                    out_media = "image/png"
+                else:
+                    webp_bytes = encode_candidate(work, "WEBP", quality=86)
+                    if len(webp_bytes) <= MAX_ENCODED_IMAGE_BYTES:
+                        out_bytes = webp_bytes
+                        out_media = "image/webp"
+
+            if out_bytes is None:
+                for edge in (None, 1280, 960):
+                    target = work
+                    if edge is not None and max(work.size) > edge:
+                        target = work.copy()
+                        target.thumbnail((edge, edge), Image.Resampling.LANCZOS)
+                        resized = True
+                    for q in (88, 80, 72):
+                        jpg_bytes = encode_candidate(target, "JPEG", quality=q)
+                        if len(jpg_bytes) <= MAX_ENCODED_IMAGE_BYTES:
+                            out_bytes = jpg_bytes
+                            out_media = "image/jpeg"
+                            work = target
+                            break
+                    if out_bytes is not None:
+                        break
+
+            if out_bytes is None:
+                raise ServiceError(
+                    413,
+                    "attachment_image_too_large",
+                    "图片压缩后仍超出单图发送上限，请适当裁剪或降低分辨率后重试。",
+                )
+
+            width, height = work.size
+            if resized:
+                warnings.append(
+                    f"原图 {orig_w}×{orig_h} 已优化缩放为 {width}×{height} 以便模型识别与传输。"
+                )
+            data_url = f"data:{out_media};base64,{base64.b64encode(out_bytes).decode('ascii')}"
+            return ChatAttachment(
+                filename=name,
+                media_type=out_media,
+                size=len(content),
+                sha256=hashlib.sha256(content).hexdigest(),
+                text=f"[图片附件：{name}，尺寸 {width}×{height}，格式 {out_media}]",
+                truncated=False,
+                warnings=warnings,
+                image_data_url=data_url,
+                image_width=width,
+                image_height=height,
+            )
+    finally:
+        Image.MAX_IMAGE_PIXELS = previous_limit
 
 
 def word_text(content):
@@ -50,7 +165,9 @@ def parse_attachment(filename, content):
     media = MEDIA.get(PurePosixPath(name).suffix.lower())
     if not media:
         raise ServiceError(
-            415, "attachment_type_unsupported", "支持 PDF、DOCX、TXT、Markdown、CSV、TSV 和 JSON。"
+            415,
+            "attachment_type_unsupported",
+            "支持图片（PNG、JPG、WebP、GIF）及 PDF、DOCX、TXT、Markdown、CSV、TSV、JSON。",
         )
     if not content or len(content) > MAX_FILE_BYTES:
         raise ServiceError(413, "attachment_size_limit", "附件不能为空，单个文件最多 10 MiB。")
@@ -63,6 +180,8 @@ def parse_attachment(filename, content):
             503, "attachment_parser_busy", "已有文件正在解析，请稍后重试。", retryable=True
         )
     try:
+        if media in IMAGE_MEDIA_TYPES:
+            return _sanitize_image_attachment(name, content, media)
         warnings = []
         if media == "application/pdf":
             if not content.startswith(b"%PDF-"):

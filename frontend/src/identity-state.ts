@@ -97,8 +97,6 @@ export async function identityGuard(to: { path: string; fullPath: string; query:
     if (isIdentityPage(to.path)) { try { await prepareCsrf() } catch { /* Page displays configuration status. */ }; return true }
     return { path: '/login', query: { next: safeReturn(to.fullPath) } }
   }
-  const securitySettings = to.path === '/settings' && (!to.query.section || to.query.section === 'security' || to.query.section === 'account')
-  if (identityUser.value.admin && !identityUser.value.mfa_verified && !isIdentityPage(to.path) && !securitySettings) return { path: '/settings', query: { section: 'security' } }
   if (to.path.startsWith('/admin') && !identityUser.value.admin) return '/'
   if (to.path === '/login' || to.path === '/register') return safeReturn(to.query.next)
   return true

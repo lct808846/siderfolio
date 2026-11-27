@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, StrictInt, field
 from astroagent.attachment_schemas import ChatAttachment
 from astroagent.export_schemas import PlotSpec
 from astroagent.literature_schemas import LiteratureSaveReceipt
+from astroagent.memory_schemas import MemoryContextTrace, MemorySaveReceipt
 from astroagent.schemas import ChatResponse, ErrorInfo
 from astroagent.skill_schemas import SkillResolution
 from astroagent.trace_schemas import RunTrace
@@ -54,6 +55,7 @@ class ContextRecord(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     delivered_characters: int = 0
     delivered_bytes: int = 0
+    memory_context: MemoryContextTrace | None = None
 
 
 class Conversation(BaseModel):
@@ -85,6 +87,7 @@ class Turn(BaseModel):
     response: ChatResponse | None = None
     skill_resolution: SkillResolution | None = None
     literature_receipts: list[LiteratureSaveReceipt] = Field(default_factory=list)
+    memory_receipts: list[MemorySaveReceipt] = Field(default_factory=list)
     run_trace: RunTrace | None = None
     trace_status: Literal["available", "unavailable", "not_recorded"] = "not_recorded"
     error: ErrorInfo | None = None

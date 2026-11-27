@@ -241,7 +241,7 @@ class LocalAccess:
             body_limit = (
                 32 * 1024**2
                 if importing
-                else 128 * 1024
+                else 4 * 1024**2
                 if turn_upload
                 else CONVERSATION_BODY_LIMIT
             )

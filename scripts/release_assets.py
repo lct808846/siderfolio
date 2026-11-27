@@ -16,6 +16,18 @@ VERSION = re.compile(r"v(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})")
 COMMIT = re.compile(r"[a-f0-9]{40}")
 DIGEST = re.compile(r"sha256:[a-f0-9]{64}")
 REPOSITORY = re.compile(r"[a-z0-9][a-z0-9_.-]*/[a-z0-9][a-z0-9_.-]*")
+BOILERPLATE_TAG_TITLE = re.compile(
+    r"^(?:Release\s+)?(?:Siderfolio|AstroAgent)\s+v\d+\.\d+\.\d+(?:\s*\([^)]*\))?\.?$",
+    re.IGNORECASE,
+)
+SIGNATURE_BLOCK = re.compile(
+    r"-----BEGIN [A-Z0-9 ]+SIGNATURE-----.*?-----END [A-Z0-9 ]+SIGNATURE-----",
+    re.DOTALL,
+)
+GIT_TRAILER = re.compile(
+    r"^(?:Signed-off-by|Co-authored-by|Reviewed-by|Acked-by|Tested-by|Change-Id):\s+\S",
+    re.IGNORECASE,
+)
 BAKE = "containers/release/docker-bake.hcl"
 APP_INPUTS = (
     ".dockerignore",
@@ -450,6 +462,127 @@ def deploy_ssh(version, sha, repository, registry_user):
             )
 
 
+def _strip_signature_blocks(text):
+    return SIGNATURE_BLOCK.sub("", text).replace("\r\n", "\n").strip()
+
+
+def _extract_release_notes_file(version, sha, git=("git",)):
+    result = subprocess.run(
+        [*git, "show", f"{sha}:docs/releases/{version}.md"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+        timeout=30,
+    )
+    if result.returncode != 0:
+        return ""
+    return result.stdout.lstrip("\ufeff").replace("\r\n", "\n").strip()
+
+
+def _extract_tag_notes(version, git=("git",)):
+    ref = f"refs/tags/{version}"
+    obj_type = subprocess.run(
+        [*git, "cat-file", "-t", ref],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+        timeout=30,
+    )
+    if obj_type.returncode != 0 or obj_type.stdout.strip() != "tag":
+        return ""
+    raw = capture([*git, "cat-file", "tag", ref])
+    _, sep, message = raw.replace("\r\n", "\n").partition("\n\n")
+    if not sep:
+        return ""
+    cleaned = _strip_signature_blocks(message)
+    if not cleaned:
+        return ""
+    lines = cleaned.splitlines()
+    if BOILERPLATE_TAG_TITLE.fullmatch(lines[0].strip()):
+        lines = lines[1:]
+        while lines and not lines[0].strip():
+            lines = lines[1:]
+    return "\n".join(lines).strip()
+
+
+def _previous_stable_tag(version, sha, git=("git",)):
+    target_tuple = validate_version(version)
+    output = capture([*git, "tag", "--merged", sha])
+    candidates = []
+    for raw_tag in output.splitlines():
+        tag = raw_tag.strip()
+        if not tag or tag == version or not VERSION.fullmatch(tag):
+            continue
+        parsed = validate_version(tag)
+        if parsed < target_tuple:
+            candidates.append((parsed, tag))
+    if not candidates:
+        return ""
+    candidates.sort()
+    return candidates[-1][1]
+
+
+def _format_commit_notes(prev_tag, sha, git=("git",)):
+    rev_spec = f"{prev_tag}..{sha}" if prev_tag else sha
+    command = [*git, "log"]
+    if not prev_tag:
+        command.extend(["-n", "1"])
+    command.extend(["--no-merges", "--format=%H%x1f%s%x1f%b%x1e", rev_spec])
+    raw = subprocess.check_output(command, encoding="utf-8", timeout=120)
+    if not raw.strip() and prev_tag:
+        raw = subprocess.check_output(
+            [*git, "log", "-n", "1", "--format=%H%x1f%s%x1f%b%x1e", sha],
+            encoding="utf-8",
+            timeout=120,
+        )
+    entries = []
+    for record in raw.split("\x1e"):
+        record = record.strip("\n\r")
+        if not record:
+            continue
+        parts = record.split("\x1f")
+        if len(parts) < 2:
+            continue
+        commit_sha = parts[0].strip()[:7]
+        subject = parts[1].strip()
+        body = parts[2] if len(parts) > 2 else ""
+        if not subject:
+            continue
+        item_lines = [f"- {subject} (`{commit_sha}`)"]
+        for line in body.replace("\r\n", "\n").splitlines():
+            stripped = line.strip()
+            if not stripped or GIT_TRAILER.match(stripped):
+                continue
+            item_lines.append(f"  {stripped}")
+        entries.append("\n".join(item_lines))
+    if not entries:
+        return f"## 更新内容\n\n- 发布提交 `{sha[:7]}`"
+    return "## 更新内容\n\n" + "\n".join(entries)
+
+
+def build_release_notes(version, sha, repository, git=("git",)):
+    validate_version(version)
+    if not COMMIT.fullmatch(sha) or not REPOSITORY.fullmatch(repository):
+        raise ValueError("Invalid release commit SHA or repository.")
+    prev_tag = _previous_stable_tag(version, sha, git=git)
+    body = _extract_release_notes_file(version, sha, git=git)
+    if not body:
+        body = _extract_tag_notes(version, git=git)
+    if not body:
+        body = _format_commit_notes(prev_tag, sha, git=git)
+    compare_prefix = f"https://github.com/{repository}/compare/"
+    if prev_tag and compare_prefix.lower() not in body.lower():
+        body = f"{body}\n\n**Full Changelog**: {compare_prefix}{prev_tag}...{version}"
+    return body.rstrip() + "\n"
+
+
+def write_release_notes(version, sha, repository, output, git=("git",)):
+    notes = build_release_notes(version, sha, repository, git=git)
+    output.write_text(notes, "utf-8")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     actions = parser.add_subparsers(dest="action", required=True)
@@ -461,6 +594,10 @@ def main():
     deploy = actions.add_parser("deploy-ssh")
     for name in ("version", "sha", "repository", "registry_user"):
         deploy.add_argument(name)
+    notes = actions.add_parser("notes")
+    for name in ("version", "sha", "repository"):
+        notes.add_argument(name)
+    notes.add_argument("output", type=Path)
     image = actions.add_parser("publish")
     image.add_argument("component", choices=COMPONENTS)
     for action in (image, actions.add_parser("assemble")):
@@ -485,6 +622,8 @@ def main():
         publish(args.component, args.version, args.sha, args.repository, args.output)
     elif args.action == "deploy-ssh":
         deploy_ssh(args.version, args.sha, args.repository, args.registry_user)
+    elif args.action == "notes":
+        write_release_notes(args.version, args.sha, args.repository, args.output)
     else:
         assemble(args.version, args.sha, args.repository, args.inputs, args.output)
 

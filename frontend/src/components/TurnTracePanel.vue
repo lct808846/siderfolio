@@ -14,7 +14,7 @@ const emit = defineEmits<{
 }>()
 
 const modelsStore = useModels()
-const canConfigurePricing = computed(() => Boolean(identityUser.value?.admin && identityUser.value?.mfa_verified))
+const canConfigurePricing = computed(() => Boolean(identityUser.value?.admin))
 const visible = computed(() => Boolean(props.trace) || props.traceStatus === 'unavailable')
 
 function displayModelName(raw: string | null | undefined): string {
@@ -139,6 +139,41 @@ const needsPricingConfig = computed(() => {
 
 const traceSpans = computed(() => props.trace?.spans || [])
 
+const memoryCtx = computed(() => props.trace?.memory_context || null)
+const hasMemoryActivity = computed(() => {
+  const ctx = memoryCtx.value
+  if (!ctx) return false
+  return Boolean(
+    ctx.memory_count ||
+    ctx.history_count ||
+    ctx.summary_covered_count ||
+    (ctx.degraded_reasons && ctx.degraded_reasons.length),
+  )
+})
+
+function retrievalModeLabel(mode?: string | null) {
+  if (mode === 'hybrid') return '混合检索（词法 + 向量）'
+  if (mode === 'lexical_fallback') return '词法降级检索'
+  if (mode === 'lexical') return '词法检索'
+  return '未启用'
+}
+
+function degradedReasonLabel(code: string) {
+  const labels: Record<string, string> = {
+    memory_vector_index_empty: '记忆向量未索引，已回退词法',
+    memory_semantic_unavailable: '语义检索不可用，已回退词法',
+    rag_model_not_configured: '未配置本地嵌入模型，已回退词法',
+    rag_model_identity_invalid: '嵌入模型核验未通过，已回退词法',
+    history_budget_pruned: '部分历史片段已按预算裁剪',
+    memory_budget_pruned: '部分低相关记忆已按预算裁剪',
+    summary_budget_exceeded: '摘要超出上下文预算，已回退原窗口',
+    summary_generation_failed: '摘要生成未完成，已回退原窗口',
+    memory_retrieval_failed: '记忆检索异常，已跳过',
+    history_retrieval_failed: '跨会话历史检索异常，已跳过',
+  }
+  return labels[code] || code
+}
+
 const hasErrorSpan = computed(() =>
   Boolean(props.trace?.status === 'error' || traceSpans.value.some(span => span.status === 'error')),
 )
@@ -166,6 +201,17 @@ const hasErrorSpan = computed(() =>
               <span class="turn-trace-sep" aria-hidden="true">·</span>
               <span class="turn-trace-transport" :class="{ 'is-mcp': trace.astronomy_transport === 'mcp' }">
                 {{ transportLabel(trace.astronomy_transport) }}
+              </span>
+            </template>
+            <template v-if="hasMemoryActivity && memoryCtx">
+              <span class="turn-trace-sep" aria-hidden="true">·</span>
+              <span class="turn-trace-transport">
+                <template v-if="memoryCtx.memory_count">记忆 {{ memoryCtx.memory_count }}</template>
+                <template v-if="memoryCtx.memory_count && (memoryCtx.history_count || memoryCtx.summary_covered_count)"> / </template>
+                <template v-if="memoryCtx.history_count">历史 {{ memoryCtx.history_count }}</template>
+                <template v-if="memoryCtx.history_count && memoryCtx.summary_covered_count"> / </template>
+                <template v-if="memoryCtx.summary_covered_count">摘要 {{ memoryCtx.summary_covered_count }} 轮</template>
+                <template v-if="!memoryCtx.memory_count && !memoryCtx.history_count && !memoryCtx.summary_covered_count">记忆降级</template>
               </span>
             </template>
             <template v-if="trace.usage?.usage_source === 'reported'">
@@ -213,6 +259,43 @@ const hasErrorSpan = computed(() =>
             配置单价 →
           </RouterLink>
         </span>
+      </div>
+
+      <div v-if="hasMemoryActivity && memoryCtx" class="turn-trace-memory">
+        <div class="turn-trace-memory-meta">
+          <strong>上下文与记忆</strong>
+          <span class="ui-pill ui-pill-neutral">{{ retrievalModeLabel(memoryCtx.retrieval_mode) }}</span>
+          <span v-if="memoryCtx.memory_count" class="ui-pill ui-pill-accent">
+            已引用记忆 {{ memoryCtx.memory_count }} 条
+          </span>
+          <span v-if="memoryCtx.skill_assisted_by_memory" class="ui-pill ui-pill-success">
+            辅助技能匹配
+          </span>
+          <span v-if="memoryCtx.summary_covered_count" class="ui-pill ui-pill-neutral">
+            已压缩较早 {{ memoryCtx.summary_covered_count }} 轮（{{ memoryCtx.summary_bytes }} B）
+          </span>
+          <span
+            v-for="reason in memoryCtx.degraded_reasons || []"
+            :key="reason"
+            class="ui-pill ui-pill-warning"
+          >
+            {{ degradedReasonLabel(reason) }}
+          </span>
+          <RouterLink v-if="memoryCtx.memory_count" class="turn-trace-price-link" to="/settings?section=memory">
+            查看记忆摘要 →
+          </RouterLink>
+        </div>
+        <div v-if="memoryCtx.history_refs?.length" class="turn-trace-history-refs">
+          <span class="small muted">跨会话引用：</span>
+          <RouterLink
+            v-for="href in memoryCtx.history_refs"
+            :key="`${href.conversation_id}:${href.turn_id}`"
+            class="turn-trace-history-link"
+            :to="`/conversations/${encodeURIComponent(href.conversation_id)}?turn=${encodeURIComponent(href.turn_id)}`"
+          >
+            [{{ href.historical_label }}] {{ href.conversation_title }} · r{{ href.turn_revision }} →
+          </RouterLink>
+        </div>
       </div>
 
       <ol v-if="traceSpans.length" class="turn-trace-spans">
@@ -297,6 +380,41 @@ const hasErrorSpan = computed(() =>
 
 .turn-trace-summary::-webkit-details-marker {
   display: none;
+}
+
+.turn-trace-memory {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface-subtle);
+  font-size: 12px;
+}
+
+.turn-trace-memory-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.turn-trace-history-refs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.turn-trace-history-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 540;
+}
+
+.turn-trace-history-link:hover {
+  text-decoration: underline;
 }
 
 .turn-trace-summary:focus-visible {

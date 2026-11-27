@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "astroagent"
-version = "2.1.0"
+version = "2.2.0"
 description = "基于 DeepSeek、SIMBAD、ADS 与 Gaia DR3 的天文查询与基础分析服务"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -45,7 +45,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-astroagent = ["auth_data/*.txt", "auth_data/*.md", "skills_data/*/SKILL.md"]
+astroagent = ["auth_data/*.txt", "auth_data/*.md", "auth_data/*.png", "skills_data/*/SKILL.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -75,6 +75,12 @@ git push origin "refs/tags/$releaseVersion"
 
 `release.yml` 发布前端、后端、Caddy、PostgreSQL 初始化镜像、计算 Worker 和三种绘图相关镜像到 GHCR。用 `vX.Y.Z` 与 `sha-<完整提交>` 标记，每个版本报告列出实际 `@sha256:…` 摘要。镜像按构建输入和服务使用独立缓存，未变化的镜像可复用。PeTar 编译层与后端安装层可共享。源文件依赖确有变化时才需新的对应构建输入。版本标签冲突直接失败。无 `latest` 生产依赖。部署报告中的版本表示发布提交，复用镜像的 `org.opencontainers.image.revision` 对应其首次构建提交。
 
+生产更新通过后，`publish-release` 作业通过 `scripts/release_assets.py notes` 自动生成 GitHub Release 更新日志，并附带 `release.json` 与 `deployment-report.log`。正文按以下优先级解析，且默认追加 `Full Changelog` 对比链接：
+
+1. 该发布提交内已提交的专用说明文件 `docs/releases/vX.Y.Z.md`（推荐用于撰写结构化中文版本说明）；
+2. 附注标签本身的正文（跳过首行 `Release Siderfolio vX.Y.Z` 模板标题和签名块）；
+3. 若以上均未提供，则自动列出上一个稳定版本标签至当前提交之间的所有非合并提交记录，避免直推 `main` 时因缺少 PR 导致 Release 更新日志为空。
+
 ## 5. GitHub 与 GCP 的一次性启用
 
 ### GitHub

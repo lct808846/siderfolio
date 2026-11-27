@@ -113,7 +113,7 @@ def test_skill_preferences_are_isolated_between_accounts(v21_client):
         method="PUT",
     )
     assert resp.status_code == 200, resp.text
-    assert resp.json()["preferences"]["auto_match"] is False
+    assert resp.json()["preferences"]["auto_match"] is True
     assert resp.json()["preferences"]["disabled_skill_ids"] == ["astronomy-literature-curation"]
 
     # Bob's preferences remain untouched

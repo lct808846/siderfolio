@@ -778,13 +778,16 @@ def enroll(body: ProofInput, request: Request):
             (service.store.crypto.encrypt(secret.encode()).decode(), user["id"]),
         )
     account_label = quote(user.get("email_display") or user.get("email_key") or "user", safe="@.")
+    icon_url = f"{service.settings.origin}/siderfolio-logo.png"
     otpauth_uri = (
         f"otpauth://totp/Siderfolio:{account_label}"
         f"?secret={secret}&issuer=Siderfolio&algorithm=SHA1&digits=6&period=30"
+        f"&image={quote(icon_url, safe='')}"
     )
     return {
         "secret": secret,
         "otpauth_uri": otpauth_uri,
+        "image_url": icon_url,
         "issuer": "Siderfolio",
         "period": 30,
         "digits": 6,
@@ -798,8 +801,6 @@ def disable_totp(body: ProofInput, request: Request, response: Response):
     service.store.rate("totp_disable", source(request), user["id"], limit=5)
     with service.store.connect() as db:
         current = proof(service, request, body, db)
-        if current["admin"]:
-            raise ServiceError(403, "admin_mfa_required", "管理员账号必须保持多因素身份验证开启。")
         if not current["totp_secret"]:
             raise ServiceError(409, "totp_not_enabled", "身份验证器尚未启用，请刷新账号状态。")
         db.execute(

@@ -70,7 +70,7 @@ function current(path: string, descendants = false) {
           </svg>
         </span>
         <b>Siderfolio</b>
-        <span class="version">2.1</span>
+        <span class="version">2.2</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">
@@ -89,7 +89,7 @@ function current(path: string, descendants = false) {
           </svg>
           <span class="sr-only">设置</span>
         </RouterLink>
-        <a v-if="identityUser?.admin && identityUser.mfa_verified" class="workspace-openapi-link" href="/openapi.json" target="_blank" rel="noopener noreferrer">接口定义 ↗</a>
+        <a v-if="identityUser?.admin" class="workspace-openapi-link" href="/openapi.json" target="_blank" rel="noopener noreferrer">接口定义 ↗</a>
       </nav>
     </div>
     <nav v-if="projectPath" class="workspace-project-nav" aria-label="当前项目导航">

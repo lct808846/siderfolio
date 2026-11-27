@@ -22,12 +22,13 @@ def registry(request):
 
 
 def writable(db, user):
-    # Model settings retain session/MFA/role checks without five-minute reauthentication.
+    # Model settings retain session/role checks (and MFA when enabled)
+    # without requiring five-minute reauthentication.
     row = db.execute(
         "SELECT u.id FROM public.auth_users u JOIN public.auth_sessions s ON "
         "s.user_id=u.id WHERE u.id=%s AND s.hash=%s AND NOT s.revoked "
-        "AND s.expires_at>now() AND s.mfa_at IS NOT NULL AND u.admin AND u.active "
-        "AND NOT u.disabled AND u.totp_secret IS NOT NULL FOR UPDATE OF u",
+        "AND s.expires_at>now() AND (u.totp_secret IS NULL OR s.mfa_at IS NOT NULL) "
+        "AND u.admin AND u.active AND NOT u.disabled FOR UPDATE OF u",
         (user["id"], user["session_hash"]),
     ).fetchone()
     if not row:

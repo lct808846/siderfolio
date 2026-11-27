@@ -84,6 +84,7 @@ class TenantServices:
                 service.literature.store.initialize()
                 service.traces.initialize()
                 service.skills.initialize()
+                service.memory.initialize()
                 service.external_mcp = self.external_mcp
             except BaseException:
                 repository.close()

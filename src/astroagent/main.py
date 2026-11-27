@@ -26,6 +26,7 @@ from astroagent.api.knowledge import router as knowledge_router
 from astroagent.api.links import router as links_router
 from astroagent.api.literature import router as literature_router
 from astroagent.api.local_titles import router as local_titles_router
+from astroagent.api.memory import router as memory_router
 from astroagent.api.model_providers import router as model_providers_router
 from astroagent.api.models import router as models_router
 from astroagent.api.plotting import router as plotting_router
@@ -116,6 +117,7 @@ app.include_router(links_router)
 app.include_router(rag_router)
 app.include_router(setup_router)
 app.include_router(skills_router)
+app.include_router(memory_router)
 app.include_router(models_router)
 app.include_router(plotting_router)
 app.include_router(local_titles_router)
@@ -195,6 +197,17 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
                 "error": {
                     "code": "invalid_skill_request",
                     "message": "技能配置参数无效，请核对输入。",
+                    "retryable": False,
+                }
+            },
+        )
+    if request.url.path.startswith("/api/v1/memories"):
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "invalid_memory_request",
+                    "message": "记忆请求参数无效，请核对范围、内容长度或修订号。",
                     "retryable": False,
                 }
             },

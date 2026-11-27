@@ -141,14 +141,15 @@ def test_resolve_turn_skill_opt_out_disabled_ambiguous_and_unavailable():
     assert skill is None
     assert res.selection_mode == "disabled"
 
-    # Auto-match turned off in user preferences
+    # Auto-match is system-enforced even if legacy preference payload passes auto_match=False
     skill, res = resolve_turn_skill(
         "检索 ADS 文献 bibcode 摘要",
         preferences=SkillPreferences(auto_match=False),
         available_tool_ids=all_tools,
     )
-    assert skill is None
-    assert res.selection_mode == "auto_disabled"
+    assert skill is not None
+    assert skill.id == "astronomy-literature-curation"
+    assert res.selection_mode == "auto"
 
     # Skill disabled by user
     skill, res = resolve_turn_skill(

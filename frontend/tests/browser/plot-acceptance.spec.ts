@@ -40,7 +40,7 @@ test('inline plot reviews the proposal and submits one confirmed isolated run', 
   })
 
   await page.goto('/projects/' + project.id + '/plotting')
-  await expect(page.getByRole('button', { name: /科研绘图与 N 体实验准备/ })).toBeVisible()
+  await expect(page.getByRole('textbox', { name: '天文问题' })).toHaveAttribute('placeholder', /描述想绘制的科研图形/)
   await page.getByRole('textbox', { name: '天文问题' }).fill('__qa_inline_plot__ 画自行散点图')
   await page.getByRole('button', { name: '发送问题', exact: true }).click()
   const card = page.getByRole('region', { name: '科研绘图方案' })

@@ -80,11 +80,13 @@ class SkillStore:
             ).fetchone()
             if row is None:
                 return SkillPreferences()
-            return SkillPreferences.model_validate_json(row[0])
+            parsed = SkillPreferences.model_validate_json(row[0])
+            return SkillPreferences(auto_match=True, disabled_skill_ids=parsed.disabled_skill_ids)
 
     def save_preferences(self, prefs: SkillPreferences) -> SkillPreferences:
+        enforced = SkillPreferences(auto_match=True, disabled_skill_ids=prefs.disabled_skill_ids)
         now = datetime.now(UTC).isoformat()
-        payload = prefs.model_dump_json()
+        payload = enforced.model_dump_json()
         with self.repo.connection() as db, self.repo.transaction(db):
             self._ensure_ready(db)
             db.execute(
@@ -93,7 +95,7 @@ class SkillStore:
                 "record=EXCLUDED.record, updated_at=EXCLUDED.updated_at",
                 (PREFERENCES_KEY, payload, now),
             )
-        return prefs
+        return enforced
 
     def save_proposal(self, proposal: ExternalMcpProposal) -> ExternalMcpConfirmationRecord:
         record = ExternalMcpConfirmationRecord(proposal=proposal, result=None)

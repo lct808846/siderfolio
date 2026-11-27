@@ -3691,6 +3691,40 @@ a.ui-pill:hover {
   font-size: 13px;
   line-height: 1.7;
 }
+.ui-empty-inline,
+:is(.settings-group, .ui-card, .ui-card-subtle, dialog.project-dialog, .account-preferences-dialog) .ui-empty-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 8px auto 4px;
+  padding: 24px 16px;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  text-align: center;
+}
+:is(.settings-group, .ui-card, .ui-card-subtle, dialog.project-dialog, .account-preferences-dialog) .ui-empty-card::before {
+  display: none;
+}
+.ui-empty-inline h2,
+.ui-empty-inline h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+.ui-empty-inline p {
+  margin: 0;
+  max-width: 48ch;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
 
 .ui-file-badge {
   display: inline-flex;
@@ -4064,9 +4098,6 @@ a.ui-pill:hover {
 .conversation-layout.workbench > .results-panel > .results-body > * {
   flex-shrink: 0;
 }
-.conversation-layout.workbench[data-results-wide="true"] {
-  --inspector-width: clamp(560px, 48vw, 760px);
-}
 .results-panel .result-tabs {
   flex: none;
   display: flex;
@@ -4371,7 +4402,7 @@ a.ui-pill:hover {
     grid-template-columns: 0px minmax(0, 1fr) calc(var(--inspector-width) + var(--workspace-gap));
   }
   :is(.conversation-layout.workbench, .archive-layout.project-workspace)[data-results-open] > .results-panel {
-    position: static;
+    position: relative;
     top: auto;
     right: auto;
     bottom: auto;
@@ -4395,7 +4426,7 @@ a.ui-pill:hover {
     top: auto;
     right: auto;
     bottom: auto;
-    width: min(460px, 100%);
+    width: min(var(--inspector-width, 460px), 100%);
     align-self: stretch;
     justify-self: end;
   }
@@ -4403,8 +4434,67 @@ a.ui-pill:hover {
     display: flex;
     flex-direction: column;
   }
-  .conversation-layout.workbench[data-results-wide="true"] > .results-panel {
-    width: min(720px, 96%);
+}
+
+/* Workbench left/right sidebar free drag-resizing handles */
+.workbench-resizer {
+  position: relative;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+.workbench-resizer::after {
+  content: '';
+  width: 3px;
+  height: 36px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line-strong) 85%, transparent);
+  opacity: 0;
+  transition: opacity 150ms ease, background-color 150ms ease, height 150ms ease;
+}
+.workbench-resizer:hover::after,
+.workbench-resizer:focus-visible::after,
+.conversation-layout.workbench[data-resizing="left"] .workbench-resizer-left::after,
+.conversation-layout.workbench[data-resizing="right"] .workbench-resizer-right::after {
+  opacity: 1;
+  height: 52px;
+  background: var(--accent);
+}
+.workbench-resizer:focus-visible::after {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-ring) 45%, transparent);
+}
+.workbench-resizer-left {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: end;
+  width: var(--workspace-gap);
+  height: 100%;
+}
+.workbench-resizer-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -5px;
+  width: 10px;
+}
+.conversation-layout.workbench[data-resizing],
+.conversation-layout.workbench[data-resizing] > .history-panel,
+.conversation-layout.workbench[data-resizing] > .results-panel {
+  transition: none !important;
+}
+body.workbench-is-resizing,
+body.workbench-is-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+@media (max-width: 980px) {
+  .workbench-resizer {
+    display: none;
   }
 }
 @media (max-width: 1200px) {
@@ -5633,6 +5723,10 @@ textarea {
 :root[data-theme-mode="dark"] .ui-empty-card {
   background: var(--specular-spot), var(--surface-glass-card);
   border-color: var(--line-strong);
+}
+:root[data-theme-mode="dark"] :is(.settings-group, .ui-card, .ui-card-subtle, dialog.project-dialog, .account-preferences-dialog) .ui-empty-card {
+  background: transparent;
+  border-color: transparent;
 }
 :root[data-theme-mode="dark"] .ui-empty-icon {
   border-color: color-mix(in srgb, var(--accent) 34%, transparent);

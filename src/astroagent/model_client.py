@@ -61,7 +61,7 @@ def upstream_failure(protocol, status, content):
         failure = ServiceError(
             502,
             "model_request_invalid",
-            "服务商拒绝请求参数，请核对所选模型支持的协议与工具调用能力。",
+            "服务商拒绝请求参数，请核对所选模型支持的协议、工具调用或图片输入能力。",
         )
     else:
         failure = ServiceError(
@@ -116,6 +116,84 @@ def tool_call(name, arguments, identifier):
     if not isinstance(identifier, str) or not identifier or len(identifier) > 200:
         raise ValueError("Invalid function call identifier")
     return {"name": name, "args": arguments, "id": identifier, "type": "tool_call"}
+
+
+def _split_image_data_url(url: str) -> tuple[str, str] | None:
+    if not isinstance(url, str) or not url.startswith("data:"):
+        return None
+    header, sep, data = url.partition(",")
+    if not sep or ";base64" not in header:
+        return None
+    mime = header[5:].split(";", 1)[0].strip().lower()
+    if mime not in {"image/png", "image/jpeg", "image/webp", "image/gif"} or not data:
+        return None
+    return mime, data
+
+
+def _format_openai_responses_content(content):
+    if not isinstance(content, list):
+        return content
+    parts = []
+    for item in content:
+        if isinstance(item, str):
+            parts.append({"type": "input_text", "text": item})
+        elif isinstance(item, dict):
+            kind = item.get("type")
+            if kind == "text" and isinstance(item.get("text"), str):
+                parts.append({"type": "input_text", "text": item["text"]})
+            elif kind == "image_url":
+                img = item.get("image_url")
+                url = img.get("url") if isinstance(img, dict) else img
+                if isinstance(url, str) and url:
+                    parts.append({"type": "input_image", "image_url": url})
+    return parts
+
+
+def _format_anthropic_blocks(content):
+    if not isinstance(content, list):
+        return [{"type": "text", "text": content}]
+    blocks = []
+    for item in content:
+        if isinstance(item, str):
+            blocks.append({"type": "text", "text": item})
+        elif isinstance(item, dict):
+            kind = item.get("type")
+            if kind == "text" and isinstance(item.get("text"), str):
+                blocks.append({"type": "text", "text": item["text"]})
+            elif kind == "image_url":
+                img = item.get("image_url")
+                url = img.get("url") if isinstance(img, dict) else img
+                parsed = _split_image_data_url(url)
+                if parsed is not None:
+                    mime, b64 = parsed
+                    blocks.append(
+                        {
+                            "type": "image",
+                            "source": {"type": "base64", "media_type": mime, "data": b64},
+                        }
+                    )
+    return blocks
+
+
+def _format_gemini_parts(content):
+    if not isinstance(content, list):
+        return [{"text": content}]
+    parts = []
+    for item in content:
+        if isinstance(item, str):
+            parts.append({"text": item})
+        elif isinstance(item, dict):
+            kind = item.get("type")
+            if kind == "text" and isinstance(item.get("text"), str):
+                parts.append({"text": item["text"]})
+            elif kind == "image_url":
+                img = item.get("image_url")
+                url = img.get("url") if isinstance(img, dict) else img
+                parsed = _split_image_data_url(url)
+                if parsed is not None:
+                    mime, b64 = parsed
+                    parts.append({"inlineData": {"mimeType": mime, "data": b64}})
+    return parts
 
 
 def append_blocks(items, role, blocks):
@@ -489,10 +567,15 @@ class ProtocolModel:
                     }
                 )
             else:
+                role = "system" if isinstance(message, SystemMessage) else "user"
                 items.append(
                     {
-                        "role": "system" if isinstance(message, SystemMessage) else "user",
-                        "content": message.content,
+                        "role": role,
+                        "content": (
+                            _format_openai_responses_content(message.content)
+                            if role == "user"
+                            else message.content
+                        ),
                     }
                 )
         body = {
@@ -555,7 +638,7 @@ class ProtocolModel:
                     ],
                 )
             else:
-                append_blocks(items, "user", [{"type": "text", "text": message.content}])
+                append_blocks(items, "user", _format_anthropic_blocks(message.content))
         body = {
             "model": self.settings.deepseek_model,
             "system": "\n\n".join(system),
@@ -619,7 +702,7 @@ class ProtocolModel:
                     function["id"] = call_ids[message.tool_call_id]
                 parts, role = [{"functionResponse": function}], "user"
             else:
-                parts, role = [{"text": message.content}], "user"
+                parts, role = _format_gemini_parts(message.content), "user"
             if items and items[-1]["role"] == role:
                 items[-1]["parts"].extend(parts)
             else:

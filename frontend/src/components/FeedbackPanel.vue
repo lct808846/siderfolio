@@ -1260,9 +1260,8 @@ onMounted(() => {
   text-align: center;
   gap: 10px;
   padding: 28px 16px 24px;
-  border: 1px dashed var(--line-strong);
-  border-radius: var(--radius-card);
-  background: color-mix(in srgb, var(--surface-subtle) 75%, transparent);
+  border: 0;
+  background: transparent;
 }
 
 .feedback-empty h3 {

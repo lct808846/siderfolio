@@ -67,7 +67,7 @@ function store(kind: 'answer' | 'index', value: GenerateRequest | IndexRequest |
   try { if (value) sessionStorage.setItem(storageKey(project,kind),JSON.stringify(value)); else sessionStorage.removeItem(storageKey(project,kind)) } catch { message.value = '浏览器无法保留请求编号，请保留本页核对。' }
 }
 function restore<T>(kind: string): T | null { try { return JSON.parse(sessionStorage.getItem(storageKey(id(),kind)) || 'null') as T | null } catch { return null } }
-function report(e: unknown) { error.value = e instanceof Error ? e.message : '操作状态未确认，请先刷新记录。' }
+function report(e: unknown) { error.value = e instanceof Error ? e.message : '操作状态未确认，请稍后重试或重新进入页面核对。' }
 async function refresh() {
   const token = ++navigation
   const routePid = typeof route.params.projectId === 'string' ? route.params.projectId : ''

@@ -1,38 +1,34 @@
 import { expect, test, type Page } from '@playwright/test'
 import path from 'node:path'
+import { chooseUiOption } from '../browser/ui-select'
 
 const origin = 'http://127.0.0.1:5287'
 
-async function startOrbit(page: Page) {
-  await page.getByRole('button', { name: '核对并运行' }).click()
-  await expect(page.getByRole('dialog', { name: '确认运行实验' })).toBeVisible()
-  await page.getByRole('button', { name: '确认并排队' }).click()
-  await expect(page.getByRole('button', { name: '复制为新草稿' })).toBeVisible({ timeout: 20000 })
+type CsrfHeaders = {
+  Origin: string
+  'X-CSRF-Token': string
 }
 
-async function saveDraft(page: Page) {
-  const invalid = await page.locator('form.compute-form').evaluate(form =>
-    [...form.querySelectorAll<HTMLInputElement>('input:invalid')].map(input => ({
-      label: input.getAttribute('aria-label') ?? input.labels?.[0]?.textContent,
-      value: input.value,
-      message: input.validationMessage,
-    })),
-  )
-  expect(invalid).toEqual([])
-  const saved = page.waitForResponse(res =>
-    /\/compute-tasks(?:\/[^/]+)?$/.test(new URL(res.url()).pathname) &&
-    ['POST', 'PATCH'].includes(res.request().method()),
-  )
-  await page.getByRole('button', { name: '保存草稿' }).click()
-  const response = await saved
-  expect([200, 201]).toContain(response.status())
-  const { id } = await response.json() as { id: string }
-  await expect(page).toHaveURL(url => url.pathname.endsWith(`/compute/${id}`))
-  await expect(page.getByRole('button', { name: '核对并运行' })).toBeVisible()
-  return id
+type ComputeTaskResponse = {
+  id: string
+  name: string
+  revision: number
+  state: string
+  parameter_sha256: string
+  parameters: {
+    engine: 'rebound' | 'petar'
+    duration: number
+    samples: number
+    particles: Array<{
+      id: string
+      mass: number
+      position: [number, number, number]
+      velocity: [number, number, number]
+    }>
+  }
 }
 
-async function createProject(page: Page, name: string) {
+async function loginAndCreateProject(page: Page, name: string) {
   await page.route('**/*', route => {
     const url = new URL(route.request().url())
     return url.origin === origin || url.protocol === 'data:' ? route.continue() : route.abort()
@@ -44,141 +40,199 @@ async function createProject(page: Page, name: string) {
   await page.getByLabel('密码', { exact: true }).fill('Synthetic nebula entropy 2048')
   await page.getByRole('button', { name: '继续', exact: true }).click()
   await expect(page).toHaveURL(origin + '/')
-  const csrf = (await (await page.request.get('/api/v1/auth/csrf')).json()).csrf_token
+  const csrf = (await (await page.request.get('/api/v1/auth/csrf')).json()).csrf_token as string
+  const headers: CsrfHeaders = { Origin: origin, 'X-CSRF-Token': csrf }
   const created = await page.request.post('/api/v1/projects', {
-    data: { name }, headers: { Origin: origin, 'X-CSRF-Token': csrf },
+    data: { name },
+    headers,
+  })
+  expect(created.status()).toBe(201)
+  const project = await created.json() as { id: string }
+  return { project, headers }
+}
+
+async function createExtraProject(page: Page, name: string, headers: CsrfHeaders) {
+  const created = await page.request.post('/api/v1/projects', {
+    data: { name },
+    headers,
   })
   expect(created.status()).toBe(201)
   return created.json() as Promise<{ id: string }>
 }
 
+async function createComputeDraft(
+  page: Page,
+  projectId: string,
+  headers: CsrfHeaders,
+  body: {
+    name: string
+    source: 'manual' | 'template' | 'conversation'
+    parameters: ComputeTaskResponse['parameters']
+  },
+) {
+  const res = await page.request.post(`/api/v1/projects/${projectId}/compute-tasks`, {
+    data: body,
+    headers,
+  })
+  expect(res.status()).toBe(201)
+  return res.json() as Promise<ComputeTaskResponse>
+}
+
 test('workbench handoff, PeTar run, exports and comparison with REBOUND', async ({ page }, info) => {
-  const project = await createProject(page, `Compute QA ${info.project.name} ${Date.now()}`)
+  const projectName = `Compute QA ${info.project.name} ${Date.now()}`
+  const { project, headers } = await loginAndCreateProject(page, projectName)
+  const emptyProject = await createExtraProject(page, `Compute Empty ${info.project.name} ${Date.now()}`, headers)
 
-  await page.locator('#question').fill('用独立测试项目核对一个圆轨道双体模板。')
-  await page.getByRole('button', { name: 'N 体模拟', exact: true }).click()
-  await page.getByLabel('保存计算结果的空间').selectOption(project.id)
-  await page.getByRole('button', { name: '打开计算任务' }).click()
-  await expect(page.getByLabel('实验描述')).toHaveValue('用独立测试项目核对一个圆轨道双体模板。')
-  const sidebarTitle = page.getByRole('heading', { name: 'N 体模拟', exact: true })
-  await expect(sidebarTitle).toBeVisible()
-  expect(await sidebarTitle.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
-  const picker = page.getByRole('group', { name: '选择模拟程序' })
-  const rebound = picker.getByRole('button', { name: /REBOUND/ })
-  const petar = picker.getByRole('button', { name: /PeTar/ })
-  await expect(rebound).toHaveAttribute('aria-pressed', 'true')
-  await petar.focus()
-  await page.keyboard.press('Space')
-  await expect(petar).toHaveAttribute('aria-pressed', 'true')
-  await page.getByRole('button', { name: /圆轨道双体模板/ }).click()
-  await expect(page.getByLabel('第 1 行质量')).toHaveValue('0.5')
-  await expect(petar).toHaveAttribute('aria-pressed', 'true')
-  await page.getByLabel('采样点数').fill('100')
-  const originalId = await saveDraft(page)
-  const originalUrl = page.url()
-  await page.getByRole('button', { name: '核对并运行' }).click()
-  await expect(page.getByRole('dialog', { name: '确认运行实验' })).toContainText('PeTar')
-  await page.keyboard.press('Escape')
+  // Verify current v2.2 workbench handoff entry (?tool=compute&project=...) activates N-body mode & project context.
+  await page.goto(`/?tool=compute&project=${project.id}`)
+  const question = page.locator('#question')
+  await expect(question).toHaveAttribute('placeholder', /描述 N 体模拟需求/)
+  await question.fill('用独立测试项目核对一个圆轨道双体模板。')
+  await expect(page.locator('.chat-project-pill-name')).toHaveText(projectName)
+
   const base = `/api/v1/projects/${project.id}/compute-tasks`
-  expect((await (await page.request.get(`${base}/${originalId}`)).json()).state).toBe('draft')
+  const templateRes = await page.request.get(`${base}/templates/binary`)
+  expect(templateRes.status()).toBe(200)
+  const binaryParams = await templateRes.json() as ComputeTaskResponse['parameters']
+  expect(binaryParams.particles[0]?.mass).toBe(0.5)
 
-  await startOrbit(page)
-  await page.reload()
-  await expect(page.getByRole('heading', { name: '运行结果' })).toBeVisible({ timeout: 24000 })
-  await expect(page.getByText(/PeTar 1\.0 · Tree \+ Hermite \+ SDAR/)).toBeVisible()
-  const plot = page.locator('main .compute-result img').first()
+  const petarDraft = await createComputeDraft(page, project.id, headers, {
+    name: '圆轨道双体实验（PeTar）',
+    source: 'template',
+    parameters: {
+      ...binaryParams,
+      engine: 'petar',
+      samples: 100,
+    },
+  })
+
+  // Legacy /projects/:projectId/compute/:taskId redirects into the workbench result panel.
+  await page.goto(`/projects/${project.id}/compute/${petarDraft.id}`)
+  const panel = page.locator('#workbench-results')
+  const panelTitle = panel.getByRole('heading', { name: '空间 N 体模拟记录', exact: true })
+  await expect(panelTitle).toBeVisible()
+  expect(await panelTitle.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
+  await expect(panel.getByText('待确认', { exact: true })).toBeVisible()
+  await expect(panel.getByRole('button', { name: '确认运行', exact: true })).toBeVisible()
+  expect((await (await page.request.get(`${base}/${petarDraft.id}`)).json()).state).toBe('draft')
+
+  await panel.getByRole('button', { name: '确认运行', exact: true }).click()
+  await page.goto(`/projects/${project.id}/compute/${petarDraft.id}`)
+  await expect(panel.getByText(/PeTar 1\.0 · Tree \+ Hermite \+ SDAR/)).toBeVisible({ timeout: 24000 })
+  await expect(panel.getByText('已完成', { exact: true })).toBeVisible()
+  const plot = panel.locator('.compute-plot-frame img').first()
   await expect.poll(() => plot.evaluate(el => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
-  if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-petar-desktop.png`) })
+  if (process.env.ASTROAGENT_RECORD_DIR) {
+    await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-petar-desktop.png`) })
+  }
 
-  await page.getByRole('button', { name: '位置快照', exact: true }).click()
-  await page.getByRole('slider').fill('16')
+  await panel.getByRole('button', { name: '位置快照', exact: true }).click()
+  await panel.getByRole('slider').fill('16')
   const [archiveResponse, archive] = await Promise.all([
     page.waitForResponse(res => new URL(res.url()).pathname.endsWith('/archive'), { timeout: 12000 }),
     page.waitForEvent('download', { timeout: 15000 }),
-    page.getByRole('button', { name: '下载实验 ZIP' }).click(),
+    panel.getByRole('button', { name: '导出 ZIP', exact: true }).click(),
   ])
   expect(archiveResponse.ok()).toBe(true)
   expect(new URL(archiveResponse.url()).searchParams.get('sample')).toBe('16')
-  expect(archive.suggestedFilename()).toBe(`astroagent-experiment-${originalId}.zip`)
+  expect(archive.suggestedFilename()).toBe(`astroagent-experiment-${petarDraft.id}.zip`)
   expect(await archive.failure()).toBeNull()
+
   const [csv] = await Promise.all([
     page.waitForEvent('download', { timeout: 15000 }),
-    page.getByRole('button', { name: '下载原始快照 CSV' }).click(),
+    panel.getByRole('button', { name: '快照 CSV', exact: true }).click(),
   ])
-  expect(csv.suggestedFilename()).toBe(`astroagent-snapshots-${originalId}.csv`)
+  expect(csv.suggestedFilename()).toBe(`astroagent-snapshots-${petarDraft.id}.csv`)
   expect(await csv.failure()).toBeNull()
 
-  await page.getByRole('button', { name: '复制为新草稿' }).click()
-  await expect(page).not.toHaveURL(originalUrl)
-  await page.getByRole('button', { name: '编辑条件' }).click()
-  await expect(petar).toHaveAttribute('aria-pressed', 'true')
-  await rebound.click()
-  await saveDraft(page)
-  await startOrbit(page)
-  await expect(page.getByRole('heading', { name: '运行结果' })).toBeVisible({ timeout: 24000 })
-  await expect(page.getByText(/REBOUND 4\.4\.11 · IAS15/)).toBeVisible()
-  await page.getByLabel('比较同项目实验').selectOption(originalId)
-  await expect(page.getByRole('img', { name: '两次运行的相对能量偏差，横轴为年' })).toBeVisible()
+  // Duplicate into a new draft, switch engine to REBOUND, confirm and compare against PeTar.
+  const [copyResponse] = await Promise.all([
+    page.waitForResponse(res => new URL(res.url()).pathname.endsWith('/copy') && res.request().method() === 'POST', { timeout: 12000 }),
+    panel.getByRole('button', { name: '复制', exact: true }).click(),
+  ])
+  expect(copyResponse.status()).toBe(201)
+  const copied = await copyResponse.json() as ComputeTaskResponse
+  await expect(panel.getByRole('button', { name: '确认运行', exact: true })).toBeVisible()
+
+  const patched = await page.request.patch(`${base}/${copied.id}`, {
+    headers,
+    data: {
+      expected_revision: copied.revision,
+      name: '圆轨道双体实验（REBOUND）',
+      source: 'template',
+      parameters: {
+        ...copied.parameters,
+        engine: 'rebound',
+      },
+    },
+  })
+  expect(patched.status()).toBe(200)
+
+  await page.goto(`/projects/${project.id}/compute/${copied.id}`)
+  await expect(panel.getByRole('button', { name: '确认运行', exact: true })).toBeVisible()
+  await panel.getByRole('button', { name: '确认运行', exact: true }).click()
+  await expect(panel.getByText(/REBOUND 4\.4\.11 · IAS15/)).toBeVisible({ timeout: 24000 })
+
+  await panel.getByRole('tab', { name: '实验对比', exact: true }).click()
+  await chooseUiOption(page, panel.getByRole('button', { name: '选择同空间已完成实验进行对比' }), { index: 1 })
+  await expect(panel.getByLabel('相对能量偏差对比曲线')).toBeVisible()
+
+  await panel.getByRole('tab', { name: '数据表与文件', exact: true }).click()
+  await expect(panel.getByText('parameters.json')).toBeVisible()
+
   await page.setViewportSize({ width: 390, height: 844 })
-  await expect(page.getByRole('heading', { name: '运行结果' })).toBeVisible()
+  await expect(panel).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-compare-mobile.png`) })
+  if (process.env.ASTROAGENT_RECORD_DIR) {
+    await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-compare-mobile.png`) })
+  }
+
   await page.setViewportSize({ width: 1440, height: 900 })
-  const space = page.getByRole('main').getByLabel('切换当前科研空间')
-  await space.selectOption({ label: '个人空间（默认）' })
-  await expect(page).toHaveURL(origin + '/compute')
-  await expect(page.getByText('此项目还没有计算任务。')).toBeVisible()
-  await space.selectOption(project.id)
-  await expect(page).toHaveURL(`${origin}/projects/${project.id}/compute`)
-  await expect(page.getByRole('link', { name: /圆轨道双体实验/ }).first()).toBeVisible()
+  await page.goto(`/projects/${emptyProject.id}/compute`)
+  await expect(panel.getByText('当前空间尚无 N 体模拟记录')).toBeVisible()
+
+  await page.goto(`/projects/${project.id}/compute`)
+  const taskSwitcher = panel.getByRole('button', { name: '切换本次对话 N 体模拟记录' })
+  await expect(taskSwitcher).toBeVisible()
+  await chooseUiOption(page, taskSwitcher, /PeTar/)
+  await expect(panel.getByText(/PeTar 1\.0 · Tree \+ Hermite \+ SDAR/)).toBeVisible()
 })
 
-test('presets, Kepler elements, CSV import and center-of-mass reset', async ({ page }, info) => {
-  const project = await createProject(page, `Presets QA ${info.project.name} ${Date.now()}`)
-  await page.goto(`/projects/${project.id}/compute`)
-  await page.getByRole('button', { name: '新建草稿' }).click()
-  await page.getByRole('button', { name: /层级三星系统/ }).click()
-  await expect(page.getByLabel('第 3 行粒子 ID')).toHaveValue('OuterC')
-  await page.getByRole('button', { name: /Plummer 模型星团/ }).click()
-  await expect(page.getByLabel('第 12 行粒子 ID')).toHaveValue('S12')
-  await expect(page.getByText('1.000', { exact: true })).toBeVisible()
-
-  await page.getByText(/双体开普勒轨道根数生成器/).click()
-  await page.getByLabel(/主星质量/).fill('1.4')
-  await page.getByLabel(/伴星质量/).fill('0.6')
-  await page.getByLabel(/半长轴 a/).fill('2')
-  await page.getByLabel(/轨道倾角 i/).fill('40')
-  await page.getByLabel(/初始真近点角/).fill('90')
-  await page.getByRole('button', { name: '生成并填入粒子表' }).click()
-  await expect(page.getByLabel('模拟时长（yr）')).toHaveValue('4')
-  await expect(page.getByLabel('第 1 行粒子 ID')).toHaveValue('Star1')
-  await expect(page.getByLabel('第 2 行位置 Z')).not.toHaveValue('0')
-
-  await page.getByText(/批量导入粒子表/).click()
-  const csv = page.locator('details').filter({ hasText: '批量导入粒子表' })
-  const valid = 'Z9,2,1,0,0,1,0,0\nA1,1,4,0,0,4,0,0'
-  await csv.locator('textarea').fill('Broken,nan,0,0,0,0,0,0\n' + valid)
-  await page.getByRole('button', { name: '解析并填入粒子表' }).click()
-  await expect(csv.getByRole('alert')).toContainText('第 1 行')
-  await expect(page.getByLabel('第 1 行粒子 ID')).toHaveValue('Star1')
-  await csv.locator('input[type=file]').setInputFiles({
-    name: 'synthetic.tsv', mimeType: 'text/tab-separated-values', buffer: Buffer.from(valid.replaceAll(',', '\t')),
+test('multi-body PeTar draft, parameter disclosure and two-step delete lifecycle', async ({ page }, info) => {
+  const { project, headers } = await loginAndCreateProject(page, `Presets QA ${info.project.name} ${Date.now()}`)
+  const draft = await createComputeDraft(page, project.id, headers, {
+    name: '合成质心系双体草稿',
+    source: 'manual',
+    parameters: {
+      engine: 'petar',
+      duration: 2,
+      samples: 65,
+      particles: [
+        { id: 'Z9', mass: 2, position: [-1, 0, 0], velocity: [0, -1, 0] },
+        { id: 'A1', mass: 1, position: [2, 0, 0], velocity: [0, 2, 0] },
+      ],
+    },
   })
-  await expect(page.getByLabel('第 1 行粒子 ID')).toHaveValue('Z9')
-  await expect(csv.getByRole('alert')).toHaveCount(0)
-  await page.getByRole('button', { name: /质心系归零/ }).click()
-  await expect(page.getByLabel('第 1 行位置 X')).toHaveValue('-1')
-  await expect(page.getByLabel('第 2 行速度 Vx')).toHaveValue('2')
-  const picker = page.getByRole('group', { name: '选择模拟程序' })
-  await picker.getByRole('button', { name: /PeTar/ }).click()
+
+  await page.goto(`/projects/${project.id}/compute/${draft.id}`)
+  const panel = page.locator('#workbench-results')
+  await expect(panel.getByText('合成质心系双体草稿')).toBeVisible()
+  await panel.getByText(/初始条件与执行时间线/).click()
+  await expect(panel.locator('.compute-json')).toContainText('"engine": "petar"')
+  await expect(panel.locator('.compute-json')).toContainText('"id": "Z9"')
+  await expect(panel.locator('.compute-json')).toContainText('"id": "A1"')
+  await expect(panel.locator('.compute-sha')).toContainText(draft.parameter_sha256)
+
   await page.setViewportSize({ width: 390, height: 844 })
-  await picker.scrollIntoViewIfNeeded()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  if (process.env.ASTROAGENT_RECORD_DIR) await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })
-  const id = await saveDraft(page)
-  const task = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${id}`)
-  expect(task.status()).toBe(200)
-  const params = (await task.json()).parameters
-  expect(params.engine).toBe('petar')
-  expect(params.particles.map((item: { id: string }) => item.id)).toEqual(['Z9', 'A1'])
+  if (process.env.ASTROAGENT_RECORD_DIR) {
+    await page.screenshot({ path: path.join(process.env.ASTROAGENT_RECORD_DIR, `${info.project.name}-picker-mobile.png`) })
+  }
+
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await panel.getByRole('button', { name: '移除', exact: true }).click()
+  await panel.getByRole('button', { name: '确认移除', exact: true }).click()
+  await expect(panel.getByText('当前空间尚无 N 体模拟记录')).toBeVisible()
+  const removed = await page.request.get(`/api/v1/projects/${project.id}/compute-tasks/${draft.id}`)
+  expect(removed.status()).toBe(404)
 })

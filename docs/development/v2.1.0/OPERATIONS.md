@@ -74,7 +74,18 @@ V2.1.0 在保留既有内置工具（SIMBAD / ADS / Gaia / 绘图 / N 体 / 文�
    DELETE FROM public.auth_meta WHERE key = 'v21_mcp_schema';
    ```
 
-## 4. 故障排查
+## 4. 独立受控 HTTPS 测试端点验收
+
+仓库内置了无外部依赖的本地自签名 HTTPS Streamable HTTP 测试服务端 [mock_external_mcp_server.py](../../../scripts/mock_external_mcp_server.py)，用于离线/隔离环境验收 `2026-07-28` 握手、分页 `tools/list`（含 SSE）、Bearer 鉴权、定义变更、协议不兼容、302 重定向阻断、超时与超大输出收敛：
+
+```powershell
+# 独立启动本机受控 HTTPS 测试端点（仅用于隔离测试，切勿用于生产）
+python scripts/mock_external_mcp_server.py --port 8443 --token synthetic-ext-token
+```
+
+对应的自动化 TLS 端到端用例位于 `tests/test_external_mcp.py::test_external_mcp_real_local_https_end_to_end`（同时验证默认生产出站策略仍会拒绝 `127.0.0.1`）。
+
+## 5. 故障排查
 
 - **`external_mcp_disabled`**：确认服务端环境已设置 `ASTROAGENT_EXTERNAL_MCP_ENABLED=true` 且已重启后端。
 - **`mcp_egress_blocked`**：目标主机或其 DNS 解析结果落入内网、环回或云元数据网段；请核对 DNS 与白名单出口。

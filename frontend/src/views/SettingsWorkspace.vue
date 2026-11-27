@@ -6,6 +6,7 @@ import AppearanceSettings from '../components/AppearanceSettings.vue'
 import LocalTitleSettings from '../components/LocalTitleSettings.vue'
 import ModelProvidersSettings from '../components/ModelProvidersSettings.vue'
 import SkillsSettings from '../components/SkillsSettings.vue'
+import MemorySettings from '../components/MemorySettings.vue'
 import AccountWorkspace from './AccountWorkspace.vue'
 import StatusNotice from '../components/StatusNotice.vue'
 import SuccessToast from '../components/SuccessToast.vue'
@@ -64,7 +65,8 @@ const sections = [
   { id: 'security', group: 'account', label: '账户安全与登录', description: '管理你的登录方式、多因素验证与已登录设备。', keywords: '登录 密码 身份 验证器 二维码 双因素 TOTP MFA 恢复码 安全 建议 会话 设备 强制 退出 异地 异常 IP 浏览器', icon: 'M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4' },
   { id: 'account', group: 'account', label: '账户', description: '查看并管理你的个人资料与账户详情。', keywords: '账户 账号 详情 用户名 邮箱 角色 资料', icon: 'M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5.5 19.2a7 7 0 0 1 13 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z' },
   { id: 'appearance', group: 'app', label: '外观与主题', description: '自定义配色主题、天文动态背景、界面密度、字号、排版与视觉性能开关。', keywords: '外观 主题 配色 暗黑 暗夜 深色 浅色 红光 护眼 天文 背景 星空 轨道 动态 圆角 密度 字体 字号 排版 毛玻璃 模糊 阴影 光影 性能 省电 流畅 动效', icon: 'M12 3a9 9 0 1 0 0 18 1.5 1.5 0 0 0 1.5-1.5c0-.4-.15-.77-.4-1.05-.25-.28-.4-.65-.4-1.05a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-7.9-9-7.9ZM7.5 10.5h.01M10.5 7.5h.01M14.5 7.5h.01M17 10.5h.01' },
-  { id: 'skills', group: 'app', label: '技能与工具', description: '管理内置科研技能的个人启停与自动匹配，查看当前获准使用的工具目录。', keywords: '技能 skill 自动匹配 科研 工具 目录 MCP 天体 文献 绘图 N体', icon: 'M12 3l2.2 5.2L19.5 10l-5.3 1.8L12 17l-2.2-5.2L4.5 10l5.3-1.8L12 3z' },
+  { id: 'skills', group: 'app', label: '技能与工具', description: '管理内置科研技能的启停状态（系统默认自动匹配），查看当前获准使用的工具目录。', keywords: '技能 skill 自动匹配 科研 工具 目录 MCP 天体 文献 绘图 N体', icon: 'M12 3l2.2 5.2L19.5 10l-5.3 1.8L12 17l-2.2-5.2L4.5 10l5.3-1.8L12 3z' },
+  { id: 'memory', group: 'app', label: '记忆', description: '开启或关闭记忆功能，查看记忆摘要并添加新的记忆内容。', keywords: '记忆 memory 长期记忆 偏好 摘要 上下文', icon: 'M12 4a7 7 0 0 0-4 12.74V20h8v-3.26A7 7 0 0 0 12 4ZM9 22h6' },
   { id: 'general', group: 'app', label: '概览', description: '查看当前工作环境、服务状态与 Astronomy MCP 查询通道。', keywords: '常规 状态 环境 版本 MCP mcp 天文 通道 直连 切换', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
   { id: 'models', group: 'app', label: '模型', description: '管理模型服务商，为工作台选择可用模型。', keywords: '远程 服务商 提供方 千问 deepseek qwen OpenAI API 密钥 默认', icon: 'm12 3 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8' },
   { id: 'assistant', group: 'app', label: '会话命名', description: '设置本地模型自动生成会话标题。', keywords: '本地 模型 自动 标题 命名 Ollama', icon: 'M9 3h6M12 3v3M5 6h14v14H5zM8 11h1M15 11h1M9 16h6M2 10v6M22 10v6' },
@@ -72,8 +74,8 @@ const sections = [
   { id: 'data', group: 'app', label: '数据管理', description: '管理已归档会话、科研项目空间与备份迁移包。', keywords: '备份 导入 导出 归档 会话 收纳 恢复 PDF 文献 迁移 项目', icon: 'M3 7V4h7l2 3h9v13H3zM8 12h8M8 16h5' },
 ] as const
 type SectionId = typeof sections[number]['id']
-const canManage = computed(() => !!identityUser.value?.admin && identityUser.value.mfa_verified)
-const availableSections = computed(() => sections.filter(section => canManage.value || section.group === 'account' || section.id === 'appearance' || section.id === 'skills' || section.id === 'data'))
+const canManage = computed(() => !!identityUser.value?.admin)
+const availableSections = computed(() => sections.filter(section => canManage.value || section.group === 'account' || section.id === 'appearance' || section.id === 'skills' || section.id === 'memory' || section.id === 'data'))
 const active = computed(() => availableSections.value.find(section => section.id === (route.path === '/account' ? 'account' : route.query.section))
   || availableSections.value[0] || sections[0])
 const isAccountGroup = (id: SectionId) => id === 'security' || id === 'account'
@@ -177,6 +179,7 @@ async function toggleAstronomyTransport(event: Event) {
 watch(canManage, allowed => { if (allowed) { void load(); void models.load() } }, { immediate: true })
 
 const archivedLoading = ref(false), archivedBusy = ref(false), archivedError = ref(''), archivedMessage = ref('')
+const archiveDialog = ref<HTMLDialogElement | null>(null)
 const deletingArchived = ref<ArchivedConversation | null>(null)
 const deleteArchiveDialog = ref<HTMLDialogElement | null>(null)
 const createProjectDialog = ref<InstanceType<typeof CreateProjectDialog> | null>(null)
@@ -192,6 +195,25 @@ async function loadArchived() {
   }
   catch (e) { archivedError.value = e instanceof Error ? e.message : '暂时无法读取数据管理记录。' }
   finally { archivedLoading.value = false }
+}
+async function openArchiveDialog() {
+  archivedError.value = ''
+  await nextTick()
+  if (archiveDialog.value && !archiveDialog.value.open) {
+    archiveDialog.value.showModal()
+  }
+  if (archivedLoading.value) return
+  archivedLoading.value = true
+  try {
+    await store.refreshArchived()
+  }
+  catch (e) { archivedError.value = e instanceof Error ? e.message : '暂时无法读取已归档会话。' }
+  finally { archivedLoading.value = false }
+}
+function onArchiveDialogBackdropClick(event: MouseEvent) {
+  if (event.target === archiveDialog.value && !archivedBusy.value) {
+    archiveDialog.value?.close()
+  }
 }
 function openSettingsProjectManager(projectId: string, tab: DrawerTab = 'context') {
   void projectManageDrawer.value?.open(projectId, tab)
@@ -319,7 +341,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
           </template>
           <p v-if="!filteredSections.length" class="settings-search-empty" role="status">没有匹配的设置，试试“密码”“验证器”“模型”或“存储”。</p>
         </div>
-        <div v-if="identityUser?.admin && identityUser.mfa_verified" class="settings-nav-footer">
+        <div v-if="identityUser?.admin" class="settings-nav-footer">
           <RouterLink to="/admin" class="settings-admin-entry">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6z" /></svg>
             <span>管理员控制台</span>
@@ -353,9 +375,12 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
           <div v-if="active.id === 'skills'">
             <SkillsSettings />
           </div>
+          <div v-if="active.id === 'memory'">
+            <MemorySettings />
+          </div>
           <template v-if="canManage">
-          <StatusNotice v-if="error && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'skills' && active.id !== 'data'" class="settings-load-error" title="本机状态读取失败" :message="error" @dismiss="error = ''" />
-          <p v-if="busy && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'skills' && active.id !== 'data'" class="settings-loading" role="status">正在读取本机状态…</p>
+          <StatusNotice v-if="error && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'skills' && active.id !== 'memory' && active.id !== 'data'" class="settings-load-error" title="本机状态读取失败" :message="error" @dismiss="error = ''" />
+          <p v-if="busy && active.id !== 'security' && active.id !== 'account' && active.id !== 'appearance' && active.id !== 'skills' && active.id !== 'memory' && active.id !== 'data'" class="settings-loading" role="status">正在读取本机状态…</p>
 
           <div v-show="active.id === 'general'">
             <div class="ui-kpi-grid" style="margin-bottom: 18px;">
@@ -468,30 +493,15 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
             <SuccessToast v-model:message="archivedMessage" />
             <StatusNotice v-if="archivedError" class="settings-load-error" title="数据管理操作未完成" :message="archivedError" @dismiss="archivedError = ''" />
             <section class="settings-group" aria-labelledby="settings-archived-chats">
-              <div class="settings-group-head">
-                <h3 id="settings-archived-chats">已归档会话</h3>
-                <span class="ui-pill ui-pill-neutral">{{ store.archived.length }} 个</span>
-              </div>
-              <p v-if="archivedLoading" class="settings-loading" role="status">正在读取已归档会话…</p>
-              <div v-else-if="store.archived.length" class="settings-archive-list">
-                <div v-for="item in store.archived" :key="item.id" class="settings-row">
-                  <div>
-                    <h4>{{ item.title }}</h4>
-                    <div class="ui-pill-list" style="margin-top: 6px;">
-                      <span class="ui-pill ui-pill-neutral">归档于 {{ new Date(item.archived_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) }}</span>
-                    </div>
-                  </div>
-                  <div class="settings-archive-actions">
-                    <RouterLink :to="`/conversations/${item.id}`" class="settings-action-link">查看</RouterLink>
-                    <button type="button" :disabled="archivedBusy" @click="restoreArchived(item)">取消归档</button>
-                    <button type="button" class="button-danger" :disabled="archivedBusy" @click="openDeleteArchived(item)">删除</button>
-                  </div>
+              <div class="settings-group-head settings-group-head-compact">
+                <div>
+                  <h3 id="settings-archived-chats">已归档会话</h3>
+                  <p class="small muted">收纳在左侧会话列表中归档的不活跃会话，可随时查看、恢复或永久删除。</p>
                 </div>
-              </div>
-              <div v-else class="ui-empty-card" style="margin-top: 12px;">
-                <div class="ui-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7V4h7l2 3h9v13H3zM8 12h8M8 16h5" /></svg></div>
-                <h3>暂无已归档会话</h3>
-                <p>可在左侧会话列表的菜单中将不活跃的会话归档收纳，随时在此恢复。</p>
+                <div class="settings-archive-actions">
+                  <span class="ui-pill ui-pill-neutral">{{ archivedLoading && !store.archived.length ? '读取中…' : `${store.archived.length} 个` }}</span>
+                  <button type="button" :disabled="archivedBusy" @click="openArchiveDialog">管理归档</button>
+                </div>
               </div>
             </section>
             <section class="settings-group" aria-labelledby="settings-projects-backup">
@@ -555,6 +565,36 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
         </div>
       </div>
     </main>
+    <dialog ref="archiveDialog" class="project-dialog account-preferences-dialog account-dialog-wide" aria-labelledby="archived-chats-dialog-title" @click="onArchiveDialogBackdropClick" @cancel="archivedBusy && $event.preventDefault()">
+      <header class="account-dialog-heading">
+        <div class="settings-archive-dialog-title">
+          <h2 id="archived-chats-dialog-title">已归档会话</h2>
+          <span class="ui-pill ui-pill-neutral">{{ store.archived.length }} 个</span>
+        </div>
+        <button type="button" class="account-dialog-close" aria-label="关闭" :disabled="archivedBusy" @click="archiveDialog?.close()">×</button>
+      </header>
+      <p v-if="archivedLoading && !store.archived.length" class="settings-loading" role="status">正在读取已归档会话…</p>
+      <div v-else-if="store.archived.length" class="settings-archive-list settings-archive-dialog-list">
+        <div v-for="item in store.archived" :key="item.id" class="settings-row">
+          <div>
+            <h4>{{ item.title }}</h4>
+            <div class="ui-pill-list" style="margin-top: 6px;">
+              <span class="ui-pill ui-pill-neutral">归档于 {{ new Date(item.archived_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) }}</span>
+            </div>
+          </div>
+          <div class="settings-archive-actions">
+            <RouterLink :to="`/conversations/${item.id}`" class="settings-action-link" @click="archiveDialog?.close()">查看</RouterLink>
+            <button type="button" :disabled="archivedBusy" @click="restoreArchived(item)">取消归档</button>
+            <button type="button" class="button-danger" :disabled="archivedBusy" @click="openDeleteArchived(item)">删除</button>
+          </div>
+        </div>
+      </div>
+      <div v-else class="ui-empty-inline">
+        <div class="ui-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7V4h7l2 3h9v13H3zM8 12h8M8 16h5" /></svg></div>
+        <h3>暂无已归档会话</h3>
+        <p>可在左侧会话列表的菜单中将不活跃的会话归档收纳，随时在此恢复。</p>
+      </div>
+    </dialog>
     <dialog ref="deleteArchiveDialog" class="project-dialog account-preferences-dialog" aria-labelledby="delete-archived-title" @close="deletingArchived = null" @cancel="archivedBusy && $event.preventDefault()">
       <header class="account-dialog-heading">
         <h2 id="delete-archived-title">永久删除已归档会话？</h2>

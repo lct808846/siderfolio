@@ -104,24 +104,13 @@ function onBackdropClick(event: MouseEvent) {
   if (outside) close()
 }
 
-async function toggleAutoMatch(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked
-  const ok = await skillsStore.updatePreferences({
-    auto_match: checked,
-    disabled_skill_ids: [...(skillsStore.preferences.disabled_skill_ids || [])],
-  })
-  if (ok) {
-    notice.value = checked ? '已开启科研技能自动匹配。' : '已关闭科研技能自动匹配。'
-  }
-}
-
 async function toggleSkill(skillId: string, event: Event) {
   const checked = (event.target as HTMLInputElement).checked
   const current = new Set(skillsStore.preferences.disabled_skill_ids || [])
   if (checked) current.delete(skillId)
   else current.add(skillId)
   const ok = await skillsStore.updatePreferences({
-    auto_match: skillsStore.preferences.auto_match !== false,
+    auto_match: true,
     disabled_skill_ids: Array.from(current),
   })
   if (ok) {
@@ -182,24 +171,6 @@ defineExpose({ openSkill, openTools, openManage, close })
 
     <!-- 模式 1：从工作台弹出的技能与工具管理总览 -->
     <div v-if="mode === 'manage'" class="skill-modal-body">
-      <section class="skill-modal-card">
-        <label class="skill-modal-switch-row">
-          <div>
-            <strong>自动匹配科研技能</strong>
-            <p class="small muted">每轮按问题意图自动载入最多一个技能，也可在输入框手动指定</p>
-          </div>
-          <input
-            class="settings-switch"
-            type="checkbox"
-            role="switch"
-            aria-label="自动匹配科研技能"
-            :checked="skillsStore.preferences.auto_match !== false"
-            :disabled="skillsStore.saving || skillsStore.loading"
-            @change="toggleAutoMatch"
-          />
-        </label>
-      </section>
-
       <section class="skill-modal-card">
         <div class="skill-modal-section-head">
           <h3>内置科研技能</h3>

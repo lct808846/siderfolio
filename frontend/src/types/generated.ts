@@ -1242,6 +1242,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/memories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Memory */
+        post: operations["create_memory_api_v1_memories_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/memories/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Memory Preferences */
+        get: operations["read_memory_preferences_api_v1_memories_preferences_get"];
+        /** Update Memory Preferences */
+        put: operations["update_memory_preferences_api_v1_memories_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/memories/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Memory Summary */
+        get: operations["read_memory_summary_api_v1_memories_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/models": {
         parameters: {
             query?: never;
@@ -2706,11 +2758,17 @@ export interface components {
         ChatAttachment: {
             /** Filename */
             filename: string;
+            /** Image Data Url */
+            image_data_url?: string | null;
+            /** Image Height */
+            image_height?: number | null;
+            /** Image Width */
+            image_width?: number | null;
             /**
              * Media Type
              * @enum {string}
              */
-            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "text/tab-separated-values" | "application/json";
+            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "text/tab-separated-values" | "application/json" | "image/png" | "image/jpeg" | "image/webp" | "image/gif";
             /** Sha256 */
             sha256: string;
             /** Size */
@@ -2767,6 +2825,8 @@ export interface components {
             literature_receipts?: components["schemas"]["LiteratureSaveReceipt"][];
             /** Literature Results */
             literature_results?: components["schemas"]["LiteratureSearchResult"][];
+            /** Memory Receipts */
+            memory_receipts?: components["schemas"]["MemorySaveReceipt"][];
             /** Nbody Proposals */
             nbody_proposals?: components["schemas"]["NBodyProposalResult"][];
             /** Plot Proposals */
@@ -3033,6 +3093,7 @@ export interface components {
             delivered_characters: number;
             /** Included Turn Ids */
             included_turn_ids?: string[];
+            memory_context?: components["schemas"]["MemoryContextTrace"] | null;
             /** Omissions */
             omissions?: {
                 [key: string]: string;
@@ -3456,6 +3517,8 @@ export interface components {
             literature_receipts?: components["schemas"]["ExportLiteratureSaveReceipt"][];
             /** Literature Results */
             literature_results: components["schemas"]["ExportLiteratureSearchResult"][];
+            /** Memory Receipts */
+            memory_receipts?: components["schemas"]["ExportMemorySaveReceipt"][];
             /** Nbody Proposals */
             nbody_proposals?: components["schemas"]["ExportNBodyProposalResult"][];
             /** Plot Proposals */
@@ -3939,6 +4002,36 @@ export interface components {
              * @constant
              */
             source_authenticity_verified: false;
+        };
+        /** ExportMemorySaveReceipt */
+        ExportMemorySaveReceipt: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "saved" | "already_saved" | "conflict_candidate" | "needs_clarification";
+            /** Candidate Id */
+            candidate_id: string | null;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "research_focus" | "preference" | "tool_habit" | "background" | "project_goal" | "experiment_condition" | "progress" | "failure_note" | "next_step" | "verified_finding";
+            /** Memory Id */
+            memory_id: string | null;
+            /** Message */
+            message: string;
+            /** Project Id */
+            project_id: string | null;
+            /** Receipt Id */
+            receipt_id: string;
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "global" | "project";
+            /** Summary */
+            summary: string;
         };
         /** ExportNBodyParticleInput */
         ExportNBodyParticleInput: {
@@ -5503,6 +5596,295 @@ export interface components {
             /** Expected Source Revision */
             expected_source_revision?: number | null;
         };
+        /**
+         * MemoryContextTrace
+         * @description 写入 ContextRecord 与 RunTrace 的脱敏记忆与压缩元数据（不含记忆/摘要/用户正文）。
+         */
+        MemoryContextTrace: {
+            /** Degraded Reasons */
+            degraded_reasons?: string[];
+            /**
+             * History Count
+             * @default 0
+             */
+            history_count: number;
+            /** History Refs */
+            history_refs?: components["schemas"]["MemoryHistoryRef"][];
+            /**
+             * Memory Context Bytes
+             * @default 0
+             */
+            memory_context_bytes: number;
+            /**
+             * Memory Count
+             * @default 0
+             */
+            memory_count: number;
+            /** Memory Ids */
+            memory_ids?: string[];
+            /** Memory Scopes */
+            memory_scopes?: ("global" | "project")[];
+            /**
+             * Retrieval Mode
+             * @default disabled
+             * @enum {string}
+             */
+            retrieval_mode: "disabled" | "lexical" | "hybrid" | "lexical_fallback";
+            /**
+             * Skill Assisted By Memory
+             * @default false
+             */
+            skill_assisted_by_memory: boolean;
+            /**
+             * Summary Bytes
+             * @default 0
+             */
+            summary_bytes: number;
+            /**
+             * Summary Covered Count
+             * @default 0
+             */
+            summary_covered_count: number;
+            /** Summary First Turn Id */
+            summary_first_turn_id?: string | null;
+            /** Summary Id */
+            summary_id?: string | null;
+            /** Summary Last Turn Id */
+            summary_last_turn_id?: string | null;
+        };
+        /** MemoryCreateRequest */
+        MemoryCreateRequest: {
+            /** Category */
+            category?: ("research_focus" | "preference" | "tool_habit" | "background" | "project_goal" | "experiment_condition" | "progress" | "failure_note" | "next_step" | "verified_finding") | null;
+            /**
+             * Conflict Resolution
+             * @default keep_both
+             * @enum {string}
+             */
+            conflict_resolution: "replace" | "merge" | "keep_both";
+            /** Project Id */
+            project_id?: string | null;
+            /**
+             * Scope
+             * @default global
+             * @enum {string}
+             */
+            scope: "global" | "project";
+            /** Summary */
+            summary: string;
+            /**
+             * Verification Status
+             * @default manual
+             * @enum {string}
+             */
+            verification_status: "manual" | "user_confirmed" | "tool_verified" | "unverified";
+        };
+        /**
+         * MemoryHistoryRef
+         * @description 脱敏历史引用定位，供运行追踪回查原会话轮次，不含原文正文。
+         */
+        MemoryHistoryRef: {
+            /** Conversation Id */
+            conversation_id: string;
+            /** Conversation Title */
+            conversation_title: string;
+            /**
+             * Historical Label
+             * @default 历史
+             * @constant
+             */
+            historical_label: "历史";
+            /**
+             * Match Mode
+             * @default lexical
+             * @enum {string}
+             */
+            match_mode: "lexical" | "hybrid" | "semantic";
+            /** Turn Id */
+            turn_id: string;
+            /** Turn Revision */
+            turn_revision: number;
+        };
+        /** MemoryItem */
+        MemoryItem: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "research_focus" | "preference" | "tool_habit" | "background" | "project_goal" | "experiment_condition" | "progress" | "failure_note" | "next_step" | "verified_finding";
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Normalized Key */
+            normalized_key: string;
+            /** Project Id */
+            project_id?: string | null;
+            /** Project Name */
+            project_name?: string | null;
+            /**
+             * Revision
+             * @default 1
+             */
+            revision: number;
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "global" | "project";
+            source?: components["schemas"]["MemorySource"];
+            /**
+             * Status
+             * @default active
+             * @enum {string}
+             */
+            status: "active" | "paused" | "superseded";
+            /** Summary */
+            summary: string;
+            /** Supersedes Memory Id */
+            supersedes_memory_id?: string | null;
+            /** Updated At */
+            updated_at: string;
+        };
+        /**
+         * MemoryPreferences
+         * @description 个人长期记忆开关；默认开启。
+         */
+        MemoryPreferences: {
+            /**
+             * Auto Extract
+             * @default true
+             */
+            auto_extract: boolean;
+            /**
+             * Cross Session Injection
+             * @default true
+             */
+            cross_session_injection: boolean;
+            /**
+             * History Retrieval
+             * @default true
+             */
+            history_retrieval: boolean;
+            /**
+             * Revision
+             * @default 0
+             */
+            revision: number;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /** MemoryPreferencesUpdate */
+        MemoryPreferencesUpdate: {
+            /** Auto Extract */
+            auto_extract: boolean;
+            /** Cross Session Injection */
+            cross_session_injection: boolean;
+            /** Expected Revision */
+            expected_revision?: number | null;
+            /** History Retrieval */
+            history_retrieval: boolean;
+        };
+        /** MemorySaveReceipt */
+        MemorySaveReceipt: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "saved" | "already_saved" | "conflict_candidate" | "needs_clarification";
+            /** Candidate Id */
+            candidate_id?: string | null;
+            /**
+             * Category
+             * @default preference
+             * @enum {string}
+             */
+            category: "research_focus" | "preference" | "tool_habit" | "background" | "project_goal" | "experiment_condition" | "progress" | "failure_note" | "next_step" | "verified_finding";
+            /** Memory Id */
+            memory_id?: string | null;
+            /** Message */
+            message: string;
+            /** Project Id */
+            project_id?: string | null;
+            /** Receipt Id */
+            receipt_id: string;
+            /**
+             * Scope
+             * @default global
+             * @enum {string}
+             */
+            scope: "global" | "project";
+            /** Summary */
+            summary: string;
+        };
+        /** MemorySource */
+        MemorySource: {
+            /** Conversation Id */
+            conversation_id?: string | null;
+            /** Conversation Title */
+            conversation_title?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+            /** Quote */
+            quote?: string | null;
+            /**
+             * Source Label
+             * @default 用户手工录入
+             */
+            source_label: string;
+            /**
+             * Source Type
+             * @default manual
+             * @enum {string}
+             */
+            source_type: "manual" | "conversation_turn" | "project_note";
+            /** Turn Id */
+            turn_id?: string | null;
+            /** Turn Revision */
+            turn_revision?: number | null;
+            /**
+             * Validity
+             * @default valid
+             * @enum {string}
+             */
+            validity: "valid" | "source_missing" | "source_moved";
+            /**
+             * Verification Status
+             * @default manual
+             * @enum {string}
+             */
+            verification_status: "manual" | "user_confirmed" | "tool_verified" | "unverified";
+        };
+        /** MemorySummaryOverview */
+        MemorySummaryOverview: {
+            /**
+             * Enabled
+             * @default true
+             */
+            enabled: boolean;
+            /**
+             * Has Memory
+             * @default false
+             */
+            has_memory: boolean;
+            preferences?: components["schemas"]["MemoryPreferences"];
+            /** Sections */
+            sections?: components["schemas"]["MemorySummarySection"][];
+            /**
+             * Summary Text
+             * @default
+             */
+            summary_text: string;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /** MemorySummarySection */
+        MemorySummarySection: {
+            /** Content */
+            content: string;
+            /** Title */
+            title: string;
+        };
         /** ModelUsageEntry */
         ModelUsageEntry: {
             /** Calls */
@@ -6827,7 +7209,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "turn" | "rag_context" | "model" | "tool_simbad" | "tool_ads" | "tool_gaia" | "tool_literature_save" | "tool_nbody_proposal" | "tool_plot_proposal" | "tool_external_mcp" | "compute_task" | "plot_run";
+            kind: "turn" | "rag_context" | "memory_context" | "conversation_summary" | "model" | "tool_simbad" | "tool_ads" | "tool_gaia" | "tool_literature_save" | "tool_nbody_proposal" | "tool_plot_proposal" | "tool_external_mcp" | "compute_task" | "plot_run";
             /** Model */
             model?: string | null;
             /** Name */
@@ -6876,6 +7258,7 @@ export interface components {
             duration_ms?: number | null;
             /** Ended At */
             ended_at?: string | null;
+            memory_context?: components["schemas"]["MemoryContextTrace"] | null;
             /**
              * Retention Days
              * @default 30
@@ -7504,6 +7887,8 @@ export interface components {
             execution_status: "running" | "completed" | "failed" | "interrupted";
             /** Literature Receipts */
             literature_receipts?: components["schemas"]["LiteratureSaveReceipt"][];
+            /** Memory Receipts */
+            memory_receipts?: components["schemas"]["MemorySaveReceipt"][];
             /** Message */
             message: string;
             /** Model */
@@ -12192,6 +12577,310 @@ export interface operations {
             };
             /** @description Request Entity Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_memory_api_v1_memories_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemoryCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemoryItem"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    read_memory_preferences_api_v1_memories_preferences_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemoryPreferences"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_memory_preferences_api_v1_memories_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemoryPreferencesUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemoryPreferences"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    read_memory_summary_api_v1_memories_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemorySummaryOverview"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

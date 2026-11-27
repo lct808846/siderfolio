@@ -413,7 +413,7 @@ async function execute() {
           store.conversations = store.conversations.filter(value => value.id !== item.id)
           if (store.current?.id === item.id) { store.loadToken++; store.current = null; store.turns = []; store.selectedTurnId = '' }
           if (store.disconnectedRequest?.id === item.id) store.disconnectedRequest = null
-        } catch (e) { failures.push(`${item.title}：${e instanceof Error ? e.message : '删除状态未确认，请刷新核对'}`) }
+        } catch (e) { failures.push(`${item.title}：${e instanceof Error ? e.message : '删除状态未确认，请重新进入页面核对'}`) }
       }
       persistPins(pins.value.filter(id => !removed.includes(id)))
       selected.value = targets.value.filter(value => !removed.includes(value.id)).map(value => value.id)
@@ -423,8 +423,8 @@ async function execute() {
       emit('removed', removed)
     }
     dialog.value?.close()
-    try { await store.refreshList() } catch (e) { error.value = `${error.value ? error.value + '\n' : ''}${e instanceof Error ? e.message : '列表刷新失败，请核对状态'}` }
-  } catch (e) { error.value = e instanceof Error ? e.message : '操作未确认，请刷新核对。' }
+    try { await store.refreshList() } catch (e) { error.value = `${error.value ? error.value + '\n' : ''}${e instanceof Error ? e.message : '会话列表同步失败，请稍后重试'}` }
+  } catch (e) { error.value = e instanceof Error ? e.message : '操作未确认，请稍后重试或重新进入页面核对。' }
   finally { busy.value = false }
 }
 watch(() => route.fullPath, () => { closeMenu(false); closeProjectMenu(false); userMenuOpen.value = false; if (!busy.value) dialog.value?.close() })

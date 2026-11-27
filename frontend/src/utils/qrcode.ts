@@ -423,7 +423,12 @@ export function encodeQrCode(text: string, margin = 4): QrCodeSvgResult {
   }
 }
 
-export function buildOtpAuthUri(email: string, secret: string, issuer = 'Siderfolio'): string {
+export function buildOtpAuthUri(
+  email: string,
+  secret: string,
+  issuer = 'Siderfolio',
+  imageUrl?: string,
+): string {
   const cleanEmail = (email || 'user').trim()
   const label = `${encodeURIComponent(issuer)}:${encodeURIComponent(cleanEmail)}`
   const params = new URLSearchParams({
@@ -433,5 +438,8 @@ export function buildOtpAuthUri(email: string, secret: string, issuer = 'Siderfo
     digits: '6',
     period: '30',
   })
+  if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
+    params.set('image', imageUrl)
+  }
   return `otpauth://totp/${label}?${params.toString()}`
 }

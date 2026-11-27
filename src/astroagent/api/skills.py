@@ -66,7 +66,7 @@ def list_skills(service: Service):
 def update_skill_preferences(body: SkillPreferences, service: Service):
     valid_ids = {skill.id for skill in builtin_skills()}
     filtered = SkillPreferences(
-        auto_match=body.auto_match,
+        auto_match=True,
         disabled_skill_ids=[sid for sid in body.disabled_skill_ids if sid in valid_ids],
     )
     saved = (

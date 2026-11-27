@@ -342,6 +342,7 @@ class TraceRecorder:
         self.skill_version: str | None = None
         self.skill_mode: str | None = None
         self.tool_manifest_sha256: str | None = None
+        self.memory_context = None
 
     def start_span(
         self,
@@ -456,6 +457,7 @@ class TraceRecorder:
             in ("explicit", "auto", "disabled", "none", "ambiguous", "auto_disabled")
             else None,
             tool_manifest_sha256=self.tool_manifest_sha256,
+            memory_context=self.memory_context,
             spans=list(self.spans),
             usage=self._aggregate_usage(),
             available=True,

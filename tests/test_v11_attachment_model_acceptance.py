@@ -154,3 +154,67 @@ def test_model_allowlist_rejects_unknown():
     assert settings.for_model("beta").deepseek_model == "beta"
     with pytest.raises(ServiceError):
         settings.for_model("not-allowed")
+
+
+def test_image_attachment_upload_and_multimodal_protocol_adapters(client):
+    from langchain_core.messages import HumanMessage, SystemMessage
+    from PIL import Image
+
+    from astroagent.attachment_schemas import ChatAttachment
+    from astroagent.context import PreparedContext
+    from astroagent.model_client import ProtocolModel
+
+    buf = BytesIO()
+    Image.new("RGB", (64, 48), color=(30, 90, 120)).save(buf, format="PNG")
+    res = client.post(
+        "/api/v1/chat/attachments",
+        files={"file": ("spectrum.png", buf.getvalue(), "image/png")},
+    )
+    assert res.status_code == 200, res.text
+    payload = res.json()
+    assert payload["media_type"] == "image/png"
+    assert payload["image_width"] == 64
+    assert payload["image_height"] == 48
+    assert payload["image_data_url"].startswith("data:image/png;base64,")
+
+    bad = client.post(
+        "/api/v1/chat/attachments",
+        files={"file": ("corrupt.png", b"not-a-real-png", "image/png")},
+    )
+    assert bad.status_code == 422
+
+    att = ChatAttachment.model_validate(payload)
+    ctx = PreparedContext([], "分析这张光谱图", attachments=[att])
+    content = ctx.current_message_content("分析这张光谱图")
+    assert isinstance(content, list)
+    assert content[0]["type"] == "text"
+    assert "image_data_url" not in content[0]["text"]
+    assert content[1]["type"] == "image_url"
+    assert content[1]["image_url"]["url"] == att.image_data_url
+
+    msgs = [SystemMessage(content="sys"), HumanMessage(content=content)]
+    for protocol, key_check in (
+        (
+            "openai_responses",
+            lambda body: any(p.get("type") == "input_image" for p in body["input"][-1]["content"]),
+        ),
+        (
+            "anthropic",
+            lambda body: any(p.get("type") == "image" for p in body["messages"][-1]["content"]),
+        ),
+        ("gemini", lambda body: any("inlineData" in p for p in body["contents"][-1]["parts"])),
+    ):
+        model = ProtocolModel(
+            Settings(
+                _env_file=None,
+                deepseek_api_key="synthetic-key",
+                deepseek_model="demo-vision",
+                model_protocol=protocol,
+            ),
+            tools=[],
+            max_tokens=512,
+            json_mode=False,
+            parallel=True,
+        )
+        _, req_body = getattr(model, f"{protocol}_request")(msgs)
+        assert key_check(req_body), f"Missing multimodal image payload for {protocol}"

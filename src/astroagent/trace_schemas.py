@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from astroagent.memory_schemas import MemoryContextTrace
+
 
 class ModelUsageSummary(BaseModel):
     provider: str | None = None
@@ -21,6 +23,8 @@ class ModelUsageSummary(BaseModel):
 SpanKind = Literal[
     "turn",
     "rag_context",
+    "memory_context",
+    "conversation_summary",
     "model",
     "tool_simbad",
     "tool_ads",
@@ -101,6 +105,7 @@ class RunTrace(BaseModel):
         Literal["explicit", "auto", "disabled", "none", "ambiguous", "auto_disabled"] | None
     ) = None
     tool_manifest_sha256: str | None = None
+    memory_context: MemoryContextTrace | None = None
     spans: list[RunSpan] = Field(default_factory=list)
     usage: ModelUsageSummary | None = None
     available: bool = True

@@ -313,3 +313,157 @@ def test_external_mcp_error_modes_protocol_redirect_timeout_and_oversized():
     with pytest.raises(ServiceError) as exc_info:
         ExternalMcpHttpClient(transport=httpx.MockTransport(huge_handler)).discover(cfg)
     assert exc_info.value.error.code == "mcp_response_too_large"
+
+
+def test_external_mcp_real_local_https_end_to_end(monkeypatch):
+    """使用独立本地受控 HTTPS Streamable HTTP 端点验证真实 TLS 握手、分页、调用与故障边界。"""
+    import http.client
+
+    from scripts.mock_external_mcp_server import ControlledExternalMcpServer
+
+    monkeypatch.setenv("EXT_LOCAL_TLS_TOKEN", "controlled-local-tls-token")
+
+    class _LoopbackOnlyHttpsTransport(httpx.BaseTransport):
+        def __init__(self, expected_port: int, ssl_context):
+            self._expected_port = expected_port
+            self._ssl_context = ssl_context
+
+        def handle_request(self, request: httpx.Request) -> httpx.Response:
+            assert request.url.scheme == "https"
+            assert request.url.host == "127.0.0.1"
+            assert request.url.port == self._expected_port
+            timeout_ext = (request.extensions or {}).get("timeout") or {}
+            read_timeout = timeout_ext.get("read") or timeout_ext.get("connect") or 5.0
+            conn = http.client.HTTPSConnection(
+                "127.0.0.1",
+                self._expected_port,
+                timeout=float(read_timeout),
+                context=self._ssl_context,
+            )
+            try:
+                body = request.read()
+                headers = dict(request.headers.items())
+                conn.request(
+                    request.method, request.url.raw_path.decode("ascii"), body=body, headers=headers
+                )
+                raw_resp = conn.getresponse()
+                data = raw_resp.read()
+                return httpx.Response(
+                    status_code=raw_resp.status,
+                    headers=list(raw_resp.getheaders()),
+                    content=data,
+                    request=request,
+                )
+            except TimeoutError as exc:
+                raise httpx.ReadTimeout(str(exc), request=request) from exc
+            finally:
+                conn.close()
+
+    with ControlledExternalMcpServer(auth_token="controlled-local-tls-token") as server:
+        cfg = _sample_config(
+            id="local_tls_mcp",
+            host="127.0.0.1",
+            port=server.port,
+            path="/mcp",
+            auth_header="Authorization",
+            auth_env_var="EXT_LOCAL_TLS_TOKEN",
+            call_timeout_seconds=1.5,
+            max_response_bytes=32 * 1024,
+        )
+        # Verify production SSRF guard STILL blocks 127.0.0.1 by default
+        with pytest.raises(ServiceError) as ssrf_exc:
+            ExternalMcpHttpClient().discover(cfg)
+        assert ssrf_exc.value.error.code == "mcp_egress_blocked"
+
+        transport = _LoopbackOnlyHttpsTransport(server.port, server.client_ssl_context())
+        client = ExternalMcpHttpClient(
+            transport=transport,
+            ssl_context=server.client_ssl_context(),
+            allow_private_for_test=True,
+        )
+
+        # 1. Paginated discovery (JSON page 1 + SSE page 2)
+        outcome = client.discover(cfg)
+        assert outcome.protocol_version == "2026-07-28"
+        assert outcome.server_name == "siderfolio-controlled-https-mcp"
+        tools = {item["remote_name"]: item for item in outcome.tools}
+        assert set(tools.keys()) == {"lookup_catalog_target", "mutate_catalog_record"}
+        assert tools["lookup_catalog_target"]["eligible_readonly"] is True
+        assert tools["mutate_catalog_record"]["eligible_readonly"] is False
+        sha_v1 = tools["lookup_catalog_target"]["definition_sha256"]
+
+        # 2. Normal read-only call + SSE call + bounded convergence (>50 rows)
+        res = client.call_tool(
+            cfg,
+            confirmation_id="tls-conf-1",
+            tool_id=tools["lookup_catalog_target"]["tool_id"],
+            remote_name="lookup_catalog_target",
+            tool_title="受控只读星表检索",
+            arguments={"target": "M45", "limit": 3},
+            input_schema=tools["lookup_catalog_target"]["input_schema"],
+        )
+        assert res.status == "success"
+        assert res.returned_count == 3
+        assert res.truncated is False
+
+        server.state.sse_for_call = True
+        conv_res = client.call_tool(
+            cfg,
+            confirmation_id="tls-conf-2",
+            tool_id=tools["lookup_catalog_target"]["tool_id"],
+            remote_name="lookup_catalog_target",
+            tool_title="受控只读星表检索",
+            arguments={"target": "CONVERGE_MANY"},
+            input_schema=tools["lookup_catalog_target"]["input_schema"],
+        )
+        assert conv_res.status == "success"
+        assert conv_res.truncated is True
+        assert conv_res.returned_count == 50
+        server.state.sse_for_call = False
+
+        # 3. Definition change produces a distinct definition_sha256
+        server.state.definition_version = 2
+        outcome_v2 = client.discover(cfg)
+        sha_v2 = next(
+            item["definition_sha256"]
+            for item in outcome_v2.tools
+            if item["remote_name"] == "lookup_catalog_target"
+        )
+        assert sha_v2 != sha_v1
+
+        # 4. Incompatible protocol version
+        server.state.protocol_version = "2025-03-26"
+        with pytest.raises(ServiceError) as proto_exc:
+            client.discover(cfg)
+        assert proto_exc.value.error.code == "mcp_incompatible_protocol"
+        server.state.protocol_version = "2026-07-28"
+
+        # 5. Redirect blocked
+        server.state.force_redirect = True
+        with pytest.raises(ServiceError) as redir_exc:
+            client.discover(cfg)
+        assert redir_exc.value.error.code == "mcp_redirect_blocked"
+        server.state.force_redirect = False
+
+        # 6. Oversized response blocked
+        server.state.oversized_response = True
+        with pytest.raises(ServiceError) as size_exc:
+            client.discover(cfg)
+        assert size_exc.value.error.code == "mcp_response_too_large"
+        server.state.oversized_response = False
+
+        # 7. Timeout enforced
+        server.state.call_delay_seconds = 2.5
+        with pytest.raises(ServiceError) as timeout_exc:
+            client.call_tool(
+                cfg,
+                confirmation_id="tls-conf-timeout",
+                tool_id=tools["lookup_catalog_target"]["tool_id"],
+                remote_name="lookup_catalog_target",
+                tool_title="受控只读星表检索",
+                arguments={"target": "M31"},
+                input_schema=tools["lookup_catalog_target"]["input_schema"],
+            )
+        assert timeout_exc.value.error.code == "mcp_timeout"
+        server.state.call_delay_seconds = 0.0
+        transport.close()
