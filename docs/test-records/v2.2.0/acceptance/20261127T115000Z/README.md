@@ -20,7 +20,7 @@
 | 前端静态检查、单测、审计与构建 | `npm run typecheck`、`npm run lint`、`npm test`、`npm audit --omit=dev --audit-level=high`、`scripts/check_frontend_audit.py`、`npm run build` | **通过** | Vitest `10/10` 文件 `47/47` 用例通过；生产与全量依赖审计零高危阻断；生产构建成功 |
 | Playwright 邮件导航套件 | `npx playwright test --config playwright.mail-navigation.ts`（Chromium + Edge） | **12 passed, 0 failed** | 跨站邮件导航、激活/重置确认与两步登录全通 |
 | Playwright 主浏览器套件 | `npm run test:browser` + 目标复跑（Chromium + Edge） | **86 passed, 4 skipped, 0 failed** | 首轮 82 passed / 4 failed（2 个用例仍引用已移除的 `ComposerSkillPicker`）；适配 `current-changes.spec.ts` 与 `plot-acceptance.spec.ts` 后 8/8 复测全通；跳过项为 `container-live.spec.ts`（×2）与 `knowledge.spec.ts:52`（×2） |
-| README 实机截图视觉核查 | 隔离合成数据渲染 4 张实机页面并逐张检查 | **通过** | 桌面工作台（含真实 Matplotlib 渲染 M45 色—星等图）、个人文献库、记忆设置与 390px 移动端均零报错、零隐私信息 |
+| README 实机截图视觉核查 | 隔离合成数据渲染 4 张实机页面并逐张检查 | **通过** | 桌面工作台（含真实 Matplotlib 渲染 M45 色—星等图）、个人文献库、N 体数值模拟（PeTar 层级三星轨道轨迹与能量守恒核验）与 390px 移动端均零报错、零隐私信息 |
 
 ## 2. 首轮验收发现并修复的真实缺陷与问题
 

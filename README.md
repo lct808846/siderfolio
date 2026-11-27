@@ -31,11 +31,11 @@
 
 ![Siderfolio 个人天文文献库](docs/assets/screenshots/literature-workspace.png)
 
-### 3. 长期记忆与偏好摘要
+### 3. N 体数值模拟（REBOUND / PeTar）
 
-系统按账号私有空间自动整理研究方向、常用工具习惯与科研项目脉络并合成叙事摘要，支持一键开关与手动补充记忆，在跨会话对话与长对话压缩中持续保持上下文连贯。
+在对话中描述天体质量与初始轨道条件后，系统自动构建质心系参数方案并展示粒子表与总能量摘要；经用户确认后在无网隔离计算 Worker 中运行 **REBOUND** / **PeTar** 积分，右侧实时核查轨道轨迹图、位置快照、能量守恒偏差并导出 CSV 与复现实验包。
 
-![Siderfolio 长期记忆设置与摘要视图](docs/assets/screenshots/settings-memory.png)
+![Siderfolio N 体数值模拟与层级三星轨道轨迹](docs/assets/screenshots/nbody-simulation.png)
 
 ### 4. 移动端响应式工作台
 
