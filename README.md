@@ -3,7 +3,7 @@
   <h1>Siderfolio</h1>
   <p><strong>面向天文学研究者与科研课题组的 AI 辅助科研工作台</strong></p>
   <p>
-    在线访问：<a href="https://www.siderfolio.com">https://www.siderfolio.com</a>
+    在线访问：<a href="https://www.siderfolio.com/login">https://www.siderfolio.com/login</a>
   </p>
   <p>
     天文数据库实时检索 · 个人文献库与项目 RAG 知识库 · 隔离容器科研绘图 · N 体数值模拟 · 科研技能与受控 MCP · 长期记忆与上下文管理
