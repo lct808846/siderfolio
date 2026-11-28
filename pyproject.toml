@@ -23,6 +23,7 @@ dependencies = [
     "requests>=2.32,<3",
     "pydantic>=2.7,<3",
     "numpy>=1.26,<3",
+    "scipy==1.18.1",
     "matplotlib>=3.9,<4",
     "openai>=2,<4",
     "pypdf==6.21.4",
