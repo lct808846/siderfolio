@@ -3,14 +3,18 @@ import { computed, ref, watch } from 'vue'
 import { api, apiUrl, download, safeLink } from '../api'
 import { literatureApi } from '../api/literature'
 import { useAttachments } from '../stores/attachments'
+import { useDirectPlots } from '../stores/directPlots'
+import { useProjects } from '../stores/projects'
 import type { ArtifactInfo, ChatAttachment, Manifest, PlotSpec, Turn } from '../types'
 import ArtifactFileViewer, { type ArtifactPreviewItem } from './ArtifactFileViewer.vue'
 import ComputeResultPanel from './ComputeResultPanel.vue'
 import PlotResultPanel from './PlotResultPanel.vue'
 import StatusNotice from './StatusNotice.vue'
+import SuccessToast from './SuccessToast.vue'
+import TableResultPanel from './TableResultPanel.vue'
 import UiSelect, { type UiSelectOption } from './UiSelect.vue'
 
-export type ResultViewKey = 'overview' | 'compute' | 'plot' | 'gaia' | 'ads' | 'simbad' | 'files' | 'export'
+export type ResultViewKey = 'overview' | 'compute' | 'plot' | 'tables' | 'gaia' | 'vizier' | 'ads' | 'simbad' | 'files' | 'export'
 
 interface ScopedComputeEntry {
   key: string
@@ -34,10 +38,20 @@ interface ScopedPlotEntry {
   files: string[]
 }
 
+interface ScopedTableEntry {
+  key: string
+  turnId: string
+  title: string
+  operator: string
+  projectId: string
+  datasetId: string
+  runId: string
+}
+
 interface ScopedQueryEntry {
   key: string
   turnId: string
-  kind: 'gaia' | 'ads' | 'simbad'
+  kind: 'gaia' | 'vizier' | 'ads' | 'simbad'
   title: string
   subtitle: string
 }
@@ -54,12 +68,15 @@ const props = defineProps<{
   pending?: boolean
   projectId?: string
   projectScopedBrowse?: boolean
-  focusKind?: 'turn' | 'compute' | 'plot' | 'files'
+  focusKind?: 'turn' | 'compute' | 'plot' | 'tables' | 'files' | 'gaia' | 'vizier' | 'ads' | 'simbad'
   focusNonce?: number
+  focusBatchIndex?: number | null
   computeTaskId?: string
   plotRunId?: string
   plotTitle?: string
   plotFiles?: string[]
+  tableDatasetId?: string
+  tableRunId?: string
   resizable?: boolean
 }>()
 
@@ -71,27 +88,56 @@ const emit = defineEmits<{
   'select-turn': [turnId: string]
   'select-compute-task': [taskId: string]
   'select-plot-run': [runId: string]
+  'select-table-dataset': [datasetId: string]
+  'select-table-run': [runId: string]
 }>()
 
 const attachmentsStore = useAttachments()
+const directPlotsStore = useDirectPlots()
+const projectsStore = useProjects()
+const directPlotToast = ref('')
 
 const view = ref<ResultViewKey>('overview')
+const vizierIndex = ref(0)
+const vizierPage = ref(0)
 const activeFileId = ref('')
+const activeFileScope = ref<'all' | 'figures' | 'uploads'>('all')
 const activeComputeProjectId = ref('')
 const activeComputeTaskId = ref('')
 const activePlotProjectId = ref('')
 const activePlotRunId = ref('')
 const activePlotTitle = ref('')
 const activePlotFiles = ref<string[]>([])
+const activeTableProjectId = ref('')
+const activeTableDatasetId = ref('')
+const activeTableRunId = ref('')
 
 const page = ref(0)
 const index = ref(0)
 const kinds = ref<PlotSpec['kind'][]>([])
 const artifact = ref<ArtifactInfo | null>(null)
 const manifest = ref<Manifest | null>(null)
+const exportDialog = ref<HTMLDialogElement | null>(null)
 const busy = ref(false)
 let generation = 0
 const error = ref('')
+
+function openExportDialog() {
+  const el = exportDialog.value
+  if (!el || el.open) return
+  el.showModal()
+}
+
+function closeExportDialog() {
+  const el = exportDialog.value
+  if (el?.open) el.close()
+}
+
+function onExportDialogClick(event: MouseEvent) {
+  if (event.target === exportDialog.value) {
+    closeExportDialog()
+  }
+}
 
 const isStandaloneSnapshot = computed(() => Boolean(props.artifactPath || props.disableExport))
 const conversationTurns = computed<Turn[]>(() => {
@@ -239,10 +285,10 @@ const statLabels: Record<string, string> = {
   radial_velocity: '视向速度 (RV)',
 }
 
-function readStoredTool(key: string): { projectId?: string; taskId?: string; runId?: string } | null {
+function readStoredTool(key: string): { projectId?: string; taskId?: string; runId?: string; datasetId?: string } | null {
   try {
     const raw = sessionStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as { projectId?: string; taskId?: string; runId?: string }) : null
+    return raw ? (JSON.parse(raw) as { projectId?: string; taskId?: string; runId?: string; datasetId?: string }) : null
   } catch {
     return null
   }
@@ -331,11 +377,39 @@ const executedComputeTaskIds = computed(() =>
   conversationComputeEntries.value.map(item => item.taskId).filter(Boolean),
 )
 
-// 3. Model-generated scientific plots strictly scoped to THIS conversation
+const activeConversationScope = computed(() =>
+  props.conversationId || props.turn?.conversation_id || 'draft',
+)
+
+const runningDirectPlots = computed(() =>
+  directPlotsStore.runningFor(activeConversationScope.value),
+)
+
+const activeDirectPlotError = computed(() => {
+  const err = directPlotsStore.lastError
+  if (!err || err.conversationId !== activeConversationScope.value) return null
+  return err
+})
+
+// 3. Model-generated & direct scientific plots strictly scoped to THIS conversation
 const conversationPlotEntries = computed<ScopedPlotEntry[]>(() => {
   void props.focusNonce
   const list: ScopedPlotEntry[] = []
   const seenRuns = new Set<string>()
+  for (const direct of directPlotsStore.completedFor(activeConversationScope.value)) {
+    if (!direct.runId || seenRuns.has(direct.runId)) continue
+    seenRuns.add(direct.runId)
+    list.push({
+      key: `plot-direct:${direct.runId}`,
+      turnId: props.turn?.turn_id || '',
+      title: direct.title || '科研绘图产物',
+      engine: 'Python',
+      chart: 'figure',
+      projectId: direct.projectId || props.projectId || '',
+      runId: direct.runId,
+      files: direct.files || [],
+    })
+  }
   for (let i = conversationTurns.value.length - 1; i >= 0; i--) {
     const t = conversationTurns.value[i]!
     const proposals = t.response?.plot_proposals || []
@@ -375,6 +449,45 @@ const executedPlotRunIds = computed(() =>
   conversationPlotEntries.value.map(item => item.runId).filter(Boolean),
 )
 
+// 3b. Model-generated table analysis executions scoped to THIS conversation
+const conversationTableEntries = computed<ScopedTableEntry[]>(() => {
+  void props.focusNonce
+  const list: ScopedTableEntry[] = []
+  const seenRuns = new Set<string>()
+  for (let i = conversationTurns.value.length - 1; i >= 0; i--) {
+    const t = conversationTurns.value[i]!
+    const proposals = t.response?.table_analysis_proposals || []
+    proposals.forEach((proposal, idx) => {
+      const saved = readStoredTool(`astroagent.chat_table.${t.turn_id}.${idx}`)
+      const runId = saved?.runId || ''
+      const datasetId = saved?.datasetId || proposal.dataset_id || ''
+      const projectId = saved?.projectId || proposal.project_id || props.projectId || ''
+      if (runId) seenRuns.add(runId)
+      list.push({
+        key: `table:${t.turn_id}:${idx}`,
+        turnId: t.turn_id,
+        title: proposal.title || '数据表分析',
+        operator: proposal.operator,
+        projectId,
+        datasetId,
+        runId,
+      })
+    })
+  }
+  if (props.tableRunId && !seenRuns.has(props.tableRunId)) {
+    list.unshift({
+      key: `table-active:${props.tableRunId}`,
+      turnId: props.turn?.turn_id || '',
+      title: '数据表确定性分析',
+      operator: 'analysis',
+      projectId: props.projectId || '',
+      datasetId: props.tableDatasetId || '',
+      runId: props.tableRunId,
+    })
+  }
+  return list
+})
+
 // 4. Astronomical query outputs strictly scoped to THIS conversation
 const conversationQueryEntries = computed<ScopedQueryEntry[]>(() => {
   const list: ScopedQueryEntry[] = []
@@ -390,6 +503,17 @@ const conversationQueryEntries = computed<ScopedQueryEntry[]>(() => {
         kind: 'gaia',
         title: `Gaia DR3 星表查询 (${res.gaia_results.length})`,
         subtitle: `${totalRows} 行测量数据 · 表格与统计`,
+      })
+    }
+    if (res.vizier_results?.length) {
+      const totalRows = res.vizier_results.reduce((acc, v) => acc + (v.returned_count || 0), 0)
+      const firstCat = res.vizier_results[0]?.catalog_id || 'VizieR'
+      list.push({
+        key: `vizier:${t.turn_id}`,
+        turnId: t.turn_id,
+        kind: 'vizier',
+        title: `VizieR · ${firstCat}${res.vizier_results.length > 1 ? ` (${res.vizier_results.length})` : ''}`,
+        subtitle: `${totalRows} 行星表检索数据`,
       })
     }
     if (res.literature_results?.length) {
@@ -416,27 +540,33 @@ const conversationQueryEntries = computed<ScopedQueryEntry[]>(() => {
   return list
 })
 
+const quickExportFigureFiles = computed<ArtifactPreviewItem[]>(() =>
+  (artifact.value?.figures || []).map(fig => ({
+    id: `fig:${fig.figure_id}`,
+    name: `${names[fig.kind] || fig.kind}.png`,
+    subtitle: '本轮快速导出图表',
+    category: 'image',
+    mediaType: 'image/png',
+    url: apiUrl(fig.url),
+  })),
+)
+
 // All previewable files in the file viewer (uploads + generated quick-chart images)
-const allPreviewFiles = computed<ArtifactPreviewItem[]>(() => {
-  const items = [...conversationUploads.value]
-  if (artifact.value?.figures?.length) {
-    for (const fig of artifact.value.figures) {
-      items.push({
-        id: `fig:${fig.figure_id}`,
-        name: `${names[fig.kind] || fig.kind}.png`,
-        subtitle: '本轮快速导出图表',
-        category: 'image',
-        mediaType: 'image/png',
-        url: apiUrl(fig.url),
-      })
-    }
-  }
-  return items
+const allPreviewFiles = computed<ArtifactPreviewItem[]>(() => [
+  ...conversationUploads.value,
+  ...quickExportFigureFiles.value,
+])
+
+const visiblePreviewFiles = computed<ArtifactPreviewItem[]>(() => {
+  if (activeFileScope.value === 'figures') return quickExportFigureFiles.value
+  if (activeFileScope.value === 'uploads') return conversationUploads.value
+  return allPreviewFiles.value
 })
 
 const hasTurnDataTabs = computed(() =>
   Boolean(
     response.value?.gaia_results?.length ||
+    response.value?.vizier_results?.length ||
     response.value?.literature_results?.length ||
     response.value?.results?.length,
   ),
@@ -446,6 +576,9 @@ const turnDataTabs = computed<Array<{ key: ResultViewKey; label: string; count?:
   const list: Array<{ key: ResultViewKey; label: string; count?: number }> = []
   if (response.value?.gaia_results?.length) {
     list.push({ key: 'gaia', label: 'Gaia DR3', count: response.value.gaia_results.length })
+  }
+  if (response.value?.vizier_results?.length) {
+    list.push({ key: 'vizier', label: 'VizieR', count: response.value.vizier_results.length })
   }
   if (response.value?.literature_results?.length) {
     const paperTotal = response.value.literature_results.reduce((acc, q) => acc + (q.papers?.length || 0), 0)
@@ -464,6 +597,8 @@ const hasAnyConversationItems = computed(() =>
   conversationUploads.value.length > 0 ||
   conversationComputeEntries.value.some(item => !!item.taskId) ||
   conversationPlotEntries.value.some(item => !!item.runId) ||
+  runningDirectPlots.value.length > 0 ||
+  conversationTableEntries.value.some(item => !!item.runId || !!item.datasetId) ||
   conversationQueryEntries.value.length > 0 ||
   Boolean(artifact.value?.figures?.length),
 )
@@ -476,17 +611,24 @@ const effectiveComputeProjectId = computed(() => activeComputeProjectId.value ||
 const effectiveComputeTaskId = computed(() => activeComputeTaskId.value || props.computeTaskId || executedComputeTaskIds.value[0] || '')
 const effectivePlotProjectId = computed(() => activePlotProjectId.value || props.projectId || '')
 const effectivePlotRunId = computed(() => activePlotRunId.value || props.plotRunId || executedPlotRunIds.value[0] || '')
+const effectiveTableProjectId = computed(() => activeTableProjectId.value || props.projectId || projectsStore.activeProjectId || projectsStore.defaultProjectId || '')
+const effectiveTableDatasetId = computed(() => activeTableDatasetId.value || props.tableDatasetId || '')
+const effectiveTableRunId = computed(() => activeTableRunId.value || props.tableRunId || '')
 
 const dynamicHeading = computed(() => {
   if (props.heading) return props.heading
   if (view.value === 'compute') return props.projectScopedBrowse ? '空间 N 体模拟记录' : 'N 体模拟结果'
   if (view.value === 'plot') return activePlotTitle.value || props.plotTitle || '科研绘图产物'
+  if (view.value === 'tables') return props.projectScopedBrowse ? '空间数据表与分析' : '数据表与分析'
   if (view.value === 'gaia') return 'Gaia DR3 查询数据'
+  if (view.value === 'vizier') return 'VizieR 星表检索'
   if (view.value === 'ads') return 'ADS 学术文献'
   if (view.value === 'simbad') return 'SIMBAD 天体目标'
   if (view.value === 'files') {
-    const active = allPreviewFiles.value.find(item => item.id === activeFileId.value)
-    return active?.name || '文件预览'
+    if (activeFileScope.value === 'figures' || activeFileId.value.startsWith('fig:')) {
+      return '快速导出图表'
+    }
+    return '文件预览'
   }
   if (view.value === 'export') return '快速图表与导出'
   return '文件与产物'
@@ -503,8 +645,9 @@ function fileKindTag(item: ArtifactPreviewItem) {
   return 'FILE'
 }
 
-function openFile(id: string) {
+function openFile(id: string, scope: 'all' | 'figures' | 'uploads' = 'all') {
   activeFileId.value = id
+  activeFileScope.value = scope
   view.value = 'files'
 }
 
@@ -524,9 +667,50 @@ function openPlotEntry(entry: ScopedPlotEntry) {
   view.value = 'plot'
 }
 
+watch(
+  () => directPlotsStore.lastCompleted,
+  completed => {
+    if (!completed) return
+    const job = completed.job
+    if (job.conversationId !== activeConversationScope.value || !job.runId) return
+    directPlotToast.value = `科研图形「${job.title}」已生成`
+    activePlotProjectId.value = job.projectId
+    activePlotRunId.value = job.runId
+    activePlotTitle.value = job.title
+    activePlotFiles.value = [...job.files]
+    emit('select-plot-run', job.runId)
+    view.value = 'plot'
+  },
+)
+
+async function openTablesView(projectId?: string, datasetId?: string, runId?: string) {
+  let targetProject = projectId || props.projectId || projectsStore.activeProjectId || projectsStore.defaultProjectId || ''
+  if (!targetProject) {
+    try {
+      const def = await projectsStore.ensureDefault()
+      targetProject = def.id
+    } catch {
+      return
+    }
+  }
+  activeTableProjectId.value = targetProject
+  activeTableDatasetId.value = datasetId || ''
+  activeTableRunId.value = runId || ''
+  view.value = 'tables'
+}
+
+function openTableEntry(entry: ScopedTableEntry) {
+  void openTablesView(entry.projectId, entry.datasetId, entry.runId)
+}
+
+let pendingOverviewTarget: ResultViewKey | null = null
+
 function openQueryEntry(entry: ScopedQueryEntry) {
   if (entry.turnId && entry.turnId !== props.turn?.turn_id) {
+    pendingOverviewTarget = entry.kind
     emit('select-turn', entry.turnId)
+  } else {
+    pendingOverviewTarget = null
   }
   view.value = entry.kind
 }
@@ -606,8 +790,22 @@ function adsSortLabel(sort?: string): string {
 }
 
 const showTurnTimestamp = computed(() =>
-  Boolean(props.turn?.received_at && ['gaia', 'ads', 'simbad', 'export'].includes(view.value)),
+  Boolean(props.turn?.received_at && ['gaia', 'vizier', 'ads', 'simbad', 'export'].includes(view.value)),
 )
+
+const gaiaMirrorLabel = computed(() => {
+  const url = gaia.value?.source?.url || ''
+  if (url.includes('ari.uni-heidelberg.de')) return 'ARI 镜像'
+  return ''
+})
+
+const activeVizier = computed(() => response.value?.vizier_results?.[vizierIndex.value])
+const activeVizierRows = computed(() => activeVizier.value?.rows?.slice(vizierPage.value * 20, (vizierPage.value + 1) * 20) || [])
+const vizierMirrorLabel = computed(() => {
+  const url = activeVizier.value?.cds_url || activeVizier.value?.source?.url || ''
+  if (url.includes('cfa.harvard.edu')) return 'CfA 镜像'
+  return ''
+})
 
 function resetArtifact() {
   generation++
@@ -631,14 +829,55 @@ function syncDefaultView() {
     view.value = 'plot'
     return
   }
+  if (props.focusKind === 'tables') {
+    activeTableProjectId.value = props.projectId || projectsStore.activeProjectId || projectsStore.defaultProjectId || ''
+    activeTableDatasetId.value = props.tableDatasetId || ''
+    activeTableRunId.value = props.tableRunId || ''
+    view.value = 'tables'
+    return
+  }
   if (props.focusKind === 'files' && allPreviewFiles.value.length) {
     view.value = 'files'
     return
   }
-  if (isStandaloneSnapshot.value || hasTurnDataTabs.value) {
+  if (props.focusKind === 'gaia' && response.value?.gaia_results?.length) {
+    const targetIdx = props.focusBatchIndex ?? 0
+    index.value = targetIdx >= 0 && targetIdx < response.value.gaia_results.length ? targetIdx : 0
+    page.value = 0
+    view.value = 'gaia'
+    return
+  }
+  if (props.focusKind === 'vizier' && response.value?.vizier_results?.length) {
+    const targetIdx = props.focusBatchIndex ?? 0
+    vizierIndex.value = targetIdx >= 0 && targetIdx < response.value.vizier_results.length ? targetIdx : 0
+    vizierPage.value = 0
+    view.value = 'vizier'
+    return
+  }
+  if (props.focusKind === 'ads' && response.value?.literature_results?.length) {
+    view.value = 'ads'
+    return
+  }
+  if (props.focusKind === 'simbad' && response.value?.results?.length) {
+    view.value = 'simbad'
+    return
+  }
+  if (isStandaloneSnapshot.value) {
     if (response.value?.gaia_results?.length) { view.value = 'gaia'; return }
+    if (response.value?.vizier_results?.length) { view.value = 'vizier'; return }
     if (response.value?.literature_results?.length) { view.value = 'ads'; return }
     if (response.value?.results?.length) { view.value = 'simbad'; return }
+  }
+  if (hasTurnDataTabs.value) {
+    const families: ResultViewKey[] = []
+    if (response.value?.gaia_results?.length) families.push('gaia')
+    if (response.value?.vizier_results?.length) families.push('vizier')
+    if (response.value?.literature_results?.length) families.push('ads')
+    if (response.value?.results?.length) families.push('simbad')
+    if (families.length === 1) {
+      view.value = families[0]!
+      return
+    }
   }
   view.value = 'overview'
 }
@@ -646,17 +885,24 @@ function syncDefaultView() {
 watch(
   [() => props.conversationId, () => props.turn?.conversation_id],
   () => {
+    pendingOverviewTarget = null
     resetArtifact()
     index.value = 0
     page.value = 0
+    vizierIndex.value = 0
+    vizierPage.value = 0
     kinds.value = []
     activeFileId.value = ''
+    activeFileScope.value = 'all'
     activeComputeProjectId.value = ''
     activeComputeTaskId.value = ''
     activePlotProjectId.value = ''
     activePlotRunId.value = ''
     activePlotTitle.value = ''
     activePlotFiles.value = []
+    activeTableProjectId.value = ''
+    activeTableDatasetId.value = ''
+    activeTableRunId.value = ''
     syncDefaultView()
   },
   { immediate: true },
@@ -668,13 +914,21 @@ watch(
     resetArtifact()
     index.value = 0
     page.value = 0
+    vizierIndex.value = 0
+    vizierPage.value = 0
     kinds.value = []
+    if (pendingOverviewTarget) {
+      const target = pendingOverviewTarget
+      pendingOverviewTarget = null
+      view.value = target
+      return
+    }
     syncDefaultView()
   },
 )
 
 watch(
-  [() => props.focusKind, () => props.focusNonce, () => props.computeTaskId, () => props.plotRunId, () => props.projectScopedBrowse],
+  [() => props.focusKind, () => props.focusNonce, () => props.focusBatchIndex, () => props.computeTaskId, () => props.plotRunId, () => props.tableDatasetId, () => props.tableRunId, () => props.projectScopedBrowse],
   () => {
     syncDefaultView()
   },
@@ -682,6 +936,7 @@ watch(
 
 watch([index, kinds], resetArtifact, { deep: true })
 watch(index, () => { page.value = 0 })
+watch(vizierIndex, () => { vizierPage.value = 0 })
 
 async function generate() {
   if (!props.turn) return
@@ -740,7 +995,7 @@ async function save() {
         <h2>{{ dynamicHeading }}</h2>
       </div>
       <div class="results-header-actions">
-        <span v-if="historical" class="tag">历史</span>
+        <span v-if="historical && view !== 'overview'" class="tag">历史</span>
         <button v-if="dismissible" type="button" class="result-icon-action result-close" aria-label="收起结果面板" title="收起结果栏" @click="emit('close')">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
         </button>
@@ -748,9 +1003,20 @@ async function save() {
     </header>
 
     <div class="workspace-pane-body results-body">
+      <SuccessToast v-model:message="directPlotToast" />
+      <StatusNotice
+        v-if="activeDirectPlotError"
+        :title="`后台绘图失败：${activeDirectPlotError.title}`"
+        :message="activeDirectPlotError.message"
+        @dismiss="directPlotsStore.dismissError()"
+      />
       <p v-if="pending" class="results-live-banner" role="status">
         <span class="live-dot" aria-hidden="true" />
         <span>正在处理当前对话，生成的文件与数据会实时同步到这里。</span>
+      </p>
+      <p v-for="job in runningDirectPlots" :key="job.id" class="results-live-banner" role="status">
+        <span class="live-dot" aria-hidden="true" />
+        <span>正在后台渲染「{{ job.title }}」，完成后将自动展示在此处…</span>
       </p>
 
       <!-- Top Utility Strip: Back to Overview + Clean Formatted UTC Timestamp -->
@@ -785,21 +1051,40 @@ async function save() {
         <div v-else class="overview-sections">
           <!-- Model-Generated Artifacts & Tasks in THIS conversation -->
           <section
-            v-if="conversationComputeEntries.some(i => i.taskId) || conversationPlotEntries.some(i => i.runId) || conversationQueryEntries.length || artifact?.figures?.length"
+            v-if="conversationComputeEntries.some(i => i.taskId) || conversationPlotEntries.some(i => i.runId) || runningDirectPlots.length || conversationTableEntries.some(i => i.runId || i.datasetId) || conversationQueryEntries.length || artifact?.figures?.length"
             class="overview-group"
           >
             <header class="overview-group-head">
               <span>模型生成与任务产物</span>
-              <em>
-                {{
-                  conversationComputeEntries.filter(i => i.taskId).length
-                  + conversationPlotEntries.filter(i => i.runId).length
-                  + conversationQueryEntries.length
-                  + (artifact?.figures?.length || 0)
-                }}
-              </em>
             </header>
             <div class="overview-list">
+              <div
+                v-for="job in runningDirectPlots"
+                :key="`running:${job.id}`"
+                class="overview-row is-running"
+                role="status"
+              >
+                <span class="overview-row-badge is-plot">图表</span>
+                <span class="overview-row-copy">
+                  <strong>{{ job.title }}</strong>
+                  <small>后台隔离容器渲染中…</small>
+                </span>
+                <span class="live-dot" aria-hidden="true" />
+              </div>
+              <button
+                v-for="item in conversationTableEntries.filter(i => i.runId || i.datasetId)"
+                :key="item.key"
+                type="button"
+                class="overview-row"
+                @click="openTableEntry(item)"
+              >
+                <span class="overview-row-badge is-gaia">表</span>
+                <span class="overview-row-copy">
+                  <strong>{{ item.title }}</strong>
+                  <small>天文数据表 · {{ item.operator }}</small>
+                </span>
+                <span class="overview-row-arrow" aria-hidden="true">›</span>
+              </button>
               <button
                 v-for="item in conversationComputeEntries.filter(i => i.taskId)"
                 :key="item.key"
@@ -837,7 +1122,7 @@ async function save() {
                 class="overview-row"
                 @click="openQueryEntry(item)"
               >
-                <span class="overview-row-badge" :class="`is-${item.kind}`">{{ item.kind === 'gaia' ? 'DR3' : item.kind === 'ads' ? 'ADS' : 'OBJ' }}</span>
+                <span class="overview-row-badge" :class="`is-${item.kind}`">{{ item.kind === 'gaia' ? 'DR3' : item.kind === 'vizier' ? 'VIZ' : item.kind === 'ads' ? 'ADS' : 'OBJ' }}</span>
                 <span class="overview-row-copy">
                   <strong>{{ item.title }}</strong>
                   <small>{{ item.subtitle }}</small>
@@ -846,16 +1131,15 @@ async function save() {
               </button>
 
               <button
-                v-for="fig in artifact?.figures || []"
-                :key="fig.figure_id"
+                v-if="artifact?.figures?.length"
                 type="button"
                 class="overview-row"
-                @click="openFile(`fig:${fig.figure_id}`)"
+                @click="openFile(`fig:${artifact.figures[0]!.figure_id}`, 'figures')"
               >
                 <span class="overview-row-badge is-image">PNG</span>
                 <span class="overview-row-copy">
-                  <strong>{{ names[fig.kind] || fig.kind }}.png</strong>
-                  <small>本轮快速导出图表</small>
+                  <strong>快速导出图表（{{ artifact.figures.length }}）</strong>
+                  <small>{{ artifact.figures.map(fig => names[fig.kind] || fig.kind).join(' · ') }}</small>
                 </span>
                 <span class="overview-row-arrow" aria-hidden="true">›</span>
               </button>
@@ -874,7 +1158,7 @@ async function save() {
                 :key="file.id"
                 type="button"
                 class="overview-row"
-                @click="openFile(file.id)"
+                @click="openFile(file.id, 'uploads')"
               >
                 <span class="overview-row-badge" :class="fileKindTag(file) === 'PDF' ? 'is-pdf' : fileKindTag(file) === 'IMG' ? 'is-image' : 'is-file'">
                   {{ fileKindTag(file) }}
@@ -889,6 +1173,17 @@ async function save() {
           </section>
         </div>
       </template>
+
+      <!-- PROJECT TABLES & DETERMINISTIC ANALYSIS VIEW -->
+      <section v-else-if="view === 'tables' && effectiveTableProjectId" class="source-section">
+        <TableResultPanel
+          :project-id="effectiveTableProjectId"
+          :dataset-id="effectiveTableDatasetId"
+          :run-id="effectiveTableRunId"
+          @select-dataset="activeTableDatasetId = $event; emit('select-table-dataset', $event)"
+          @select-run="activeTableRunId = $event; emit('select-table-run', $event)"
+        />
+      </section>
 
       <!-- N-BODY COMPUTE VIEW (Strictly scoped to THIS conversation unless projectScopedBrowse) -->
       <section v-else-if="view === 'compute' && effectiveComputeProjectId" class="source-section">
@@ -914,12 +1209,12 @@ async function save() {
 
       <!-- MULTI-FORMAT FILE PREVIEW VIEW -->
       <section v-else-if="view === 'files'" class="source-section">
-        <ArtifactFileViewer :items="allPreviewFiles" :initial-id="activeFileId" />
+        <ArtifactFileViewer :items="visiblePreviewFiles" :initial-id="activeFileId" />
       </section>
 
       <!-- TURN DATA VIEWS (Gaia / ADS / SIMBAD / Export) -->
       <template v-else-if="turn">
-        <div v-if="turnDataTabs.length > 1" class="result-tabs" role="tablist" aria-label="本轮数据视图">
+        <div v-if="isStandaloneSnapshot && turnDataTabs.length > 1" class="result-tabs" role="tablist" aria-label="本轮数据视图">
           <button
             v-for="item in turnDataTabs"
             :key="item.key"
@@ -959,7 +1254,7 @@ async function save() {
         </div>
 
         <!-- Gaia DR3 -->
-        <section v-if="view === 'gaia' && response?.gaia_results?.length" class="source-section">
+        <section v-if="view === 'gaia' && response?.gaia_results?.length" class="source-section catalog-section">
           <label v-if="response.gaia_results.length > 1" class="field-label" for="query-index">Gaia 查询批次</label>
           <UiSelect
             v-if="response.gaia_results.length > 1"
@@ -973,68 +1268,280 @@ async function save() {
             })) as UiSelectOption<number>[]"
           />
           <template v-if="gaia">
-            <p v-if="gaia.error" class="notice" :class="{ danger: !querySucceeded }">{{ gaia.error.message }} <code>{{ gaia.error.code }}</code></p>
-            <p v-if="!querySucceeded" class="notice" role="status">本次未取得可用数据，不能据此判断视场中没有天体。交付数量和截断状态不适用；可核对条件后手动重试，旧记录保留。</p>
-            <div v-if="hasPlotData && !disableExport" class="result-plot-actions">
-              <RouterLink class="plot-primary" :to="plotDestination">用此结果科研绘图</RouterLink>
-              <button type="button" @click="view = 'export'">快速图表与导出</button>
-            </div>
-            <div class="data-metrics">
-              <span><b>{{ querySucceeded ? gaia.returned_count : '未取得' }}</b>交付行</span>
-              <span><b>未知</b>总命中数</span>
-              <span><b>{{ !querySucceeded ? '不适用' : gaia.truncated ? '已截断' : '未截断' }}</b>交付范围</span>
-            </div>
-            <p v-if="gaia.truncated || gaia.archive_overflow" class="notice">仅描述交付样本{{ gaia.archive_overflow ? ' · Archive 报告溢出' : '' }}，不能代表视场总体。</p>
-            <div class="result-stats-card">
-              <div class="result-stats-head">
-                <h3>查询条件与样本统计</h3>
-                <span v-if="gaia.analysis" class="small muted">负视差 {{ gaia.analysis.negative_parallax_count }} · 缺失视差 {{ gaia.analysis.missing_parallax_count }}</span>
+            <div v-if="gaia.error" class="result-advisory-card" :class="querySucceeded ? 'is-warning' : 'is-danger'" role="alert">
+              <span class="result-advisory-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v5m0 3.5h.01" /></svg>
+              </span>
+              <div class="result-advisory-copy">
+                <p>{{ gaia.error.message }}</p>
+                <code class="result-advisory-code">{{ gaia.error.code }}</code>
               </div>
-              <dl class="result-conditions-grid">
+            </div>
+            <p v-if="!querySucceeded" class="catalog-status-note" role="status">
+              本次未取得可用数据，不能据此判断视场中没有天体；交付数量与截断状态不适用，可核对条件后重试。
+            </p>
+
+            <div class="catalog-metrics">
+              <div class="catalog-metric-tile">
+                <span class="catalog-metric-label">交付行</span>
+                <strong class="catalog-metric-value">{{ querySucceeded ? gaia.returned_count : '未取得' }}</strong>
+                <span class="catalog-metric-sub">{{ querySucceeded ? '当前样本行' : '暂无有效行' }}</span>
+              </div>
+              <div class="catalog-metric-tile">
+                <span class="catalog-metric-label">总命中数</span>
+                <strong class="catalog-metric-value is-muted">未知</strong>
+                <span class="catalog-metric-sub">未做全库计数</span>
+              </div>
+              <div
+                class="catalog-metric-tile"
+                :class="{ 'is-truncated': querySucceeded && (gaia.truncated || gaia.archive_overflow) }"
+                :title="gaia.truncated || gaia.archive_overflow ? `视场内符合条件的源多于本次上限，仅返回前 ${gaia.returned_count} 颗，统计不代表全视场总体` : '当前检索条件下已全部返回'"
+              >
+                <span class="catalog-metric-label">返回范围</span>
+                <strong class="catalog-metric-value">
+                  <span
+                    v-if="querySucceeded"
+                    class="catalog-scope-dot"
+                    :class="gaia.truncated || gaia.archive_overflow ? 'is-warn' : 'is-ok'"
+                    aria-hidden="true"
+                  />
+                  {{ !querySucceeded ? '不适用' : gaia.truncated ? `仅前 ${gaia.returned_count} 颗` : '全部返回' }}
+                </strong>
+                <span class="catalog-metric-sub">
+                  {{ !querySucceeded ? '查询未完成' : gaia.archive_overflow ? '还有更多 · 达服务端上限' : gaia.truncated ? '视场内还有更多源' : '条件内完整样本' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="catalog-stats-card">
+              <div class="catalog-stats-head">
+                <h3>查询条件与样本统计</h3>
+                <div v-if="gaia.analysis" class="catalog-stats-badges">
+                  <span class="catalog-mini-badge">负视差 {{ gaia.analysis.negative_parallax_count }}</span>
+                  <span class="catalog-mini-badge">缺失 {{ gaia.analysis.missing_parallax_count }}</span>
+                </div>
+              </div>
+              <dl class="catalog-conditions-grid">
                 <template v-for="cond in gaiaConditions" :key="cond.label">
                   <dt>{{ cond.label }}</dt>
                   <dd>{{ cond.value }}</dd>
                 </template>
               </dl>
-              <div v-if="gaiaStatRows.length" class="result-stats-scroll">
-                <table class="result-stats-table">
+              <div v-if="gaiaStatRows.length" class="catalog-stats-scroll">
+                <table class="catalog-stats-table">
                   <thead>
-                    <tr><th>物理量</th><th>有效</th><th>中位数</th><th>最小 ~ 最大</th><th>单位</th></tr>
+                    <tr>
+                      <th>物理量</th>
+                      <th class="num">有效</th>
+                      <th class="num">中位数</th>
+                      <th class="num">最小 ~ 最大</th>
+                      <th>单位</th>
+                    </tr>
                   </thead>
                   <tbody>
                     <tr v-for="stat in gaiaStatRows" :key="stat.key">
-                      <td>{{ stat.label }}</td>
+                      <td class="metric-name">{{ stat.label }}</td>
                       <td class="num">{{ stat.valid }}/{{ stat.total }}</td>
-                      <td class="num">{{ stat.median }}</td>
+                      <td class="num is-strong">{{ stat.median }}</td>
                       <td class="num">{{ stat.range }}</td>
-                      <td>{{ stat.unit }}</td>
+                      <td class="unit">{{ stat.unit }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
-            <details><summary>原始条件、单位与统计 JSON</summary><pre>{{ text({ release: gaia.release, table: gaia.table, query: gaia.query, units: gaia.units, analysis: gaia.analysis }) }}</pre></details>
-            <details><summary>实际 ADQL</summary><pre>{{ gaia.adql }}</pre></details>
-            <details v-if="querySucceeded">
-              <summary>查看完整交付表格（{{ (gaia.data?.length || 0) }} 行）</summary>
-              <div class="table-scroll" tabindex="0" aria-label="Gaia 完整数据表">
+
+            <div class="catalog-disclosure-group">
+              <details v-if="querySucceeded" class="catalog-disclosure">
+                <summary>
+                  <span>查看完整交付表格</span>
+                  <span class="catalog-disclosure-meta">{{ gaia.data?.length || 0 }} 行</span>
+                </summary>
+                <div class="catalog-disclosure-body">
+                  <div class="table-scroll" tabindex="0" aria-label="Gaia 完整数据表">
+                    <table>
+                      <thead><tr><th v-for="field in fields" :key="field">{{ field }}<small>{{ gaia.units?.[field] }}</small></th></tr></thead>
+                      <tbody><tr v-for="row in rows" :key="row.source_id"><td v-for="field in fields" :key="field">{{ text((row as unknown as Record<string, unknown>)[field]) }}</td></tr></tbody>
+                    </table>
+                  </div>
+                  <div v-if="(gaia.data?.length || 0) > 20" class="pagination">
+                    <button type="button" :disabled="page === 0" @click="page--">上一页</button>
+                    <span>{{ page + 1 }} / {{ Math.max(1, Math.ceil((gaia.data?.length || 0) / 20)) }}</span>
+                    <button type="button" :disabled="(page + 1) * 20 >= (gaia.data?.length || 0)" @click="page++">下一页</button>
+                  </div>
+                </div>
+              </details>
+              <details class="catalog-disclosure">
+                <summary>
+                  <span>实际 ADQL 查询语句</span>
+                  <span class="catalog-disclosure-meta">TAP</span>
+                </summary>
+                <div class="catalog-disclosure-body">
+                  <pre>{{ gaia.adql }}</pre>
+                </div>
+              </details>
+              <details class="catalog-disclosure">
+                <summary>
+                  <span>原始条件、单位与统计 JSON</span>
+                  <span class="catalog-disclosure-meta">元数据</span>
+                </summary>
+                <div class="catalog-disclosure-body">
+                  <pre>{{ text({ release: gaia.release, table: gaia.table, query: gaia.query, units: gaia.units, analysis: gaia.analysis }) }}</pre>
+                </div>
+              </details>
+            </div>
+
+            <div v-if="hasPlotData && !disableExport" class="catalog-action-grid">
+              <RouterLink class="catalog-action-card is-accent" :to="plotDestination">
+                <span class="catalog-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 19h16M7 15l3.5-4.5 3.5 2.5 4.5-6" /></svg>
+                </span>
+                <span class="catalog-action-copy">
+                  <strong>AI 定制绘图</strong>
+                  <small>写入对话生成脚本图</small>
+                </span>
+              </RouterLink>
+              <button type="button" class="catalog-action-card" @click="openExportDialog">
+                <span class="catalog-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+                </span>
+                <span class="catalog-action-copy">
+                  <strong>导出数据包</strong>
+                  <small>CSV、快速图与 ZIP</small>
+                </span>
+              </button>
+            </div>
+
+            <footer class="catalog-footer-card">
+              <div class="catalog-footer-top">
+                <div class="catalog-footer-links">
+                  <a v-if="safeLink(gaia.source.url)" :href="safeLink(gaia.source.url)!" class="ui-pill ui-pill-gaia" target="_blank" rel="noopener noreferrer">{{ gaia.status === 'error' ? 'Gaia 查询目标 ↗' : 'Gaia 来源 ↗' }}</a>
+                  <span v-else class="small muted">{{ gaia.source.url }}</span>
+                  <span v-if="gaiaMirrorLabel" class="ui-pill ui-pill-neutral">{{ gaiaMirrorLabel }}</span>
+                </div>
+                <span class="small muted results-source-time" :title="gaia.source.retrieved_at">{{ formatUtc(gaia.source.retrieved_at) }}</span>
+              </div>
+              <details v-if="gaia.warnings?.length" class="catalog-caveats">
+                <summary>
+                  <span>仅描述本次交付样本，位置候选源不等同成员确认</span>
+                  <em>{{ gaia.warnings.length }} 条口径说明</em>
+                </summary>
+                <ul class="catalog-caveat-list">
+                  <li v-for="warning in gaia.warnings" :key="warning">{{ warning }}</li>
+                </ul>
+              </details>
+            </footer>
+          </template>
+        </section>
+
+        <!-- VizieR Catalog -->
+        <section v-else-if="view === 'vizier' && response?.vizier_results?.length" class="source-section catalog-section">
+          <UiSelect
+            v-if="response.vizier_results.length > 1"
+            v-model="vizierIndex"
+            variant="compact"
+            aria-label="VizieR 查询批次"
+            :options="response.vizier_results.map((result, i) => ({
+              value: i,
+              label: `第 ${i + 1} 次 · ${result.catalog_id} · ${result.status === 'success' ? `${result.returned_count} 行` : result.status}`,
+            })) as UiSelectOption<number>[]"
+          />
+          <template v-if="activeVizier">
+            <div v-if="activeVizier.error" class="result-advisory-card is-danger" role="alert">
+              <span class="result-advisory-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v5m0 3.5h.01" /></svg>
+              </span>
+              <div class="result-advisory-copy">
+                <p>{{ activeVizier.error.message }}</p>
+                <code class="result-advisory-code">{{ activeVizier.error.code }}</code>
+              </div>
+            </div>
+
+            <div class="catalog-metrics">
+              <div class="catalog-metric-tile">
+                <span class="catalog-metric-label">星表</span>
+                <strong class="catalog-metric-value is-compact" :title="activeVizier.catalog_id">{{ activeVizier.catalog_id }}</strong>
+                <span class="catalog-metric-sub">{{ activeVizier.coordinate_frame }} · {{ activeVizier.ref_epoch || '历元见元数据' }}</span>
+              </div>
+              <div class="catalog-metric-tile">
+                <span class="catalog-metric-label">交付行 / 列</span>
+                <strong class="catalog-metric-value">{{ activeVizier.returned_count }}</strong>
+                <span class="catalog-metric-sub">{{ activeVizier.columns?.length || 0 }} 列星表字段</span>
+              </div>
+              <div
+                class="catalog-metric-tile"
+                :class="{ 'is-truncated': activeVizier.status === 'success' && (activeVizier.truncated || activeVizier.archive_overflow) }"
+                :title="activeVizier.truncated || activeVizier.archive_overflow ? `视场内符合条件的源多于本次上限，仅返回前 ${activeVizier.returned_count} 颗` : '当前检索条件下已全部返回'"
+              >
+                <span class="catalog-metric-label">返回范围</span>
+                <strong class="catalog-metric-value">
+                  <span
+                    class="catalog-scope-dot"
+                    :class="activeVizier.status !== 'success' ? 'is-warn' : activeVizier.truncated || activeVizier.archive_overflow ? 'is-warn' : 'is-ok'"
+                    aria-hidden="true"
+                  />
+                  {{ activeVizier.status !== 'success' ? queryStatusLabel(activeVizier.status) : activeVizier.truncated ? `仅前 ${activeVizier.returned_count} 颗` : '全部返回' }}
+                </strong>
+                <span class="catalog-metric-sub">
+                  {{ activeVizier.status !== 'success' ? '未取得数据' : activeVizier.archive_overflow ? '还有更多 · 达服务端上限' : activeVizier.truncated ? '视场内还有更多源' : '条件内完整样本' }}
+                </span>
+              </div>
+            </div>
+
+            <div v-if="activeVizier.rows?.length" class="catalog-table-card">
+              <div class="table-scroll" tabindex="0" aria-label="VizieR 数据表">
                 <table>
-                  <thead><tr><th v-for="field in fields" :key="field">{{ field }}<small>{{ gaia.units?.[field] }}</small></th></tr></thead>
-                  <tbody><tr v-for="row in rows" :key="row.source_id"><td v-for="field in fields" :key="field">{{ text((row as unknown as Record<string, unknown>)[field]) }}</td></tr></tbody>
+                  <thead>
+                    <tr>
+                      <th v-for="col in activeVizier.columns" :key="col">{{ col }}<small>{{ activeVizier.units?.[col] }}</small></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(row, rIdx) in activeVizierRows" :key="rIdx">
+                      <td v-for="col in activeVizier.columns" :key="col">{{ text(row[col]) }}</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
-              <div class="pagination">
-                <button :disabled="page === 0" @click="page--">上一页</button>
-                <span>{{ page + 1 }} / {{ Math.max(1, Math.ceil((gaia.data?.length || 0) / 20)) }}</span>
-                <button :disabled="(page + 1) * 20 >= (gaia.data?.length || 0)" @click="page++">下一页</button>
+              <div v-if="(activeVizier.rows?.length || 0) > 20" class="pagination catalog-table-pagination">
+                <button type="button" :disabled="vizierPage === 0" @click="vizierPage--">上一页</button>
+                <span>{{ vizierPage + 1 }} / {{ Math.max(1, Math.ceil((activeVizier.rows?.length || 0) / 20)) }}</span>
+                <button type="button" :disabled="(vizierPage + 1) * 20 >= (activeVizier.rows?.length || 0)" @click="vizierPage++">下一页</button>
               </div>
-            </details>
-            <div class="ui-card-head">
-              <a v-if="safeLink(gaia.source.url)" :href="safeLink(gaia.source.url)!" class="ui-pill ui-pill-gaia" target="_blank" rel="noopener noreferrer">{{ gaia.status === 'error' ? 'Gaia 查询目标 ↗' : 'Gaia 来源 ↗' }}</a>
-              <span v-else class="small muted">{{ gaia.source.url }}</span>
-              <span class="small muted results-source-time" :title="gaia.source.retrieved_at">{{ formatUtc(gaia.source.retrieved_at) }}</span>
             </div>
-            <p v-for="warning in gaia.warnings" :key="warning" class="small muted">{{ warning }}</p>
+
+            <div class="catalog-disclosure-group">
+              <details class="catalog-disclosure">
+                <summary>
+                  <span>实际查询式与列单位</span>
+                  <span class="catalog-disclosure-meta">{{ activeVizier.columns?.length || 0 }} 列</span>
+                </summary>
+                <div class="catalog-disclosure-body">
+                  <pre>{{ activeVizier.adql }}</pre>
+                  <pre>{{ text(activeVizier.units) }}</pre>
+                </div>
+              </details>
+            </div>
+
+            <footer class="catalog-footer-card">
+              <div class="catalog-footer-top">
+                <div class="catalog-footer-links">
+                  <a v-if="safeLink(activeVizier.cds_url)" :href="safeLink(activeVizier.cds_url)!" class="ui-pill ui-pill-simbad" target="_blank" rel="noopener noreferrer">CDS VizieR 目录 ↗</a>
+                  <span v-else class="ui-pill ui-pill-simbad">{{ activeVizier.catalog_id }}</span>
+                  <span v-if="vizierMirrorLabel" class="ui-pill ui-pill-neutral">{{ vizierMirrorLabel }}</span>
+                </div>
+                <span class="small muted results-source-time">{{ formatUtc(activeVizier.source.retrieved_at) }}</span>
+              </div>
+              <details v-if="activeVizier.warnings?.length" class="catalog-caveats">
+                <summary>
+                  <span>圆锥候选源不等同确认匹配，跨历元需留意自行</span>
+                  <em>{{ activeVizier.warnings.length }} 条口径说明</em>
+                </summary>
+                <ul class="catalog-caveat-list">
+                  <li v-for="warning in activeVizier.warnings" :key="warning">{{ warning }}</li>
+                </ul>
+              </details>
+            </footer>
           </template>
         </section>
 
@@ -1158,6 +1665,47 @@ async function save() {
         </section>
       </template>
     </div>
+
+    <dialog
+      v-if="!disableExport"
+      ref="exportDialog"
+      class="project-dialog catalog-export-dialog"
+      aria-labelledby="catalog-export-dialog-title"
+      @click="onExportDialogClick"
+    >
+      <header class="catalog-export-head">
+        <div>
+          <h2 id="catalog-export-dialog-title">导出数据包与快速预览图</h2>
+          <p class="small muted">{{ artifactPath ? '基于保存的完整快照' : '基于当前检索样本' }}，可按需勾选附带诊断图一并打包为 ZIP。</p>
+        </div>
+        <button type="button" class="catalog-export-close" aria-label="关闭" @click="closeExportDialog">×</button>
+      </header>
+      <div class="catalog-export-body">
+        <div v-if="response?.gaia_results?.length" class="plot-options">
+          <label v-for="(name, kind) in names" :key="kind" class="ui-chip-toggle">
+            <input v-model="kinds" type="checkbox" :value="kind" :disabled="busy || !hasPlotData">
+            {{ name }}
+          </label>
+        </div>
+        <StatusNotice v-if="error" title="结果导出未完成" :message="error" @dismiss="error = ''" />
+        <template v-if="artifact">
+          <p class="small muted">导出{{ artifact.export_status === 'partial' ? '部分完成' : '完成' }} · {{ artifact.exporter_version }} · 有效期至 {{ formatUtc(artifact.expires_at) }}</p>
+          <ArtifactFileViewer
+            v-if="artifact.figures.length"
+            :items="artifact.figures.map(fig => ({ id: fig.figure_id, name: `${names[fig.kind] || fig.kind}.png`, subtitle: '快速图表导出', category: 'image', mediaType: 'image/png', url: apiUrl(fig.url) }))"
+            compact
+          />
+          <div v-if="manifest?.plots?.length" class="catalog-export-manifest">
+            <p v-for="(plot, i) in manifest.plots" :key="i" class="small muted">{{ names[String(plot.kind)] }}：{{ plot.status === 'success' ? '已生成' : reasons[String(plot.reason)] || '未生成' }}</p>
+          </div>
+        </template>
+        <div class="catalog-export-footer">
+          <button type="button" class="button-secondary" @click="closeExportDialog">关闭</button>
+          <button v-if="artifact" type="button" class="button-secondary" @click="save">下载 ZIP</button>
+          <button type="button" :disabled="busy" class="button-primary" @click="generate">{{ busy ? '正在生成…' : artifact ? '重新生成' : '生成数据包与预览图' }}</button>
+        </div>
+      </div>
+    </dialog>
   </aside>
 </template>
 
@@ -1635,6 +2183,530 @@ async function save() {
 
 .results-sheet-handle {
   display: none;
+}
+
+.catalog-section {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.catalog-status-note {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.catalog-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.catalog-action-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface-card);
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  min-width: 0;
+  transition: border-color 150ms ease, background-color 150ms ease, transform 120ms ease;
+}
+
+.catalog-action-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-card));
+  text-decoration: none;
+}
+
+.catalog-action-card:active {
+  transform: scale(0.985);
+}
+
+.catalog-action-icon {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--surface-subtle);
+  color: var(--ink-secondary, var(--muted));
+}
+
+.catalog-action-card.is-accent .catalog-action-icon {
+  border-color: color-mix(in srgb, var(--accent) 26%, transparent);
+  background: color-mix(in srgb, var(--accent) 11%, var(--surface-card));
+  color: var(--accent);
+}
+
+.catalog-action-icon svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.catalog-action-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.catalog-action-copy strong {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-action-copy small {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-export-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  padding: var(--space-5);
+  color: var(--ink);
+}
+
+.catalog-export-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.catalog-export-head h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.catalog-export-head p {
+  margin: 0;
+}
+
+.catalog-export-close {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.catalog-export-close:hover {
+  background: var(--surface-subtle);
+  color: var(--ink);
+}
+
+.catalog-export-body {
+  display: grid;
+  gap: 12px;
+}
+
+.catalog-export-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.catalog-export-manifest {
+  display: grid;
+  gap: 4px;
+}
+
+.catalog-export-manifest p {
+  margin: 0;
+}
+
+.catalog-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.catalog-metric-tile {
+  display: grid;
+  gap: 3px;
+  align-content: start;
+  padding: 10px 12px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+}
+
+.catalog-metric-tile.is-truncated {
+  border-color: color-mix(in srgb, var(--warning) 30%, var(--line));
+  background: color-mix(in srgb, var(--warning-soft) 36%, var(--surface-card));
+}
+
+.catalog-metric-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.catalog-metric-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16.5px;
+  font-weight: 650;
+  color: var(--ink);
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-metric-value.is-muted {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.catalog-metric-value.is-compact {
+  font-size: 13.5px;
+  font-family: var(--font-mono);
+}
+
+.catalog-metric-sub {
+  font-size: 10.5px;
+  color: var(--ink-tertiary, var(--muted));
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-scope-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  flex: none;
+}
+
+.catalog-scope-dot.is-warn {
+  background: var(--warning);
+}
+
+.catalog-scope-dot.is-ok {
+  background: var(--success);
+}
+
+.catalog-stats-card {
+  display: grid;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.catalog-stats-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.catalog-stats-head h3 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 620;
+  color: var(--ink);
+}
+
+.catalog-stats-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.catalog-mini-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.catalog-conditions-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 14px;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: var(--surface-subtle);
+  font-size: 12px;
+}
+
+.catalog-conditions-grid dt {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.catalog-conditions-grid dd {
+  margin: 0;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.catalog-stats-scroll {
+  overflow-x: auto;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+}
+
+.catalog-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.catalog-stats-table th,
+.catalog-stats-table td {
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.catalog-stats-table th {
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.catalog-stats-table th.num,
+.catalog-stats-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.catalog-stats-table td.metric-name {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.catalog-stats-table td.is-strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.catalog-stats-table td.unit {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.catalog-stats-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+.catalog-stats-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.catalog-table-card {
+  display: grid;
+  gap: 8px;
+}
+
+.catalog-table-pagination {
+  padding: 0 2px;
+}
+
+.catalog-disclosure-group {
+  display: grid;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.catalog-disclosure {
+  padding: 0;
+  border-top: 0;
+}
+
+.catalog-disclosure + .catalog-disclosure {
+  border-top: 1px solid var(--line);
+}
+
+.catalog-disclosure > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 13px;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 140ms ease;
+}
+
+.catalog-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.catalog-disclosure > summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 1.6px solid var(--muted);
+  border-bottom: 1.6px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform 160ms ease;
+  flex: none;
+  margin-right: 2px;
+}
+
+.catalog-disclosure[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.catalog-disclosure > summary > span:first-child {
+  flex: 1 1 auto;
+}
+
+.catalog-disclosure > summary:hover {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.catalog-disclosure-meta {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.catalog-disclosure-body {
+  padding: 0 12px 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.catalog-disclosure-body pre {
+  margin: 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.catalog-footer-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface-subtle);
+}
+
+.catalog-footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.catalog-footer-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.catalog-caveats {
+  border-top: 1px solid var(--line);
+  padding: 8px 0 0;
+}
+
+.catalog-caveats > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.catalog-caveats > summary::-webkit-details-marker {
+  display: none;
+}
+
+.catalog-caveats > summary em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.catalog-caveat-list {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 5px;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--muted);
 }
 
 @media (max-width: 980px) {

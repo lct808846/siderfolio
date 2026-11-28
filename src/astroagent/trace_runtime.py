@@ -310,7 +310,7 @@ def classify_error_code(code: str | None) -> ErrorCategory:
         return "validation"
     if "database" in lower or "storage" in lower:
         return "storage"
-    if lower.startswith(("simbad_", "ads_", "gaia_", "model_")):
+    if lower.startswith(("simbad_", "ads_", "gaia_", "vizier_", "model_")):
         return "upstream"
     return "internal"
 
@@ -339,6 +339,7 @@ class TraceRecorder:
         self.pricing_override: dict | None = None
         self.skill_id: str | None = None
         self.skill_title: str | None = None
+        self.skill_titles: list[str] = []
         self.skill_version: str | None = None
         self.skill_mode: str | None = None
         self.tool_manifest_sha256: str | None = None
@@ -451,6 +452,7 @@ class TraceRecorder:
             astronomy_transport=self.astronomy_transport,
             skill_id=self.skill_id,
             skill_title=self.skill_title,
+            skill_titles=list(self.skill_titles),
             skill_version=self.skill_version,
             skill_mode=self.skill_mode
             if self.skill_mode

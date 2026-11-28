@@ -2333,6 +2333,194 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects/{project_id}/tables": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Project Tables */
+        get: operations["list_project_tables_api_v1_projects__project_id__tables_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/from-gaia": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import From Gaia */
+        post: operations["import_from_gaia_api_v1_projects__project_id__tables_from_gaia_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/from-vizier": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import From Vizier */
+        post: operations["import_from_vizier_api_v1_projects__project_id__tables_from_vizier_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/inspect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inspect Upload */
+        post: operations["inspect_upload_api_v1_projects__project_id__tables_inspect_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/runs/{operator}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Operator */
+        post: operations["run_operator_api_v1_projects__project_id__tables_runs__operator__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/runs/{run_id}/bundle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Run Bundle */
+        get: operations["export_run_bundle_api_v1_projects__project_id__tables_runs__run_id__bundle_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Table */
+        post: operations["upload_table_api_v1_projects__project_id__tables_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/{dataset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Dataset */
+        get: operations["get_dataset_api_v1_projects__project_id__tables__dataset_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Dataset */
+        delete: operations["delete_dataset_api_v1_projects__project_id__tables__dataset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/{dataset_id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Dataset */
+        get: operations["export_dataset_api_v1_projects__project_id__tables__dataset_id__export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/{dataset_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preview Dataset */
+        get: operations["preview_dataset_api_v1_projects__project_id__tables__dataset_id__preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/tables/{dataset_id}/send-to-plot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send To Plot */
+        post: operations["send_to_plot_api_v1_projects__project_id__tables__dataset_id__send_to_plot_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects/{project_id}/workflows": {
         parameters: {
             query?: never;
@@ -2523,6 +2711,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tables/vizier/presets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Vizier Presets */
+        get: operations["vizier_presets_api_v1_tables_vizier_presets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tables/vizier/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Vizier Query */
+        post: operations["vizier_query_api_v1_tables_vizier_query_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workflow-templates": {
         parameters: {
             query?: never;
@@ -2641,6 +2863,98 @@ export interface components {
              * @default 0
              */
             start: number;
+        };
+        /** AnalysisDataset */
+        AnalysisDataset: {
+            /** Column Count */
+            column_count: number;
+            /** Columns */
+            columns: components["schemas"]["TableColumnMeta"][];
+            /** Coordinate Frame */
+            coordinate_frame?: string | null;
+            /** Created At */
+            created_at: string;
+            /** Data Sha256 */
+            data_sha256: string;
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "fits" | "votable" | "ecsv" | "csv" | "tsv";
+            /** Header Meta */
+            header_meta?: {
+                [key: string]: string;
+            };
+            /** Id */
+            id: string;
+            lineage: components["schemas"]["TableLineage"];
+            /** Name */
+            name: string;
+            /** Project Id */
+            project_id: string;
+            /** Ref Epoch */
+            ref_epoch?: string | null;
+            /** Row Count */
+            row_count: number;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "upload" | "gaia_turn" | "gaia_snapshot" | "vizier" | "derived";
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Updated At */
+            updated_at: string;
+            /** Warnings */
+            warnings?: string[];
+        };
+        /** AnalysisRunRecord */
+        AnalysisRunRecord: {
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Input Dataset Ids */
+            input_dataset_ids?: string[];
+            /**
+             * Operator
+             * @enum {string}
+             */
+            operator: "stats" | "filter_derive" | "coordinates" | "crossmatch" | "fit";
+            /** Output Dataset Id */
+            output_dataset_id?: string | null;
+            /** Parameters */
+            parameters?: {
+                [key: string]: unknown;
+            };
+            /** Project Id */
+            project_id: string;
+            /** Request Sha256 */
+            request_sha256: string;
+            /** Software */
+            software?: {
+                [key: string]: string;
+            };
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "completed" | "failed";
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            };
+            /** Warnings */
+            warnings?: string[];
+        };
+        /** AnalysisRunResponse */
+        AnalysisRunResponse: {
+            output_dataset?: components["schemas"]["AnalysisDataset"] | null;
+            /** Preview Columns */
+            preview_columns?: components["schemas"]["TableColumnMeta"][];
+            /** Preview Rows */
+            preview_rows?: (string | null)[][];
+            run: components["schemas"]["AnalysisRunRecord"];
         };
         /** ArchivedConversation */
         ArchivedConversation: {
@@ -2768,7 +3082,7 @@ export interface components {
              * Media Type
              * @enum {string}
              */
-            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "text/tab-separated-values" | "application/json" | "image/png" | "image/jpeg" | "image/webp" | "image/gif";
+            media_type: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "text/plain" | "text/markdown" | "text/csv" | "text/tab-separated-values" | "application/json" | "application/fits" | "application/x-votable+xml" | "text/x-ecsv" | "image/png" | "image/jpeg" | "image/webp" | "image/gif";
             /** Sha256 */
             sha256: string;
             /** Size */
@@ -2841,6 +3155,10 @@ export interface components {
              * @enum {string}
              */
             status: "success" | "partial" | "error";
+            /** Table Analysis Proposals */
+            table_analysis_proposals?: components["schemas"]["TableAnalysisProposalResult"][];
+            /** Vizier Results */
+            vizier_results?: components["schemas"]["VizierQueryResult"][];
             /** Warnings */
             warnings?: components["schemas"]["ErrorInfo"][];
         };
@@ -3534,6 +3852,10 @@ export interface components {
              * @enum {string}
              */
             status: "success" | "partial" | "error";
+            /** Table Analysis Proposals */
+            table_analysis_proposals?: components["schemas"]["ExportTableAnalysisProposalResult"][];
+            /** Vizier Results */
+            vizier_results?: components["schemas"]["ExportVizierQueryResult"][];
             /** Warnings */
             warnings: components["schemas"]["ExportErrorInfo"][];
         };
@@ -4140,7 +4462,7 @@ export interface components {
              * Data Source Kind
              * @enum {string}
              */
-            data_source_kind: "current_turn_gaia" | "history_turn_gaia" | "attachment_csv" | "project_dataset";
+            data_source_kind: "current_turn_gaia" | "history_turn_gaia" | "attachment_csv" | "project_dataset" | "project_table";
             /** Dataset Id */
             dataset_id: string | null;
             /**
@@ -4211,8 +4533,12 @@ export interface components {
             selection_mode: "explicit" | "auto" | "disabled" | "none" | "ambiguous" | "auto_disabled";
             /** Skill Id */
             skill_id: string | null;
+            /** Skill Ids */
+            skill_ids?: string[];
             /** Skill Title */
             skill_title: string | null;
+            /** Skill Titles */
+            skill_titles?: string[];
             /** Skill Version */
             skill_version: string | null;
             /** Tool Manifest Sha256 */
@@ -4226,7 +4552,7 @@ export interface components {
              * Name
              * @enum {string}
              */
-            name: "SIMBAD" | "ADS" | "Gaia";
+            name: "SIMBAD" | "ADS" | "Gaia" | "VizieR";
             /**
              * Retrieved At
              * Format: date-time
@@ -4234,6 +4560,121 @@ export interface components {
             retrieved_at: string;
             /** Url */
             url: string;
+        };
+        /** ExportTableAnalysisProposalResult */
+        ExportTableAnalysisProposalResult: {
+            /**
+             * Dataset Id
+             * @description 主数据表 UUID（必须来自 list_project_tables 返回）
+             */
+            dataset_id: string;
+            /**
+             * Dataset Name
+             * @description 主数据表显示名
+             */
+            dataset_name: string | null;
+            /** Derived Name */
+            derived_name: string | null;
+            /**
+             * Explanation
+             * @description 分析目标、物理单位/坐标系与统计或拟合假设说明
+             */
+            explanation: string;
+            /**
+             * Operator
+             * @description 算子类型：stats、filter_derive、coordinates、crossmatch 或 fit
+             * @enum {string}
+             */
+            operator: "stats" | "filter_derive" | "coordinates" | "crossmatch" | "fit";
+            /**
+             * Parameters
+             * @description 按 operator 填写严格匹配的参数字典（严禁附带未定义字段）：1) stats: {columns?: string[], corr_x?: string, corr_y?: string, ks_column?: string, ks_other_dataset_id?: uuid, ks_group_column?: string, ks_group_a?: string, ks_group_b?: string}；2) filter_derive: {combine?: 'and'|'or', conditions?: [{column, op, value?, value_max?, values?, rhs_column?}], derived_columns?: [{name, expression, unit?, description?}]}；3) coordinates: {lon_col, lat_col, input_frame?: 'icrs'|'fk5'|'galactic', input_unit?: 'deg'|'hourangle_deg', output_frame?: 'galactic'|'icrs'|'fk5'|null, ref_ra_deg?: number, ref_dec_deg?: number}；4) crossmatch: {left_ra_col, left_dec_col, right_ra_col, right_dec_col, left_frame?: 'icrs'|'fk5'|'galactic', right_frame?: 'icrs'|'fk5'|'galactic', left_unit?: 'deg'|'hourangle_deg', right_unit?: 'deg'|'hourangle_deg', radius_arcsec?: number(0.05-300), mode?: 'nearest'|'all_within_radius', join_type?: 'inner'|'left', right_prefix?: string}（left/right_dataset_id 由顶层 dataset_id 与 secondary_dataset_id 自动补全）；5) fit: {x_col, y_col, y_err_col?: string, model?: 'linear'|'polynomial'|'power_law'|'gaussian', degree?: int(2-4), initial_guess?: {amplitude?, center?, sigma?, baseline?, scale?, exponent?}}。
+             */
+            parameters: {
+                [key: string]: unknown;
+            };
+            /** Project Id */
+            project_id: string | null;
+            /**
+             * Save Derived
+             * @description 是否保存为派生表
+             */
+            save_derived: boolean;
+            /**
+             * Secondary Dataset Id
+             * @description 可选第二张表 UUID（仅 crossmatch 或跨表 stats KS 检验使用）
+             */
+            secondary_dataset_id: string | null;
+            /** Secondary Dataset Name */
+            secondary_dataset_name: string | null;
+            /**
+             * Status
+             * @constant
+             */
+            status: "proposed";
+            /**
+             * Title
+             * @description 分析任务标题
+             */
+            title: string;
+            /** Warnings */
+            warnings: string[];
+        };
+        /** ExportVizierQueryResult */
+        ExportVizierQueryResult: {
+            /** Adql */
+            adql: string;
+            /** Archive Overflow */
+            archive_overflow: boolean | null;
+            /** Catalog Id */
+            catalog_id: string;
+            /** Catalog Title */
+            catalog_title: string;
+            /** Cds Url */
+            cds_url: string;
+            /** Columns */
+            columns: string[];
+            /** Coordinate Frame */
+            coordinate_frame: string;
+            /** Dec Column */
+            dec_column: string | null;
+            /** Endpoint */
+            endpoint: string;
+            error: components["schemas"]["ExportErrorInfo"] | null;
+            /** Has More */
+            has_more: boolean | null;
+            /** Query */
+            query: {
+                [key: string]: unknown;
+            };
+            /** Ra Column */
+            ra_column: string | null;
+            /** Ref Epoch */
+            ref_epoch: string | null;
+            /** Resolved Object */
+            resolved_object: {
+                [key: string]: unknown;
+            } | null;
+            /** Returned Count */
+            returned_count: number;
+            /** Rows */
+            rows: {
+                [key: string]: string | number | boolean | null;
+            }[];
+            source: components["schemas"]["ExportSource"];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "success" | "not_found" | "error";
+            /** Truncated */
+            truncated: boolean | null;
+            /** Units */
+            units: {
+                [key: string]: string;
+            };
+            /** Warnings */
+            warnings: string[];
         };
         /** ExternalMcpConfirmRequest */
         ExternalMcpConfirmRequest: {
@@ -6380,7 +6821,7 @@ export interface components {
              * Data Source Kind
              * @enum {string}
              */
-            data_source_kind: "current_turn_gaia" | "history_turn_gaia" | "attachment_csv" | "project_dataset";
+            data_source_kind: "current_turn_gaia" | "history_turn_gaia" | "attachment_csv" | "project_dataset" | "project_table";
             /** Dataset Id */
             dataset_id?: string | null;
             /**
@@ -6798,6 +7239,13 @@ export interface components {
             /** Workflows */
             workflows: components["schemas"]["LinkTarget"][];
         };
+        /** ProjectTablesPage */
+        ProjectTablesPage: {
+            /** Datasets */
+            datasets?: components["schemas"]["AnalysisDataset"][];
+            /** Runs */
+            runs?: components["schemas"]["AnalysisRunRecord"][];
+        };
         /** ProjectUpdate */
         ProjectUpdate: {
             /**
@@ -7130,7 +7578,7 @@ export interface components {
              * Family
              * @enum {string}
              */
-            family: "simbad" | "ads" | "gaia";
+            family: "simbad" | "ads" | "gaia" | "vizier";
             /** Result Index */
             result_index: number;
             /** Turn Id */
@@ -7209,7 +7657,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "turn" | "rag_context" | "memory_context" | "conversation_summary" | "model" | "tool_simbad" | "tool_ads" | "tool_gaia" | "tool_literature_save" | "tool_nbody_proposal" | "tool_plot_proposal" | "tool_external_mcp" | "compute_task" | "plot_run";
+            kind: "turn" | "rag_context" | "memory_context" | "conversation_summary" | "model" | "tool_simbad" | "tool_ads" | "tool_gaia" | "tool_vizier" | "tool_project_tables" | "tool_table_analysis_proposal" | "tool_literature_save" | "tool_nbody_proposal" | "tool_plot_proposal" | "tool_external_mcp" | "compute_task" | "plot_run";
             /** Model */
             model?: string | null;
             /** Name */
@@ -7270,6 +7718,8 @@ export interface components {
             skill_mode?: ("explicit" | "auto" | "disabled" | "none" | "ambiguous" | "auto_disabled") | null;
             /** Skill Title */
             skill_title?: string | null;
+            /** Skill Titles */
+            skill_titles?: string[];
             /** Skill Version */
             skill_version?: string | null;
             /** Spans */
@@ -7288,6 +7738,21 @@ export interface components {
             /** Turn Id */
             turn_id: string;
             usage?: components["schemas"]["ModelUsageSummary"] | null;
+        };
+        /** SendToPlotRequest */
+        SendToPlotRequest: {
+            /** Name */
+            name?: string | null;
+        };
+        /** SendToPlotResponse */
+        SendToPlotResponse: {
+            plot_dataset: components["schemas"]["PlotDataset"];
+            /** Plot Url */
+            plot_url: string;
+            /** Project Id */
+            project_id: string;
+            /** Source Dataset Id */
+            source_dataset_id: string;
         };
         /** ServerToggleRequest */
         ServerToggleRequest: {
@@ -7582,8 +8047,12 @@ export interface components {
             selection_mode: "explicit" | "auto" | "disabled" | "none" | "ambiguous" | "auto_disabled";
             /** Skill Id */
             skill_id?: string | null;
+            /** Skill Ids */
+            skill_ids?: string[];
             /** Skill Title */
             skill_title?: string | null;
+            /** Skill Titles */
+            skill_titles?: string[];
             /** Skill Version */
             skill_version?: string | null;
             /** Tool Manifest Sha256 */
@@ -7694,7 +8163,7 @@ export interface components {
              * @default SIMBAD
              * @enum {string}
              */
-            name: "SIMBAD" | "ADS" | "Gaia";
+            name: "SIMBAD" | "ADS" | "Gaia" | "VizieR";
             /**
              * Retrieved At
              * Format: date-time
@@ -7778,6 +8247,206 @@ export interface components {
             sha256: string;
             /** Step Id */
             step_id: string;
+        };
+        /** TableAnalysisProposalResult */
+        TableAnalysisProposalResult: {
+            /**
+             * Dataset Id
+             * @description 主数据表 UUID（必须来自 list_project_tables 返回）
+             */
+            dataset_id: string;
+            /**
+             * Dataset Name
+             * @description 主数据表显示名
+             */
+            dataset_name?: string | null;
+            /** Derived Name */
+            derived_name?: string | null;
+            /**
+             * Explanation
+             * @description 分析目标、物理单位/坐标系与统计或拟合假设说明
+             */
+            explanation: string;
+            /**
+             * Operator
+             * @description 算子类型：stats、filter_derive、coordinates、crossmatch 或 fit
+             * @enum {string}
+             */
+            operator: "stats" | "filter_derive" | "coordinates" | "crossmatch" | "fit";
+            /**
+             * Parameters
+             * @description 按 operator 填写严格匹配的参数字典（严禁附带未定义字段）：1) stats: {columns?: string[], corr_x?: string, corr_y?: string, ks_column?: string, ks_other_dataset_id?: uuid, ks_group_column?: string, ks_group_a?: string, ks_group_b?: string}；2) filter_derive: {combine?: 'and'|'or', conditions?: [{column, op, value?, value_max?, values?, rhs_column?}], derived_columns?: [{name, expression, unit?, description?}]}；3) coordinates: {lon_col, lat_col, input_frame?: 'icrs'|'fk5'|'galactic', input_unit?: 'deg'|'hourangle_deg', output_frame?: 'galactic'|'icrs'|'fk5'|null, ref_ra_deg?: number, ref_dec_deg?: number}；4) crossmatch: {left_ra_col, left_dec_col, right_ra_col, right_dec_col, left_frame?: 'icrs'|'fk5'|'galactic', right_frame?: 'icrs'|'fk5'|'galactic', left_unit?: 'deg'|'hourangle_deg', right_unit?: 'deg'|'hourangle_deg', radius_arcsec?: number(0.05-300), mode?: 'nearest'|'all_within_radius', join_type?: 'inner'|'left', right_prefix?: string}（left/right_dataset_id 由顶层 dataset_id 与 secondary_dataset_id 自动补全）；5) fit: {x_col, y_col, y_err_col?: string, model?: 'linear'|'polynomial'|'power_law'|'gaussian', degree?: int(2-4), initial_guess?: {amplitude?, center?, sigma?, baseline?, scale?, exponent?}}。
+             */
+            parameters?: {
+                [key: string]: unknown;
+            };
+            /** Project Id */
+            project_id?: string | null;
+            /**
+             * Save Derived
+             * @description 是否保存为派生表
+             * @default false
+             */
+            save_derived: boolean;
+            /**
+             * Secondary Dataset Id
+             * @description 可选第二张表 UUID（仅 crossmatch 或跨表 stats KS 检验使用）
+             */
+            secondary_dataset_id?: string | null;
+            /** Secondary Dataset Name */
+            secondary_dataset_name?: string | null;
+            /**
+             * Status
+             * @default proposed
+             * @constant
+             */
+            status: "proposed";
+            /**
+             * Title
+             * @description 分析任务标题
+             */
+            title: string;
+            /** Warnings */
+            warnings?: string[];
+        };
+        /** TableColumnMeta */
+        TableColumnMeta: {
+            /** Description */
+            description?: string | null;
+            /**
+             * Dtype
+             * @default string
+             */
+            dtype: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "number" | "integer" | "identifier" | "text" | "boolean" | "empty";
+            /**
+             * Missing
+             * @default 0
+             */
+            missing: number;
+            /** Name */
+            name: string;
+            /** Ucd */
+            ucd?: string | null;
+            /** Unit */
+            unit?: string | null;
+        };
+        /** TableHduInfo */
+        TableHduInfo: {
+            /** Columns */
+            columns?: components["schemas"]["TableColumnMeta"][];
+            /** Index */
+            index: number;
+            /** Kind */
+            kind: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason?: string | null;
+            /** Rows */
+            rows: number;
+            /** Selectable */
+            selectable: boolean;
+        };
+        /** TableImportGaiaRequest */
+        TableImportGaiaRequest: {
+            /** Conversation Id */
+            conversation_id?: string | null;
+            /** Name */
+            name?: string | null;
+            /**
+             * Query Index
+             * @default 0
+             */
+            query_index: number;
+            /** Snapshot Id */
+            snapshot_id?: string | null;
+            /**
+             * Source Kind
+             * @enum {string}
+             */
+            source_kind: "turn" | "snapshot";
+            /** Turn Id */
+            turn_id?: string | null;
+        };
+        /** TableImportVizierTurnRequest */
+        TableImportVizierTurnRequest: {
+            /** Conversation Id */
+            conversation_id: string;
+            /** Name */
+            name?: string | null;
+            /**
+             * Query Index
+             * @default 0
+             */
+            query_index: number;
+            /** Turn Id */
+            turn_id: string;
+        };
+        /** TableInspectResponse */
+        TableInspectResponse: {
+            /** Coordinate Frame */
+            coordinate_frame?: string | null;
+            /** Default Hdu Index */
+            default_hdu_index?: number | null;
+            /** Filename */
+            filename: string;
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "fits" | "votable" | "ecsv" | "csv" | "tsv";
+            /** Hdus */
+            hdus: components["schemas"]["TableHduInfo"][];
+            /** Header Meta */
+            header_meta?: {
+                [key: string]: string;
+            };
+            /** Ref Epoch */
+            ref_epoch?: string | null;
+            /** Sha256 */
+            sha256: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Warnings */
+            warnings?: string[];
+        };
+        /** TableLineage */
+        TableLineage: {
+            /** Operator */
+            operator?: ("stats" | "filter_derive" | "coordinates" | "crossmatch" | "fit") | null;
+            /** Origin */
+            origin?: {
+                [key: string]: unknown;
+            };
+            /** Parent Dataset Ids */
+            parent_dataset_ids?: string[];
+            /** Run Id */
+            run_id?: string | null;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "upload" | "gaia_turn" | "gaia_snapshot" | "vizier" | "derived";
+        };
+        /** TablePreviewResponse */
+        TablePreviewResponse: {
+            /** Columns */
+            columns: components["schemas"]["TableColumnMeta"][];
+            /** Dataset Id */
+            dataset_id: string;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Rows */
+            rows: (string | null)[][];
+            /** Total Rows */
+            total_rows: number;
         };
         /** TextPreview */
         TextPreview: {
@@ -7943,6 +8612,8 @@ export interface components {
             model?: string | null;
             /** Skill Id */
             skill_id?: string | null;
+            /** Skill Ids */
+            skill_ids?: string[];
             /** Tool Mode */
             tool_mode?: ("auto" | "plot" | "compute") | null;
         };
@@ -7997,6 +8668,153 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VizierPreset */
+        VizierPreset: {
+            /** Catalog Id */
+            catalog_id: string;
+            /** Cds Url */
+            cds_url: string;
+            /**
+             * Coordinate Frame
+             * @default ICRS
+             */
+            coordinate_frame: string;
+            /** Dec Col */
+            dec_col: string;
+            /** Default Columns */
+            default_columns: string[];
+            /** Description */
+            description: string;
+            /** Ra Col */
+            ra_col: string;
+            /** Ref Epoch */
+            ref_epoch: string;
+            /** Title */
+            title: string;
+            /** Units */
+            units: {
+                [key: string]: string;
+            };
+        };
+        /** VizierQueryHttpRequest */
+        VizierQueryHttpRequest: {
+            /**
+             * Catalog Id
+             * @description VizieR 星表编号，如 II/246/out、II/328/allwise、II/349/ps1、V/156/dr7lrs、J/A+A/640/A1/nodup
+             */
+            catalog_id: string;
+            /**
+             * Columns
+             * @description 可选返回列名列表（1–32 列）；留空则使用预设默认列或表默认坐标与核心列
+             */
+            columns?: string[] | null;
+            /** Dataset Name */
+            dataset_name?: string | null;
+            /**
+             * Dec Deg
+             * @description ICRS 中心赤纬，单位 deg，范围 [-90, 90]；与 object_name 互斥
+             */
+            dec_deg?: number | null;
+            /**
+             * Limit
+             * @description 最多返回源行数，范围 1–500，默认 50
+             * @default 50
+             */
+            limit: number;
+            /**
+             * Object Name
+             * @description 待解析天体名称（通过 SIMBAD 获取 ICRS 坐标），与 ra_deg/dec_deg 互斥
+             */
+            object_name?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+            /**
+             * Ra Deg
+             * @description ICRS 中心赤经，单位 deg，范围 [0, 360)；与 object_name 互斥
+             */
+            ra_deg?: number | null;
+            /**
+             * Radius Arcmin
+             * @description 圆锥检索半径，单位 arcmin，范围 [0.05, 60]
+             * @default 5
+             */
+            radius_arcmin: number;
+            /**
+             * Save To Project
+             * @default false
+             */
+            save_to_project: boolean;
+        };
+        /** VizierQueryHttpResponse */
+        VizierQueryHttpResponse: {
+            result: components["schemas"]["VizierQueryResult"];
+            saved_dataset?: components["schemas"]["AnalysisDataset"] | null;
+        };
+        /** VizierQueryResult */
+        VizierQueryResult: {
+            /** Adql */
+            adql: string;
+            /** Archive Overflow */
+            archive_overflow?: boolean | null;
+            /** Catalog Id */
+            catalog_id: string;
+            /** Catalog Title */
+            catalog_title: string;
+            /** Cds Url */
+            cds_url: string;
+            /** Columns */
+            columns?: string[];
+            /**
+             * Coordinate Frame
+             * @default ICRS
+             */
+            coordinate_frame: string;
+            /** Dec Column */
+            dec_column?: string | null;
+            /**
+             * Endpoint
+             * @default https://tapvizier.cds.unistra.fr/TAPVizieR/tap/sync
+             */
+            endpoint: string;
+            error?: components["schemas"]["ErrorInfo"] | null;
+            /** Has More */
+            has_more?: boolean | null;
+            /** Query */
+            query: {
+                [key: string]: unknown;
+            };
+            /** Ra Column */
+            ra_column?: string | null;
+            /** Ref Epoch */
+            ref_epoch?: string | null;
+            /** Resolved Object */
+            resolved_object?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Returned Count
+             * @default 0
+             */
+            returned_count: number;
+            /** Rows */
+            rows?: {
+                [key: string]: string | number | boolean | null;
+            }[];
+            source: components["schemas"]["Source"];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "success" | "not_found" | "error";
+            /** Truncated */
+            truncated?: boolean | null;
+            /** Units */
+            units?: {
+                [key: string]: string;
+            };
+            /** Warnings */
+            warnings?: string[];
         };
         /** WorkflowCreate */
         WorkflowCreate: {
@@ -18724,6 +19542,1071 @@ export interface operations {
             };
         };
     };
+    list_project_tables_api_v1_projects__project_id__tables_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectTablesPage"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    import_from_gaia_api_v1_projects__project_id__tables_from_gaia_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TableImportGaiaRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisDataset"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    import_from_vizier_api_v1_projects__project_id__tables_from_vizier_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TableImportVizierTurnRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisDataset"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    inspect_upload_api_v1_projects__project_id__tables_inspect_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TableInspectResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    run_operator_api_v1_projects__project_id__tables_runs__operator__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                operator: "stats" | "filter_derive" | "coordinates" | "crossmatch" | "fit";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisRunResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    export_run_bundle_api_v1_projects__project_id__tables_runs__run_id__bundle_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    upload_table_api_v1_projects__project_id__tables_upload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                    hdu_index?: number;
+                    name?: string;
+                    selected_columns?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisDataset"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_dataset_api_v1_projects__project_id__tables__dataset_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisDataset"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_dataset_api_v1_projects__project_id__tables__dataset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    export_dataset_api_v1_projects__project_id__tables__dataset_id__export_get: {
+        parameters: {
+            query?: {
+                format?: string;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    preview_dataset_api_v1_projects__project_id__tables__dataset_id__preview_get: {
+        parameters: {
+            query?: {
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TablePreviewResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    send_to_plot_api_v1_projects__project_id__tables__dataset_id__send_to_plot_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SendToPlotRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendToPlotResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     list_runs_api_v1_projects__project_id__workflows_get: {
         parameters: {
             query?: never;
@@ -19518,6 +21401,176 @@ export interface operations {
             };
             /** @description Forbidden */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    vizier_presets_api_v1_tables_vizier_presets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VizierPreset"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    vizier_query_api_v1_tables_vizier_query_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VizierQueryHttpRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VizierQueryHttpResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
                 headers: {
                     [name: string]: unknown;
                 };

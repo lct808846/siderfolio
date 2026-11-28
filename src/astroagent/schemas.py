@@ -9,7 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_
 from astroagent.literature_schemas import LiteratureSaveReceipt
 from astroagent.memory_schemas import MemorySaveReceipt
 from astroagent.skill_schemas import SkillResolution
-from astroagent.source_schemas import Source
+from astroagent.source_schemas import ErrorInfo, Source
+from astroagent.table_schemas import TableAnalysisProposalResult, VizierQueryResult
 from astroagent.tool_schemas import ExternalMcpProposal, ExternalMcpResult
 
 
@@ -28,12 +29,6 @@ class ObjectQuery(BaseModel):
         max_length=200,
         description="SIMBAD 天体名称或标识符（1–200 字符，不使用通配符）",
     )
-
-
-class ErrorInfo(BaseModel):
-    code: str
-    message: str
-    retryable: bool = False
 
 
 class ErrorResponse(BaseModel):
@@ -512,13 +507,18 @@ class PlotProposalQuery(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     data_source_kind: Literal[
-        "current_turn_gaia", "history_turn_gaia", "attachment_csv", "project_dataset"
+        "current_turn_gaia",
+        "history_turn_gaia",
+        "attachment_csv",
+        "project_dataset",
+        "project_table",
     ] = Field(
         description=(
             "数据来源类型：current_turn_gaia=本轮刚查到的 Gaia 数据；"
             "history_turn_gaia=历史轮次的 Gaia 数据；"
             "attachment_csv=用户附件中的 CSV/TSV 文件；"
-            "project_dataset=项目已有数据集"
+            "project_dataset=项目已有绘图数据集；"
+            "project_table=项目数据分析工作区中的数据表（含派生表与拟合残差表）"
         )
     )
     source_turn_id: str | None = Field(
@@ -603,7 +603,11 @@ class PlotProposalQuery(BaseModel):
 class PlotProposalResult(BaseModel):
     status: Literal["proposed"] = "proposed"
     data_source_kind: Literal[
-        "current_turn_gaia", "history_turn_gaia", "attachment_csv", "project_dataset"
+        "current_turn_gaia",
+        "history_turn_gaia",
+        "attachment_csv",
+        "project_dataset",
+        "project_table",
     ]
     source_turn_id: str | None = None
     gaia_query_index: int = 0
@@ -626,8 +630,10 @@ class ChatResponse(BaseModel):
     results: list[QueryResult] = Field(default_factory=list)
     literature_results: list[LiteratureSearchResult] = Field(default_factory=list)
     gaia_results: list[GaiaQueryResult] = Field(default_factory=list)
+    vizier_results: list[VizierQueryResult] = Field(default_factory=list)
     nbody_proposals: list[NBodyProposalResult] = Field(default_factory=list)
     plot_proposals: list[PlotProposalResult] = Field(default_factory=list)
+    table_analysis_proposals: list[TableAnalysisProposalResult] = Field(default_factory=list)
     literature_receipts: list[LiteratureSaveReceipt] = Field(default_factory=list)
     memory_receipts: list[MemorySaveReceipt] = Field(default_factory=list)
     skill_resolution: SkillResolution | None = None

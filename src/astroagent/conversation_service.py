@@ -17,7 +17,7 @@ from astroagent.mcp_client import McpAdsAdapter
 from astroagent.model_providers import configured_pricing_snapshot
 from astroagent.skill_schemas import SkillPreferences
 from astroagent.skill_store import merge_confirmations_into_turn
-from astroagent.skills import resolve_turn_skill
+from astroagent.skills import resolve_turn_skills
 from astroagent.tool_catalog import build_turn_tool_catalog
 from astroagent.tool_schemas import (
     ExternalMcpConfirmationRecord,
@@ -44,6 +44,7 @@ class ConversationService:
         self.skills = None
         self.memory = None
         self.external_mcp = None
+        self.tables = None
 
     def delete(self, identifier):
         with self.gate:
@@ -463,9 +464,10 @@ class ConversationService:
                 external_entries=external_entries,
             )
             memory_hint = memory_bundle.memory_hint if memory_bundle is not None else ""
-            skill_def, skill_resolution = resolve_turn_skill(
+            skill_defs, skill_resolution = resolve_turn_skills(
                 request.message,
                 requested_skill_id=getattr(request, "skill_id", None),
+                requested_skill_ids=getattr(request, "skill_ids", None),
                 preferences=skill_prefs,
                 available_tool_ids=set(base_catalog.tool_ids),
                 tool_mode=request.tool_mode,
@@ -481,6 +483,11 @@ class ConversationService:
                 context.memory_trace.skill_assisted_by_memory = True
                 turn.context.memory_context = context.memory_trace
             recorder.memory_context = context.memory_trace
+            skill_allowed_tools = (
+                list(dict.fromkeys(tool for skill in skill_defs for tool in skill.allowed_tools))
+                if skill_defs
+                else None
+            )
             turn_catalog = build_turn_tool_catalog(
                 astronomy_transport=astro_transport,
                 include_literature_save=literature_saver is not None,
@@ -491,26 +498,28 @@ class ConversationService:
                     "external_mcp_max_calls_per_turn",
                     2,
                 ),
-                skill_allowed_tools=skill_def.allowed_tools if skill_def is not None else None,
+                skill_allowed_tools=skill_allowed_tools,
             )
             skill_resolution.available_tool_ids = turn_catalog.tool_ids
             skill_resolution.tool_manifest_sha256 = turn_catalog.manifest_sha256
             turn.skill_resolution = skill_resolution
             recorder.skill_id = skill_resolution.skill_id
             recorder.skill_title = skill_resolution.skill_title
+            recorder.skill_titles = list(skill_resolution.skill_titles)
             recorder.skill_version = skill_resolution.skill_version
             recorder.skill_mode = skill_resolution.selection_mode
             recorder.tool_manifest_sha256 = turn_catalog.manifest_sha256
 
-            if on_event is not None and skill_def is not None:
-                mode_tag = (
-                    "已选技能" if skill_resolution.selection_mode == "explicit" else "自动匹配技能"
-                )
+            if on_event is not None and skill_defs:
+                if len(skill_defs) == 1:
+                    skill_label = f"已载入技能：{skill_defs[0].title}（v{skill_defs[0].version}）"
+                else:
+                    skill_label = "已载入技能：" + " + ".join(item.title for item in skill_defs)
                 on_event(
                     {
                         "type": "status",
                         "phase": "skill",
-                        "label": f"{mode_tag}：{skill_def.title}（v{skill_def.version}）",
+                        "label": skill_label,
                     }
                 )
 
@@ -547,6 +556,36 @@ class ConversationService:
                     self.skills.save_proposal(proposal)
                     return proposal
 
+            resolved_active_project_id = project_id
+            if not resolved_active_project_id and getattr(self, "projects", None) is not None:
+                try:
+                    default_proj = self.projects.repository.default_project()
+                    if default_proj:
+                        resolved_active_project_id = default_proj["id"]
+                except Exception:
+                    pass
+
+            project_tables_lister = None
+            if getattr(self, "tables", None) is not None:
+
+                def project_tables_lister(
+                    requested_pid: str | None = None,
+                    current_results: list | None = None,
+                ):
+                    target_pid = requested_pid or resolved_active_project_id
+                    if not target_pid and getattr(self, "projects", None) is not None:
+                        target_pid = self.projects.repository.ensure_default()["id"]
+                    if not target_pid:
+                        raise ServiceError(404, "project_record_not_found", "当前未关联科研项目。")
+                    self.tables.sync_conversation_catalog_results(
+                        target_pid,
+                        identifier,
+                        history,
+                        current_turn_id=turn.turn_id,
+                        current_results=current_results,
+                    )
+                    return self.tables.list_tables_for_agent(target_pid)
+
             converse_params = inspect.signature(agent.converse).parameters
             converse_kwargs = {}
             if on_event is not None and "on_event" in converse_params:
@@ -556,13 +595,17 @@ class ConversationService:
             if "trace_recorder" in converse_params:
                 converse_kwargs["trace_recorder"] = recorder
             if "skill_definition" in converse_params:
-                converse_kwargs["skill_definition"] = skill_def
+                converse_kwargs["skill_definition"] = skill_defs or None
             if "skill_resolution" in converse_params:
                 converse_kwargs["skill_resolution"] = skill_resolution
             if "tool_catalog" in converse_params:
                 converse_kwargs["tool_catalog"] = turn_catalog
             if "external_mcp_proposer" in converse_params:
                 converse_kwargs["external_mcp_proposer"] = external_mcp_proposer
+            if "project_tables_lister" in converse_params:
+                converse_kwargs["project_tables_lister"] = project_tables_lister
+            if "active_project_id" in converse_params:
+                converse_kwargs["active_project_id"] = resolved_active_project_id
             turn.response = agent.converse(request.message, context, **converse_kwargs)
             if turn.response is not None and turn.response.skill_resolution is None:
                 turn.response.skill_resolution = skill_resolution

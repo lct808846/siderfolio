@@ -11,6 +11,7 @@ import ComposerProjectPicker from '../components/ComposerProjectPicker.vue'
 import CreateProjectDialog from '../components/CreateProjectDialog.vue'
 import ChatNBodyCard, { type ComputeResultPayload } from '../components/ChatNBodyCard.vue'
 import ChatPlotCard, { type PlotResultPayload } from '../components/ChatPlotCard.vue'
+import ChatTableAnalysisCard, { type TableResultPayload } from '../components/ChatTableAnalysisCard.vue'
 import ChatExternalMcpCard from '../components/ChatExternalMcpCard.vue'
 import LiteratureReceiptCard from '../components/LiteratureReceiptCard.vue'
 import MemoryReceiptCard from '../components/MemoryReceiptCard.vue'
@@ -35,6 +36,7 @@ import LocalTitleStatus from '../components/LocalTitleStatus.vue'
 import { api, safeLink } from '../api'
 import { computeApi, type ComputeStatus } from '../api/compute'
 import { projectsApi } from '../api/projects'
+import { tablesApi } from '../api/tables'
 import { readResultsPanelStates, saveResultsPanelStates } from '../conversation-panel-state'
 import type { ChatAttachment, ChatToolMode, ExternalMcpResult, LiteratureSaveReceipt, MemorySaveReceipt, Project, SkillResolution, Snapshot, Turn } from '../types'
 
@@ -73,7 +75,7 @@ const inspectedSnapshotTurn = computed<Turn | null>(() => inspectedSnapshot.valu
 let pendingDrawerRequest: { projectId: string; tab: DrawerTab; snapshotId?: string; promptDelete?: boolean } | null = null
 const profileMode = computed(() => route.path === '/profile')
 const computeStatus = ref<ComputeStatus | null>(null)
-function handleInlineRefine(mode: 'plot' | 'compute', promptText: string) {
+function handleInlineRefine(mode: 'auto' | 'plot' | 'compute', promptText: string) {
   toolMode.value = mode
   draft.value = promptText
   void nextTick(() => {
@@ -83,9 +85,9 @@ function handleInlineRefine(mode: 'plot' | 'compute', promptText: string) {
   })
 }
 const composerPlaceholder = computed(() => {
-  if (toolMode.value === 'plot') return '描述想绘制的科研图形（可直接基于上文 Gaia 数据、附带 CSV/TSV，或先查天体再出图）…'
+  if (toolMode.value === 'plot') return '描述想绘制的科研图形（可直接基于项目数据表、上文 Gaia/VizieR 数据、附带 FITS/CSV/TSV，或先查天体再出图）…'
   if (toolMode.value === 'compute') return '描述 N 体模拟需求，例如：太阳-地球-木星三体演化 12 年，模型将自动填写初始参数…'
-  return '输入一个天文问题，或继续追问刚才的结果…'
+  return '输入一个天文问题，或拖入 FITS / VOTable / CSV 数据表继续分析…'
 })
 const composerHint = computed(() => {
   if (toolMode.value === 'plot') return '模型将自动编写绘图配置与脚本供你核对或修改，确认后在无网容器中隔离出图。'
@@ -111,14 +113,17 @@ const effectiveProject = computed(() => {
   return null
 })
 const activeSpaceProjectId = computed(() => effectiveProject.value?.id || '')
-const resultFocusKind = ref<'turn' | 'compute' | 'plot' | 'files'>('turn')
+const resultFocusKind = ref<'turn' | 'compute' | 'plot' | 'tables' | 'files' | 'gaia' | 'vizier' | 'ads' | 'simbad'>('turn')
 const resultFocusNonce = ref(0)
+const resultFocusBatchIndex = ref<number | null>(null)
 const resultProjectId = ref('')
 const resultProjectScoped = ref(false)
 const resultComputeTaskId = ref('')
 const resultPlotRunId = ref('')
 const resultPlotTitle = ref('')
 const resultPlotFiles = ref<string[]>([])
+const resultTableDatasetId = ref('')
+const resultTableRunId = ref('')
 const SIDEBAR_WIDTHS_KEY = 'astroagent.workbench.sidebar_widths.v1'
 const MIN_LEFT_SIDEBAR = 188
 const MAX_LEFT_SIDEBAR = 440
@@ -447,23 +452,8 @@ const showWelcome = computed(() => conversationReady.value && !store.loading && 
   && (!conversationId.value || !!store.current) && !store.error)
 const completedResults = computed(() => store.turns.filter(turn =>
   turn.response && turn.execution_status === 'completed'
-  && (turn.response.results?.length || turn.response.literature_results?.length || turn.response.gaia_results?.length),
+  && (turn.response.results?.length || turn.response.literature_results?.length || turn.response.gaia_results?.length || turn.response.vizier_results?.length),
 ))
-const resultArtifactCount = computed(() => {
-  let count = 0
-  for (const turn of store.turns) {
-    const res = turn.response
-    if (res) {
-      count += (res.gaia_results?.length || 0)
-        + (res.literature_results?.length || 0)
-        + (res.results?.length || 0)
-        + (res.nbody_proposals?.length || 0)
-        + (res.plot_proposals?.length || 0)
-    }
-    count += turn.attachments?.length || 0
-  }
-  return count
-})
 let knownResults = new Set<string>()
 let restoreFrame = 0, restoreRevision = 0
 const historyVisible = computed(() => compactLayout.value ? store.panel === 'history' : !sidebarCollapsed.value)
@@ -509,12 +499,17 @@ function rememberResults(open: boolean) {
   resultsPanelStates.set(id, open)
   saveResultsPanelStates(resultsPanelStates)
 }
-async function openResults(turnId?: string) {
+async function openResults(
+  turnId?: string,
+  focusKind: 'turn' | 'gaia' | 'vizier' | 'ads' | 'simbad' = 'turn',
+  batchIndex?: number,
+) {
   const id = route.params.id
   inspectedSnapshot.value = null
   resultProjectId.value = ''
   resultProjectScoped.value = false
-  resultFocusKind.value = 'turn'
+  resultFocusKind.value = focusKind
+  resultFocusBatchIndex.value = typeof batchIndex === 'number' && batchIndex >= 0 ? batchIndex : null
   resultFocusNonce.value++
   if (turnId) store.selectedTurnId = turnId
   rememberResults(true)
@@ -522,13 +517,17 @@ async function openResults(turnId?: string) {
   await nextTick()
   if (route.params.id === id && store.panel === 'results') document.getElementById('workbench-results')?.querySelector<HTMLButtonElement>('.result-close')?.focus({ preventScroll: true })
 }
-function handleOpenToolResult(payload: ComputeResultPayload | PlotResultPayload) {
+function handleOpenToolResult(payload: ComputeResultPayload | PlotResultPayload | TableResultPayload) {
   inspectedSnapshot.value = null
   resultProjectId.value = payload.projectId
   resultProjectScoped.value = false
   if (payload.kind === 'compute') {
     resultFocusKind.value = 'compute'
     resultComputeTaskId.value = payload.taskId
+  } else if (payload.kind === 'tables') {
+    resultFocusKind.value = 'tables'
+    resultTableDatasetId.value = payload.datasetId || ''
+    resultTableRunId.value = payload.runId || ''
   } else {
     resultFocusKind.value = 'plot'
     resultPlotRunId.value = payload.runId
@@ -688,23 +687,40 @@ function turnSourceSummary(items: TurnSourceItem[]): string {
   if (providers.length === 1) return `原始来源 · ${items.length} 条 ${providers[0]}`
   return `原始来源 · ${items.length} 条`
 }
-function handleTraceJump(turnId: string, target: { type: string; batchIndex?: number; receiptId?: string }) {
+function handleTraceJump(turnId: string, target: { type: string; batchIndex?: number; receiptId?: string; projectId?: string }) {
   if (target.type === 'literature') {
     void router.push('/literature')
     return
   }
+  if (target.type === 'tables') {
+    resultProjectId.value = target.projectId || activeSpaceProjectId.value || projectsStore.defaultProjectId || ''
+    resultProjectScoped.value = true
+    resultFocusKind.value = 'tables'
+    resultFocusNonce.value++
+    rememberResults(true)
+    store.panel = 'results'
+    return
+  }
   if (target.type === 'compute') {
+    if (turnId) store.selectedTurnId = turnId
     resultFocusKind.value = 'compute'
+    resultFocusBatchIndex.value = null
     resultFocusNonce.value++
     rememberResults(true)
     store.panel = 'results'
     return
   }
   if (target.type === 'plot') {
+    if (turnId) store.selectedTurnId = turnId
     resultFocusKind.value = 'plot'
+    resultFocusBatchIndex.value = null
     resultFocusNonce.value++
     rememberResults(true)
     store.panel = 'results'
+    return
+  }
+  if (target.type === 'gaia' || target.type === 'vizier' || target.type === 'ads' || target.type === 'simbad') {
+    void openResults(turnId, target.type, target.batchIndex)
     return
   }
   void openResults(turnId)
@@ -767,11 +783,11 @@ const examples = [
     text: '以 ICRS 赤经56.75度、赤纬24.12度为中心，查5角分内最近100个Gaia DR3位置候选源，不估算距离。',
   },
   {
-    badge: 'DR3 编号',
+    badge: 'VizieR 星表',
     badgeClass: 'ui-pill-simbad',
-    label: '指定源精确测量',
-    summary: '按 Gaia DR3 source_id 精确核查天体测量与高信噪比视差距离近似。',
-    text: '查询 Gaia DR3 source_id 5853498713190525696 的测量信息并估算距离，说明近似条件。',
+    label: '2MASS 近红外星表检索',
+    summary: '通过 CDS VizieR TAP 检索 2MASS / AllWISE 等星表并一键转存至项目数据分析。',
+    text: '以 M45 为中心，在 VizieR 2MASS 点源星表（II/246/out）检索 5 角分内前 50 颗候选源，给出 J/H/K 星等与参考历元说明。',
   },
   {
     badge: 'ADS 文献',
@@ -834,6 +850,40 @@ function clearSubmittedDraft(scope: string) {
   editingTurn.value = null
   draftBeforeEdit.value = ''
 }
+const syncedTableAttachments = new Set<string>()
+const TABLE_ATTACHMENT_RE = /\.(fits|fit|vot|xml|ecsv|csv|tsv)$/i
+
+async function syncChatTableAttachments(conversationIdValue: string, files: ChatAttachment[]) {
+  const tableFiles = files.filter(f => TABLE_ATTACHMENT_RE.test(f.filename))
+  if (!tableFiles.length) return
+  let pid = projectsStore.memberships[conversationIdValue] || activeSpaceProjectId.value || projectsStore.defaultProjectId || ''
+  if (!pid) {
+    try {
+      pid = (await projectsStore.ensureDefault()).id
+    } catch {
+      return
+    }
+  }
+  for (const att of tableFiles) {
+    const dedupeKey = `${pid}:${att.sha256}`
+    if (syncedTableAttachments.has(dedupeKey)) continue
+    const raw = attachments.rawFile(att.sha256)
+    let fileToUpload: File | null = raw ?? null
+    if (!fileToUpload && !att.truncated && /\.(csv|tsv)$/i.test(att.filename)) {
+      fileToUpload = new File([att.text], att.filename, { type: att.media_type })
+    }
+    if (!fileToUpload) continue
+    try {
+      await tablesApi.upload(pid, fileToUpload, {
+        name: att.filename.replace(/\.[^.]+$/, ''),
+      })
+      syncedTableAttachments.add(dedupeKey)
+    } catch {
+      // Non-blocking: chat message still proceeds with parsed attachment summary.
+    }
+  }
+}
+
 async function submit(submission: Submission, fromComposer: boolean) {
   const sourceScope = modelScope.value
   const selectedModel = currentModel.value
@@ -877,6 +927,9 @@ async function submit(submission: Submission, fromComposer: boolean) {
     }
     const destination = `/conversations/${id}`
     if (route.path !== destination || store.current?.id !== id) return
+    if (submission.files.length) {
+      await syncChatTableAttachments(id, submission.files)
+    }
     if (fromComposer) clearSubmittedDraft(id)
     models.select(id, selectedModel)
     const result = await store.send(submission.message, id, selectedModel, submission.files, submission.toolMode)
@@ -908,6 +961,8 @@ watch(() => route.params.id, () => {
   resultPlotRunId.value = ''
   resultPlotTitle.value = ''
   resultPlotFiles.value = []
+  resultTableDatasetId.value = ''
+  resultTableRunId.value = ''
   resultProjectId.value = ''
   resultProjectScoped.value = false
 })
@@ -961,28 +1016,36 @@ async function applyWorkbenchHandoff() {
   if (route.path !== '/' && !route.path.startsWith('/conversations/')) return
   const q = route.query
   const requestedTool = q.tool === 'plot' || q.mode === 'plot' ? 'plot' : q.tool === 'compute' ? 'compute' : null
-  const requestedResult = q.result === 'compute' || q.result === 'plot' ? q.result : null
+  const requestedResult = q.result === 'compute' || q.result === 'plot' || q.result === 'tables' ? q.result : null
   const requestedComputeTask = typeof q.compute_task === 'string' ? q.compute_task : ''
   const requestedPlotRun = typeof q.plot_run === 'string' ? q.plot_run : ''
+  const requestedTableDataset = typeof q.table_dataset === 'string' ? q.table_dataset : ''
+  const requestedTableRun = typeof q.table_run === 'string' ? q.table_run : ''
   const requestedProject = typeof q.project === 'string' ? q.project : typeof q.plot_project === 'string' ? q.plot_project : ''
   const requestedManage = q.manage === 'context' || q.manage === 'snapshots' || q.manage === 'manage' ? q.manage : null
   const requestedSnapshotId = typeof q.snapshot === 'string' ? q.snapshot : ''
   const requestedTurn = typeof q.plot_turn === 'string' ? q.plot_turn : ''
   const requestedPlotSnapshot = typeof q.plot_snapshot === 'string' ? q.plot_snapshot : ''
-  const hasToolQuery = !!requestedTool || !!requestedResult || !!requestedComputeTask || !!requestedPlotRun || !!requestedProject || !!requestedManage || !!requestedSnapshotId || !!requestedTurn || !!requestedPlotSnapshot || typeof q.plot_query === 'string' || typeof q.plot_dataset === 'string'
+  const requestedPlotDataset = typeof q.plot_dataset === 'string' ? q.plot_dataset : ''
+  const hasToolQuery = !!requestedTool || !!requestedResult || !!requestedComputeTask || !!requestedPlotRun || !!requestedTableDataset || !!requestedTableRun || !!requestedProject || !!requestedManage || !!requestedSnapshotId || !!requestedTurn || !!requestedPlotSnapshot || typeof q.plot_query === 'string' || !!requestedPlotDataset
   if (requestedTool) {
     toolMode.value = requestedTool
   }
   if (requestedProject && !conversationId.value && requestedProject !== projectsStore.defaultProjectId) {
     draftProjectId.value = requestedProject
   }
-  if (requestedTurn && !draft.value.trim()) {
+  if (requestedPlotDataset && !draft.value.trim()) {
+    draft.value = `请基于项目绘图数据集 ${requestedPlotDataset} 生成科研绘图脚本（data_source_kind="project_dataset", dataset_id="${requestedPlotDataset}"）：`
+  } else if (requestedTurn && !draft.value.trim()) {
     const matched = store.turns.find(t => t.turn_id === requestedTurn)
-    draft.value = matched
-      ? `请基于记录编号 ${matched.turn_id} 对应的 Gaia 查询结果绘制科研图形：`
-      : '请基于刚才的 Gaia 查询结果绘制科研图形：'
+    const isLatestTurn = Boolean(matched && matched.turn_id === newest.value)
+    draft.value = matched && !isLatestTurn
+      ? `请基于第 ${matched.revision} 轮的 Gaia DR3 查询结果绘制科研图形：`
+      : '请基于刚才的 Gaia DR3 查询结果绘制科研图形：'
+    void nextTick(() => input.value?.focus())
   } else if (requestedPlotSnapshot && !draft.value.trim()) {
-    draft.value = '请基于当前项目快照的 Gaia 查询结果绘制科研图形：'
+    draft.value = '请基于当前项目快照的 Gaia DR3 查询结果绘制科研图形：'
+    void nextTick(() => input.value?.focus())
   }
   if (hasToolQuery) {
     const cleanQuery = { ...q }
@@ -991,6 +1054,8 @@ async function applyWorkbenchHandoff() {
     delete cleanQuery.result
     delete cleanQuery.compute_task
     delete cleanQuery.plot_run
+    delete cleanQuery.table_dataset
+    delete cleanQuery.table_run
     delete cleanQuery.project
     delete cleanQuery.manage
     delete cleanQuery.snapshot
@@ -1015,6 +1080,10 @@ async function applyWorkbenchHandoff() {
     resultFocusKind.value = requestedResult
     if (requestedResult === 'compute') resultComputeTaskId.value = requestedComputeTask
     if (requestedResult === 'plot') resultPlotRunId.value = requestedPlotRun
+    if (requestedResult === 'tables') {
+      resultTableDatasetId.value = requestedTableDataset
+      resultTableRunId.value = requestedTableRun
+    }
     resultFocusNonce.value++
     rememberResults(true)
     store.panel = 'results'
@@ -1164,7 +1233,6 @@ onBeforeUnmount(() => {
           ref="resultsToggle"
           type="button"
           class="chat-toolbar-button results-toggle"
-          :class="{ 'has-badge': resultArtifactCount > 0 }"
           :aria-expanded="store.panel === 'results'"
           aria-controls="workbench-results"
           aria-label="打开结果栏"
@@ -1173,7 +1241,6 @@ onBeforeUnmount(() => {
             <rect x="3" y="4" width="18" height="16" rx="3" />
             <path d="M15 4v16m-8-7 3-2-3-2" />
           </svg>
-          <span v-if="resultArtifactCount > 0" class="results-toggle-badge" aria-hidden="true">{{ resultArtifactCount > 9 ? '9+' : resultArtifactCount }}</span>
         </button>
       </header>
       <ProfileWorkspace v-if="profileMode" />
@@ -1194,11 +1261,12 @@ onBeforeUnmount(() => {
               <div class="ui-pill-list" style="justify-content: center; margin-bottom: 14px;">
                 <span class="ui-pill ui-pill-simbad">SIMBAD · 天体目标</span>
                 <span class="ui-pill ui-pill-gaia">Gaia DR3 · 天体测量</span>
+                <span class="ui-pill ui-pill-accent">VizieR · 数据分析</span>
                 <span class="ui-pill ui-pill-ads">ADS · 学术文献</span>
                 <span class="ui-pill ui-pill-compute">绘图 · N 体模拟</span>
               </div>
-              <h2>天文数据、绘图与数值实验工作台</h2>
-              <p>在一个对话框内完成天体与文献检索、科研绘图脚本生成与 N 体轨道模拟，自动保留数据来源与可复现产物。</p>
+              <h2>天文数据、星表分析与数值实验工作台</h2>
+              <p>在一个工作台内完成天体、VizieR 多波段星表与文献检索、FITS/VOTable 交叉匹配与拟合、科研绘图及 N 体模拟，自动保留来源与可复现产物。</p>
             </div>
           </div>
           <div class="welcome-launch-grid">
@@ -1224,7 +1292,7 @@ onBeforeUnmount(() => {
                 <b>Siderfolio</b>
                 <span v-if="turn.response && turn.response.status !== 'success'" class="tag" :class="turn.response.status">{{ turn.response.status === 'partial' ? '部分完成' : '查询未成功' }}</span>
               </div>
-              <p v-if="turnSkillResolution(turn)?.clarification_note" class="turn-skill-note">
+              <p v-if="turnSkillResolution(turn)?.clarification_note && turnSkillResolution(turn)?.selection_mode !== 'ambiguous'" class="turn-skill-note">
                 {{ turnSkillResolution(turn)!.clarification_note }}
               </p>
               <p v-if="turn.execution_status==='running'" class="thinking-status"><span class="thinking-shimmer-text">正在处理中，可稍候重新进入会话查看最新结果，系统不会自动重发请求。</span></p>
@@ -1261,6 +1329,16 @@ onBeforeUnmount(() => {
                 @refine="handleInlineRefine('plot', $event)"
                 @open-result="handleOpenToolResult"
               />
+              <ChatTableAnalysisCard
+                v-for="(proposal, idx) in turn.response?.table_analysis_proposals || []"
+                :key="`${turn.turn_id}-table-${idx}`"
+                :proposal="proposal"
+                :turn-id="turn.turn_id"
+                :proposal-index="idx"
+                :project-id="activeSpaceProjectId"
+                @refine="handleInlineRefine('auto', $event)"
+                @open-result="handleOpenToolResult"
+              />
               <LiteratureReceiptCard
                 v-for="receipt in turnReceipts(turn)"
                 :key="receipt.receipt_id"
@@ -1280,17 +1358,17 @@ onBeforeUnmount(() => {
               />
               <ConversationErrorNotice v-for="warning in turn.response?.warnings || []" :key="`${warning.code}:${warning.message}`" inline :message="warning.message" :code="warning.code" advisory />
               <div
-                v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.attachments?.length || turn.response?.sources?.length"
+                v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.response?.vizier_results?.length || turn.attachments?.length || turn.response?.sources?.length"
                 class="turn-footer-group"
               >
                 <div class="turn-footer-actions">
                   <button
-                    v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.attachments?.length"
+                    v-if="turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.response?.vizier_results?.length || turn.attachments?.length"
                     type="button"
                     class="view-results"
                     @click="openResults(turn.turn_id)"
                   >
-                    {{ (turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length) ? '核查与导出查询结果' : '在右侧栏预览附件' }}
+                    {{ (turn.response?.results?.length || turn.response?.literature_results?.length || turn.response?.gaia_results?.length || turn.response?.vizier_results?.length) ? '核查与导出查询结果' : '在右侧栏预览附件' }}
                     <span aria-hidden="true">→</span>
                   </button>
                   <template v-if="turnSourceItems(turn).length === 1">
@@ -1373,7 +1451,7 @@ onBeforeUnmount(() => {
       </div>
       <form class="composer" :class="{ 'composer-dragging': dragDepth > 0, 'composer-plot-mode': toolMode !== 'auto' }" @submit.prevent="send" @dragenter="dragEnter" @dragover="dragOver" @dragleave="dragDepth = Math.max(0, dragDepth - 1)" @drop="dropFiles">
         <AttachmentTray :scope="modelScope" :disabled="attachmentDisabled" />
-        <p v-if="dragDepth > 0" class="attachment-drop-hint">松开添加附件（支持图片 PNG/JPG/WebP/GIF 及 CSV / PDF / Markdown 等）</p>
+        <p v-if="dragDepth > 0" class="attachment-drop-hint">松开添加附件（支持 FITS / VOTable / ECSV / CSV / TSV、图片及 PDF / Markdown 等）</p>
         <div v-if="editingTurn!==null" class="composer-editing"><p>正在编辑问题，发送后将追加一条消息。{{ draftBeforeEdit ? '取消编辑可恢复原草稿。' : '' }}</p><button type="button" :disabled="sending || store.running" @click="cancelEdit">取消编辑</button></div>
         <label class="sr-only" for="question">天文问题</label>
         <textarea id="question" ref="input" v-model="draft" rows="2" maxlength="4000" :placeholder="composerPlaceholder" :disabled="store.running || store.creating || sending || !!store.disconnectedRequest" @keydown="keydown" @paste="onComposerPaste" @compositionstart="composing=true" @compositionend="composing=false"></textarea>
@@ -1434,10 +1512,13 @@ onBeforeUnmount(() => {
       :project-scoped-browse="resultProjectScoped"
       :focus-kind="inspectedSnapshot ? 'turn' : resultFocusKind"
       :focus-nonce="resultFocusNonce"
+      :focus-batch-index="inspectedSnapshot ? null : resultFocusBatchIndex"
       :compute-task-id="resultComputeTaskId"
       :plot-run-id="resultPlotRunId"
       :plot-title="resultPlotTitle"
       :plot-files="resultPlotFiles"
+      :table-dataset-id="resultTableDatasetId"
+      :table-run-id="resultTableRunId"
       :resizable="!compactLayout"
       dismissible
       @resize-start="startResize('right', $event)"
@@ -1446,6 +1527,8 @@ onBeforeUnmount(() => {
       @select-turn="store.selectedTurnId = $event"
       @select-compute-task="resultComputeTaskId = $event"
       @select-plot-run="resultPlotRunId = $event"
+      @select-table-dataset="resultTableDatasetId = $event"
+      @select-table-run="resultTableRunId = $event"
       @close="closeResults"
     />
     <CreateProjectDialog ref="composerCreateProjectDialog" :default-start-chat="false" @created="onComposerProjectCreated" />

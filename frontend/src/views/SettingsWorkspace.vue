@@ -441,7 +441,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
                 />
               </label>
               <p v-if="mcpBusy" class="settings-loading" role="status">正在切换并核验天文查询通道…</p>
-              <p class="settings-footnote">仅影响聊天中的 SIMBAD、ADS 与 Gaia DR3 查询。开启时会在服务端启动并核验固定本机 MCP 子进程（协议 2026-07-28），关闭后立即切回直连并回收子进程；对话执行期间不允许切换。项目重跑与固定科研流程不受影响。</p>
+              <p class="settings-footnote">仅影响聊天中的 SIMBAD、ADS、Gaia DR3 与 VizieR 查询。开启时会在服务端启动并核验固定本机 MCP 子进程（协议 2026-07-28），关闭后立即切回直连并回收子进程；对话执行期间不允许切换。项目重跑与固定科研流程不受影响。</p>
             </section>
           </div>
 
@@ -529,6 +529,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
                     </div>
                   </div>
                   <div class="settings-archive-actions">
+                    <RouterLink :to="{ path: '/', query: { result: 'tables' } }" class="settings-action-link">数据表</RouterLink>
                     <RouterLink to="/knowledge" class="settings-action-link">知识库</RouterLink>
                     <RouterLink to="/workflows" class="settings-action-link">科研流程</RouterLink>
                     <button type="button" :disabled="archivedBusy" @click="openSettingsProjectManager(projectsStore.defaultProject.id, 'snapshots')">快照</button>
@@ -547,6 +548,7 @@ watch(() => active.value.id, id => { if (id === 'data') void loadArchived() }, {
                   </div>
                   <div class="settings-archive-actions">
                     <RouterLink :to="`/?project=${encodeURIComponent(project.id)}`" class="settings-action-link">进入对话</RouterLink>
+                    <RouterLink :to="{ path: '/', query: { project: project.id, result: 'tables' } }" class="settings-action-link">数据表</RouterLink>
                     <RouterLink :to="`/projects/${encodeURIComponent(project.id)}/knowledge`" class="settings-action-link">知识库</RouterLink>
                     <RouterLink :to="`/projects/${encodeURIComponent(project.id)}/workflows`" class="settings-action-link">科研流程</RouterLink>
                     <button type="button" :disabled="archivedBusy" @click="openSettingsProjectManager(project.id, 'context')">管理与备份</button>

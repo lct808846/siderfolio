@@ -53,7 +53,22 @@ function computeRedirect(to: Pick<RouteLocationNormalized, 'query' | 'params'>) 
   }
 }
 
-const router = createRouter({ history: createWebHistory(), routes: [{ path: '/local-assistant', redirect: '/' }, { path: '/projects/:projectId/plotting', redirect: plottingRedirect }, { path: '/settings', component: { render: () => null } }, { path: '/profile', component: { render: () => null } }, { path: '/literature/:itemId?', component: { render: () => null } }, { path: '/knowledge/:documentId?', component: { render: () => null } }, { path: '/rag', component: { render: () => null } }, { path: '/workflows/:runId?', component: { render: () => null } }, { path: '/compute/:taskId?', redirect: computeRedirect }, { path: '/projects/:projectId/rag', component: { render: () => null } }, { path: '/', component: { render: () => null } }, { path: '/conversations/:id', component: { render: () => null } }, { path: '/projects', redirect: '/' }, { path: '/projects/:projectId', redirect: projectRedirect }, { path: '/projects/:projectId/overview', component: { render: () => null } }, { path: '/projects/:projectId/knowledge/:documentId?', component: { render: () => null } }, { path: '/projects/:projectId/workflows/:runId?', component: { render: () => null } }, { path: '/projects/:projectId/compute/:taskId?', redirect: computeRedirect }] })
+function tablesRedirect(to: Pick<RouteLocationNormalized, 'query' | 'params'>) {
+  const project = typeof to.params.projectId === 'string' ? to.params.projectId : typeof to.query.project === 'string' ? to.query.project : ''
+  const dataset = typeof to.query.dataset === 'string' ? to.query.dataset : typeof to.query.table_dataset === 'string' ? to.query.table_dataset : ''
+  const run = typeof to.query.run === 'string' ? to.query.run : typeof to.query.table_run === 'string' ? to.query.table_run : ''
+  return {
+    path: '/',
+    query: {
+      result: 'tables',
+      ...(project ? { project } : {}),
+      ...(dataset ? { table_dataset: dataset } : {}),
+      ...(run ? { table_run: run } : {}),
+    },
+  }
+}
+
+const router = createRouter({ history: createWebHistory(), routes: [{ path: '/local-assistant', redirect: '/' }, { path: '/projects/:projectId/plotting', redirect: plottingRedirect }, { path: '/settings', component: { render: () => null } }, { path: '/profile', component: { render: () => null } }, { path: '/literature/:itemId?', component: { render: () => null } }, { path: '/knowledge/:documentId?', component: { render: () => null } }, { path: '/rag', component: { render: () => null } }, { path: '/workflows/:runId?', component: { render: () => null } }, { path: '/tables', redirect: tablesRedirect }, { path: '/compute/:taskId?', redirect: computeRedirect }, { path: '/projects/:projectId/rag', component: { render: () => null } }, { path: '/', component: { render: () => null } }, { path: '/conversations/:id', component: { render: () => null } }, { path: '/projects', redirect: '/' }, { path: '/projects/:projectId', redirect: projectRedirect }, { path: '/projects/:projectId/overview', component: { render: () => null } }, { path: '/projects/:projectId/knowledge/:documentId?', component: { render: () => null } }, { path: '/projects/:projectId/workflows/:runId?', component: { render: () => null } }, { path: '/projects/:projectId/tables', redirect: tablesRedirect }, { path: '/projects/:projectId/compute/:taskId?', redirect: computeRedirect }] })
 router.addRoute({ path: '/plotting', redirect: plottingRedirect })
 router.addRoute({ path: '/account', redirect: { path: '/settings', query: { section: 'account' } } })
 for (const path of ['/login', '/register', '/activate', '/resend', '/forgot-password', '/reset-password', '/admin', '/feedback']) router.addRoute({ path, component: { render: () => null } })

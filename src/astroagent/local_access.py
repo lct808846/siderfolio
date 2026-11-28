@@ -9,6 +9,7 @@ import tempfile
 from fastapi.responses import JSONResponse
 
 from astroagent.config import LocalSettings
+from astroagent.table_schemas import MAX_TABLE_UPLOAD_BYTES
 
 CONVERSATION_BODY_LIMIT = 32 * 1024
 
@@ -133,8 +134,16 @@ class LocalAccess:
             r"/api/v1/projects/[0-9a-fA-F-]{36}/plotting/datasets/[0-9a-fA-F-]{36}/upload",
             scope["path"],
         )
+        table_uploading = scope["method"] == "POST" and re.fullmatch(
+            r"/api/v1/projects/[0-9a-fA-F-]{36}/tables/(?:inspect|upload)", scope["path"]
+        )
         uploading = (
-            uploading or chat_uploading or avatar_uploading or plot_uploading or feedback_uploading
+            uploading
+            or chat_uploading
+            or avatar_uploading
+            or plot_uploading
+            or feedback_uploading
+            or table_uploading
         )
         if uploading:
             if (
@@ -145,6 +154,15 @@ class LocalAccess:
                 return await failure(
                     415, "knowledge_upload_media", "仅接受未压缩multipart单文件上传。"
                 )
+            limit_bytes = (
+                MAX_TABLE_UPLOAD_BYTES
+                if table_uploading
+                else 5 * 1024**2
+                if (plot_uploading or avatar_uploading or feedback_uploading)
+                else 10 * 1024**2
+                if chat_uploading
+                else 20 * 1024**2
+            )
             # Bound actual transport bytes, spool to disk above 1 MiB, and replay in chunks.
             # Never allocate a 20 MiB multipart bytearray in the ASGI middleware.
             with tempfile.SpooledTemporaryFile(max_size=1024**2) as spool:
@@ -155,14 +173,7 @@ class LocalAccess:
                         return
                     chunk = message.get("body", b"")
                     received += len(chunk)
-                    limit_mb = (
-                        5
-                        if (plot_uploading or avatar_uploading or feedback_uploading)
-                        else 10
-                        if chat_uploading
-                        else 20
-                    )
-                    if received > limit_mb * 1024**2 + 64 * 1024:
+                    if received > limit_bytes + 64 * 1024:
                         return await failure(
                             413, "knowledge_upload_too_large", "文件及multipart开销超过接收上限。"
                         )
@@ -199,7 +210,7 @@ class LocalAccess:
                 return await self.app(scope, receive, with_headers)
             bodyless_delete = scope["method"] == "DELETE" and (
                 re.fullmatch(
-                    r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks)/[0-9a-fA-F-]{36}",
+                    r"/api/v1/projects/[0-9a-fA-F-]{36}/(?:rag/previews|compute-tasks|tables)/[0-9a-fA-F-]{36}",
                     scope["path"],
                 )
                 is not None

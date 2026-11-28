@@ -587,7 +587,7 @@ async function executePending() {
   if (nextSnapshotId) await selectSnapshot(nextSnapshotId)
 }
 
-function modulePath(section: 'knowledge' | 'rag' | 'workflows' | 'compute' | 'overview', subId?: string) {
+function modulePath(section: 'knowledge' | 'rag' | 'tables' | 'workflows' | 'compute' | 'overview', subId?: string) {
   const id = current.value?.id || ''
   if (!id) return '/'
   if (section === 'overview') return `/projects/${id}/overview`
@@ -775,6 +775,10 @@ defineExpose({ open, close })
                     </div>
                   </div>
                   <div class="drawer-modules-grid">
+                    <button type="button" class="drawer-module-tile" @click="navigateAndClose(modulePath('tables'))">
+                      <span class="drawer-module-top"><b>数据表记录</b><span class="ui-pill ui-pill-gaia">VizieR / FITS</span></span>
+                      <small>查看已存天文数据表、分析摘要与导出包</small>
+                    </button>
                     <button type="button" class="drawer-module-tile" @click="navigateAndClose(modulePath('knowledge'))">
                       <span class="drawer-module-top"><b>本地知识库</b><span class="ui-pill ui-pill-neutral">{{ current.document_count }} 份</span></span>
                       <small>原文检索、多版本留存与定位核对</small>

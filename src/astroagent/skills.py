@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -26,10 +27,20 @@ _INTENT_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
         re.compile(r"\b(?:ads|bibcode|doi|arxiv|citation|abstract)\b", re.I),
         re.compile(r"(?:论文|文献|摘要|综述|被引|文献库|保存.{0,6}(?:文献|论文)|检索.{0,8}文献)"),
     ),
-    "scientific-plotting-nbody-prep": (
-        re.compile(r"\b(?:matplotlib|gnuplot|rebound|petar|n-?body|cmd)\b", re.I),
+    "scientific-plotting": (
+        re.compile(r"\b(?:matplotlib|gnuplot|cmd)\b", re.I),
+        re.compile(r"(?:绘图|画图|作图|色星等图|赫罗图|散点图|误差棒|直方图|出图)"),
+    ),
+    "nbody-simulation-prep": (
+        re.compile(r"\b(?:rebound|petar|n-?body)\b", re.I),
+        re.compile(r"(?:N\s*体|轨道模拟|数值模拟|质心系|三体|双星轨道|轨道积分)"),
+    ),
+    "astronomy-table-analysis": (
         re.compile(
-            r"(?:绘图|画图|作图|色星等图|赫罗图|散点图|误差棒|直方图|N\s*体|轨道模拟|数值模拟|质心系)"
+            r"\b(?:vizier|2mass|allwise|pan-?starrs|lamost|fits|votable|ecsv|crossmatch)\b", re.I
+        ),
+        re.compile(
+            r"(?:交叉匹配|坐标转换|银道坐标|线性拟合|高斯拟合|幂律拟合|多项式拟合|ks\s*检验|相关性|派生列|数据表)"
         ),
     ),
 }
@@ -268,9 +279,12 @@ def _score_skill_intent(
     reasons: list[str] = []
     lower_msg = message.lower()
 
-    if tool_mode in ("plot", "compute") and skill.id == "scientific-plotting-nbody-prep":
+    if tool_mode == "plot" and skill.id == "scientific-plotting":
         score += 6
-        reasons.append(f"工具模式={tool_mode}")
+        reasons.append("工具模式=plot")
+    elif tool_mode == "compute" and skill.id == "nbody-simulation-prep":
+        score += 6
+        reasons.append("工具模式=compute")
 
     keyword_hits = 0
     for kw in skill.intent_keywords:
@@ -288,10 +302,21 @@ def _score_skill_intent(
     if pattern_hits:
         score += min(pattern_hits * 2, 4)
 
-    if has_attachments and skill.id == "scientific-plotting-nbody-prep":
+    if skill.id == "astronomy-table-analysis" and pattern_hits:
+        score += 2
+        reasons.append("星表检索或表分析明确信号")
+
+    if has_attachments and skill.id == "scientific-plotting":
         if any(word in lower_msg for word in ("画", "绘", "图", "plot", "chart", "scatter")):
             score += 2
             reasons.append("附件绘图意图")
+    if has_attachments and skill.id == "astronomy-table-analysis":
+        if any(
+            word in lower_msg
+            for word in ("fits", "votable", "ecsv", "交叉匹配", "拟合", "统计", "坐标", "筛选")
+        ):
+            score += 2
+            reasons.append("天文表格分析意图")
 
     if project_hint and score > 0:
         lower_hint = project_hint.lower()
@@ -314,79 +339,165 @@ def _score_skill_intent(
     return score, reasons
 
 
-def resolve_turn_skill(
+def _build_resolution_for_skills(
+    selected: list[SkillDefinition],
+    *,
+    selection_mode: str,
+    matched_reason: str,
+    available_tool_ids: set[str],
+    extra_notes: list[str] | None = None,
+) -> tuple[tuple[SkillDefinition, ...], SkillResolution]:
+    usable_skills: list[SkillDefinition] = []
+    usable_tools: list[str] = []
+    missing_tools: list[str] = []
+    unavailable_skill_titles: list[str] = []
+
+    for skill in selected:
+        skill_usable = [tool for tool in skill.allowed_tools if tool in available_tool_ids]
+        skill_missing = [tool for tool in skill.allowed_tools if tool not in available_tool_ids]
+        if not skill_usable:
+            unavailable_skill_titles.append(skill.title)
+            for tool in skill_missing:
+                if tool not in missing_tools:
+                    missing_tools.append(tool)
+            continue
+        usable_skills.append(skill)
+        for tool in skill_usable:
+            if tool not in usable_tools:
+                usable_tools.append(tool)
+        for tool in skill_missing:
+            if tool not in missing_tools:
+                missing_tools.append(tool)
+
+    notes = list(extra_notes or [])
+    if not usable_skills:
+        primary = selected[0] if selected else None
+        if unavailable_skill_titles and missing_tools:
+            notes.append(
+                f"技能「{' / '.join(unavailable_skill_titles)}」所需工具当前不可用"
+                f"（{', '.join(missing_tools)}），"
+                "请检查服务配置或改用其他提问方式。"
+            )
+        return (), SkillResolution(
+            skill_id=primary.id if primary is not None else None,
+            skill_title=primary.title if primary is not None else None,
+            skill_version=primary.version if primary is not None else None,
+            content_sha256=primary.content_sha256 if primary is not None else None,
+            selection_mode="none",
+            matched_reason="所选技能所需工具当前均不可用，已回退为普通对话。",
+            unavailable_tools=missing_tools,
+            clarification_note=" ".join(notes) if notes else None,
+        )
+
+    if unavailable_skill_titles:
+        notes.append(
+            f"技能「{' / '.join(unavailable_skill_titles)}」所需工具当前不可用，"
+            "已使用其余可用技能继续。"
+        )
+    elif missing_tools:
+        notes.append(
+            f"部分关联工具暂不可用（{', '.join(missing_tools)}），将在可用工具范围内执行。"
+        )
+
+    skill_ids = [skill.id for skill in usable_skills]
+    skill_titles = [skill.title for skill in usable_skills]
+    combined_title = " + ".join(skill_titles)
+    primary = usable_skills[0]
+    return tuple(usable_skills), SkillResolution(
+        skill_id=primary.id,
+        skill_title=combined_title,
+        skill_version=primary.version if len(usable_skills) == 1 else None,
+        skill_ids=skill_ids,
+        skill_titles=skill_titles,
+        content_sha256=primary.content_sha256 if len(usable_skills) == 1 else None,
+        selection_mode=selection_mode,
+        matched_reason=matched_reason,
+        candidate_skill_ids=skill_ids if len(skill_ids) > 1 else [],
+        available_tool_ids=usable_tools,
+        unavailable_tools=missing_tools,
+        clarification_note=" ".join(notes) if notes else None,
+    )
+
+
+def resolve_turn_skills(
     message: str,
     *,
     requested_skill_id: str | None = None,
+    requested_skill_ids: Sequence[str] | None = None,
     preferences: SkillPreferences | None = None,
     available_tool_ids: set[str],
     tool_mode: str | None = None,
     has_attachments: bool = False,
     project_hint: str = "",
     memory_hint: str = "",
-) -> tuple[SkillDefinition | None, SkillResolution]:
-    """Select at most one skill for the current turn using short metadata only."""
+) -> tuple[tuple[SkillDefinition, ...], SkillResolution]:
+    """Select one or more skills for the current turn using short metadata only."""
     prefs = preferences or SkillPreferences()
     disabled = set(prefs.disabled_skill_ids)
 
-    # 1. Explicit turn-level selection (including explicit "none" to opt out).
+    # 1. Explicit turn-level selection (supports single id, comma-separated ids, list, or "none").
+    explicit_ids: list[str] = []
+    if requested_skill_ids:
+        for item in requested_skill_ids:
+            cleaned_item = str(item).strip()
+            if cleaned_item and cleaned_item not in explicit_ids:
+                explicit_ids.append(cleaned_item)
     if requested_skill_id is not None:
-        cleaned = requested_skill_id.strip()
-        if cleaned == "none":
-            return None, SkillResolution(
+        for part in requested_skill_id.split(","):
+            cleaned_part = part.strip()
+            if cleaned_part and cleaned_part not in explicit_ids:
+                explicit_ids.append(cleaned_part)
+
+    if explicit_ids:
+        if "none" in explicit_ids:
+            return (), SkillResolution(
                 selection_mode="disabled",
                 matched_reason="用户已取消本轮技能载入，按普通对话执行。",
             )
-        skill = get_builtin_skill(cleaned)
-        if skill is None:
-            return None, SkillResolution(
+        resolved_explicit: list[SkillDefinition] = []
+        notes: list[str] = []
+        disabled_titles: list[str] = []
+        missing_ids: list[str] = []
+        for sid in explicit_ids:
+            skill = get_builtin_skill(sid)
+            if skill is None:
+                missing_ids.append(sid)
+                continue
+            if skill.id in disabled:
+                disabled_titles.append(skill.title)
+                continue
+            resolved_explicit.append(skill)
+
+        if missing_ids:
+            notes.append(f"未找到编号为 {', '.join(missing_ids)} 的内置技能。")
+        if disabled_titles:
+            notes.append(f"你在个人设置中停用了技能「{' / '.join(disabled_titles)}」。")
+
+        if not resolved_explicit:
+            if disabled_titles and not missing_ids:
+                return (), SkillResolution(
+                    selection_mode="disabled",
+                    matched_reason=f"技能「{' / '.join(disabled_titles)}」已在个人设置中停用。",
+                    clarification_note=(
+                        f"你在个人设置中停用了技能「{' / '.join(disabled_titles)}」，"
+                        "本次按普通对话处理。"
+                    ),
+                )
+            return (), SkillResolution(
                 selection_mode="none",
-                matched_reason=f"请求的技能「{cleaned}」不存在，已回退为普通对话。",
-                clarification_note=f"未找到编号为 {cleaned} 的内置技能，本次按普通对话处理。",
+                matched_reason=f"请求的技能（{', '.join(explicit_ids)}）不可用，已回退为普通对话。",
+                clarification_note=" ".join(notes) + " 本次按普通对话处理。",
             )
-        if skill.id in disabled:
-            return None, SkillResolution(
-                selection_mode="disabled",
-                matched_reason=f"技能「{skill.title}」已在个人设置中停用。",
-                clarification_note=(
-                    f"你在个人设置中停用了技能「{skill.title}」，本次按普通对话处理。"
-                ),
-            )
-        missing = [tool for tool in skill.allowed_tools if tool not in available_tool_ids]
-        usable = [tool for tool in skill.allowed_tools if tool in available_tool_ids]
-        if not usable:
-            return None, SkillResolution(
-                skill_id=skill.id,
-                skill_title=skill.title,
-                skill_version=skill.version,
-                content_sha256=skill.content_sha256,
-                selection_mode="none",
-                matched_reason="所选技能所需工具当前均不可用，已回退为普通对话。",
-                unavailable_tools=missing,
-                clarification_note=(
-                    f"技能「{skill.title}」所需工具当前不可用（{', '.join(missing)}），"
-                    "请检查服务配置或改用其他提问方式。"
-                ),
-            )
-        note = (
-            f"技能「{skill.title}」部分工具暂不可用（{', '.join(missing)}），"
-            "仅使用当前可用工具继续。"
-            if missing
-            else None
-        )
-        return skill, SkillResolution(
-            skill_id=skill.id,
-            skill_title=skill.title,
-            skill_version=skill.version,
-            content_sha256=skill.content_sha256,
+
+        return _build_resolution_for_skills(
+            resolved_explicit,
             selection_mode="explicit",
             matched_reason="用户本轮显式选择。",
-            available_tool_ids=usable,
-            unavailable_tools=missing,
-            clarification_note=note,
+            available_tool_ids=available_tool_ids,
+            extra_notes=notes,
         )
 
-    # 2. Automatic matching is always enforced by the system (respects disabled_skill_ids).
+    # 2. Automatic multi-skill matching (composes all strongly matched enabled skills).
     scored: list[tuple[int, SkillDefinition, list[str]]] = []
     for skill in builtin_skills():
         if skill.id in disabled:
@@ -403,66 +514,86 @@ def resolve_turn_skill(
             scored.append((score, skill, reasons))
 
     if not scored:
-        return None, SkillResolution(
+        return (), SkillResolution(
             selection_mode="none",
             matched_reason="未命中特定科研技能，按普通对话执行。",
         )
 
     scored.sort(key=lambda item: item[0], reverse=True)
-    top_score, top_skill, top_reasons = scored[0]
+    top_score = scored[0][0]
+    selected_entries: list[tuple[int, SkillDefinition, list[str]]] = [scored[0]]
+    for entry in scored[1:]:
+        entry_score = entry[0]
+        if entry_score >= 4 or (top_score == 3 and entry_score == 3):
+            selected_entries.append(entry)
 
-    # Ambiguous intent guard: conflicting high scores -> load no skill, note ambiguity.
-    if len(scored) >= 2 and (top_score - scored[1][0]) <= 1 and scored[1][0] >= 4:
-        candidates = [item[1].id for item in scored[:2]]
-        titles = " / ".join(item[1].title for item in scored[:2])
-        return None, SkillResolution(
-            selection_mode="ambiguous",
-            matched_reason=f"意图同时匹配多个技能（{titles}），本轮不强制载入单个技能。",
-            candidate_skill_ids=candidates,
-            clarification_note=(
-                f"当前问题同时涉及「{titles}」，本次按综合普通对话处理；"
-                "如需聚焦某一研究流程，可拆分为单独问题发送。"
-            ),
-        )
-
-    missing = [tool for tool in top_skill.allowed_tools if tool not in available_tool_ids]
-    usable = [tool for tool in top_skill.allowed_tools if tool in available_tool_ids]
-    if not usable:
-        return None, SkillResolution(
-            selection_mode="none",
-            matched_reason=f"自动匹配到「{top_skill.title}」但所需工具不可用，回退普通对话。",
-            unavailable_tools=missing,
-            clarification_note=(
-                f"任务匹配技能「{top_skill.title}」，但所需工具当前不可用（{', '.join(missing)}）。"
-            ),
-        )
-
-    return top_skill, SkillResolution(
-        skill_id=top_skill.id,
-        skill_title=top_skill.title,
-        skill_version=top_skill.version,
-        content_sha256=top_skill.content_sha256,
+    selected_skills = [entry[1] for entry in selected_entries]
+    reason_parts = [
+        f"{entry[1].title}（{'、'.join(entry[2])}）" if entry[2] else entry[1].title
+        for entry in selected_entries
+    ]
+    return _build_resolution_for_skills(
+        selected_skills,
         selection_mode="auto",
-        matched_reason="自动匹配：" + ("、".join(top_reasons) if top_reasons else top_skill.title),
-        available_tool_ids=usable,
-        unavailable_tools=missing,
-        clarification_note=(
-            f"部分关联工具暂不可用（{', '.join(missing)}），将在可用工具范围内执行。"
-            if missing
-            else None
-        ),
+        matched_reason="自动匹配：" + "；".join(reason_parts),
+        available_tool_ids=available_tool_ids,
     )
 
 
-def format_skill_prompt_section(skill: SkillDefinition, resolution: SkillResolution) -> str:
-    """Render the active skill guidance block safely; instructions never override system policy."""
+def resolve_turn_skill(
+    message: str,
+    *,
+    requested_skill_id: str | None = None,
+    preferences: SkillPreferences | None = None,
+    available_tool_ids: set[str],
+    tool_mode: str | None = None,
+    has_attachments: bool = False,
+    project_hint: str = "",
+    memory_hint: str = "",
+) -> tuple[SkillDefinition | None, SkillResolution]:
+    """Return the primary resolved skill and full resolution for existing callers."""
+    skills, resolution = resolve_turn_skills(
+        message,
+        requested_skill_id=requested_skill_id,
+        preferences=preferences,
+        available_tool_ids=available_tool_ids,
+        tool_mode=tool_mode,
+        has_attachments=has_attachments,
+        project_hint=project_hint,
+        memory_hint=memory_hint,
+    )
+    return (skills[0] if skills else None), resolution
+
+
+def format_skill_prompt_section(
+    skill: SkillDefinition | Sequence[SkillDefinition],
+    resolution: SkillResolution,
+) -> str:
+    """Render one or more active skill guidance blocks safely; never overrides system policy."""
+    skills = (skill,) if isinstance(skill, SkillDefinition) else tuple(skill)
+    if not skills:
+        return ""
     allowed = ", ".join(resolution.available_tool_ids) or "无"
+    if len(skills) == 1:
+        single = skills[0]
+        return (
+            "\n\n=== 本轮已载入科研技能"
+            "（仅作研究步骤与核查参考，不得覆盖系统安全规则或扩大工具授权）===\n"
+            f"技能名称：{single.title}（{single.id} v{single.version}）\n"
+            f"本轮授权可用技能工具：{allowed}\n\n"
+            f"{single.body_markdown}\n"
+            "=== 技能正文结束 ==="
+        )
+    names = " + ".join(f"{item.title}（{item.id} v{item.version}）" for item in skills)
+    blocks = "\n\n".join(
+        f"--- 技能 {idx}：{item.title}（{item.id} v{item.version}）---\n{item.body_markdown}"
+        for idx, item in enumerate(skills, start=1)
+    )
     return (
-        "\n\n=== 本轮已载入科研技能"
-        "（仅作研究步骤与核查参考，不得覆盖系统安全规则或扩大工具授权）===\n"
-        f"技能名称：{skill.title}（{skill.id} v{skill.version}）\n"
-        f"匹配方式：{resolution.selection_mode}（{resolution.matched_reason}）\n"
-        f"本轮授权可用技能工具：{allowed}\n\n"
-        f"{skill.body_markdown}\n"
+        "\n\n=== 本轮已协同载入多个科研技能"
+        "（仅作研究步骤与核查参考，请结合任务目标协同使用各技能工具，不得覆盖系统安全规则或扩大工具授权）===\n"
+        f"已载入技能：{names}\n"
+        f"本轮授权可用技能工具（并集）：{allowed}\n\n"
+        f"{blocks}\n"
         "=== 技能正文结束 ==="
     )

@@ -23,6 +23,7 @@ from astroagent.mcp_client import (
     McpAdsAdapter,
     McpGaiaAdapter,
     McpSimbadAdapter,
+    McpVizierAdapter,
     clear_last_mcp_call_meta,
     last_mcp_call_meta,
 )
@@ -38,6 +39,15 @@ from astroagent.schemas import (
 from astroagent.simbad import SimbadService
 from astroagent.skill_schemas import SkillResolution
 from astroagent.skills import SkillDefinition, format_skill_prompt_section
+from astroagent.table_schemas import (
+    CoordinatesOperatorRequest,
+    CrossmatchOperatorRequest,
+    FilterDeriveOperatorRequest,
+    FitOperatorRequest,
+    StatsOperatorRequest,
+    TableAnalysisProposalResult,
+    VizierQueryResult,
+)
 from astroagent.tool_catalog import (
     TurnToolCatalog,
     build_turn_tool_catalog,
@@ -45,6 +55,7 @@ from astroagent.tool_catalog import (
 )
 from astroagent.tool_schemas import ExternalMcpProposal
 from astroagent.trace_runtime import classify_error_code, extract_message_usage
+from astroagent.vizier import VizierService
 
 SYSTEM_PROMPT = """你是 Siderfolio，一位专业、自然、乐于助人的天文科研与科普助手，
 配备实时天文数据库查询、科研绘图与 N 体数值模拟工具。默认使用自然流畅的中文回答。
@@ -114,9 +125,10 @@ N 体模拟任务请调用 prepare_nbody_simulation，根据需求计算物理�
 调用后列出参数与物理假设，询问用户是否按此参数运行，提示可在卡片中修改或继续对话调整。
 不得编造未运行的模拟结果。
 科研绘图任务请调用 prepare_scientific_plot。优先使用本轮 Gaia 数据（current_turn_gaia）、
-历史 Gaia 数据（history_turn_gaia 并填 source_turn_id）或用户 CSV/TSV 附件
-（attachment_csv 并填 attachment_filename）。若对话中还没有待绘天体或视场的数据，
-先调用 query_simbad / query_gaia，再在同轮调用 prepare_scientific_plot。
+历史 Gaia 数据（history_turn_gaia 并填 source_turn_id）、用户 CSV/TSV 附件
+（attachment_csv 并填 attachment_filename）或项目数据分析表（project_table 并填 dataset_id）。
+若对话中还没有待绘天体或视场的数据，先调用 query_simbad / query_gaia / query_vizier，
+再在同轮调用 prepare_scientific_plot。
 脚本固定只读 /input/data.csv，输出 /output/figure.png 与 /output/figure.pdf，无 Markdown 围栏。
 Python 仅用标准库、numpy 和 matplotlib(Agg)，中文使用 WenQuanYi Zen Hei 字体，
 用 subplots_adjust(bottom=0.20, top=0.90) 预留底部注记留白。
@@ -125,6 +137,12 @@ Gaia 常用列名含 source_id, ra, dec, parallax, parallax_error, pmra, pmra_er
 pmdec_error, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag, bp_rp, radial_velocity,
 ruwe, separation_arcsec。仅使用真实列，不编造数据或未要求的科学筛选。
 调用后说明配色、坐标轴和数据范围，提示用户核对或修改脚本后确认在隔离容器中执行。
+VizieR 星表检索请调用 query_vizier，支持 2MASS (II/246/out)、AllWISE (II/328/allwise)、
+Pan-STARRS (II/349/ps1)、LAMOST (V/156/dr7lrs)、Cantat-Gaudin+2020 (J/A+A/640/A1/nodup)
+或合法自定义星表 ID；返回结果仅描述实际交付行、参考历元与单位，不认定为确认匹配。
+项目数据表分析请先调用 list_project_tables 获取真实 dataset_id、列名、单位与参考历元，
+再调用 prepare_table_analysis 生成统计、筛选/派生、坐标变换、交叉匹配或拟合方案卡片交由用户确认。
+严禁模型在回复中自行口算或编造拟合系数、相关系数、KS 检验 p 值或匹配率。
 """
 
 _BUILTIN_CATALOG_ENTRIES = {
@@ -134,6 +152,9 @@ _BUILTIN_CATALOG_ENTRIES = {
 SIMBAD_TOOL = _BUILTIN_CATALOG_ENTRIES["query_simbad"].to_model_tool_definition()
 ADS_TOOL = _BUILTIN_CATALOG_ENTRIES["search_ads"].to_model_tool_definition()
 GAIA_TOOL = _BUILTIN_CATALOG_ENTRIES["query_gaia"].to_model_tool_definition()
+VIZIER_TOOL = _BUILTIN_CATALOG_ENTRIES["query_vizier"].to_model_tool_definition()
+LIST_TABLES_TOOL = _BUILTIN_CATALOG_ENTRIES["list_project_tables"].to_model_tool_definition()
+TABLE_ANALYSIS_TOOL = _BUILTIN_CATALOG_ENTRIES["prepare_table_analysis"].to_model_tool_definition()
 NBODY_TOOL = _BUILTIN_CATALOG_ENTRIES["prepare_nbody_simulation"].to_model_tool_definition()
 PLOT_TOOL = _BUILTIN_CATALOG_ENTRIES["prepare_scientific_plot"].to_model_tool_definition()
 SAVE_LITERATURE_TOOL = _BUILTIN_CATALOG_ENTRIES["save_literature"].to_model_tool_definition()
@@ -162,6 +183,15 @@ def gaia_view(result: GaiaQueryResult) -> dict:
         view["analysis"]["distance_estimates"] = [
             row for row in view["analysis"]["distance_estimates"] if row["source_id"] in ids
         ]
+    return view
+
+
+def vizier_view(result: VizierQueryResult) -> dict:
+    view = result.model_dump(mode="json")
+    shown = view["rows"][:10]
+    view["rows_shown_to_model"] = len(shown)
+    view["rows_omitted_from_model"] = len(view["rows"]) - len(shown)
+    view["rows"] = shown
     return view
 
 
@@ -214,6 +244,7 @@ class AstroAgent:
         settings: Settings,
         ads: AdsService | None = None,
         gaia: GaiaService | None = None,
+        vizier: VizierService | None = None,
     ):
         self.model = model
         self.simbad = simbad
@@ -224,6 +255,14 @@ class AstroAgent:
             else AdsService(settings.ads_api_token, settings.ads_timeout_seconds)
         )
         self.gaia = gaia if gaia is not None else GaiaService(settings.gaia_timeout_seconds)
+        self.vizier = (
+            vizier
+            if vizier is not None
+            else VizierService(
+                getattr(settings, "vizier_timeout_seconds", 30.0),
+                simbad=simbad if isinstance(simbad, SimbadService) else None,
+            )
+        )
 
     def _invoke(self, messages, on_delta=None):
         try:
@@ -263,10 +302,15 @@ class AstroAgent:
         *,
         literature_saver=None,
         trace_recorder=None,
-        skill_definition: SkillDefinition | None = None,
+        skill_definition: SkillDefinition
+        | tuple[SkillDefinition, ...]
+        | list[SkillDefinition]
+        | None = None,
         skill_resolution: SkillResolution | None = None,
         tool_catalog: TurnToolCatalog | None = None,
         external_mcp_proposer=None,
+        project_tables_lister=None,
+        active_project_id: str | None = None,
     ) -> ChatResponse:
         return self._run(
             message,
@@ -278,6 +322,8 @@ class AstroAgent:
             skill_resolution=skill_resolution,
             tool_catalog=tool_catalog,
             external_mcp_proposer=external_mcp_proposer,
+            project_tables_lister=project_tables_lister,
+            active_project_id=active_project_id,
         )
 
     def _run(
@@ -288,10 +334,15 @@ class AstroAgent:
         *,
         literature_saver=None,
         trace_recorder=None,
-        skill_definition: SkillDefinition | None = None,
+        skill_definition: SkillDefinition
+        | tuple[SkillDefinition, ...]
+        | list[SkillDefinition]
+        | None = None,
         skill_resolution: SkillResolution | None = None,
         tool_catalog: TurnToolCatalog | None = None,
         external_mcp_proposer=None,
+        project_tables_lister=None,
+        active_project_id: str | None = None,
     ) -> ChatResponse:
         astro_transport = (
             "mcp"
@@ -344,7 +395,7 @@ class AstroAgent:
             prompt += CONVERSATION_PROMPT
             if hasattr(context, "has_memory_block") and context.has_memory_block():
                 prompt += MEMORY_CONTEXT_PROMPT
-        if skill_definition is not None and skill_resolution is not None:
+        if skill_definition and skill_resolution is not None:
             prompt += format_skill_prompt_section(skill_definition, skill_resolution)
         if any(entry.source == "external_mcp" for entry in active_catalog.entries):
             prompt += (
@@ -382,6 +433,7 @@ class AstroAgent:
         results = []
         nbody_proposals: list[NBodyProposalResult] = []
         plot_proposals: list[PlotProposalResult] = []
+        table_analysis_proposals: list[TableAnalysisProposalResult] = []
         literature_receipts: list[LiteratureSaveReceipt] = []
         external_mcp_proposals: list[ExternalMcpProposal] = []
         calls = 0
@@ -393,6 +445,7 @@ class AstroAgent:
                 results
                 or nbody_proposals
                 or plot_proposals
+                or table_analysis_proposals
                 or literature_receipts
                 or external_mcp_proposals
             )
@@ -510,6 +563,7 @@ class AstroAgent:
                         literature_receipts,
                         skill_resolution,
                         external_mcp_proposals,
+                        table_analysis_proposals,
                     )
                 raise
             if trace_recorder is not None and model_span is not None:
@@ -554,6 +608,7 @@ class AstroAgent:
                             literature_receipts,
                             skill_resolution,
                             external_mcp_proposals,
+                            table_analysis_proposals,
                         )
                     raise exc
                 return self._response(
@@ -564,6 +619,7 @@ class AstroAgent:
                     literature_receipts,
                     skill_resolution,
                     external_mcp_proposals,
+                    table_analysis_proposals,
                 )
             if streamed_in_round and on_event is not None:
                 on_event({"type": "reset"})
@@ -576,6 +632,7 @@ class AstroAgent:
                     literature_receipts,
                     skill_resolution,
                     external_mcp_proposals,
+                    table_analysis_proposals,
                 )
             # 先按统一服务端工具目录验证整个批次，再执行，避免未知工具或越权参数触发任意操作。
             validated = []
@@ -623,6 +680,7 @@ class AstroAgent:
                         if name in {
                             "prepare_nbody_simulation",
                             "prepare_scientific_plot",
+                            "prepare_table_analysis",
                             "save_literature",
                         }:
                             proposal_errors.append((call, str(exc)[:600]))
@@ -642,6 +700,7 @@ class AstroAgent:
                         literature_receipts,
                         skill_resolution,
                         external_mcp_proposals,
+                        table_analysis_proposals,
                     )
                 raise error from exc
             for call, reason in proposal_errors:
@@ -802,6 +861,228 @@ class AstroAgent:
                         )
                     )
                     continue
+                if name == "list_project_tables":
+                    span = (
+                        trace_recorder.start_span(kind="tool_project_tables", name="列出项目数据表")
+                        if trace_recorder is not None
+                        else None
+                    )
+                    if project_tables_lister is None:
+                        if trace_recorder is not None and span is not None:
+                            trace_recorder.record_span(
+                                span_id=span[0],
+                                started_at=span[1],
+                                started_mono=span[2],
+                                kind="tool_project_tables",
+                                name="列出项目数据表",
+                                status="error",
+                                transport="internal",
+                                error_code="project_tables_unavailable",
+                            )
+                        messages.append(
+                            ToolMessage(
+                                content=json.dumps(
+                                    {
+                                        "status": "unavailable",
+                                        "message": "当前请求上下文未挂载项目数据表仓储。",
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call["id"],
+                                name=name,
+                            )
+                        )
+                        continue
+                    try:
+                        try:
+                            listing = project_tables_lister(arguments.project_id, results)
+                        except TypeError:
+                            listing = project_tables_lister(arguments.project_id)
+                        if trace_recorder is not None and span is not None:
+                            trace_recorder.record_span(
+                                span_id=span[0],
+                                started_at=span[1],
+                                started_mono=span[2],
+                                kind="tool_project_tables",
+                                name="列出项目数据表",
+                                status="ok",
+                                transport="internal",
+                                provider="PostgreSQL",
+                                result_count=int(listing.get("count", 0)),
+                                result_ref={
+                                    "type": "tables",
+                                    "project_id": str(listing.get("project_id") or ""),
+                                },
+                            )
+                        messages.append(
+                            ToolMessage(
+                                content=json.dumps(listing, ensure_ascii=False),
+                                tool_call_id=call["id"],
+                                name=name,
+                            )
+                        )
+                    except ServiceError as exc:
+                        if trace_recorder is not None and span is not None:
+                            trace_recorder.record_span(
+                                span_id=span[0],
+                                started_at=span[1],
+                                started_mono=span[2],
+                                kind="tool_project_tables",
+                                name="列出项目数据表",
+                                status="error",
+                                transport="internal",
+                                error_code=exc.error.code,
+                                error_category=classify_error_code(exc.error.code),
+                            )
+                        messages.append(
+                            ToolMessage(
+                                content=json.dumps(
+                                    {
+                                        "status": "error",
+                                        "code": exc.error.code,
+                                        "message": exc.error.message,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call["id"],
+                                name=name,
+                            )
+                        )
+                    continue
+                if name == "prepare_table_analysis":
+                    span = (
+                        trace_recorder.start_span(
+                            kind="tool_table_analysis_proposal", name="天文数据表分析方案"
+                        )
+                        if trace_recorder is not None
+                        else None
+                    )
+                    op_params = dict(arguments.parameters or {})
+                    if arguments.operator == "crossmatch":
+                        if "dataset_id" in op_params and "left_dataset_id" not in op_params:
+                            op_params["left_dataset_id"] = op_params.pop("dataset_id")
+                        else:
+                            op_params.pop("dataset_id", None)
+                        if (
+                            "secondary_dataset_id" in op_params
+                            and "right_dataset_id" not in op_params
+                        ):
+                            op_params["right_dataset_id"] = op_params.pop("secondary_dataset_id")
+                        else:
+                            op_params.pop("secondary_dataset_id", None)
+                        op_params.setdefault("left_dataset_id", arguments.dataset_id)
+                        if arguments.secondary_dataset_id:
+                            op_params.setdefault("right_dataset_id", arguments.secondary_dataset_id)
+                    else:
+                        op_params.setdefault("dataset_id", arguments.dataset_id)
+                        if arguments.operator == "stats":
+                            op_params.pop("save_derived", None)
+                            op_params.pop("derived_name", None)
+                            if arguments.secondary_dataset_id:
+                                op_params.setdefault(
+                                    "ks_other_dataset_id", arguments.secondary_dataset_id
+                                )
+                    if arguments.operator != "stats":
+                        op_params.setdefault("save_derived", arguments.save_derived)
+                        if arguments.derived_name:
+                            op_params.setdefault("derived_name", arguments.derived_name)
+                    op_models = {
+                        "stats": StatsOperatorRequest,
+                        "filter_derive": FilterDeriveOperatorRequest,
+                        "coordinates": CoordinatesOperatorRequest,
+                        "crossmatch": CrossmatchOperatorRequest,
+                        "fit": FitOperatorRequest,
+                    }
+                    op_model = op_models[arguments.operator]
+                    try:
+                        validated_op = op_model.model_validate(op_params)
+                    except ValidationError as exc:
+                        if trace_recorder is not None and span is not None:
+                            trace_recorder.record_span(
+                                span_id=span[0],
+                                started_at=span[1],
+                                started_mono=span[2],
+                                kind="tool_table_analysis_proposal",
+                                name="天文数据表分析方案",
+                                status="error",
+                                transport="internal",
+                                error_code="validation_error",
+                                error_category="validation",
+                            )
+                        field_errors = [
+                            {
+                                "field": ".".join(str(part) for part in err.get("loc", ())),
+                                "error": err.get("msg", ""),
+                            }
+                            for err in exc.errors()[:8]
+                        ]
+                        required_fields = [
+                            fname
+                            for fname, finfo in op_model.model_fields.items()
+                            if finfo.is_required()
+                        ]
+                        messages.append(
+                            ToolMessage(
+                                content=json.dumps(
+                                    {
+                                        "status": "validation_error",
+                                        "operator": arguments.operator,
+                                        "errors": field_errors,
+                                        "required_parameters": required_fields,
+                                        "allowed_parameters": list(op_model.model_fields.keys()),
+                                        "message": (
+                                            "请严格按 allowed_parameters 中的字段名修正 "
+                                            "parameters 后重试，不要传入未定义键。"
+                                        ),
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call["id"],
+                                name=name,
+                            )
+                        )
+                        continue
+                    proposal_data = arguments.model_dump()
+                    proposal_data["parameters"] = validated_op.model_dump(mode="json")
+                    proposal = TableAnalysisProposalResult(
+                        **proposal_data,
+                        project_id=active_project_id,
+                    )
+                    table_analysis_proposals.append(proposal)
+                    if trace_recorder is not None and span is not None:
+                        trace_recorder.record_span(
+                            span_id=span[0],
+                            started_at=span[1],
+                            started_mono=span[2],
+                            kind="tool_table_analysis_proposal",
+                            name=f"表分析方案：{proposal.operator}",
+                            status="ok",
+                            transport="internal",
+                            provider="Astropy/SciPy",
+                            result_count=1,
+                            result_ref={"type": "tables", "project_id": active_project_id or ""},
+                        )
+                    messages.append(
+                        ToolMessage(
+                            content=json.dumps(
+                                {
+                                    "status": "proposed",
+                                    "operator": proposal.operator,
+                                    "title": proposal.title,
+                                    "dataset_id": proposal.dataset_id,
+                                    "note": (
+                                        "表分析方案卡片已生成并展示给用户核对；用户点击「确认执行」后"
+                                        "将由后端 Astropy/NumPy/SciPy 确定性执行并返回真实数值。"
+                                        "切勿自行估算或编造计算结果。"
+                                    ),
+                                },
+                                ensure_ascii=False,
+                            ),
+                            tool_call_id=call["id"],
+                            name=name,
+                        )
+                    )
+                    continue
                 if name == "prepare_scientific_plot":
                     span = (
                         trace_recorder.start_span(
@@ -933,6 +1214,9 @@ class AstroAgent:
                 elif name == "query_gaia":
                     span_kind, span_name, provider = "tool_gaia", "Gaia DR3 查询", "Gaia"
                     transport = "mcp" if isinstance(self.gaia, McpGaiaAdapter) else "direct"
+                elif name == "query_vizier":
+                    span_kind, span_name, provider = "tool_vizier", "VizieR 星表检索", "VizieR"
+                    transport = "mcp" if isinstance(self.vizier, McpVizierAdapter) else "direct"
                 else:
                     span_kind, span_name, provider = "tool_simbad", "SIMBAD 天体查询", "SIMBAD"
                     transport = "mcp" if isinstance(self.simbad, McpSimbadAdapter) else "direct"
@@ -955,6 +1239,9 @@ class AstroAgent:
                     elif name == "query_gaia":
                         result = self.gaia.query(arguments)
                         view = gaia_view(result)
+                    elif name == "query_vizier":
+                        result = self.vizier.query(arguments)
+                        view = vizier_view(result)
                     else:
                         result = self.simbad.query(arguments.object_name)
                         view = result.model_dump(mode="json")
@@ -983,6 +1270,7 @@ class AstroAgent:
                             literature_receipts,
                             skill_resolution,
                             external_mcp_proposals,
+                            table_analysis_proposals,
                         )
                     raise
                 mcp_meta = last_mcp_call_meta() or {}
@@ -1004,6 +1292,15 @@ class AstroAgent:
                             "type": "gaia",
                             "index": str(
                                 sum(1 for r in results if isinstance(r, GaiaQueryResult)) - 1
+                            ),
+                        }
+                    elif isinstance(result, VizierQueryResult):
+                        res_count = result.returned_count
+                        truncated = bool(result.truncated)
+                        ref = {
+                            "type": "vizier",
+                            "index": str(
+                                sum(1 for r in results if isinstance(r, VizierQueryResult)) - 1
                             ),
                         }
                     else:
@@ -1059,6 +1356,7 @@ class AstroAgent:
             literature_receipts,
             skill_resolution,
             external_mcp_proposals,
+            table_analysis_proposals,
         )
 
     @staticmethod
@@ -1070,6 +1368,7 @@ class AstroAgent:
         literature_receipts: list[LiteratureSaveReceipt] | None = None,
         skill_resolution: SkillResolution | None = None,
         external_mcp_proposals: list[ExternalMcpProposal] | None = None,
+        table_analysis_proposals: list[TableAnalysisProposalResult] | None = None,
     ) -> ChatResponse:
         successes = [result for result in results if result.status == "success"]
         status = "success"
@@ -1092,8 +1391,10 @@ class AstroAgent:
             results=[r for r in results if isinstance(r, QueryResult)],
             literature_results=[r for r in results if isinstance(r, LiteratureSearchResult)],
             gaia_results=[r for r in results if isinstance(r, GaiaQueryResult)],
+            vizier_results=[r for r in results if isinstance(r, VizierQueryResult)],
             nbody_proposals=list(nbody_proposals or ()),
             plot_proposals=list(plot_proposals or ()),
+            table_analysis_proposals=list(table_analysis_proposals or ()),
             literature_receipts=list(literature_receipts or ()),
             skill_resolution=skill_resolution,
             external_mcp_proposals=list(external_mcp_proposals or ()),
@@ -1109,6 +1410,7 @@ class AstroAgent:
         literature_receipts: list[LiteratureSaveReceipt] | None = None,
         skill_resolution: SkillResolution | None = None,
         external_mcp_proposals: list[ExternalMcpProposal] | None = None,
+        table_analysis_proposals: list[TableAnalysisProposalResult] | None = None,
     ) -> ChatResponse:
         response = self._response(
             "回答生成未完成，请查看已执行的查询结果或生成的参数方案。" + error.error.message,
@@ -1118,6 +1420,7 @@ class AstroAgent:
             literature_receipts,
             skill_resolution,
             external_mcp_proposals,
+            table_analysis_proposals,
         )
         if response.status == "success":
             response.status = "partial"
@@ -1132,6 +1435,7 @@ class AstroAgent:
         literature_receipts: list[LiteratureSaveReceipt] | None = None,
         skill_resolution: SkillResolution | None = None,
         external_mcp_proposals: list[ExternalMcpProposal] | None = None,
+        table_analysis_proposals: list[TableAnalysisProposalResult] | None = None,
     ) -> ChatResponse:
         error = ServiceError(
             502, "agent_limit_reached", "已达到本次查询的工具调用限制，请缩小问题范围。"
@@ -1140,6 +1444,7 @@ class AstroAgent:
             results
             or nbody_proposals
             or plot_proposals
+            or table_analysis_proposals
             or literature_receipts
             or external_mcp_proposals
         ):
@@ -1151,5 +1456,6 @@ class AstroAgent:
                 literature_receipts,
                 skill_resolution,
                 external_mcp_proposals,
+                table_analysis_proposals,
             )
         raise error

@@ -29,6 +29,9 @@ SpanKind = Literal[
     "tool_simbad",
     "tool_ads",
     "tool_gaia",
+    "tool_vizier",
+    "tool_project_tables",
+    "tool_table_analysis_proposal",
     "tool_literature_save",
     "tool_nbody_proposal",
     "tool_plot_proposal",
@@ -100,6 +103,7 @@ class RunTrace(BaseModel):
     astronomy_transport: Literal["direct", "mcp"] | None = None
     skill_id: str | None = None
     skill_title: str | None = None
+    skill_titles: list[str] = Field(default_factory=list)
     skill_version: str | None = None
     skill_mode: (
         Literal["explicit", "auto", "disabled", "none", "ambiguous", "auto_disabled"] | None

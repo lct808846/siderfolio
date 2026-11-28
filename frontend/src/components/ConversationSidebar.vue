@@ -710,6 +710,7 @@ onBeforeUnmount(() => {
         <div class="conversation-menu-divider" role="separator"></div>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/knowledge`" @click="closeProjectMenu(false)"><span aria-hidden="true">⊞</span>本地知识库</RouterLink>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/rag`" @click="closeProjectMenu(false)"><span aria-hidden="true">◎</span>文献知识问答</RouterLink>
+        <RouterLink role="menuitem" :to="{ path: '/', query: { project: projectMenuTarget.id, result: 'tables' } }" @click="closeProjectMenu(false)"><span aria-hidden="true">◫</span>数据表与分析</RouterLink>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/workflows`" @click="closeProjectMenu(false)"><span aria-hidden="true">▷</span>科研流程</RouterLink>
         <RouterLink role="menuitem" :to="{ path: '/', query: { project: projectMenuTarget.id, result: 'compute' } }" @click="closeProjectMenu(false)"><span aria-hidden="true">◌</span>N 体计算记录</RouterLink>
         <RouterLink role="menuitem" :to="`/projects/${projectMenuTarget.id}/overview`" @click="closeProjectMenu(false)"><span aria-hidden="true">☍</span>来源关联</RouterLink>

@@ -10,7 +10,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'jump-result': [target: { type: string; batchIndex?: number; receiptId?: string }]
+  'jump-result': [target: { type: string; batchIndex?: number; receiptId?: string; projectId?: string }]
 }>()
 
 const modelsStore = useModels()
@@ -55,14 +55,11 @@ function transportLabel(transport: string | null | undefined) {
   return ''
 }
 
-function skillModeLabel(mode: string | null | undefined) {
-  if (mode === 'explicit') return '显式技能'
-  if (mode === 'auto') return '自动匹配'
-  if (mode === 'ambiguous') return '多技能待澄清'
-  if (mode === 'disabled') return '本轮禁用技能'
-  if (mode === 'auto_disabled') return '自动匹配已关闭'
-  return ''
-}
+const displaySkillTitle = computed(() => {
+  const titles = props.trace?.skill_titles?.filter(Boolean) || []
+  if (titles.length) return titles.join(' + ')
+  return props.trace?.skill_title || ''
+})
 
 function categoryLabel(category: string | null | undefined) {
   const labels: Record<string, string> = {
@@ -92,19 +89,25 @@ function jumpLabel(span: RunSpan) {
   if (kind === 'literature') return '查看文献管理 →'
   if (kind === 'ads') return '查看 ADS 结果 →'
   if (kind === 'gaia') return '查看 Gaia 结果 →'
+  if (kind === 'vizier') return '查看 VizieR 结果 →'
   if (kind === 'simbad') return '查看 SIMBAD 结果 →'
   if (kind === 'compute') return '查看 N 体记录 →'
   if (kind === 'plot') return '查看绘图产物 →'
+  if (kind === 'tables') return '打开数据分析 →'
   return ''
 }
 
 function triggerJump(span: RunSpan) {
   const ref = span.result_ref
   if (!ref) return
+  const rawIndex = ref.index ?? ref.batch_index
+  const parsedIndex = rawIndex !== undefined && rawIndex !== null && rawIndex !== '' ? Number(rawIndex) : NaN
+  const batchIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 ? parsedIndex : undefined
   emit('jump-result', {
     type: String(ref.type || ''),
-    batchIndex: typeof ref.batch_index === 'number' ? ref.batch_index : undefined,
+    batchIndex,
     receiptId: typeof ref.receipt_id === 'string' ? ref.receipt_id : undefined,
+    projectId: typeof ref.project_id === 'string' ? ref.project_id : undefined,
   })
 }
 
@@ -190,11 +193,10 @@ const hasErrorSpan = computed(() =>
             <span class="turn-trace-mono">{{ formatDuration(trace.duration_ms) }}</span>
             <span class="turn-trace-sep" aria-hidden="true">·</span>
             <span>{{ traceSpans.length }} 阶段</span>
-            <template v-if="trace.skill_title">
+            <template v-if="displaySkillTitle">
               <span class="turn-trace-sep" aria-hidden="true">·</span>
               <span class="turn-trace-transport is-mcp">
-                {{ skillModeLabel(trace.skill_mode) ? `${skillModeLabel(trace.skill_mode)}：` : '' }}{{ trace.skill_title }}
-                <template v-if="trace.skill_version"> v{{ trace.skill_version }}</template>
+                {{ displaySkillTitle }}<template v-if="trace.skill_version && !(trace.skill_titles && trace.skill_titles.length > 1)"> v{{ trace.skill_version }}</template>
               </span>
             </template>
             <template v-if="trace.astronomy_transport">
@@ -234,10 +236,9 @@ const hasErrorSpan = computed(() =>
     <div v-if="trace" class="turn-trace-body">
       <div class="turn-trace-overview">
         <span>追踪编号 <code>{{ trace.trace_id.slice(0, 8) }}</code></span>
-        <span v-if="trace.skill_id">
-          技能 <b>{{ trace.skill_title || trace.skill_id }}</b>
-          <template v-if="trace.skill_version"> <code>v{{ trace.skill_version }}</code></template>
-          <template v-if="skillModeLabel(trace.skill_mode)">（{{ skillModeLabel(trace.skill_mode) }}）</template>
+        <span v-if="trace.skill_id || displaySkillTitle">
+          技能 <b>{{ displaySkillTitle || trace.skill_id }}</b>
+          <template v-if="trace.skill_version && !(trace.skill_titles && trace.skill_titles.length > 1)"> <code>v{{ trace.skill_version }}</code></template>
         </span>
         <span v-if="trace.tool_manifest_sha256">
           工具目录摘要 <code>{{ trace.tool_manifest_sha256.slice(0, 10) }}</code>

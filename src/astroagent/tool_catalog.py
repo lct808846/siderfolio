@@ -18,6 +18,11 @@ from astroagent.schemas import (
     ObjectQuery,
     PlotProposalQuery,
 )
+from astroagent.table_schemas import (
+    ProjectTablesListQuery,
+    TableAnalysisProposalQuery,
+    VizierQuery,
+)
 from astroagent.tool_schemas import (
     ToolAccessScope,
     ToolCatalogItem,
@@ -30,6 +35,9 @@ BUILTIN_TOOL_NAMES = frozenset(
         "query_simbad",
         "search_ads",
         "query_gaia",
+        "query_vizier",
+        "list_project_tables",
+        "prepare_table_analysis",
         "prepare_nbody_simulation",
         "prepare_scientific_plot",
         "save_literature",
@@ -203,6 +211,58 @@ def builtin_tool_entries(
             ("validation", "not_found", "timeout", "upstream", "mcp_subprocess", "mcp_protocol"),
             "正在查询 Gaia DR3 星表数据…",
             astro_proto,
+        ),
+        (
+            "query_vizier",
+            "VizieR 星表检索",
+            (
+                "只读检索 CDS VizieR 星表（内置 2MASS、AllWISE、Pan-STARRS、"
+                "LAMOST、Cantat-Gaudin+2020 等预设或指定合法星表 ID），"
+                "返回真实列单位、参考历元、截断状态与 CDS 来源链接。"
+            ),
+            astro_source,
+            "account_readonly",
+            "readonly",
+            VizierQuery,
+            False,
+            ("提供合法 VizieR 星表编号及 ICRS 坐标或天体名", "符合每轮调用预算"),
+            ("validation", "not_found", "timeout", "upstream", "mcp_subprocess", "mcp_protocol"),
+            "正在检索 CDS VizieR 星表…",
+            astro_proto,
+        ),
+        (
+            "list_project_tables",
+            "列出项目数据表",
+            "只读列出当前科研项目中已保存的天文数据表编号（dataset_id）、行数、列名、数据类型、物理单位与参考历元。",
+            "builtin",
+            "account_readonly",
+            "readonly",
+            ProjectTablesListQuery,
+            False,
+            ("当前处于科研项目或个人空间上下文",),
+            ("validation", "authorization", "not_found"),
+            "正在读取项目数据表清单…",
+            None,
+        ),
+        (
+            "prepare_table_analysis",
+            "天文数据表确定性分析方案",
+            (
+                "基于项目内真实数据表构建统计检验、白名单筛选/派生列、坐标变换、交叉匹配或曲线拟合参数方案，"
+                "在对话中生成交互式确认卡片，由用户核对并确认由服务端 Astropy/SciPy 执行。"
+            ),
+            "builtin",
+            "project_draft",
+            "draft_only",
+            TableAnalysisProposalQuery,
+            True,
+            (
+                "引用 list_project_tables 返回的真实 dataset_id 与列名",
+                "仅生成草案，实际运算由用户在原卡片确认",
+            ),
+            ("validation",),
+            "正在构建天文数据表确定性分析方案…",
+            None,
         ),
         (
             "prepare_nbody_simulation",

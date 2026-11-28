@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ApiError } from '../api'
 import { plottingApi, savePlotFile, type PlotOperation } from '../api/plotting'
+import { tablesApi } from '../api/tables'
 import { useAttachments } from '../stores/attachments'
 import { useProjects } from '../stores/projects'
 import type { ChatAttachment, PlotProposalResult, Turn } from '../types'
@@ -126,6 +127,9 @@ const sourceSummary = computed(() => {
         ? `附件数据：${props.proposal.attachment_filename}（请重新选择原 CSV/TSV 文件）`
         : '本地 CSV / TSV 数据'
   }
+  if (props.proposal.data_source_kind === 'project_table' && props.proposal.dataset_id) {
+    return `项目数据表：${props.proposal.dataset_id.slice(0, 8)}`
+  }
   if (props.proposal.data_source_kind === 'project_dataset' && props.proposal.dataset_id) {
     return `项目数据集：${props.proposal.dataset_id.slice(0, 8)}`
   }
@@ -226,6 +230,9 @@ async function confirmAndExecute() {
     if (localCsvFile.value) {
       const uploaded = await plottingApi.upload(targetProject, crypto.randomUUID(), localCsvFile.value)
       datasetId = uploaded.id
+    } else if (props.proposal.data_source_kind === 'project_table' && props.proposal.dataset_id) {
+      const bridged = await tablesApi.sendToPlot(targetProject, props.proposal.dataset_id)
+      datasetId = bridged.plot_dataset.id
     } else if (props.proposal.data_source_kind === 'project_dataset' && props.proposal.dataset_id) {
       datasetId = props.proposal.dataset_id
     } else if (props.proposal.data_source_kind === 'attachment_csv') {

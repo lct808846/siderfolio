@@ -149,7 +149,9 @@ onMounted(() => {
 .skill-overview-main {
   flex: 1;
   min-width: 0;
+  max-width: none;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
   padding: 4px 6px;
   margin: -4px -6px;
@@ -185,9 +187,11 @@ onMounted(() => {
   font-size: 12.5px;
   line-height: 1.5;
   color: var(--muted);
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .skill-overview-actions {

@@ -11,6 +11,8 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, create_model, mode
 from astroagent.analysis import analyze_sources
 from astroagent.gaia import GAIA_UNITS, build_adql
 from astroagent.schemas import ChatResponse, GaiaQuery, LiteratureQuery, ObjectQuery
+from astroagent.skill_schemas import SkillResolution
+from astroagent.table_schemas import VizierQuery
 
 _models = {}
 
@@ -23,15 +25,22 @@ def _strict_type(annotation):
             for name, original in annotation.model_fields.items():
                 field = deepcopy(original)
                 # Older snapshot manifests omit fields added in later versions.
-                if annotation is not ChatResponse or name not in (
-                    "nbody_proposals",
-                    "plot_proposals",
-                    "literature_receipts",
-                    "skill_resolution",
-                    "external_mcp_proposals",
-                    "external_mcp_results",
-                    "memory_receipts",
-                ):
+                is_compat_optional = (
+                    annotation is ChatResponse
+                    and name
+                    in (
+                        "nbody_proposals",
+                        "plot_proposals",
+                        "table_analysis_proposals",
+                        "literature_receipts",
+                        "vizier_results",
+                        "skill_resolution",
+                        "external_mcp_proposals",
+                        "external_mcp_results",
+                        "memory_receipts",
+                    )
+                ) or (annotation is SkillResolution and name in ("skill_ids", "skill_titles"))
+                if not is_compat_optional:
                     field.default = ...
                     field.default_factory = None
                 fields[name] = (_strict_type(original.annotation), field)
@@ -86,7 +95,12 @@ def _same(actual, expected):
 
 
 def validate_snapshot(snapshot):
-    results = [*snapshot.results, *snapshot.literature_results, *snapshot.gaia_results]
+    results = [
+        *snapshot.results,
+        *snapshot.literature_results,
+        *snapshot.gaia_results,
+        *snapshot.vizier_results,
+    ]
     if len(results) > 12:
         raise ValueError("At most 12 queries are supported")
     successes = [r for r in results if r.status == "success"]
@@ -209,6 +223,31 @@ def validate_snapshot(snapshot):
             for value in (result.has_more, result.truncated, result.archive_overflow)
         ):
             raise ValueError("Inconsistent failed Gaia result")
+    for result in snapshot.vizier_results:
+        query = VizierQuery.model_validate(result.query)
+        n = len(result.rows)
+        if (
+            result.query != query.effective_parameters()
+            or result.source.name != "VizieR"
+            or (result.status == "not_found" and result.error is None)
+            or n > query.limit
+            or result.returned_count != n
+            or (result.status == "success") != bool(n)
+        ):
+            raise ValueError("Inconsistent VizieR result")
+        if result.status == "success":
+            if (
+                type(result.truncated) is not bool
+                or result.has_more != result.truncated
+                or type(result.archive_overflow) is not bool
+                or (result.archive_overflow and not result.truncated)
+            ):
+                raise ValueError("Inconsistent VizieR truncation")
+        elif any(
+            value not in (None, False)
+            for value in (result.has_more, result.truncated, result.archive_overflow)
+        ):
+            raise ValueError("Inconsistent failed VizieR result")
 
 
 class PlotSpec(BaseModel):

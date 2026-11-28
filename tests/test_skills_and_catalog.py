@@ -25,6 +25,7 @@ from astroagent.skills import (
     get_builtin_skill,
     parse_skill_markdown,
     resolve_turn_skill,
+    resolve_turn_skills,
 )
 from astroagent.tool_catalog import (
     BUILTIN_TOOL_NAMES,
@@ -76,7 +77,9 @@ def test_builtin_skills_integrity_and_allowed_tools():
     assert ids == {
         "celestial-identification-field-query",
         "astronomy-literature-curation",
-        "scientific-plotting-nbody-prep",
+        "scientific-plotting",
+        "nbody-simulation-prep",
+        "astronomy-table-analysis",
     }
     for skill in skills:
         assert len(skill.content_sha256) == 64
@@ -99,8 +102,12 @@ def test_builtin_skills_integrity_and_allowed_tools():
             "请通过 ADS 检索 2022-2026 年双星团相关论文摘要，并返回 bibcode。",
         ),
         (
-            "scientific-plotting-nbody-prep",
-            "请帮我用 Matplotlib 绘制刚才 Gaia 数据的色星等图，并准备一个三体 N 体轨道模拟草案。",
+            "scientific-plotting",
+            "请帮我用 Matplotlib 绘制刚才 Gaia 数据的色星等图。",
+        ),
+        (
+            "nbody-simulation-prep",
+            "请准备一个太阳-地球-木星三体系统的 REBOUND N 体轨道模拟草案。",
         ),
     ],
 )
@@ -162,16 +169,30 @@ def test_resolve_turn_skill_opt_out_disabled_ambiguous_and_unavailable():
     assert res.selection_mode == "disabled"
     assert res.clarification_note
 
-    # Ambiguous intent across multiple high-scoring skills -> loads none
-    skill, res = resolve_turn_skill(
+    # Multi-domain intent loads all matched skills simultaneously instead of bailing out
+    skills, res = resolve_turn_skills(
         "请查 SIMBAD 中 M45 坐标和 Gaia DR3 视差，同时在 ADS 检索论文 bibcode 摘要并保存到文献库。",
         preferences=SkillPreferences(auto_match=True),
         available_tool_ids=all_tools,
     )
-    assert skill is None
-    assert res.selection_mode == "ambiguous"
-    assert len(res.candidate_skill_ids) == 2
-    assert res.clarification_note
+    assert len(skills) == 2
+    assert {s.id for s in skills} == {
+        "celestial-identification-field-query",
+        "astronomy-literature-curation",
+    }
+    assert res.selection_mode == "auto"
+    assert set(res.skill_ids) == {
+        "celestial-identification-field-query",
+        "astronomy-literature-curation",
+    }
+    assert {"query_simbad", "query_gaia", "search_ads", "save_literature"}.issubset(
+        set(res.available_tool_ids)
+    )
+    assert res.clarification_note is None
+    combined_prompt = format_skill_prompt_section(skills, res)
+    assert "协同载入多个科研技能" in combined_prompt
+    assert "天体识别与视场查询" in combined_prompt
+    assert "天文文献检索与整理" in combined_prompt
 
     # Required tools unavailable
     skill, res = resolve_turn_skill(

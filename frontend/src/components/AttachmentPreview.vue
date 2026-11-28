@@ -4,7 +4,8 @@ import { useRoute } from 'vue-router'
 import type { ChatAttachment } from '../types'
 
 const props = defineProps<{ attachment: ChatAttachment }>()
-const route = useRoute(), dialog = ref<HTMLDialogElement | null>(null)
+const route = useRoute()
+const dialog = ref<HTMLDialogElement | null>(null)
 const isImage = computed(() => Boolean(props.attachment.media_type?.startsWith('image/') && props.attachment.image_data_url))
 const detailSummary = computed(() => {
   if (isImage.value) {

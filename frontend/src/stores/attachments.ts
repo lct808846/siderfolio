@@ -38,7 +38,7 @@ export const useAttachments = defineStore('attachments', {
         if (rows.some(row => row.file.name === file.name && row.file.size === file.size && row.file.lastModified === file.lastModified)) continue
         if (rows.length >= 3) { problems.push('每条消息最多添加 3 个附件。'); break }
         const extension = '.' + (file.name.split('.').at(-1) || '').toLowerCase()
-        if (!attachmentExtensions.has(extension)) { problems.push(`${file.name}：支持图片（PNG、JPG、WebP、GIF）及 PDF、DOCX、TXT、Markdown、CSV、TSV、JSON。`); continue }
+        if (!attachmentExtensions.has(extension)) { problems.push(`${file.name}：支持图片（PNG、JPG、WebP、GIF）、天文数据表（FITS、VOTable、ECSV）及 PDF、DOCX、TXT、Markdown、CSV、TSV、JSON。`); continue }
         if (!file.size || file.size > attachmentFileLimit) { problems.push(`${file.name}：文件不能为空，单个最多 10 MiB。`); continue }
         const id = crypto.randomUUID()
         this.drafts.set(scope, [...rows, { id, file, state: 'reading', error: '' }])

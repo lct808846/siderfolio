@@ -35,6 +35,7 @@ from astroagent.api.projects import router as projects_router
 from astroagent.api.rag import router as rag_router
 from astroagent.api.setup import router as setup_router
 from astroagent.api.skills import router as skills_router
+from astroagent.api.tables import router as tables_router
 from astroagent.api.workflows import router as workflows_router
 from astroagent.auth_access import IdentityAccess
 from astroagent.config import LocalSettings, Settings
@@ -123,6 +124,7 @@ app.include_router(plotting_router)
 app.include_router(local_titles_router)
 app.include_router(literature_router)
 app.include_router(profile_router)
+app.include_router(tables_router)
 app.add_middleware(ExportBodyLimit)
 app.add_middleware(LocalAccess)
 app.add_middleware(IdentityAccess)
@@ -230,6 +232,17 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
                 "error": {
                     "code": "invalid_identity_request",
                     "message": "身份请求参数无效，请核对输入。",
+                    "retryable": False,
+                }
+            },
+        )
+    if request.url.path.startswith("/api/v1/tables"):
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "invalid_table_request",
+                    "message": "天文数据表或 VizieR 查询参数无效，请核对输入。",
                     "retryable": False,
                 }
             },

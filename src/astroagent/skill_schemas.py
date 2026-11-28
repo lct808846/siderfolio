@@ -54,6 +54,8 @@ class SkillResolution(BaseModel):
     skill_id: str | None = None
     skill_title: str | None = None
     skill_version: str | None = None
+    skill_ids: list[str] = Field(default_factory=list)
+    skill_titles: list[str] = Field(default_factory=list)
     content_sha256: str | None = None
     selection_mode: SkillSelectionMode = "none"
     matched_reason: str = ""

@@ -46,6 +46,7 @@ from astroagent.schemas import (
     ObjectQuery,
     QueryResult,
 )
+from astroagent.table_schemas import VizierQuery, VizierQueryResult
 from astroagent.usage import reserve_request
 
 if TYPE_CHECKING:
@@ -172,6 +173,7 @@ def build_mcp_subprocess_env(
     env["SIMBAD_TIMEOUT_SECONDS"] = str(settings.simbad_timeout_seconds)
     env["ADS_TIMEOUT_SECONDS"] = str(settings.ads_timeout_seconds)
     env["GAIA_TIMEOUT_SECONDS"] = str(settings.gaia_timeout_seconds)
+    env["VIZIER_TIMEOUT_SECONDS"] = str(settings.vizier_timeout_seconds)
     ads_token = settings.ads_api_token.get_secret_value().strip()
     if ads_token:
         env["ADS_API_TOKEN"] = ads_token
@@ -977,6 +979,25 @@ class McpGaiaAdapter:
                 502,
                 "mcp_contract_invalid",
                 "MCP query_gaia 返回结果类型不匹配。",
+            )
+        return result
+
+
+class McpVizierAdapter:
+    """将 VizierService.query 接口桥接到固定 MCP Client。"""
+
+    def __init__(self, pool: McpClientPool, settings: Settings | None = None):
+        self._pool = pool
+        self._settings = settings
+
+    def query(self, arguments: VizierQuery) -> VizierQueryResult:
+        payload = arguments.model_dump(mode="json", exclude_none=True)
+        result = self._pool.call_tool("query_vizier", payload, settings=self._settings)
+        if not isinstance(result, VizierQueryResult):
+            raise ServiceError(
+                502,
+                "mcp_contract_invalid",
+                "MCP query_vizier 返回结果类型不匹配。",
             )
         return result
 

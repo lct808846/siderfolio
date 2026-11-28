@@ -19,6 +19,8 @@ from astroagent.usage import reserve_request
 
 GAIA_ENDPOINT = "https://gea.esac.esa.int/tap-server/tap/sync"
 GAIA_ARCHIVE = "https://gea.esac.esa.int/archive/"
+GAIA_ARI_MIRROR_ENDPOINT = "https://gaia.ari.uni-heidelberg.de/tap/sync"
+GAIA_ARI_MIRROR_ARCHIVE = "https://gaia.ari.uni-heidelberg.de/tap"
 GAIA_TABLE = "gaiadr3.gaia_source"
 MAX_RESPONSE_BYTES = 4 * 1024 * 1024
 GAIA_UNITS = {
@@ -141,7 +143,7 @@ def _validate_xml(body: bytes):
     return tables[0], "OVERFLOW" in statuses
 
 
-def _validate_fields(table_xml, query: GaiaQuery):
+def _validate_fields(table_xml, query: GaiaQuery, *, allow_integer_boolean: bool = False):
     fields = {}
     for field in table_xml:
         if _tag(field) != "FIELD":
@@ -161,7 +163,7 @@ def _validate_fields(table_xml, query: GaiaQuery):
         elif name == "astrometric_params_solved":
             allowed = INTEGER_TYPES
         elif name == "duplicated_source":
-            allowed = {"boolean"}
+            allowed = {"boolean", "short"} if allow_integer_boolean else {"boolean"}
         else:
             allowed = NUMBER_TYPES
         if datatype not in allowed or (name != "source_id" and field.get("arraysize", "1") != "1"):
@@ -207,7 +209,7 @@ def _value(row, name):
     return value.item() if isinstance(value, np.generic) else value
 
 
-def _source(row, query: GaiaQuery) -> GaiaSourceData:
+def _source(row, query: GaiaQuery, *, allow_integer_boolean: bool = False) -> GaiaSourceData:
     values = {}
     for name in GAIA_COLUMNS:
         value = _value(row, name)
@@ -220,8 +222,13 @@ def _source(row, query: GaiaQuery) -> GaiaSourceData:
             if value is not None and type(value) is not int:
                 raise ValueError("Expected integer")
         elif name == "duplicated_source":
-            if value is not None and type(value) is not bool:
-                raise ValueError("Expected boolean")
+            if value is not None:
+                if type(value) is bool:
+                    pass
+                elif allow_integer_boolean and type(value) is int and value in (0, 1):
+                    value = bool(value)
+                else:
+                    raise ValueError("Expected boolean")
         elif value is not None:
             if type(value) not in (float, int):
                 raise ValueError("Expected scalar number")
@@ -237,9 +244,11 @@ def _source(row, query: GaiaQuery) -> GaiaSourceData:
     return GaiaSourceData(**values)
 
 
-def parse_result(body: bytes, query: GaiaQuery, maxrec: int):
+def parse_result(
+    body: bytes, query: GaiaQuery, maxrec: int, *, allow_integer_boolean: bool = False
+):
     table_xml, overflow = _validate_xml(body)
-    _validate_fields(table_xml, query)
+    _validate_fields(table_xml, query, allow_integer_boolean=allow_integer_boolean)
     _validate_layout(table_xml, maxrec)
     parsed = parse(BytesIO(body), verify="exception").get_first_table()
     # Work directly on Astropy's masked records; no extra Table copy is needed.
@@ -247,7 +256,12 @@ def parse_result(body: bytes, query: GaiaQuery, maxrec: int):
     if len(table) > maxrec or (query.mode == "source_id" and len(table) > 1):
         raise ValueError("Unexpected row count")
     sources = [
-        _source({field.name: row[field.ID] for field in parsed.fields}, query) for row in table
+        _source(
+            {field.name: row[field.ID] for field in parsed.fields},
+            query,
+            allow_integer_boolean=allow_integer_boolean,
+        )
+        for row in table
     ]
     if len({s.source_id for s in sources}) != len(sources):
         raise ValueError("Duplicate source IDs")
@@ -312,58 +326,137 @@ class GaiaService:
 
         owned = self._session is None
         session = self._session if self._session is not None else requests.Session()
+        endpoints: list[tuple[str, str, bool]] = [(GAIA_ENDPOINT, GAIA_ARCHIVE, False)]
+        if owned:
+            endpoints.append((GAIA_ARI_MIRROR_ENDPOINT, GAIA_ARI_MIRROR_ARCHIVE, True))
+
+        def _is_html_maintenance(raw: bytes, headers) -> bool:
+            ctype = str((headers or {}).get("Content-Type", "")).lower()
+            prefix = raw[:256].lstrip().lower()
+            return "text/html" in ctype or prefix.startswith((b"<!doctype html", b"<html"))
+
         try:
-            response = session.post(
-                GAIA_ENDPOINT,
-                data={
-                    "REQUEST": "doQuery",
-                    "LANG": "ADQL",
-                    "FORMAT": "votable",
-                    "QUERY": adql,
-                    "MAXREC": maxrec,
-                },
-                timeout=(min(10, self.timeout), self.timeout),
-                allow_redirects=False,
-                stream=True,
-            )
-            try:
-                status = response.status_code
-                if status in (401, 403):
-                    return failure("gaia_access_denied", "Gaia 拒绝访问此查询。")
-                if status == 429:
-                    return failure("gaia_rate_limited", "Gaia 请求受限，请稍后重试。", True)
-                if status == 400:
-                    return failure("gaia_query_failed", "Gaia 拒绝了固定查询，请检查服务兼容性。")
-                if 500 <= status <= 599:
-                    return failure("gaia_unavailable", "Gaia 服务暂时不可用。", True)
-                if status != 200:
-                    return failure("gaia_unexpected_response", "Gaia 返回了非预期 HTTP 响应。")
-                body = bytearray()
-                for chunk in response.iter_content(chunk_size=64 * 1024):
-                    body.extend(chunk)
-                    if len(body) > MAX_RESPONSE_BYTES:
-                        raise ResponseTooLarge("Response exceeds decompressed size limit")
-            finally:
-                response.close()
-            sources, has_more, overflow = parse_result(bytes(body), arguments, maxrec)
-            if not sources:
-                return failure(
-                    "gaia_not_found", "本次查询条件下无匹配的 Gaia DR3 源。", status="not_found"
-                )
-            if has_more:
-                warnings.append("结果已截断，统计仅限交付行；未执行总数查询或自动翻页。")
-            if overflow:
-                warnings.append("Gaia Archive 报告 OVERFLOW：服务器截断了结果。")
-            return GaiaQueryResult(
-                **base,
-                status="success",
-                returned_count=len(sources),
-                data=sources,
-                has_more=has_more,
-                truncated=has_more,
-                archive_overflow=overflow,
-                analysis=analyze_sources(sources, arguments, truncated=has_more),
-            )
+            last_exc: Exception | None = None
+            last_failure: GaiaQueryResult | None = None
+            for idx, (endpoint, archive_url, allow_int_bool) in enumerate(endpoints):
+                has_fallback = idx + 1 < len(endpoints)
+                try:
+                    response = session.post(
+                        endpoint,
+                        data={
+                            "REQUEST": "doQuery",
+                            "LANG": "ADQL",
+                            "FORMAT": "votable",
+                            "QUERY": adql,
+                            "MAXREC": maxrec,
+                        },
+                        timeout=(min(10, self.timeout), self.timeout),
+                        allow_redirects=False,
+                        stream=True,
+                    )
+                    try:
+                        status = response.status_code
+                        resp_headers = getattr(response, "headers", None)
+                        if status in (401, 403):
+                            return failure("gaia_access_denied", "Gaia 拒绝访问此查询。")
+                        if status == 429:
+                            if has_fallback:
+                                last_failure = failure(
+                                    "gaia_rate_limited", "Gaia 请求受限，请稍后重试。", True
+                                )
+                                continue
+                            return failure("gaia_rate_limited", "Gaia 请求受限，请稍后重试。", True)
+                        if status == 400:
+                            return failure(
+                                "gaia_query_failed", "Gaia 拒绝了固定查询，请检查服务兼容性。"
+                            )
+                        if 500 <= status <= 599:
+                            if has_fallback:
+                                last_failure = failure(
+                                    "gaia_unavailable", "Gaia 服务暂时不可用。", True
+                                )
+                                continue
+                            return failure("gaia_unavailable", "Gaia 服务暂时不可用。", True)
+                        if status != 200:
+                            if has_fallback:
+                                last_failure = failure(
+                                    "gaia_unexpected_response", "Gaia 返回了非预期 HTTP 响应。"
+                                )
+                                continue
+                            return failure(
+                                "gaia_unexpected_response", "Gaia 返回了非预期 HTTP 响应。"
+                            )
+                        body = bytearray()
+                        for chunk in response.iter_content(chunk_size=64 * 1024):
+                            body.extend(chunk)
+                            if len(body) > MAX_RESPONSE_BYTES:
+                                raise ResponseTooLarge("Response exceeds decompressed size limit")
+                    finally:
+                        response.close()
+
+                    raw_bytes = bytes(body)
+                    if owned and _is_html_maintenance(raw_bytes, resp_headers):
+                        if has_fallback:
+                            last_failure = failure(
+                                "gaia_unavailable",
+                                "Gaia 官方服务当前处于维护（返回网页而非星表数据），请稍后重试。",
+                                True,
+                            )
+                            continue
+                        return failure(
+                            "gaia_unavailable",
+                            "Gaia 官方服务当前处于维护（返回网页而非星表数据），请稍后重试。",
+                            True,
+                        )
+
+                    sources, has_more, overflow = parse_result(
+                        raw_bytes,
+                        arguments,
+                        maxrec,
+                        allow_integer_boolean=allow_int_bool,
+                    )
+                    used_warnings = list(warnings)
+                    if idx > 0:
+                        used_warnings.append(
+                            "ESA Gaia 主站当前处于维护或暂不可用，"
+                            "本次结果已自动切换至官方合作伙伴镜像（ARI Heidelberg Gaia DR3 TAP）。"
+                        )
+                        base["source"] = Source(
+                            name="Gaia", url=archive_url, retrieved_at=datetime.now(UTC)
+                        )
+                    if not sources:
+                        return failure(
+                            "gaia_not_found",
+                            "本次查询条件下无匹配的 Gaia DR3 源。",
+                            status="not_found",
+                        )
+                    if has_more:
+                        used_warnings.append(
+                            "结果已截断，统计仅限交付行；未执行总数查询或自动翻页。"
+                        )
+                    if overflow:
+                        used_warnings.append("Gaia Archive 报告 OVERFLOW：服务器截断了结果。")
+                    result_base = {**base, "warnings": used_warnings}
+                    return GaiaQueryResult(
+                        **result_base,
+                        status="success",
+                        returned_count=len(sources),
+                        data=sources,
+                        has_more=has_more,
+                        truncated=has_more,
+                        archive_overflow=overflow,
+                        analysis=analyze_sources(sources, arguments, truncated=has_more),
+                    )
+                except (requests.Timeout, requests.RequestException) as exc:
+                    if has_fallback:
+                        last_exc = exc
+                        continue
+                    raise
+            if last_failure is not None:
+                return last_failure
+            if last_exc is not None:
+                raise last_exc
+            return failure("gaia_unavailable", "Gaia 服务暂时不可用。", True)
         except ResponseTooLarge:
             return failure("gaia_response_too_large", "Gaia 响应超过 4 MiB 上限，已终止读取。")
         except TapQueryError:

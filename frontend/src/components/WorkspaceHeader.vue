@@ -25,6 +25,7 @@ const projectSections = computed(() => {
     { label: '项目对话', path: `/?project=${encodedId}` },
     { label: '指令与快照', path: `/?project=${encodedId}&manage=context` },
     { label: '来源关联', path: `${projectPath.value}/overview` },
+    { label: '数据表与分析', path: `/?project=${encodedId}&result=tables` },
     { label: '科研流程', path: `${projectPath.value}/workflows` },
     { label: 'N 体记录', path: `/?project=${encodedId}&result=compute` },
     { label: '本地知识库', path: `${projectPath.value}/knowledge` },
@@ -70,7 +71,7 @@ function current(path: string, descendants = false) {
           </svg>
         </span>
         <b>Siderfolio</b>
-        <span class="version">2.2</span>
+        <span class="version">2.3</span>
       </button>
       <span class="workspace-title">{{ title }}</span>
       <nav class="workspace-global-nav" aria-label="全局导航">

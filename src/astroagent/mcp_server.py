@@ -44,6 +44,8 @@ from astroagent.mcp_contract import (
 from astroagent.mcp_stdio import bounded_stdio_server
 from astroagent.schemas import ErrorInfo, GaiaQuery, LiteratureQuery, ObjectQuery
 from astroagent.simbad import SimbadService
+from astroagent.table_schemas import VizierQuery
+from astroagent.vizier import VizierService
 
 _WIRE_ENVELOPE_OVERHEAD_BYTES = 1024
 
@@ -57,6 +59,7 @@ class McpServerConfig(BaseModel):
     ads_api_token: SecretStr = SecretStr("")
     ads_timeout_seconds: float = Field(default=20.0, gt=0, le=120)
     gaia_timeout_seconds: float = Field(default=45.0, gt=0, le=120)
+    vizier_timeout_seconds: float = Field(default=30.0, gt=0, le=120)
     call_timeout_seconds: float = Field(default=DEFAULT_MCP_CALL_TIMEOUT_SECONDS, ge=1.0, le=180.0)
     max_message_bytes: int = Field(
         default=DEFAULT_MCP_MAX_MESSAGE_BYTES, ge=64 * 1024, le=16 * 1024 * 1024
@@ -77,6 +80,7 @@ class McpServerConfig(BaseModel):
             "ADS_API_TOKEN": "ads_api_token",
             "ADS_TIMEOUT_SECONDS": "ads_timeout_seconds",
             "GAIA_TIMEOUT_SECONDS": "gaia_timeout_seconds",
+            "VIZIER_TIMEOUT_SECONDS": "vizier_timeout_seconds",
             "ASTROAGENT_MCP_CALL_TIMEOUT_SECONDS": "call_timeout_seconds",
             "ASTROAGENT_MCP_MAX_MESSAGE_BYTES": "max_message_bytes",
             "ASTROAGENT_MCP_MAX_REQUEST_BYTES": "max_request_bytes",
@@ -153,8 +157,9 @@ def build_astronomy_mcp_server(
     simbad: SimbadService | None = None,
     ads: AdsService | None = None,
     gaia: GaiaService | None = None,
+    vizier: VizierService | None = None,
 ) -> Server[Any]:
-    """创建可复用现有三类查询服务的 MCP Server 实例。"""
+    """创建可复用现有四类查询服务的 MCP Server 实例。"""
     resolved_config = config if config is not None else McpServerConfig.from_env()
     simbad_service = (
         simbad if simbad is not None else SimbadService(resolved_config.simbad_timeout_seconds)
@@ -165,6 +170,11 @@ def build_astronomy_mcp_server(
         else AdsService(resolved_config.ads_api_token, resolved_config.ads_timeout_seconds)
     )
     gaia_service = gaia if gaia is not None else GaiaService(resolved_config.gaia_timeout_seconds)
+    vizier_service = (
+        vizier
+        if vizier is not None
+        else VizierService(resolved_config.vizier_timeout_seconds, simbad=simbad_service)
+    )
 
     tools = build_mcp_tools()
     slots = anyio.lowlevel.RunVar[anyio.Semaphore]("astronomy-query-slots")
@@ -299,6 +309,9 @@ def build_astronomy_mcp_server(
             if tool_name == "search_ads":
                 assert isinstance(validated, LiteratureQuery)
                 return ads_service.search(validated)
+            if tool_name == "query_vizier":
+                assert isinstance(validated, VizierQuery)
+                return vizier_service.query(validated)
             assert isinstance(validated, GaiaQuery)
             return gaia_service.query(validated)
 

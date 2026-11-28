@@ -33,6 +33,7 @@ class TurnRequest(BaseModel):
     attachments: list[ChatAttachment] = Field(default_factory=list, max_length=3)
     tool_mode: Literal["auto", "plot", "compute"] | None = Field(default=None)
     skill_id: str | None = Field(default=None, min_length=1, max_length=64)
+    skill_ids: list[str] = Field(default_factory=list, max_length=8)
 
     @field_validator("client_request_id")
     @classmethod
@@ -42,7 +43,7 @@ class TurnRequest(BaseModel):
 
 class ResultReference(BaseModel):
     turn_id: str
-    family: Literal["simbad", "ads", "gaia"]
+    family: Literal["simbad", "ads", "gaia", "vizier"]
     result_index: int
 
 

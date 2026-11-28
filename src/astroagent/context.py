@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from astroagent.agent import gaia_view, literature_view
+from astroagent.agent import gaia_view, literature_view, vizier_view
 from astroagent.conversation_schemas import ContextRecord, ResultReference
 from astroagent.memory_schemas import (
     MAX_MEMORY_CONTEXT_BYTES,
@@ -118,11 +118,19 @@ class PreparedContext:
                             literature_view(r) for r in response.literature_results
                         ],
                         "gaia_results": [gaia_view(r) for r in response.gaia_results],
+                        "vizier_results": [
+                            vizier_view(r)
+                            for r in (getattr(response, "vizier_results", None) or ())
+                        ],
                         "nbody_proposals": [
                             p.model_dump(mode="json") for p in response.nbody_proposals
                         ],
                         "plot_proposals": [
                             p.model_dump(mode="json") for p in response.plot_proposals
+                        ],
+                        "table_analysis_proposals": [
+                            p.model_dump(mode="json")
+                            for p in (getattr(response, "table_analysis_proposals", None) or ())
                         ],
                         "external_mcp_results": [
                             r.model_dump(mode="json") for r in (response.external_mcp_results or ())
@@ -336,6 +344,7 @@ class PreparedContext:
                 ("results", "simbad"),
                 ("literature_results", "ads"),
                 ("gaia_results", "gaia"),
+                ("vizier_results", "vizier"),
             )
             for i in range(len(p["historical_response"][key]))
         ]

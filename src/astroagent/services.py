@@ -11,6 +11,7 @@ from astroagent.project_links import ProjectLinks
 from astroagent.project_service import ProjectService
 from astroagent.rag_service import RagService
 from astroagent.skill_store import SkillStore
+from astroagent.table_service import TableService
 from astroagent.trace_store import TraceStore
 from astroagent.workflow_service import WorkflowService
 
@@ -24,6 +25,7 @@ def compose(repository, settings):
     service.links = ProjectLinks(service)
     service.rag = RagService(service)
     service.plotting = PlotService(service, settings)
+    service.tables = TableService(service, settings)
     service.local_titles = LocalModelService(service, settings)
     service.literature = LiteratureService(service)
     service.traces = TraceStore(repository)

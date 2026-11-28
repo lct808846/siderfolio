@@ -464,6 +464,7 @@ class PostgresRepository(ConversationRepository):
         from astroagent.memory_store import used as memory_used
         from astroagent.plot_store import used
         from astroagent.rag_store import used_bytes
+        from astroagent.table_store import used as table_used
         from astroagent.trace_store import used as trace_used
 
         return (
@@ -474,6 +475,7 @@ class PostgresRepository(ConversationRepository):
             + literature_used(db)
             + trace_used(db)
             + memory_used(db)
+            + table_used(db)
         )
 
     def close(self):

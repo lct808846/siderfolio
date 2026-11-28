@@ -341,7 +341,6 @@ def test_client_cancel_timeout_and_pool_saturation(tmp_path):
     pool = McpClientPool(
         McpPoolConfig(
             pool_size=1,
-            startup_timeout_seconds=5,
             call_timeout_seconds=1.5,
             acquire_timeout_seconds=0.2,
         ),
@@ -350,6 +349,8 @@ def test_client_cancel_timeout_and_pool_saturation(tmp_path):
         ),
     )
     try:
+        # Exercise cancellation on an active tool call after the server handshake.
+        assert McpSimbadAdapter(pool).query("READY").status == "success"
         errors: list[ServiceError] = []
         cancel_event = threading.Event()
 

@@ -133,6 +133,287 @@
         "title": "AdsEvidenceParameters",
         "type": "object"
       },
+      "AnalysisDataset": {
+        "additionalProperties": false,
+        "properties": {
+          "column_count": {
+            "maximum": 64.0,
+            "minimum": 1.0,
+            "title": "Column Count",
+            "type": "integer"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/TableColumnMeta"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Columns",
+            "type": "array"
+          },
+          "coordinate_frame": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coordinate Frame"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Data Sha256",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "fits",
+              "votable",
+              "ecsv",
+              "csv",
+              "tsv"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "header_meta": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Header Meta",
+            "type": "object"
+          },
+          "id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "lineage": {
+            "$ref": "#/components/schemas/TableLineage"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "ref_epoch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Epoch"
+          },
+          "row_count": {
+            "maximum": 20000.0,
+            "minimum": 1.0,
+            "title": "Row Count",
+            "type": "integer"
+          },
+          "source": {
+            "enum": [
+              "upload",
+              "gaia_turn",
+              "gaia_snapshot",
+              "vizier",
+              "derived"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "source",
+          "format",
+          "source_sha256",
+          "data_sha256",
+          "row_count",
+          "column_count",
+          "columns",
+          "lineage",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AnalysisDataset",
+        "type": "object"
+      },
+      "AnalysisRunRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "input_dataset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Input Dataset Ids",
+            "type": "array"
+          },
+          "operator": {
+            "enum": [
+              "stats",
+              "filter_derive",
+              "coordinates",
+              "crossmatch",
+              "fit"
+            ],
+            "title": "Operator",
+            "type": "string"
+          },
+          "output_dataset_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Dataset Id"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "request_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Request Sha256",
+            "type": "string"
+          },
+          "software": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Software",
+            "type": "object"
+          },
+          "state": {
+            "enum": [
+              "completed",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "title": "Summary",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "operator",
+          "state",
+          "request_sha256",
+          "created_at"
+        ],
+        "title": "AnalysisRunRecord",
+        "type": "object"
+      },
+      "AnalysisRunResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "output_dataset": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisDataset"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "preview_columns": {
+            "items": {
+              "$ref": "#/components/schemas/TableColumnMeta"
+            },
+            "title": "Preview Columns",
+            "type": "array"
+          },
+          "preview_rows": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "title": "Preview Rows",
+            "type": "array"
+          },
+          "run": {
+            "$ref": "#/components/schemas/AnalysisRunRecord"
+          }
+        },
+        "required": [
+          "run"
+        ],
+        "title": "AnalysisRunResponse",
+        "type": "object"
+      },
       "ArchivedConversation": {
         "properties": {
           "archived_at": {
@@ -451,6 +732,9 @@
               "text/csv",
               "text/tab-separated-values",
               "application/json",
+              "application/fits",
+              "application/x-votable+xml",
+              "text/x-ecsv",
               "image/png",
               "image/jpeg",
               "image/webp",
@@ -688,6 +972,20 @@
             ],
             "title": "Status",
             "type": "string"
+          },
+          "table_analysis_proposals": {
+            "items": {
+              "$ref": "#/components/schemas/TableAnalysisProposalResult"
+            },
+            "title": "Table Analysis Proposals",
+            "type": "array"
+          },
+          "vizier_results": {
+            "items": {
+              "$ref": "#/components/schemas/VizierQueryResult"
+            },
+            "title": "Vizier Results",
+            "type": "array"
           },
           "warnings": {
             "items": {
@@ -2592,6 +2890,20 @@
             "title": "Status",
             "type": "string"
           },
+          "table_analysis_proposals": {
+            "items": {
+              "$ref": "#/components/schemas/ExportTableAnalysisProposalResult"
+            },
+            "title": "Table Analysis Proposals",
+            "type": "array"
+          },
+          "vizier_results": {
+            "items": {
+              "$ref": "#/components/schemas/ExportVizierQueryResult"
+            },
+            "title": "Vizier Results",
+            "type": "array"
+          },
           "warnings": {
             "items": {
               "$ref": "#/components/schemas/ExportErrorInfo"
@@ -4381,7 +4693,8 @@
               "current_turn_gaia",
               "history_turn_gaia",
               "attachment_csv",
-              "project_dataset"
+              "project_dataset",
+              "project_table"
             ],
             "title": "Data Source Kind",
             "type": "string"
@@ -4615,6 +4928,13 @@
             ],
             "title": "Skill Id"
           },
+          "skill_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skill Ids",
+            "type": "array"
+          },
           "skill_title": {
             "anyOf": [
               {
@@ -4625,6 +4945,13 @@
               }
             ],
             "title": "Skill Title"
+          },
+          "skill_titles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skill Titles",
+            "type": "array"
           },
           "skill_version": {
             "anyOf": [
@@ -4679,7 +5006,8 @@
             "enum": [
               "SIMBAD",
               "ADS",
-              "Gaia"
+              "Gaia",
+              "VizieR"
             ],
             "title": "Name",
             "type": "string"
@@ -4700,6 +5028,358 @@
           "retrieved_at"
         ],
         "title": "ExportSource",
+        "type": "object"
+      },
+      "ExportTableAnalysisProposalResult": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_id": {
+            "description": "主数据表 UUID（必须来自 list_project_tables 返回）",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "dataset_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "主数据表显示名",
+            "title": "Dataset Name"
+          },
+          "derived_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Name"
+          },
+          "explanation": {
+            "description": "分析目标、物理单位/坐标系与统计或拟合假设说明",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          },
+          "operator": {
+            "description": "算子类型：stats、filter_derive、coordinates、crossmatch 或 fit",
+            "enum": [
+              "stats",
+              "filter_derive",
+              "coordinates",
+              "crossmatch",
+              "fit"
+            ],
+            "title": "Operator",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "description": "按 operator 填写严格匹配的参数字典（严禁附带未定义字段）：1) stats: {columns?: string[], corr_x?: string, corr_y?: string, ks_column?: string, ks_other_dataset_id?: uuid, ks_group_column?: string, ks_group_a?: string, ks_group_b?: string}；2) filter_derive: {combine?: 'and'|'or', conditions?: [{column, op, value?, value_max?, values?, rhs_column?}], derived_columns?: [{name, expression, unit?, description?}]}；3) coordinates: {lon_col, lat_col, input_frame?: 'icrs'|'fk5'|'galactic', input_unit?: 'deg'|'hourangle_deg', output_frame?: 'galactic'|'icrs'|'fk5'|null, ref_ra_deg?: number, ref_dec_deg?: number}；4) crossmatch: {left_ra_col, left_dec_col, right_ra_col, right_dec_col, left_frame?: 'icrs'|'fk5'|'galactic', right_frame?: 'icrs'|'fk5'|'galactic', left_unit?: 'deg'|'hourangle_deg', right_unit?: 'deg'|'hourangle_deg', radius_arcsec?: number(0.05-300), mode?: 'nearest'|'all_within_radius', join_type?: 'inner'|'left', right_prefix?: string}（left/right_dataset_id 由顶层 dataset_id 与 secondary_dataset_id 自动补全）；5) fit: {x_col, y_col, y_err_col?: string, model?: 'linear'|'polynomial'|'power_law'|'gaussian', degree?: int(2-4), initial_guess?: {amplitude?, center?, sigma?, baseline?, scale?, exponent?}}。",
+            "title": "Parameters",
+            "type": "object"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "save_derived": {
+            "description": "是否保存为派生表",
+            "title": "Save Derived",
+            "type": "boolean"
+          },
+          "secondary_dataset_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "可选第二张表 UUID（仅 crossmatch 或跨表 stats KS 检验使用）",
+            "title": "Secondary Dataset Id"
+          },
+          "secondary_dataset_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secondary Dataset Name"
+          },
+          "status": {
+            "const": "proposed",
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "description": "分析任务标题",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "operator",
+          "title",
+          "dataset_id",
+          "dataset_name",
+          "secondary_dataset_id",
+          "secondary_dataset_name",
+          "parameters",
+          "save_derived",
+          "derived_name",
+          "explanation",
+          "warnings",
+          "status",
+          "project_id"
+        ],
+        "title": "ExportTableAnalysisProposalResult",
+        "type": "object"
+      },
+      "ExportVizierQueryResult": {
+        "additionalProperties": false,
+        "properties": {
+          "adql": {
+            "title": "Adql",
+            "type": "string"
+          },
+          "archive_overflow": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Overflow"
+          },
+          "catalog_id": {
+            "title": "Catalog Id",
+            "type": "string"
+          },
+          "catalog_title": {
+            "title": "Catalog Title",
+            "type": "string"
+          },
+          "cds_url": {
+            "title": "Cds Url",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "coordinate_frame": {
+            "title": "Coordinate Frame",
+            "type": "string"
+          },
+          "dec_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dec Column"
+          },
+          "endpoint": {
+            "title": "Endpoint",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExportErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "has_more": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has More"
+          },
+          "query": {
+            "additionalProperties": true,
+            "title": "Query",
+            "type": "object"
+          },
+          "ra_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ra Column"
+          },
+          "ref_epoch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Epoch"
+          },
+          "resolved_object": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved Object"
+          },
+          "returned_count": {
+            "title": "Returned Count",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExportSource"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "truncated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Truncated"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Units",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "catalog_id",
+          "catalog_title",
+          "query",
+          "adql",
+          "endpoint",
+          "cds_url",
+          "status",
+          "returned_count",
+          "has_more",
+          "truncated",
+          "archive_overflow",
+          "columns",
+          "units",
+          "ref_epoch",
+          "coordinate_frame",
+          "ra_column",
+          "dec_column",
+          "resolved_object",
+          "rows",
+          "source",
+          "warnings",
+          "error"
+        ],
+        "title": "ExportVizierQueryResult",
         "type": "object"
       },
       "ExternalMcpConfirmRequest": {
@@ -10334,7 +11014,8 @@
               "current_turn_gaia",
               "history_turn_gaia",
               "attachment_csv",
-              "project_dataset"
+              "project_dataset",
+              "project_table"
             ],
             "title": "Data Source Kind",
             "type": "string"
@@ -11402,6 +12083,27 @@
         "title": "ProjectOverview",
         "type": "object"
       },
+      "ProjectTablesPage": {
+        "additionalProperties": false,
+        "properties": {
+          "datasets": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisDataset"
+            },
+            "title": "Datasets",
+            "type": "array"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisRunRecord"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "title": "ProjectTablesPage",
+        "type": "object"
+      },
       "ProjectUpdate": {
         "additionalProperties": false,
         "properties": {
@@ -12416,7 +13118,8 @@
             "enum": [
               "simbad",
               "ads",
-              "gaia"
+              "gaia",
+              "vizier"
             ],
             "title": "Family",
             "type": "string"
@@ -12658,6 +13361,9 @@
               "tool_simbad",
               "tool_ads",
               "tool_gaia",
+              "tool_vizier",
+              "tool_project_tables",
+              "tool_table_analysis_proposal",
               "tool_literature_save",
               "tool_nbody_proposal",
               "tool_plot_proposal",
@@ -12935,6 +13641,13 @@
             ],
             "title": "Skill Title"
           },
+          "skill_titles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skill Titles",
+            "type": "array"
+          },
           "skill_version": {
             "anyOf": [
               {
@@ -13006,6 +13719,56 @@
           "started_at"
         ],
         "title": "RunTrace",
+        "type": "object"
+      },
+      "SendToPlotRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "title": "SendToPlotRequest",
+        "type": "object"
+      },
+      "SendToPlotResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "plot_dataset": {
+            "$ref": "#/components/schemas/PlotDataset"
+          },
+          "plot_url": {
+            "title": "Plot Url",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "source_dataset_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Source Dataset Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plot_dataset",
+          "project_id",
+          "source_dataset_id",
+          "plot_url"
+        ],
+        "title": "SendToPlotResponse",
         "type": "object"
       },
       "ServerToggleRequest": {
@@ -13636,6 +14399,13 @@
             ],
             "title": "Skill Id"
           },
+          "skill_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skill Ids",
+            "type": "array"
+          },
           "skill_title": {
             "anyOf": [
               {
@@ -13646,6 +14416,13 @@
               }
             ],
             "title": "Skill Title"
+          },
+          "skill_titles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skill Titles",
+            "type": "array"
           },
           "skill_version": {
             "anyOf": [
@@ -13994,7 +14771,8 @@
             "enum": [
               "SIMBAD",
               "ADS",
-              "Gaia"
+              "Gaia",
+              "VizieR"
             ],
             "title": "Name",
             "type": "string"
@@ -14290,6 +15068,605 @@
           "sha256"
         ],
         "title": "StepDependency",
+        "type": "object"
+      },
+      "TableAnalysisProposalResult": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_id": {
+            "description": "主数据表 UUID（必须来自 list_project_tables 返回）",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "dataset_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "主数据表显示名",
+            "title": "Dataset Name"
+          },
+          "derived_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Name"
+          },
+          "explanation": {
+            "description": "分析目标、物理单位/坐标系与统计或拟合假设说明",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          },
+          "operator": {
+            "description": "算子类型：stats、filter_derive、coordinates、crossmatch 或 fit",
+            "enum": [
+              "stats",
+              "filter_derive",
+              "coordinates",
+              "crossmatch",
+              "fit"
+            ],
+            "title": "Operator",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "description": "按 operator 填写严格匹配的参数字典（严禁附带未定义字段）：1) stats: {columns?: string[], corr_x?: string, corr_y?: string, ks_column?: string, ks_other_dataset_id?: uuid, ks_group_column?: string, ks_group_a?: string, ks_group_b?: string}；2) filter_derive: {combine?: 'and'|'or', conditions?: [{column, op, value?, value_max?, values?, rhs_column?}], derived_columns?: [{name, expression, unit?, description?}]}；3) coordinates: {lon_col, lat_col, input_frame?: 'icrs'|'fk5'|'galactic', input_unit?: 'deg'|'hourangle_deg', output_frame?: 'galactic'|'icrs'|'fk5'|null, ref_ra_deg?: number, ref_dec_deg?: number}；4) crossmatch: {left_ra_col, left_dec_col, right_ra_col, right_dec_col, left_frame?: 'icrs'|'fk5'|'galactic', right_frame?: 'icrs'|'fk5'|'galactic', left_unit?: 'deg'|'hourangle_deg', right_unit?: 'deg'|'hourangle_deg', radius_arcsec?: number(0.05-300), mode?: 'nearest'|'all_within_radius', join_type?: 'inner'|'left', right_prefix?: string}（left/right_dataset_id 由顶层 dataset_id 与 secondary_dataset_id 自动补全）；5) fit: {x_col, y_col, y_err_col?: string, model?: 'linear'|'polynomial'|'power_law'|'gaussian', degree?: int(2-4), initial_guess?: {amplitude?, center?, sigma?, baseline?, scale?, exponent?}}。",
+            "title": "Parameters",
+            "type": "object"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "save_derived": {
+            "default": false,
+            "description": "是否保存为派生表",
+            "title": "Save Derived",
+            "type": "boolean"
+          },
+          "secondary_dataset_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "可选第二张表 UUID（仅 crossmatch 或跨表 stats KS 检验使用）",
+            "title": "Secondary Dataset Id"
+          },
+          "secondary_dataset_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secondary Dataset Name"
+          },
+          "status": {
+            "const": "proposed",
+            "default": "proposed",
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "description": "分析任务标题",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "operator",
+          "title",
+          "dataset_id",
+          "explanation"
+        ],
+        "title": "TableAnalysisProposalResult",
+        "type": "object"
+      },
+      "TableColumnMeta": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "dtype": {
+            "default": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Dtype",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "number",
+              "integer",
+              "identifier",
+              "text",
+              "boolean",
+              "empty"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "missing": {
+            "default": 0,
+            "maximum": 20000.0,
+            "minimum": 0.0,
+            "title": "Missing",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "ucd": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ucd"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "name",
+          "kind"
+        ],
+        "title": "TableColumnMeta",
+        "type": "object"
+      },
+      "TableHduInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/TableColumnMeta"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "index": {
+            "minimum": 0.0,
+            "title": "Index",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "rows": {
+            "minimum": 0.0,
+            "title": "Rows",
+            "type": "integer"
+          },
+          "selectable": {
+            "title": "Selectable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "index",
+          "name",
+          "kind",
+          "rows",
+          "selectable"
+        ],
+        "title": "TableHduInfo",
+        "type": "object"
+      },
+      "TableImportGaiaRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "query_index": {
+            "default": 0,
+            "maximum": 11.0,
+            "minimum": 0.0,
+            "title": "Query Index",
+            "type": "integer"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
+          },
+          "source_kind": {
+            "enum": [
+              "turn",
+              "snapshot"
+            ],
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "turn_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Id"
+          }
+        },
+        "required": [
+          "source_kind"
+        ],
+        "title": "TableImportGaiaRequest",
+        "type": "object"
+      },
+      "TableImportVizierTurnRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "conversation_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "query_index": {
+            "default": 0,
+            "maximum": 11.0,
+            "minimum": 0.0,
+            "title": "Query Index",
+            "type": "integer"
+          },
+          "turn_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Turn Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id",
+          "turn_id"
+        ],
+        "title": "TableImportVizierTurnRequest",
+        "type": "object"
+      },
+      "TableInspectResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "coordinate_frame": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coordinate Frame"
+          },
+          "default_hdu_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Hdu Index"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "fits",
+              "votable",
+              "ecsv",
+              "csv",
+              "tsv"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "hdus": {
+            "items": {
+              "$ref": "#/components/schemas/TableHduInfo"
+            },
+            "title": "Hdus",
+            "type": "array"
+          },
+          "header_meta": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Header Meta",
+            "type": "object"
+          },
+          "ref_epoch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Epoch"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "maximum": 10485760.0,
+            "minimum": 1.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "filename",
+          "format",
+          "size_bytes",
+          "sha256",
+          "hdus"
+        ],
+        "title": "TableInspectResponse",
+        "type": "object"
+      },
+      "TableLineage": {
+        "additionalProperties": false,
+        "properties": {
+          "operator": {
+            "anyOf": [
+              {
+                "enum": [
+                  "stats",
+                  "filter_derive",
+                  "coordinates",
+                  "crossmatch",
+                  "fit"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operator"
+          },
+          "origin": {
+            "additionalProperties": true,
+            "title": "Origin",
+            "type": "object"
+          },
+          "parent_dataset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Parent Dataset Ids",
+            "type": "array"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "source": {
+            "enum": [
+              "upload",
+              "gaia_turn",
+              "gaia_snapshot",
+              "vizier",
+              "derived"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "TableLineage",
+        "type": "object"
+      },
+      "TablePreviewResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/TableColumnMeta"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "dataset_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "limit": {
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "total_rows": {
+            "maximum": 20000.0,
+            "minimum": 1.0,
+            "title": "Total Rows",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "offset",
+          "limit",
+          "total_rows",
+          "columns",
+          "rows"
+        ],
+        "title": "TablePreviewResponse",
         "type": "object"
       },
       "TextPreview": {
@@ -14800,6 +16177,14 @@
             ],
             "title": "Skill Id"
           },
+          "skill_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Skill Ids",
+            "type": "array"
+          },
           "tool_mode": {
             "anyOf": [
               {
@@ -14982,6 +16367,414 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VizierPreset": {
+        "additionalProperties": false,
+        "properties": {
+          "catalog_id": {
+            "title": "Catalog Id",
+            "type": "string"
+          },
+          "cds_url": {
+            "title": "Cds Url",
+            "type": "string"
+          },
+          "coordinate_frame": {
+            "default": "ICRS",
+            "title": "Coordinate Frame",
+            "type": "string"
+          },
+          "dec_col": {
+            "title": "Dec Col",
+            "type": "string"
+          },
+          "default_columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Default Columns",
+            "type": "array"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "ra_col": {
+            "title": "Ra Col",
+            "type": "string"
+          },
+          "ref_epoch": {
+            "title": "Ref Epoch",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Units",
+            "type": "object"
+          }
+        },
+        "required": [
+          "catalog_id",
+          "title",
+          "description",
+          "default_columns",
+          "ra_col",
+          "dec_col",
+          "ref_epoch",
+          "units",
+          "cds_url"
+        ],
+        "title": "VizierPreset",
+        "type": "object"
+      },
+      "VizierQueryHttpRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "catalog_id": {
+            "description": "VizieR 星表编号，如 II/246/out、II/328/allwise、II/349/ps1、V/156/dr7lrs、J/A+A/640/A1/nodup",
+            "pattern": "^[A-Za-z0-9_+./-]{3,64}$",
+            "title": "Catalog Id",
+            "type": "string"
+          },
+          "columns": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Za-z0-9_+-]{1,64}$",
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "可选返回列名列表（1–32 列）；留空则使用预设默认列或表默认坐标与核心列",
+            "title": "Columns"
+          },
+          "dataset_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Name"
+          },
+          "dec_deg": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ICRS 中心赤纬，单位 deg，范围 [-90, 90]；与 object_name 互斥",
+            "title": "Dec Deg"
+          },
+          "limit": {
+            "default": 50,
+            "description": "最多返回源行数，范围 1–500，默认 50",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "object_name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "待解析天体名称（通过 SIMBAD 获取 ICRS 坐标），与 ra_deg/dec_deg 互斥",
+            "title": "Object Name"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "ra_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ICRS 中心赤经，单位 deg，范围 [0, 360)；与 object_name 互斥",
+            "title": "Ra Deg"
+          },
+          "radius_arcmin": {
+            "default": 5.0,
+            "description": "圆锥检索半径，单位 arcmin，范围 [0.05, 60]",
+            "maximum": 60.0,
+            "minimum": 0.05,
+            "title": "Radius Arcmin",
+            "type": "number"
+          },
+          "save_to_project": {
+            "default": false,
+            "title": "Save To Project",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "catalog_id"
+        ],
+        "title": "VizierQueryHttpRequest",
+        "type": "object"
+      },
+      "VizierQueryHttpResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/VizierQueryResult"
+          },
+          "saved_dataset": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisDataset"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "VizierQueryHttpResponse",
+        "type": "object"
+      },
+      "VizierQueryResult": {
+        "additionalProperties": false,
+        "properties": {
+          "adql": {
+            "title": "Adql",
+            "type": "string"
+          },
+          "archive_overflow": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive Overflow"
+          },
+          "catalog_id": {
+            "title": "Catalog Id",
+            "type": "string"
+          },
+          "catalog_title": {
+            "title": "Catalog Title",
+            "type": "string"
+          },
+          "cds_url": {
+            "title": "Cds Url",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "coordinate_frame": {
+            "default": "ICRS",
+            "title": "Coordinate Frame",
+            "type": "string"
+          },
+          "dec_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dec Column"
+          },
+          "endpoint": {
+            "default": "https://tapvizier.cds.unistra.fr/TAPVizieR/tap/sync",
+            "title": "Endpoint",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "has_more": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has More"
+          },
+          "query": {
+            "additionalProperties": true,
+            "title": "Query",
+            "type": "object"
+          },
+          "ra_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ra Column"
+          },
+          "ref_epoch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Epoch"
+          },
+          "resolved_object": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved Object"
+          },
+          "returned_count": {
+            "default": 0,
+            "title": "Returned Count",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "not_found",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "truncated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Truncated"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Units",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "catalog_id",
+          "catalog_title",
+          "query",
+          "adql",
+          "cds_url",
+          "status",
+          "source"
+        ],
+        "title": "VizierQueryResult",
         "type": "object"
       },
       "WorkflowCreate": {
@@ -15704,7 +17497,7 @@
   },
   "info": {
     "title": "Siderfolio",
-    "version": "2.2.1"
+    "version": "2.3.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -29465,6 +31258,1432 @@
         ]
       }
     },
+    "/api/v1/projects/{project_id}/tables": {
+      "get": {
+        "operationId": "list_project_tables_api_v1_projects__project_id__tables_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectTablesPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "List Project Tables",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/from-gaia": {
+      "post": {
+        "operationId": "import_from_gaia_api_v1_projects__project_id__tables_from_gaia_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableImportGaiaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisDataset"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Import From Gaia",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/from-vizier": {
+      "post": {
+        "operationId": "import_from_vizier_api_v1_projects__project_id__tables_from_vizier_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableImportVizierTurnRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisDataset"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Import From Vizier",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/inspect": {
+      "post": {
+        "operationId": "inspect_upload_api_v1_projects__project_id__tables_inspect_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableInspectResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Inspect Upload",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/runs/{operator}": {
+      "post": {
+        "operationId": "run_operator_api_v1_projects__project_id__tables_runs__operator__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "operator",
+            "required": true,
+            "schema": {
+              "enum": [
+                "stats",
+                "filter_derive",
+                "coordinates",
+                "crossmatch",
+                "fit"
+              ],
+              "title": "Operator",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Payload",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Run Operator",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/runs/{run_id}/bundle": {
+      "get": {
+        "operationId": "export_run_bundle_api_v1_projects__project_id__tables_runs__run_id__bundle_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Export Run Bundle",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/upload": {
+      "post": {
+        "operationId": "upload_table_api_v1_projects__project_id__tables_upload_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "type": "string"
+                  },
+                  "hdu_index": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "selected_columns": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisDataset"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Upload Table",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/{dataset_id}": {
+      "delete": {
+        "operationId": "delete_dataset_api_v1_projects__project_id__tables__dataset_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Delete Dataset",
+        "tags": [
+          "tables"
+        ]
+      },
+      "get": {
+        "operationId": "get_dataset_api_v1_projects__project_id__tables__dataset_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisDataset"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Get Dataset",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/{dataset_id}/export": {
+      "get": {
+        "operationId": "export_dataset_api_v1_projects__project_id__tables__dataset_id__export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "csv",
+              "title": "Format",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Export Dataset",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/{dataset_id}/preview": {
+      "get": {
+        "operationId": "preview_dataset_api_v1_projects__project_id__tables__dataset_id__preview_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TablePreviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Preview Dataset",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/projects/{project_id}/tables/{dataset_id}/send-to-plot": {
+      "post": {
+        "operationId": "send_to_plot_api_v1_projects__project_id__tables__dataset_id__send_to_plot_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SendToPlotRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendToPlotResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Send To Plot",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
     "/api/v1/projects/{project_id}/workflows": {
       "get": {
         "operationId": "list_runs_api_v1_projects__project_id__workflows_get",
@@ -30508,6 +33727,202 @@
         "summary": "List User Tools",
         "tags": [
           "skills"
+        ]
+      }
+    },
+    "/api/v1/tables/vizier/presets": {
+      "get": {
+        "operationId": "vizier_presets_api_v1_tables_vizier_presets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VizierPreset"
+                  },
+                  "title": "Response Vizier Presets Api V1 Tables Vizier Presets Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Vizier Presets",
+        "tags": [
+          "tables"
+        ]
+      }
+    },
+    "/api/v1/tables/vizier/query": {
+      "post": {
+        "operationId": "vizier_query_api_v1_tables_vizier_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VizierQueryHttpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VizierQueryHttpResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Vizier Query",
+        "tags": [
+          "tables"
         ]
       }
     },

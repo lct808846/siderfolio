@@ -8,6 +8,7 @@ metadata:
   allowed_tools:
     - query_simbad
     - query_gaia
+    - query_vizier
   intent_keywords:
     - simbad
     - gaia

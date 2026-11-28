@@ -15,11 +15,13 @@ from astroagent.mcp_client import (
     McpAdsAdapter,
     McpGaiaAdapter,
     McpSimbadAdapter,
+    McpVizierAdapter,
     effective_astronomy_transport,
     get_mcp_pool,
 )
 from astroagent.schemas import ChatRequest, ChatResponse, ErrorResponse
 from astroagent.simbad import SimbadService
+from astroagent.vizier import VizierService
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
@@ -42,13 +44,16 @@ def get_agent_for_model(model_id=None) -> AstroAgent:
             settings,
             McpAdsAdapter(pool, settings),
             McpGaiaAdapter(pool, settings),
+            McpVizierAdapter(pool, settings),
         )
+    simbad = SimbadService(settings.simbad_timeout_seconds)
     return AstroAgent(
         None,
-        SimbadService(settings.simbad_timeout_seconds),
+        simbad,
         settings,
         AdsService(settings.ads_api_token, settings.ads_timeout_seconds),
         GaiaService(settings.gaia_timeout_seconds),
+        VizierService(settings.vizier_timeout_seconds, simbad=simbad),
     )
 
 

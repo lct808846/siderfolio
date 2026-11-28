@@ -6,7 +6,7 @@
     在线访问：<a href="https://www.siderfolio.com/login">https://www.siderfolio.com/login</a>
   </p>
   <p>
-    天文数据库实时检索 · 个人文献库与项目 RAG 知识库 · 隔离容器科研绘图 · N 体数值模拟 · 科研技能与受控 MCP · 长期记忆与上下文管理
+    天文数据库实时检索 · 星表交叉匹配与拟合 · 文献库与项目 RAG · 隔离科研绘图 · N 体模拟 · 科研技能与长期记忆
   </p>
 </div>
 
@@ -22,31 +22,27 @@
 
 ## 实际运行截图
 
-### 1. 科研对话工作台与隔离绘图（桌面端）
+以下桌面截图来自 v2.3.0 隔离验收环境，使用合成星表演示实际计算结果。
 
-左侧管理课题项目与会话记录；中部支持自然语言提问、LaTeX 公式渲染与可审阅脚本的对话内隔离绘图卡片；右侧核查 SIMBAD / Gaia DR3 / ADS 原始测量数据、过滤条件、高分辨率科研图形并一键导出数据包。
+### 星表导入与派生表预览
 
-![Siderfolio 桌面端科研工作台与 M45 观测色—星等图](docs/assets/screenshots/workbench-desktop.png)
+右侧结果栏展示交叉匹配后生成的派生表，可核对源编号和列并下载原始或派生数据。
 
-### 2. 个人天文文献库
+![Siderfolio 桌面端星表数据预览](docs/assets/screenshots/workbench-table.jpg)
 
-集中管理从 NASA ADS 检索并入库的文献条目，支持按关键词、年份与自定义标签筛选，查看原始书目元数据、DOI 与 ADS 链接、摘要快照、个人阅读笔记以及溯源回原会话。
+### 拟合结果与复现记录
 
-![Siderfolio 个人天文文献库](docs/assets/screenshots/literature-workspace.png)
+分析记录展示拟合系数、误差指标和适用范围，支持下载 ZIP 复现包。
 
-### 3. N 体数值模拟（REBOUND / PeTar）
+![Siderfolio 星表拟合结果和分析记录](docs/assets/screenshots/workbench-analysis.jpg)
 
-在对话中描述天体质量与初始轨道条件后，系统自动构建质心系参数方案并展示粒子表与总能量摘要；经用户确认后在无网隔离计算 Worker 中运行 **REBOUND** / **PeTar** 积分，右侧实时核查轨道轨迹图、位置快照、能量守恒偏差并导出 CSV 与复现实验包。
+### 隔离科研绘图
 
-![Siderfolio N 体数值模拟与层级三星轨道轨迹](docs/assets/screenshots/nbody-simulation.png)
+从已保存的数据表选择坐标列后，系统在隔离容器内生成图形，可导出 PNG 和 PDF。
 
-### 4. 移动端响应式工作台
+![Siderfolio 从派生表实际运行生成的科研图](docs/assets/screenshots/workbench-plot.jpg)
 
-完整适配窄屏交互，提供全高会话抽屉、毛玻璃弹窗、触摸优化与移动端高分辨率图形预览。
-
-<p align="center">
-  <img src="docs/assets/screenshots/workbench-mobile.png" alt="Siderfolio 移动端科研图形预览" width="320" />
-</p>
+[个人文献库示例](docs/assets/screenshots/literature-workspace.png) · [N 体模拟示例](docs/assets/screenshots/nbody-simulation.png)
 
 ---
 
@@ -56,6 +52,7 @@
 | --- | --- |
 | **天文数据库查询** | 接入 **SIMBAD**（主站自动故障转移至哈佛镜像）、**NASA ADS**（精确检索式、分页与被引排序）与 **ESA Gaia DR3**（固定 `gaiadr3.gaia_source` TAP 查询、质量筛选与基础样本统计）；所有结果保留原始单位、历元、截断状态与来源链接，严禁模型凭记忆伪造测量值或论文。 |
 | **科研项目、快照与固定流程** | 按课题组织会话、命名快照、单工具可复现重跑与双快照交集对比；内置「Gaia 视场候选源」「ADS 摘要证据表」固定科研流程，支持项目 ZIP 完整归档与校验恢复。 |
+| **项目星表分析** | 支持导入 FITS 表、VOTable、ECSV、CSV 和 TSV，或将 Gaia DR3 与 VizieR 查询结果存入项目。提供坐标变换、球面交叉匹配、统计、筛选与拟合，派生结果保留数据来源并可用于隔离绘图。 |
 | **个人文献库与项目 RAG 知识库** | 支持对话内显式授权幂等入库与手动整理个人 ADS 文献；项目知识库支持导入 PDF / Markdown 原文，基于 PostgreSQL 词法检索与 `pgvector` 本地嵌入混合检索，先预览原文证据段并经用户确认后再生成带页/行引文的回答。 |
 | **隔离科研绘图与 N 体模拟** | 对话内生成可审阅的 **Python (Matplotlib)** / **Gnuplot** 绘图方案与 **REBOUND** / **PeTar** N 体初始条件草案；用户确认后在无网络、只读根文件系统、受限资源的独立容器中执行并归档高分辨率图表与轨道数据。 |
 | **多模态附件分析** | 支持上传 PDF、DOCX、TXT/Markdown、CSV/TSV、JSON 及 PNG/JPG/WebP/GIF 图片附件，后端离线解析文本并对图片执行校验、去元数据重编码与分辨率收敛后传入多模态模型。 |
@@ -97,7 +94,7 @@ flowchart TB
 
     subgraph Ext["外部模型与科研服务"]
         LLM["多模型适配（OpenAI / DeepSeek / Anthropic / Gemini）"]
-        Astro["SIMBAD · NASA ADS · ESA Gaia DR3 TAP"]
+        Astro["SIMBAD · NASA ADS · ESA Gaia DR3 TAP · CDS VizieR TAP"]
         MCP["本地 stdio Astronomy MCP / 受控外部 Streamable HTTP MCP"]
     end
 

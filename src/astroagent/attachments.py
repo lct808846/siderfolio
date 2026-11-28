@@ -29,6 +29,10 @@ MEDIA = {
     ".csv": "text/csv",
     ".tsv": "text/tab-separated-values",
     ".json": "application/json",
+    ".fits": "application/fits",
+    ".fit": "application/fits",
+    ".vot": "application/x-votable+xml",
+    ".ecsv": "text/x-ecsv",
     ".png": "image/png",
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
@@ -167,7 +171,8 @@ def parse_attachment(filename, content):
         raise ServiceError(
             415,
             "attachment_type_unsupported",
-            "支持图片（PNG、JPG、WebP、GIF）及 PDF、DOCX、TXT、Markdown、CSV、TSV、JSON。",
+            "支持图片（PNG、JPG、WebP、GIF）、天文数据表（FITS、VOTable、ECSV）"
+            "及 PDF、DOCX、TXT、Markdown、CSV、TSV、JSON。",
         )
     if not content or len(content) > MAX_FILE_BYTES:
         raise ServiceError(413, "attachment_size_limit", "附件不能为空，单个文件最多 10 MiB。")
@@ -198,6 +203,10 @@ def parse_attachment(filename, content):
         elif media.endswith("wordprocessingml.document"):
             text = word_text(content)
             warnings = ["已提取正文和表格中的文字；图片、公式和版式不包含在附件文本中。"]
+        elif media in ("application/fits", "application/x-votable+xml", "text/x-ecsv"):
+            from astroagent.table_io import summarize_astro_table_attachment
+
+            text, warnings = summarize_astro_table_attachment(content, name)
         else:
             try:
                 text = content.decode("utf-8-sig")
