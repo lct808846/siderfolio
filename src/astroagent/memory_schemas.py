@@ -240,7 +240,9 @@ class MemoryCandidateReviewResponse(BaseModel):
 
 class MemorySaveReceipt(BaseModel):
     receipt_id: str
-    action: Literal["saved", "already_saved", "conflict_candidate", "needs_clarification"]
+    action: Literal[
+        "saved", "already_saved", "conflict_candidate", "needs_clarification", "limit_reached"
+    ]
     memory_id: str | None = None
     candidate_id: str | None = None
     scope: MemoryScope = "global"

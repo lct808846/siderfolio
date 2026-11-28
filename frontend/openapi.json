@@ -3956,7 +3956,8 @@
               "saved",
               "already_saved",
               "conflict_candidate",
-              "needs_clarification"
+              "needs_clarification",
+              "limit_reached"
             ],
             "title": "Action",
             "type": "string"
@@ -8748,7 +8749,8 @@
               "saved",
               "already_saved",
               "conflict_candidate",
-              "needs_clarification"
+              "needs_clarification",
+              "limit_reached"
             ],
             "title": "Action",
             "type": "string"
@@ -15702,7 +15704,7 @@
   },
   "info": {
     "title": "Siderfolio",
-    "version": "2.2.0"
+    "version": "2.2.1"
   },
   "openapi": "3.1.0",
   "paths": {

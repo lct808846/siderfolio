@@ -9,6 +9,7 @@ function statusLabel(action: MemorySaveReceipt['action']) {
   if (action === 'saved') return '已保存记忆'
   if (action === 'already_saved') return '已存在'
   if (action === 'conflict_candidate') return '待解决冲突'
+  if (action === 'limit_reached') return '记忆已达上限'
   return '需补充确认'
 }
 

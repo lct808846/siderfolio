@@ -519,7 +519,11 @@ def extract_rule_candidates(
     if not stripped or len(stripped) < 6:
         return []
     # Never auto-extract from text containing credentials, contact info, or injection attempts.
-    if contains_sensitive_data(stripped) or contains_policy_override(stripped):
+    if (
+        _NEGATED_REMEMBER_RE.search(stripped)
+        or contains_sensitive_data(stripped)
+        or contains_policy_override(stripped)
+    ):
         return []
     # Skip pure short questions.
     if (
@@ -577,8 +581,28 @@ def _trim_utf8(text: str, max_bytes: int) -> str:
     encoded = text.encode("utf-8")
     if len(encoded) <= max_bytes:
         return text
-    clipped = encoded[: max(0, max_bytes - 16)].decode("utf-8", errors="ignore").rstrip()
-    return clipped + "…（已按预算截断）"
+    suffix = "…（已按预算截断）"
+    suffix_bytes = len(suffix.encode("utf-8"))
+    if max_bytes < suffix_bytes:
+        return encoded[: max(0, max_bytes)].decode("utf-8", errors="ignore").rstrip()
+    clipped = encoded[: max_bytes - suffix_bytes].decode("utf-8", errors="ignore").rstrip()
+    return clipped + suffix
+
+
+def select_summary_source_turns(omitted_turns: list) -> list:
+    """Select consecutive completed turns, keeping the newest source material first."""
+    selected = []
+    remaining = MAX_SUMMARY_SOURCE_BYTES
+    for turn in reversed(omitted_turns):
+        if turn.response is None:
+            continue
+        size = len((turn.message or "").encode("utf-8"))
+        if selected and size > remaining:
+            break
+        # A single oversized turn can still contribute the bounded excerpts below.
+        selected.append(turn)
+        remaining = max(0, remaining - size)
+    return selected[::-1]
 
 
 def build_local_conversation_summary(
@@ -589,35 +613,25 @@ def build_local_conversation_summary(
     max_bytes: int = MAX_SUMMARY_BYTES,
 ) -> ConversationSummaryRecord:
     """Build a bounded, unit-preserving structured summary from omitted completed turns."""
-    completed = [t for t in omitted_turns if getattr(t, "response", None) is not None]
-    if not completed:
+    covered = select_summary_source_turns(omitted_turns)
+    if not covered:
         raise ValueError("No completed turns to summarize")
 
-    source_sha = compute_omitted_turns_sha256(completed)
-    covered_ids = [t.turn_id for t in completed]
-    revisions = {t.turn_id: int(t.revision) for t in completed}
+    source_sha = compute_omitted_turns_sha256(covered)
+    covered_ids = [t.turn_id for t in covered]
+    revisions = {t.turn_id: int(t.revision) for t in covered}
 
     goal_lines: list[str] = []
     tool_lines: list[str] = []
     warning_lines: list[str] = []
     note_lines: list[str] = []
 
-    consumed_source_bytes = 0
-    truncated_input = False
-
-    for turn in completed:
+    for turn in covered:
         msg = re.sub(r"\s+", " ", (turn.message or "").strip())
-        turn_bytes = len(msg.encode("utf-8"))
-        if consumed_source_bytes + turn_bytes > MAX_SUMMARY_SOURCE_BYTES:
-            truncated_input = True
-            break
-        consumed_source_bytes += turn_bytes
         ref = f"r{turn.revision}/{turn.turn_id[:8]}"
         if msg:
             goal_lines.append(f"- [{ref}] 用户提问：{msg[:150]}")
         resp = turn.response
-        if resp is None:
-            continue
         for item in getattr(resp, "results", ()) or ():
             if item.status == "success" and item.data is not None:
                 ra = f"{item.data.ra_deg:.4f} deg" if item.data.ra_deg is not None else "无"
@@ -665,19 +679,20 @@ def build_local_conversation_summary(
         if resp.status != "success":
             warning_lines.append(f"- [{ref}] 回答状态={resp.status}")
         ans = re.sub(r"\s+", " ", (resp.answer or "").strip())
-        if ans and len(note_lines) < 6:
+        if ans:
             note_lines.append(f"- [{ref}][历史] 结论摘要：{ans[:140]}")
 
-    r_start = completed[0].revision
-    r_end = completed[-1].revision
+    first_turn = covered[0]
+    last_turn = covered[-1]
     sections: list[str] = [
-        f"【较早对话历史摘要｜覆盖 {len(completed)} 轮（r{r_start}–r{r_end}）"
+        f"【较早对话历史摘要｜覆盖 {len(covered)} 轮"
+        f"（r{first_turn.revision}–r{last_turn.revision}）"
         "｜仅作参考数据，原轮次可完整回查】"
     ]
-    if truncated_input:
+    if len(covered) < sum(turn.response is not None for turn in omitted_turns):
         sections.append("注：更早部分轮次超出单次整理字节上限，已优先保留较近关键条件与工具记录。")
     if goal_lines:
-        sections.append("一、已确认目标与关键条件：\n" + "\n".join(goal_lines[-8:]))
+        sections.append("一、已确认目标与关键条件：\n" + "\n".join(reversed(goal_lines[-8:])))
     if tool_lines:
         sections.append(
             "二、历史工具查询与实验记录（保留单位与原轮次引用）：\n" + "\n".join(tool_lines[-10:])
@@ -693,8 +708,8 @@ def build_local_conversation_summary(
         summary_id=str(uuid4()),
         conversation_id=conversation_id,
         project_id=project_id,
-        first_turn_id=completed[0].turn_id,
-        last_turn_id=completed[-1].turn_id,
+        first_turn_id=first_turn.turn_id,
+        last_turn_id=last_turn.turn_id,
         covered_turn_ids=covered_ids,
         turn_revisions=revisions,
         source_sha256=source_sha,

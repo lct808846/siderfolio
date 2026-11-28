@@ -54,7 +54,7 @@ test.beforeAll(async () => {
   })
   mailbox = http.createServer((_req, res) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    res.end(`<a href="${origin}/activate#token=${token}">Activation email</a><a href="${origin}/reset-password#token=${token}">Password reset email</a>`)
+    res.end(`<a href="${origin}/activate#token=${token}">Activation email</a><a href="${origin}/reset-password#token=${token}">Password reset email</a><a href="${origin}/">Siderfolio home</a>`)
   })
   backend.listen(8102, '127.0.0.1'); await once(backend, 'listening')
   mailbox.listen(5290, '127.0.0.1'); await once(mailbox, 'listening')
@@ -102,6 +102,22 @@ test('real email navigation opens reset page without changing a password', async
   expect(posts).toEqual([])
 })
 
+test('cross-site link to homepage opens the login page', async ({ page, request }) => {
+  const navigation = { 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document' }
+  for (const method of ['GET', 'HEAD']) {
+    const response = await request.fetch('/', { method, headers: navigation, maxRedirects: 0 })
+    expect(response.status()).toBe(302)
+    expect(response.headers().location).toBe('/login')
+  }
+
+  await page.goto('http://localhost:5290/')
+  const rootRequest = page.waitForRequest(req => req.isNavigationRequest() && req.url() === origin + '/')
+  await page.getByRole('link', { name: 'Siderfolio home' }).click()
+  expect((await (await rootRequest).allHeaders())['sec-fetch-site']).toBe('cross-site')
+  await expect(page).toHaveURL(origin + '/login')
+  await expect(page.getByLabel('邮箱', { exact: true })).toBeVisible()
+})
+
 test('cross-site APIs, writes, embeds and private pages stay rejected', async ({ request }) => {
   const navigation = { 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document' }
   for (const path of ['/login', '/register', '/activate', '/resend', '/forgot-password', '/reset-password']) {
@@ -112,9 +128,11 @@ test('cross-site APIs, writes, embeds and private pages stay rejected', async ({
     expect((await request.get(path, { headers: navigation })).status()).toBe(403)
   }
   for (const [mode, destination] of [['cors', 'empty'], ['navigate', 'iframe'], ['no-cors', 'image']]) {
-    expect((await request.get('/activate', { headers: { ...navigation, 'Sec-Fetch-Mode': mode, 'Sec-Fetch-Dest': destination } })).status()).toBe(403)
+    for (const path of ['/', '/activate']) {
+      expect((await request.get(path, { headers: { ...navigation, 'Sec-Fetch-Mode': mode, 'Sec-Fetch-Dest': destination } })).status()).toBe(403)
+    }
   }
-  for (const path of ['/activate', '/api/v1/auth/activate/confirm', '/api/v1/auth/reset-password']) {
+  for (const path of ['/', '/activate', '/api/v1/auth/activate/confirm', '/api/v1/auth/reset-password']) {
     expect((await request.post(path, { headers: { ...navigation, Origin: origin, 'X-CSRF-Token': csrf }, data: { token } })).status()).toBe(403)
   }
   expect(posts).toEqual([])

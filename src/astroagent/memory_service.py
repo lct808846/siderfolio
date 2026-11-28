@@ -24,6 +24,7 @@ from astroagent.memory_extractor import (
     normalize_memory_text,
     parse_explicit_remember,
     score_lexical_relevance,
+    select_summary_source_turns,
 )
 from astroagent.memory_schemas import (
     MAX_HISTORY_SNIPPETS,
@@ -341,9 +342,9 @@ class MemoryService:
             preferences=self.store.get_preferences(),
         )
 
+    @staticmethod
     def _find_scope_matches(
-        self,
-        existing: list[MemoryItem],
+        db,
         *,
         scope: MemoryScope,
         project_id: str | None,
@@ -351,23 +352,6 @@ class MemoryService:
         normalized_key: str,
     ) -> tuple[MemoryItem | None, MemoryItem | None]:
         """Return (exact_duplicate, category_conflict) among active items in the same scope."""
-        exact = None
-        conflict = None
-        for item in existing:
-            if item.status != "active":
-                continue
-            if item.scope != scope or item.project_id != project_id:
-                continue
-            if item.category == category and item.normalized_key == normalized_key:
-                exact = item
-                break
-            if item.category == category and category not in PRESERVED_RECORD_CATEGORIES:
-                if conflict is None:
-                    conflict = item
-        return exact, conflict
-
-    @staticmethod
-    def _active_scope_items(db, *, scope: MemoryScope, project_id: str | None) -> list[MemoryItem]:
         if project_id is None:
             rows = db.execute(
                 "SELECT record FROM memories WHERE status='active' AND scope=? "
@@ -379,7 +363,30 @@ class MemoryService:
                 "SELECT record FROM memories WHERE status='active' AND scope=? AND project_id=?",
                 (scope, project_id),
             ).fetchall()
-        return [MemoryItem.model_validate_json(r[0]) for r in rows]
+        conflict = None
+        for row in rows:
+            item = MemoryItem.model_validate_json(row[0])
+            if item.status != "active" or item.scope != scope or item.project_id != project_id:
+                continue
+            if item.category != category:
+                continue
+            if item.normalized_key == normalized_key:
+                return item, conflict
+            if conflict is None and category not in PRESERVED_RECORD_CATEGORIES:
+                conflict = item
+        return None, conflict
+
+    @staticmethod
+    def _require_memory_capacity(db) -> None:
+        count = db.execute("SELECT COUNT(*) FROM memories WHERE status != 'superseded'").fetchone()[
+            0
+        ]
+        if count >= MAX_MEMORIES_PER_ACCOUNT:
+            raise ServiceError(
+                409,
+                "memory_limit_reached",
+                f"单账号最多保存 {MAX_MEMORIES_PER_ACCOUNT} 条有效记忆，请先整理旧记录。",
+            )
 
     def create_memory(self, body: MemoryCreateRequest) -> MemoryItem:
         sensitive = contains_sensitive_data(body.summary)
@@ -404,20 +411,8 @@ class MemoryService:
         with self.repo.connection() as db, self.repo.transaction(db):
             self.store._ensure_ready(db)
             project_name = self._verify_project_scope(db, body.scope, body.project_id)
-            count = db.execute(
-                "SELECT COUNT(*) FROM memories WHERE status != 'superseded'"
-            ).fetchone()[0]
-            if count >= MAX_MEMORIES_PER_ACCOUNT:
-                raise ServiceError(
-                    409,
-                    "memory_limit_reached",
-                    f"单账号最多保存 {MAX_MEMORIES_PER_ACCOUNT} 条有效记忆，请先整理旧记录。",
-                )
-            active_items = self._active_scope_items(
-                db, scope=body.scope, project_id=body.project_id
-            )
             exact, conflict = self._find_scope_matches(
-                active_items,
+                db,
                 scope=body.scope,
                 project_id=body.project_id,
                 category=resolved_category,
@@ -451,6 +446,8 @@ class MemoryService:
                     conflict.project_name = project_name
                 self.store.save_memory_with_db(db, conflict)
                 return conflict
+            else:
+                self._require_memory_capacity(db)
 
             item = MemoryItem(
                 id=str(uuid4()),
@@ -621,11 +618,8 @@ class MemoryService:
             project_name = self._verify_project_scope(db, final_scope, final_project_id)
             dedup = memory_dedup_key(final_category, final_summary)
 
-            active_items = self._active_scope_items(
-                db, scope=final_scope, project_id=final_project_id
-            )
             exact, conflict = self._find_scope_matches(
-                active_items,
+                db,
                 scope=final_scope,
                 project_id=final_project_id,
                 category=final_category,
@@ -664,6 +658,8 @@ class MemoryService:
                     conflict.updated_at = now
                     self.store.save_memory_with_db(db, conflict)
                     supersedes_id = conflict.id
+                else:
+                    self._require_memory_capacity(db)
                 saved_memory = MemoryItem(
                     id=str(uuid4()),
                     scope=final_scope,
@@ -881,9 +877,10 @@ class MemoryService:
         if not omitted_completed:
             return None, []
         degraded: list[str] = []
-        expected_sha = compute_omitted_turns_sha256(omitted_completed)
-        expected_ids = [t.turn_id for t in omitted_completed]
-        expected_revs = {t.turn_id: int(t.revision) for t in omitted_completed}
+        covered = select_summary_source_turns(omitted_completed)
+        expected_sha = compute_omitted_turns_sha256(covered)
+        expected_ids = [t.turn_id for t in covered]
+        expected_revs = {t.turn_id: int(t.revision) for t in covered}
         try:
             cached = self.store.get_summary(conversation_id)
             if (
@@ -1052,11 +1049,8 @@ class MemoryService:
                     project_name = self._verify_project_scope(
                         db, explicit.scope, explicit.project_id
                     )
-                    active_items = self._active_scope_items(
-                        db, scope=explicit.scope, project_id=explicit.project_id
-                    )
                     exact, conflict = self._find_scope_matches(
-                        active_items,
+                        db,
                         scope=explicit.scope,
                         project_id=explicit.project_id,
                         category=explicit.category,
@@ -1096,6 +1090,8 @@ class MemoryService:
                         conflict.updated_at = now
                         self.store.save_memory_with_db(db, conflict)
                         supersedes_id = conflict.id
+                    else:
+                        self._require_memory_capacity(db)
                     item = MemoryItem(
                         id=str(uuid4()),
                         scope=explicit.scope,
@@ -1126,9 +1122,24 @@ class MemoryService:
                     )
                     return receipts
             except Exception as exc:
-                LOGGER.warning(
-                    "Direct memory save failed for turn %s: %s", turn.turn_id, type(exc).__name__
-                )
+                if isinstance(exc, ServiceError) and exc.error.code == "memory_limit_reached":
+                    receipts.append(
+                        MemorySaveReceipt(
+                            receipt_id=str(uuid4()),
+                            action="limit_reached",
+                            scope=explicit.scope,
+                            project_id=explicit.project_id,
+                            category=explicit.category,
+                            summary=explicit.summary,
+                            message=exc.error.message,
+                        )
+                    )
+                else:
+                    LOGGER.warning(
+                        "Direct memory save failed for turn %s: %s",
+                        turn.turn_id,
+                        type(exc).__name__,
+                    )
                 return receipts
 
         # 2. Automatic bounded extraction when memory is enabled: store directly into active
@@ -1142,19 +1153,11 @@ class MemoryService:
                 return receipts
             with self.repo.connection() as db, self.repo.transaction(db):
                 self.store._ensure_ready(db)
-                count = db.execute(
-                    "SELECT COUNT(*) FROM memories WHERE status != 'superseded'"
-                ).fetchone()[0]
-                if count >= MAX_MEMORIES_PER_ACCOUNT:
-                    return receipts
                 names = self.store.project_names_map(db)
                 for item in extracted:
                     dedup = memory_dedup_key(item.category, item.summary)
-                    active_items = self._active_scope_items(
-                        db, scope=item.scope, project_id=item.project_id
-                    )
                     exact, _ = self._find_scope_matches(
-                        active_items,
+                        db,
                         scope=item.scope,
                         project_id=item.project_id,
                         category=item.category,
@@ -1162,6 +1165,10 @@ class MemoryService:
                     )
                     if exact is not None:
                         continue
+                    try:
+                        self._require_memory_capacity(db)
+                    except ServiceError:
+                        break
                     record = MemoryItem(
                         id=str(uuid4()),
                         scope=item.scope,
@@ -1190,9 +1197,6 @@ class MemoryService:
                         updated_at=now,
                     )
                     self.store.save_memory_with_db(db, record)
-                    count += 1
-                    if count >= MAX_MEMORIES_PER_ACCOUNT:
-                        break
         except Exception as exc:
             LOGGER.warning("Automatic memory extraction failed: %s", type(exc).__name__)
         return receipts

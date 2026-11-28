@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -196,6 +197,8 @@ def test_rule_extraction_and_cjk_research_focus_retrieval():
 
     # Sensitive text yields zero automatic candidates.
     assert extract_rule_candidates("我的研究方向是星团，密钥=sk-abcdef1234567890123456") == []
+    assert extract_rule_candidates("不要记住：我主要用 Python 做数据分析") == []
+    assert extract_rule_candidates("Don't remember: 我主要用 Python 做数据分析") == []
 
     # Acceptance scenario: saved research focus retrieved by "找几篇和我研究方向相关的论文".
     query = "找几篇和我研究方向相关的论文"
@@ -280,6 +283,42 @@ def test_long_conversation_summary_and_budget_pruning_preserve_units_and_origina
     assert ctx.record.memory_context.degraded_reasons
     # Original turns remain untouched.
     assert len(turns) == MAX_HISTORY_TURNS + 4
+
+
+def test_large_chinese_summary_covers_recent_source_and_fits_context():
+    turns = [
+        _make_turn(
+            index + 1,
+            ("修正后的软化长度 0.02 pc：" if index == 6 else f"旧参数第 {index + 1} 轮：")
+            + "条件" * 1950,
+            "记录该轮参数。",
+        )
+        for index in range(7)
+    ]
+    summary = build_local_conversation_summary(turns[0].conversation_id, None, turns)
+
+    assert summary.covered_turn_ids == [turn.turn_id for turn in turns[-5:]]
+    assert summary.first_turn_id == turns[2].turn_id
+    assert summary.last_turn_id == turns[-1].turn_id
+    assert summary.turn_revisions == {turn.turn_id: turn.revision for turn in turns[-5:]}
+    assert "覆盖 5 轮" in summary.summary_text
+    assert "修正后的软化长度 0.02 pc" in summary.summary_text
+    assert "旧参数第 1 轮" not in summary.summary_text
+
+    clipped = build_local_conversation_summary(turns[0].conversation_id, None, turns, max_bytes=511)
+    assert clipped.summary_text.endswith("…（已按预算截断）")
+    assert clipped.summary_bytes == len(clipped.summary_text.encode("utf-8")) <= 511
+
+    turns = [
+        _make_turn(index + 1, "很长的中文科研条件" * 40, "很长的中文结论" * 40)
+        for index in range(10)
+    ]
+    summary = build_local_conversation_summary(turns[0].conversation_id, None, turns)
+    assert summary.summary_text.endswith("…（已按预算截断）")
+    assert summary.summary_bytes == len(summary.summary_text.encode("utf-8")) <= MAX_SUMMARY_BYTES
+    prepared = PreparedContext([], "继续研究", conversation_summary=summary)
+    rendered = json.loads(prepared.fit_memory(8192))["earlier_conversation_summary"]
+    assert rendered["text"] == summary.summary_text
 
 
 def test_memory_assisted_skill_matching_and_no_tool_auth_bypass():

@@ -96,9 +96,18 @@ const server = http.createServer(async (req, res) => {
   // Email links are cross-site document navigations. Loading their public page
   // must not activate/reset anything; writes still require same-origin CSRF.
   const publicBrandAsset = ['GET', 'HEAD'].includes(req.method) && ['/siderfolio-logo.png', '/favicon.svg', '/favicon.ico'].includes(url.pathname)
-  const publicNavigation = ['GET', 'HEAD'].includes(req.method) && publicPages.has(url.pathname)
+  const documentNavigation = ['GET', 'HEAD'].includes(req.method)
     && req.headers['sec-fetch-mode'] === 'navigate' && req.headers['sec-fetch-dest'] === 'document'
-  if (req.headers['sec-fetch-site'] === 'cross-site' && !publicNavigation && !publicBrandAsset) { res.writeHead(403); return res.end('Unsupported request origin') }
+  if (req.headers['sec-fetch-site'] === 'cross-site') {
+    if (documentNavigation && url.pathname === '/') {
+      res.writeHead(302, { Location: '/login', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' })
+      return res.end()
+    }
+    if (!publicBrandAsset && !(documentNavigation && publicPages.has(url.pathname))) {
+      res.writeHead(403)
+      return res.end('Unsupported request origin')
+    }
+  }
   if (url.pathname === '/__internal/health') {
     const local = ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress || '')
     res.writeHead(local ? 200 : 404); return res.end(local ? 'ok' : '')

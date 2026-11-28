@@ -4009,7 +4009,7 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "saved" | "already_saved" | "conflict_candidate" | "needs_clarification";
+            action: "saved" | "already_saved" | "conflict_candidate" | "needs_clarification" | "limit_reached";
             /** Candidate Id */
             candidate_id: string | null;
             /**
@@ -5791,7 +5791,7 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "saved" | "already_saved" | "conflict_candidate" | "needs_clarification";
+            action: "saved" | "already_saved" | "conflict_candidate" | "needs_clarification" | "limit_reached";
             /** Candidate Id */
             candidate_id?: string | null;
             /**

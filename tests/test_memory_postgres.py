@@ -336,3 +336,62 @@ def test_direct_save_auto_extraction_and_source_revocation(v22_client):
     )
     assert "Julia" not in captured[-1]["memory_block"]
     assert captured[-1]["memory_trace"].history_count == 0
+
+
+def test_memory_opt_out_and_capacity_on_both_write_paths(v22_client, monkeypatch):
+    client = v22_client
+    account(client, "memory-limit@example.org")
+    service = client.identity.tenants.for_user(
+        client.store.authenticate(client.cookies.get("astroagent_session"))
+    )
+    conversation = post(client, "conversations", {"title": "合成记忆验收"}).json()
+    captured: list[dict] = []
+
+    def submit(message: str, revision: int):
+        turn, status = service.submit(
+            conversation["id"],
+            TurnRequest(
+                message=message, client_request_id=str(uuid4()), expected_revision=revision
+            ),
+            lambda: _StubAgent(captured),
+        )
+        assert status == 200
+        return turn.memory_receipts
+
+    assert client.get("/api/v1/memories/preferences").json()["auto_extract"] is True
+    assert submit("不要记住：我主要用 Julia 做谱线拟合", 0) == []
+    assert service.memory.store.list_memories() == []
+
+    monkeypatch.setattr("astroagent.memory_service.MAX_MEMORIES_PER_ACCOUNT", 1)
+    body = {"scope": "global", "summary": "我主要用 Python 做数据分析"}
+    created = post(client, "memories", body)
+    assert created.status_code == 201, created.text
+    memory_id = created.json()["id"]
+    duplicate = post(client, "memories", body)
+    assert duplicate.status_code == 201
+    assert duplicate.json()["id"] == memory_id
+    receipts = submit("记住我主要用 Python 做数据分析", 1)
+    assert [(receipt.action, receipt.memory_id) for receipt in receipts] == [
+        ("already_saved", memory_id)
+    ]
+
+    blocked = post(client, "memories", {**body, "summary": "我主要用 Fortran 做数据分析"})
+    assert blocked.status_code == 409
+    assert blocked.json()["error"]["code"] == "memory_limit_reached"
+    receipts = submit("记住我主要用 Fortran 做数据分析", 2)
+    assert [receipt.action for receipt in receipts] == ["limit_reached"]
+    assert "请先整理旧记录" in receipts[0].message
+    assert submit("我主要用 Fortran 做数据分析", 3) == []
+    assert [item.id for item in service.memory.store.list_memories()] == [memory_id]
+
+    replacement = submit("记住我的数据分析工具改为 Fortran", 4)[0]
+    assert replacement.action == "saved"
+    assert replacement.memory_id != memory_id
+    merged = post(
+        client,
+        "memories",
+        {**body, "summary": "我主要用 Gnuplot 做数据分析", "conflict_resolution": "merge"},
+    )
+    assert merged.status_code == 201, merged.text
+    assert merged.json()["id"] == replacement.memory_id
+    assert [item.id for item in service.memory.store.list_memories()] == [replacement.memory_id]
