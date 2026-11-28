@@ -229,8 +229,15 @@ def test_openapi_additive_schema_and_invalid_ads_config(monkeypatch):
         schema = client.get("/openapi.json").json()
         assert schema["info"]["version"] == __version__
         components = schema["components"]["schemas"]
-        assert "literature_results" in components["ChatResponse"]["properties"]
-        assert components["Source"]["properties"]["name"]["enum"] == ["SIMBAD", "ADS", "Gaia"]
+        assert {"literature_results", "vizier_results", "table_analysis_proposals"} <= set(
+            components["ChatResponse"]["properties"]
+        )
+        assert components["Source"]["properties"]["name"]["enum"] == [
+            "SIMBAD",
+            "ADS",
+            "Gaia",
+            "VizieR",
+        ]
         monkeypatch.setenv("ADS_TIMEOUT_SECONDS", "private-invalid")
         response = client.post("/api/v1/chat", json={"message": "查询"})
         assert response.status_code == 503

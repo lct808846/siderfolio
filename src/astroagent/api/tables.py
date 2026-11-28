@@ -41,6 +41,8 @@ router = APIRouter(
 
 
 def get_tables(service: Service):
+    if service.tables is None:
+        raise ServiceError(503, "table_storage_unavailable", "星表服务暂不可用。")
     return service.tables
 
 
